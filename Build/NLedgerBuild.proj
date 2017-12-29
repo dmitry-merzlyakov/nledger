@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="All">
+
+  <PropertyGroup>
+    
+    <!-- Project file structure -->
+    
+    <ProjectRoot Condition=" '$(ProjectRoot)'=='' ">..\</ProjectRoot>
+    <SourceRoot>$(ProjectRoot)Source\</SourceRoot>
+    <BuildDir>$(ProjectRoot)Build\</BuildDir>
+    <TestResultsDir>$(BuildDir)TestResults\</TestResultsDir>
+    <MarkdownDir>$(BuildDir)MarkdownSharp\</MarkdownDir>
+    <!-- Path to ProductInfo file -->
+    <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
+    <!-- Paths to test project assemblies separated by spaces -->
+    <TestAssemblies>$(SourceRoot)NLedger.Tests\bin\Release\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\NLedger.IntegrationTests.dll</TestAssemblies>
+
+    <!-- Output file structure -->
+
+    <OutputDir Condition=" '$(OutputDir)'=='' ">$(ProjectRoot)BuildOut\</OutputDir>
+    <PackageDir>$(OutputDir)package\NLedger\</PackageDir>
+    <ReleaseDir Condition=" '$(ReleaseDir)'=='' ">$(ProjectRoot)Bin\</ReleaseDir>
+
+    <!-- Paths to build tools -->
+    
+    <!-- Visual Studio Test Console location -->
+    <VsTestConsolePath Condition=" '$(VsTestConsolePath)'=='' ">%VS140COMNTOOLS%..\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</VsTestConsolePath>
+    <!-- Powershell location -->
+    <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+  
+    <!-- Properties -->
+    
+    <!-- Indicates whether current process has elevated permissions. If yes - IntegrationTests calls NGen to create a native image -->
+    <Elevated Condition=" '$(Elevated)'=='' ">False</Elevated>
+    
+  
+</PropertyGroup>
+
+  <Target Name="All">
+    <CallTarget Targets="Build" />
+    <CallTarget Targets="CodeTests" />
+    <CallTarget Targets="Release" />
+    <CallTarget Targets="IntegrationTests" />
+    <CallTarget Targets="Package" />
+    <CallTarget Targets="Publish" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="CheckLicensing">
+    <Message Text="Target : Build (building source code)"/>
+    <MSBuild Projects="$(SourceRoot)NLedger.sln" Properties="Configuration=Release" />    
+  </Target>
+
+  <Target Name="CodeTests" DependsOnTargets="Build;CheckOutputDir">
+    <Message Text="Target : CodeTests (executing all unit tests defined in code)"/>
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssemblies) /Logger:trx" />
+    <!-- Copy trx files (s) to output folder -->
+    <CreateItem Include="$(TestResultsDir)**\*.*">
+      <Output TaskParameter="Include" ItemName="TestResultsFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(TestResultsFiles)" DestinationFiles="@(TestResultsFiles->'$(OutputDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <!-- Remove test results folder -->
+    <RemoveDir Directories="$(TestResultsDir)"/>
+  </Target>
+
+  <Target Name="Release" DependsOnTargets="Build">
+    <Message Text="Target : Release (composing a package folder with release binaries)"/>
+    <!-- Prepare a folder for package binaries -->
+    <RemoveDir Directories="$(PackageDir)"/>
+    <MakeDir Directories="$(PackageDir)"/>
+    <!-- Add binaries -->
+    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\NLedger.dll" DestinationFiles="$(PackageDir)NLedger.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\NLedger-cli.exe" DestinationFiles="$(PackageDir)NLedger-cli.exe"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)NLedger-cli.exe.config"  />
+    <!-- Add Contrib files -->
+    <CreateItem Include="$(ProjectRoot)Contrib\**\*.*">
+      <Output TaskParameter="Include" ItemName="ContribFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(ContribFiles)" DestinationFiles="@(ContribFiles->'$(PackageDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <!-- Add licenses -->
+    <Copy SourceFiles="$(ProjectRoot)LICENSE" DestinationFiles="$(PackageDir)\LICENSE"  />
+    <Copy SourceFiles="$(ProjectRoot)LICENSE.LEDGER" DestinationFiles="$(PackageDir)\LICENSE.LEDGER"  />
+    <!-- Add NLedger readme, documentation and release notes -->
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\README.md&quot; -outputFileName &quot;$(PackageDir)\README.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\CHANGELOG.md&quot; -outputFileName &quot;$(PackageDir)\CHANGELOG.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\nledger.md&quot; -outputFileName &quot;$(PackageDir)\nledger.html&quot;" />
+  </Target>
+
+  <Target Name="IntegrationTests" DependsOnTargets="Release">
+    <Message Text="Target : IntegrationTests (executing all Ledger tests in NLTest Toolkit)"/>
+    <!-- Call NGEN to create a native image to speed up the tests. Requires elevated permissions -->
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -addPath:$False -addAlias:$False" />
+    <!-- Run all integration tests -->
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -htmlReport -reportFileName &quot;$(OutputDir)NLTest.LastTestResults&quot;" />
+    <!-- Remove the native image from the cache -->
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -uninstall -addPath:$False -addAlias:$False" />
+  </Target>
+
+  <Target Name="Package" DependsOnTargets="GetProductVersion;Release">
+    <Message Text="Target : Package (creating a zip package)"/>
+    <Delete Files="$(OutputDir)NLedger-v$(ProductVersion).zip" />
+    <ZipDir ZipFileName="$(OutputDir)NLedger-v$(ProductVersion).zip" DirectoryName="$(PackageDir).." />
+  </Target>
+
+  <Target Name="Publish" DependsOnTargets="GetProductVersion;Package">
+    <Message Text="Target : Publishing (moving the zip package to the public folder)"/>
+    <Copy SourceFiles="$(OutputDir)NLedger-v$(ProductVersion).zip" DestinationFiles="$(ReleaseDir)NLedger-v$(ProductVersion).zip"  />
+  </Target>
+
+  <!-- Technical task - check output folder -->
+  <Target Name="CheckOutputDir">
+    <Message Text="Create output folder if it does not exist" />
+    <MakeDir Directories="$(OutputDir)"/>
+  </Target>
+
+  <!-- Technical task - checking version and licensing info in all source files -->
+  <Target Name="CheckLicensing">
+    <Message Text="Checking version and licensing info in all source code files" />
+    <Message Text="NOTE: if this task fails, execute ProductInfoUpdate.cmd to actualize data and observe modifications in a source control system." />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(BuildDir)ProductInfoUpdate.ps1&quot; -verify" />
+  </Target>
+  
+  <!-- Technical task: getting a product version from Product Info file -->
+  <Target Name="GetProductVersion">
+    <XmlPeek XmlInputPath="$(ProductInfoPath)" Query="/ProductInfo/General/Version/text()">
+      <Output TaskParameter="Result" PropertyName="ProductVersion" />
+    </XmlPeek>
+    <Message Text="Found product version: $(ProductVersion)" />
+  </Target>
+
+  <!-- Technical task: create a zip file -->
+  <UsingTask TaskName="ZipDir" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
+    <ParameterGroup>
+      <ZipFileName ParameterType="System.String" Required="true" />
+      <DirectoryName ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+      try
+      {
+        Log.LogMessage(string.Format("Zipping Directory {0} to {1}", DirectoryName, ZipFileName));
+        ZipFile.CreateFromDirectory( DirectoryName, ZipFileName );
+        return true;
+      }
+      catch(Exception ex)
+      {
+        Log.LogErrorFromException(ex);
+        return false;
+      }
+    ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+</Project>

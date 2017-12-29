@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProductInfo>
+  <General>
+	<Version>0.6</Version>
+	<Stage>Public Beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
+    <!-- This is a reference to a snapshot of the original source code that has been ported. -->
+    <OriginalSource>
+        <Repository>https://github.com/ledger/ledger</Repository>
+        <Branch>NEXT</Branch>
+        <Commit>b414544</Commit>  <!-- The date of the latest commit was 2017/02/17 -->
+    </OriginalSource>
+  </General>
+  <AssemblyInfo>
+    <!-- Product info -->
+    <AssemblyTitle>NLedger</AssemblyTitle>
+    <AssemblyDescription>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</AssemblyDescription>
+    <AssemblyProduct>NLedger, the double-entry accounting tool</AssemblyProduct>
+    <AssemblyCopyright>Copyright &#169; 2015-{{Year}}, Dmitry Merzlyakov</AssemblyCopyright>
+    <AssemblyCompany>Dmitry Merzlyakov</AssemblyCompany>
+    <!-- Version information -->
+    <AssemblyVersion>{{Version}}.*</AssemblyVersion>					<!-- Auto-generate the build and release numbers -->
+    <AssemblyFileVersion remove="true" />					<!-- Remove this attribue to make AssemblyVersion visible on the file details tab -->
+    <AssemblyInformationalVersion>{{Version}} {{Stage}}</AssemblyInformationalVersion>
+  </AssemblyInfo>
+  <SourceLicensing>
+    <FileHeader>
+        // **********************************************************************************
+        // Copyright (c) 2015-{{Year}}, Dmitry Merzlyakov.  All rights reserved.
+        // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
+        // 
+        // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
+        // Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+        // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
+        // **********************************************************************************
+    </FileHeader>
+  </SourceLicensing>
+</ProductInfo>

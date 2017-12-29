@@ -1,0 +1,1 @@
+PowerShell -ExecutionPolicy RemoteSigned -File "%~dp0NLedgerBuild.ps1"

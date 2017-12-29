@@ -1,0 +1,2175 @@
+<!-- Creator     : groff version 1.22.2 -->
+<!-- CreationDate: Sat Dec 16 05:06:15 2017 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title></title>
+</head>
+<body>
+
+<hr>
+
+
+<p>LEDGER(1) BSD General Commands Manual LEDGER(1)</p>
+
+<p style="margin-top: 1em"><b>NAME</b></p>
+
+<p style="margin-left:6%;"><b>ledger</b> &mdash;
+Command-line, double-entry account reporting tool</p>
+
+<p style="margin-top: 1em"><b>SYNOPSIS</b></p>
+
+<p style="margin-left:15%;"><b>ledger</b> [<i>command</i>]
+[<i>options</i>] [<i>arguments</i>]</p>
+
+<p style="margin-top: 1em"><b>DESCRIPTION</b></p>
+
+<p style="margin-left:6%;"><b>ledger</b> is a command-line
+accounting tool based on the power and completeness of
+double-entry accounting. It is only a reporting tool, which
+means it never modifies your data files, but it does offer a
+large selection of reports, and different ways to customize
+them to your needs.</p>
+
+<p style="margin-top: 1em"><b>COMMANDS</b></p>
+
+<p style="margin-left:6%;"><b>ledger</b> accepts several
+top-level commands, each of which generates a different kind
+of basic report. Most of them accept a <i>report-query</i>
+argument, in order to determine what should be reported. To
+understand the syntax of a <i>report-query</i>, see the
+section on <i>QUERIES</i>. In its most basic form, simply
+specifying one or more strings produces a report for all
+accounts containing those strings.</p>
+
+<p style="margin-left:6%; margin-top: 1em">If no command is
+given, <b>ledger</b> enters a REPL, or command loop,
+allowing several commands to be executed on the same dataset
+without reparsing.</p>
+
+<p style="margin-left:6%; margin-top: 1em">The following is
+a complete list of accepted reporting commands:</p>
+
+<p style="margin-top: 1em"><b>accounts</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:19%;">List all accounts for postings
+that match the <i>report-query</i>.</p>
+
+<p style="margin-top: 1em"><b>balance</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Print a balance report showing
+totals for postings that match <i>report-query</i>, and
+aggregate totals for parents of those accounts. Options most
+commonly used with this command are:</p>
+
+<p><b>&minus;&minus;basis</b> (<b>&minus;B</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Report in terms
+of cost basis, not amount or value. This is the only form of
+report which is guaranteed to always balance to zero, when
+no <i>report-query</i> is specified. Only show totals for
+the top-most accounts.</p>
+
+<p><b>&minus;&minus;empty</b> (<b>&minus;E</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Show accounts
+whose total is zero.</p>
+
+<p><b>&minus;&minus;flat</b></p>
+
+<p style="margin-left:40%; margin-top: 1em">Rather than
+display a hierarchical tree, flatten the report to show
+subtotals for only accounts matching
+<i>report-query</i>.</p>
+
+<p><b>&minus;&minus;no-total</b></p>
+
+<p style="margin-left:40%; margin-top: 1em">Suppress the
+summary total shown at the bottom of the report.</p>
+
+<p style="margin-left:18%; margin-top: 1em">The synonyms
+<b>bal</b> and <b>b</b> are also accepted.</p>
+
+<p style="margin-top: 1em"><b>budget</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">A special balance report which
+includes three extra columns: the amount budgeted during the
+reporting period, how spending differed from the budget, and
+the percentage of budget spent (exceeds 100% if you go over
+budget). Note that budgeting requires one or more
+&rsquo;&rsquo;</p>
+
+<p>periodic transactions &rsquo;&rsquo; to be defined in
+your data file(s). See the manual for more information.</p>
+
+<p style="margin-top: 1em"><b>cleared</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">A special balance report which
+adds two extra columns: the cleared balance for each
+account, and the date of the most recent cleared posting in
+that account. For this accounting to be meaningful, the
+cleared flag must be set on at least one posting. See the
+manual for more information.</p>
+
+<p style="margin-top: 1em"><b>commodities</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">List all commodities for
+postings matching the <i>report-query</i>.</p>
+
+<p style="margin-top: 1em"><b>convert</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Reads data from
+a CSV (comma-separated values) file and generates
+<b>ledger</b> transactions.</p>
+
+<p style="margin-top: 1em"><b>csv</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Report of postings matching the
+<i>report-query</i> in CSV format (comma-separated values).
+Useful for exporting data to a spreadsheet for further
+analysis or charting.</p>
+
+<p style="margin-top: 1em"><b>entry</b> [ <i><br>
+entry-template</i>]</p>
+
+<p style="margin-left:18%;">Generate and display a new,
+properly formatted <b>ledger</b> transaction by comparing
+the <i>entry-template</i> to the transactions in your data
+file(s). For more information on draft templates and using
+this command to quickly create new transactions, see the
+section <i>ENTRIES</i>.</p>
+
+<p style="margin-left:18%; margin-top: 1em">The synonym
+<b>xact</b> is also accepted.</p>
+
+<p style="margin-top: 1em"><b>emacs</b> [ <i><br>
+query</i>]</p>
+
+<p style="margin-left:18%;">Output posting and transaction
+data in a format readily consumed by the Emacs editor, in a
+series of Lisp forms. This is used by the <i>ledger.el</i>
+Emacs mode to process reporting data from <b>ledger</b>.</p>
+
+<p style="margin-top: 1em"><b>equity</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Print a transaction with a
+series of postings that balance current totals for accounts
+matching the <i>report-query</i> in a special account called
+Equity:Opening Balances. The purpose of this report is to
+close the books for a prior year, while using these equity
+postings to carry forward those balances.</p>
+
+<p style="margin-top: 1em"><b>org</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Produce a
+journal file suitable for use in the Emacs org mode.</p>
+
+<p style="margin-top: 1em"><b>payees</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">List all payees for postings
+matching the <i>report-query</i>.</p>
+
+<p style="margin-top: 1em"><b>pricemap</b></p>
+
+<p style="margin-left:18%;">Produce a file which can be
+used to generate a graph with graphviz showing the
+relationship of commodities in the <b>ledger</b> file.</p>
+
+<p style="margin-top: 1em"><b>prices</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Report prices for all
+commodities in postings matching the <i>report-query</i>.
+The prices are reported with the granularity of a single
+day.</p>
+
+<p style="margin-top: 1em"><b>pricedb</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Report prices for all
+commodities in postings matching the <i>report-query</i>.
+Prices are reported down to the second, using the same
+format as the <i>~/.pricedb</i> file.</p>
+
+<p style="margin-top: 1em"><b>print</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Print out the full transactions
+of any matching postings using the same format as they would
+appear in a data file. This can be used to extract subsets
+from a <b>ledger</b> file to transfer to other files.</p>
+
+<p style="margin-top: 1em"><b>push</b> [ <i><br>
+options</i>]</p>
+
+<p style="margin-left:18%;">In the REPL, push a set of
+command-line <i>options</i>, so that they will apply to all
+subsequent reports.</p>
+
+<p style="margin-top: 1em"><b>pop</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">In the REPL,
+pop any option settings that have been <b>push</b>ed.</p>
+
+<p style="margin-top: 1em"><b>register</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">List all postings matching the
+<i>report-query</i>. This is one of the most common
+commands, and can be used to provide a variety of useful
+reports. Options most commonly used with this command
+are:</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;average</b>
+(<b>&minus;A</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Show the
+running average, rather than a running total.</p>
+
+<p><b>&minus;&minus;current</b> (<b>&minus;c</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Don&rsquo;t
+show postings beyond the present day.</p>
+
+<p><b>&minus;&minus;exchange</b> <i>commodity</i>
+(<b>&minus;X</b>)</p>
+
+<p style="margin-left:40%;">Render all values in the given
+<i>commodity</i>, if a price conversion rate can be
+determined. Rates are always displayed relative to the date
+of the posting they are calculated for. This means a
+<b>register</b> report is a historical value report. For
+current values, it may be preferable to use the
+<b>balance</b> report.</p>
+
+<p><b>&minus;&minus;gain</b> (<b>&minus;G</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Show any gains
+(or losses) in commodity values over time.</p>
+
+<p><b>&minus;&minus;head</b> <i>number</i></p>
+
+<p style="margin-left:40%; margin-top: 1em">Only show the
+top <i>number</i> postings.</p>
+
+<p><b>&minus;&minus;historical</b> (<b>&minus;H</b>)</p>
+
+<p style="margin-left:40%;">Value commodities at the time
+of their acquisition.</p>
+
+<p><b>&minus;&minus;invert</b></p>
+
+<p style="margin-left:40%; margin-top: 1em">Invert the
+value of amounts shown.</p>
+
+<p><b>&minus;&minus;market</b> (<b>&minus;V</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Show current
+market values for all amounts. This is determined in a
+somewhat magical fashion. It is probably more
+straightforward to use <b>&minus;&minus;exchange</b>
+option.</p>
+
+<p><b>&minus;&minus;period</b> <i>time-period</i>
+(<b>&minus;p</b>)</p>
+
+<p style="margin-left:40%;">Show postings only for the
+given <i>time-period</i>.</p>
+
+<p><b>&minus;&minus;related</b> (<b>&minus;r</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Show postings
+that are related to those that would have been shown. It has
+the effect of displaying the &quot;other side&quot; of the
+postings.</p>
+
+<p><b>&minus;&minus;sort</b> <i>value-expression</i>
+(<b>&minus;S</b>)</p>
+
+<p style="margin-left:40%;">Sort postings by evaluating the
+given <i>value-expression</i>. Note that a comma-separated
+list of expressions is allowed, in which case each sorting
+term is used in order to determine the final ordering. For
+example, to search by date and then amount, one would
+use:</p>
+
+<p style="margin-left:47%;">ledger reg --sort &rsquo;date,
+amount&rsquo;</p>
+
+<p><b>&minus;&minus;tail</b> <i>number</i></p>
+
+<p style="margin-left:40%; margin-top: 1em">Only show the
+last <i>number</i> postings.</p>
+
+<p><b>&minus;&minus;uncleared</b> (<b>&minus;U</b>)</p>
+
+<p style="margin-left:40%;">Only show uncleared (i.e.,
+recent) postings.</p>
+
+<p style="margin-left:18%; margin-top: 1em">There are also
+several grouping options that can be useful:</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;by-payee</b>
+(<b>&minus;P</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by common payee names.</p>
+
+<p><b>&minus;&minus;daily</b> (<b>&minus;D</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by day.</p>
+
+<p><b>&minus;&minus;weekly</b> (<b>&minus;W</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by week (starting on Sundays).</p>
+
+<p><b>&minus;&minus;start-of-week</b> <i>day</i></p>
+
+<p style="margin-left:40%;">Set the start of each report
+grouped by week to the given <i>day</i>.</p>
+
+<p><b>&minus;&minus;monthly</b> (<b>&minus;M</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by month.</p>
+
+<p><b>&minus;&minus;quarterly</b></p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by fiscal quarter.</p>
+
+<p><b>&minus;&minus;yearly</b> (<b>&minus;Y</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by year.</p>
+
+<p><b>&minus;&minus;days-of-week</b></p>
+
+<p style="margin-left:40%; margin-top: 1em">Group postings
+by the day of the week on which they took place.</p>
+
+<p><b>&minus;&minus;subtotal</b> (<b>&minus;s</b>)</p>
+
+<p style="margin-left:40%; margin-top: 1em">Group all
+postings together. This is very similar to the totals shown
+by the <b>balance</b> report.</p>
+
+<p style="margin-left:18%; margin-top: 1em">The synonyms
+<b>reg</b> and <b>r</b> are also accepted.</p>
+
+<p style="margin-top: 1em"><b>server</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">This command
+requires that Python support be active. If so, it starts up
+an HTTP server listening for requests on port 9000. This
+provides an alternate interface to creating and viewing
+reports. Note that this is very much a work-in-progress, and
+will not be fully functional until a later version.</p>
+
+<p style="margin-top: 1em"><b>select</b> [ <i><br>
+sql-query</i>]</p>
+
+<p style="margin-left:18%;">List all postings matching the
+<i>sql-query</i>. This command allows to generate SQL-like
+queries, e.g.:</p>
+
+<p style="margin-left:26%;">ledger select date,amount from
+posts where account=~/Income/</p>
+
+<p style="margin-top: 1em"><b>source</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Parse a journal
+file and checks it for errors. <b>ledger</b> will return
+success if no errors are found.</p>
+
+<p style="margin-top: 1em"><b>stats</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Provide summary information
+about all the postings matching <i>report-query</i>. It
+provides information such as:</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Time range of all matching
+postings</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Unique payees</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Unique accounts</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Postings total</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Uncleared postings</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Days since last posting</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Posts in the last 7 days</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Posts in the last 30 days</p>
+
+<p><b>&bull;</b></p>
+
+<p style="margin-left:31%;">Posts this month</p>
+
+<p style="margin-top: 1em"><b>xml</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Output data relating to the
+current report in XML format. It includes all accounts and
+commodities involved in the report, plus the postings and
+the transactions they are contained in. See the manual for
+more information.</p>
+
+<p style="margin-top: 1em"><b>OPTIONS <br>
+&minus;&minus;abbrev-len</b> <i>INT</i></p>
+
+<p style="margin-left:18%;">Set the minimum length an
+account can be abbreviated to if it doesn&rsquo;t fit inside
+the <b>account-width</b>. If <i>INT</i> is zero, then the
+account name will be truncated on the right. If <i>INT</i>
+is greater than <b>account-width</b> then the account will
+be truncated on the left, with no shortening of the account
+names in order to fit into the desired width.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;account</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Prepend <i>EXPR</i> to all
+accounts reported. That is, the option
+<b>&minus;&minus;account</b>
+<i>&quot;&rsquo;Personal&rsquo;&quot;</i> would tack
+<i>Personal:</i> and <b>&minus;&minus;account</b>
+<i>&quot;tag(&rsquo;VAT&rsquo;)&quot;</i> would tack the
+value of the VAT tag to the beginning of every account
+reported in a <b>balance</b> or <b>register</b> report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;account-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Set the width of the account
+column in the <b>register</b> report to <i>INT</i>
+characters.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;actual</b>
+(<b>&minus;L</b>)</p>
+
+<p style="margin-left:18%;">Report only real transactions,
+with no automated or virtual transactions used.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;add-budget</b></p>
+
+<p style="margin-left:18%;">Show only un-budgeted
+postings.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;amount</b>
+<i>EXPR</i> (<b>&minus;t</b>)</p>
+
+<p style="margin-left:18%;">Apply the given value
+expression to the posting amount. Using
+<b>&minus;&minus;amount</b> <i>EXPR</i> you can apply an
+arbitrary transformation to the postings.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;amount-data</b>
+(<b>&minus;j</b>)</p>
+
+<p style="margin-left:18%;">On a register report print only
+the dates and amount of postings. Useful for graphing and
+spreadsheet applications.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;amount-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Set the width in characters of
+the amount column in the <b>register</b> report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;anon</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Anonymize
+registry output, mostly for sending in bug reports.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;ansi</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Use color if
+the terminal supports it. Alias for
+<b>&minus;&minus;color</b></p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;args-only</b></p>
+
+<p style="margin-left:18%;">Ignore init files and
+environment variables for the <b>ledger</b> run.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;auto-match</b></p>
+
+<p style="margin-left:18%;">When generating a ledger
+transaction from a CSV file using the <b>convert</b>
+command, automatically match an account from the Ledger
+journal.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;aux-date</b></p>
+
+<p style="margin-left:18%;">Show auxiliary dates for all
+calculations. Alias for <b>&minus;&minus;effective</b></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;average</b>
+(<b>&minus;A</b>)</p>
+
+<p style="margin-left:18%;">Print average values over the
+number of transactions instead of running totals.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;balance-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Specify the format to use for
+the <b>balance</b> report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;base</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Reduce
+convertible commodities down the bottom of the conversion,
+e.g. display time in seconds.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;basis</b>
+(<b>&minus;B</b>)</p>
+
+<p style="margin-left:18%;">Report the cost basis on all
+posting. Alias for <b>&minus;&minus;cost</b></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;begin</b>
+<i>DATE</i> (<b>&minus;b</b>)</p>
+
+<p style="margin-left:18%;">Specify the start <i>DATE</i>
+of all calculations. Transactions before that date will be
+ignored.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;bold-if</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Print the entire line in bold
+if the given value expression is true.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;budget</b></p>
+
+<p style="margin-left:18%;">Only display budgeted items. In
+a <b>register</b> report this displays transaction in the
+budget, in a balance report this displays accounts in the
+budget.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;budget-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Specify the format to use for
+the <b>budget</b> report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;by-payee</b>
+(<b>&minus;P</b>)</p>
+
+<p style="margin-left:18%;">Group postings in the register
+report by common payee names.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;check-payees</b></p>
+
+<p style="margin-left:18%;">Enable strict and pedantic
+checking for payees as well as accounts, commodities and
+tags.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;cleared</b>
+(<b>&minus;C</b>)</p>
+
+<p style="margin-left:18%;">Display only cleared
+postings.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;cleared-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Specify the format to use for
+the <b>cleared</b> report</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;collapse</b>
+(<b>&minus;n</b>)</p>
+
+<p style="margin-left:18%;">Print only the top level
+accounts.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;collapse-if-zero</b></p>
+
+<p style="margin-left:18%;">Collapse the account display
+only if it has a zero balance.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;color</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Use color if
+the terminal supports it. Alias for
+<b>&minus;&minus;ansi</b></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;columns</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Make the <b>register</b> report
+<i>INT</i> characters wide. By default <b>ledger</b> will
+use all available columns in your terminal.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;cost</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Report the cost
+basis on all posting. Alias for
+<b>&minus;&minus;basis</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;count</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Direct
+<b>ledger</b> to report the number of items when appended to
+the <b>commodities</b>, <b>accounts</b> or <b>payees</b>
+commands.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;csv-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Format <b>csv</b> report
+according to <i>FMT</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;current</b>
+(<b>&minus;c</b>)</p>
+
+<p style="margin-left:18%;">Shorthand for
+<b>&minus;&minus;limit</b> <i>&rsquo;date &lt;=
+today&rsquo;</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;daily</b>
+(<b>&minus;D</b>)</p>
+
+<p style="margin-left:18%;">Shorthand for
+<b>&minus;&minus;period</b> <i>daily</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;date</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Transform the date of the
+transaction using <i>EXPR</i>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;date-format</b>
+<i>DATEFMT</i> (<b>&minus;y</b>)</p>
+
+<p style="margin-left:18%;">Print dates using
+<i>DATEFMT</i>. Refer to strftime(3) for details on the
+format string syntax.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;datetime-format</b>
+<i>DATETIMEFMT</i></p>
+
+<p style="margin-left:18%;">Print datetimes using
+<i>DATETIMEFMT</i>. Refer to strftime(3) for details on the
+format string syntax.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;date-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Specify the width, in
+characters, of the date column in the <b>register</b>
+report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;day-break</b></p>
+
+<p style="margin-left:18%;">Break up <b>register</b> report
+of timelog entries that span multiple days by day.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;days-of-week</b></p>
+
+<p style="margin-left:18%;">Group transactions by the days
+of the week. Alias for <b>&minus;&minus;dow</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;dc</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Display
+register or balance in debit/credit format If you use
+<b>&minus;&minus;dc</b> with either the <b>register</b> or
+<b>balance</b> commands, you will now get separate columns
+for debits and credits.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;debug</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">If <b>ledger</b> has been built
+with debug options this will provide extra data during the
+run.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;decimal-comma</b></p>
+
+<p style="margin-left:18%;">Direct <b>ledger</b> to parse
+journals using the European standard comma as decimal
+separator, vice a period.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;depth</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Limit the depth of the account
+tree. In a balance report, for example,
+<b>&minus;&minus;depth</b> <i>2</i> will print balances only
+for accounts with two levels, i.e.
+<b>Expenses:Entertainment</b> but not
+<b>Expenses:Entertainment:Dining</b>. This is a display
+predicate, which means it only affects display, not the
+total calculations.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;detail</b></p>
+
+<p style="margin-left:18%;">Related to <b>convert</b>
+command. Synonym to <b>&minus;&minus;rich-data</b>
+option.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;deviation</b></p>
+
+<p style="margin-left:18%;">Report each posting&rsquo;s
+deviation from the average. It is only meaningful in the
+<b>register</b> and <b>prices</b> reports.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;display</b>
+<i>EXPR</i> (<b>&minus;d</b>)</p>
+
+<p style="margin-left:18%;">Display lines that satisfy the
+expression <i>EXPR</i>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;display-amount</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Apply a transformation to the
+<i>displayed</i> amount. This occurs after calculations
+occur.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;display-total</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Apply a transformation to the
+<i>displayed</i> total. This occurs after calculations
+occur.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;dow</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Group
+transactions by the days of the week. Alias for
+<b>&minus;&minus;days-of-week</b>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;download</b></p>
+
+<p style="margin-left:18%;">Cause quotes to be
+automagically downloaded, as needed, by running a script
+named <i>getquote</i> and expecting that script to return a
+value understood by <b>ledger</b>. A sample implementation
+of a <i>getquote</i> script, implemented in Perl, is
+provided in the distribution. Downloaded quote price are
+then appended to the price database, usually specified using
+the environment variable LEDGER_PRICE_DB.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;effective</b></p>
+
+<p style="margin-left:18%;">Show auxiliary dates for all
+calculations. Alias for <b>&minus;&minus;aux-date</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;empty</b>
+(<b>&minus;E</b>)</p>
+
+<p style="margin-left:18%;">Include empty accounts in
+report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;end</b>
+<i>DATE</i> (<b>&minus;e</b>)</p>
+
+<p style="margin-left:18%;">Constrain the report so that
+transactions on or after <i>DATE</i> are not considered.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;equity</b></p>
+
+<p style="margin-left:18%;">Related to the <b>equity</b>
+command. Gives current account balances in the form of a
+register report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;exact</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Report
+beginning and ending of periods by the date of the first and
+last posting occurring in that period.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;exchange</b>
+<i>COMMODITY</i> [ <br>
+, <i>COMMODITY, ...</i>] (<b>&minus;X</b>)</p>
+
+<p style="margin-left:18%;">Display values in terms of the
+given <i>COMMODITY</i>. The latest available price is
+used.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;explicit</b></p>
+
+<p style="margin-left:18%;">Direct <b>ledger</b> to require
+pre-declarations for entities (such as accounts, commodities
+and tags) rather than taking entities from cleared
+transactions as defined.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;file</b>
+<i>FILE</i></p>
+
+<p style="margin-left:18%;">Read journal data from
+<i>FILE</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;first</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Print the first <i>INT</i>
+entries. Opposite of <b>&minus;&minus;last</b> <i>INT</i>.
+Alias for <b>&minus;&minus;head</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;flat</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Force the full
+names of accounts to be used in the balance report. The
+balance report will not use an indented tree.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;force-color</b></p>
+
+<p style="margin-left:18%;">Output TTY color codes even if
+the TTY doesn&rsquo;t support them. Useful for TTYs that
+don&rsquo;t advertise their capabilities correctly.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;force-pager</b></p>
+
+<p style="margin-left:18%;">Force <b>ledger</b> to paginate
+its output.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;forecast-while</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Continue forecasting while
+<i>VEXPR</i> is true. Alias for
+<b>&minus;&minus;forecast</b>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;forecast-years</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Forecast at most <i>INT</i>
+years into the future.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;format</b>
+<i>FMT</i> (<b>&minus;F</b>)</p>
+
+<p style="margin-left:18%;">Use the given format string
+<i>FMT</i> to print output.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;gain</b>
+(<b>&minus;G</b>)</p>
+
+<p style="margin-left:18%;">Report net gain or loss for
+commodities that have a price history.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;generated</b></p>
+
+<p style="margin-left:18%;">Include auto-generated postings
+(such as those from automated transactions) in the report,
+in cases where you normally wouldn&rsquo;t want them.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;group-by</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Group transaction together in
+the <b>register</b> report. <i>EXPR</i> can be anything,
+although most common would be <i>payee</i> or
+<i>commodity</i>. The <b>tag</b>() function is also useful
+here.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;group-title-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Set the format for the headers
+that separate reports section of a grouped report. Only has
+effect with a <b>&minus;&minus;group-by</b> <i>EXPR</i>
+register report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;head</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Print the first <i>INT</i>
+entries. Opposite of <b>&minus;&minus;tail</b> <i>INT</i>.
+Alias for <b>&minus;&minus;first</b></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;help</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Print this man
+page.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;immediate</b></p>
+
+<p style="margin-left:18%;">Evaluate calculations
+immediately rather than lazily.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;import</b>
+<i>FILE</i></p>
+
+<p style="margin-left:18%;">Import <i>FILE</i> as Python
+module.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;init-file</b>
+<i>FILE</i> (<b>&minus;i</b>)</p>
+
+<p style="margin-left:18%;">Read <i>FILE</i> before any
+other <b>ledger</b> file. This file may not contain any
+postings, but it may contain option settings. To specify
+options in the init file, use the same syntax as the
+command-line, but put each option on its own line.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;inject</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">Use <i>STR</i> amounts in
+calculations. In case you know what amount a transaction
+should be, but the actual transaction has the wrong value
+you can use metadata <i>STR</i> to specify the expected
+amount.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;input-date-format</b>
+<i>DATEFMT</i></p>
+
+<p style="margin-left:18%;">Specify the input date format
+for journal entries.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;invert</b></p>
+
+<p style="margin-left:18%;">Change the sign of all reported
+values.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;last</b>
+<i>INT</i>.</p>
+
+<p style="margin-left:18%;">Report only the last <i>INT</i>
+entries. Opposite of <b>&minus;&minus;first</b> <i>INT</i>.
+Only useful on a register report. Alias for
+<b>&minus;&minus;tail</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;leeway</b>
+<i>INT</i> (<b>&minus;Z</b>)</p>
+
+<p style="margin-left:18%;">Alias for
+<b>&minus;&minus;price-expr</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;limit</b>
+<i>EXPR</i> (<b>&minus;l</b>)</p>
+
+<p style="margin-left:18%;">Limit postings in
+calculations.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;lot-dates</b></p>
+
+<p style="margin-left:18%;">Report the date on which each
+commodity in a balance report was purchased.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;lot-notes</b></p>
+
+<p style="margin-left:18%;">Report the tag attached to each
+commodity in a balance report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;lot-prices</b></p>
+
+<p style="margin-left:18%;">Report the price at which each
+commodity in a balance report was purchased.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;lots</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Report the date
+and price at which each commodity was purchased in a balance
+report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;lots-actual</b></p>
+
+<p style="margin-left:18%;">Preserve the uniqueness of
+commodities so they aren&rsquo;t merged during reporting
+without printing the lot annotations.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;market</b>
+(<b>&minus;V</b>)</p>
+
+<p style="margin-left:18%;">Use the latest market value for
+all commodities.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;master-account</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">Prepend all account names with
+<i>STR</i></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;meta</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">In the register report, prepend
+the transaction with the value of the given tag
+<i>STR</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;meta-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Specify the width of the Meta
+column used for the <b>&minus;&minus;meta</b> <i>TAG</i>
+options.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;monthly</b>
+(<b>&minus;M</b>)</p>
+
+<p style="margin-left:18%;">Shorthand for
+<b>&minus;&minus;period</b> <i>monthly</i>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-aliases</b></p>
+
+<p style="margin-left:18%;">Aliases are completely
+ignored.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-color</b></p>
+
+<p style="margin-left:18%;">Suppress any color TTY
+output.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-pager</b></p>
+
+<p style="margin-left:18%;">Disables the pager on TTY
+output.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-revalued</b></p>
+
+<p style="margin-left:18%;">Stop <b>ledger</b> from showing
+&lt;Revalued&gt; postings.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-rounding</b></p>
+
+<p style="margin-left:18%;">Don&rsquo;t output
+&quot;&lt;Adjustment&gt;&quot; postings. Note that this will
+cause the running total to often not add up! Its main use is
+for <b>&minus;&minus;amount-data</b> (<b>&minus;j</b>) and
+<b>&minus;&minus;total-data</b> (<b>&minus;J</b>)
+reports.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-titles</b></p>
+
+<p style="margin-left:18%;">Suppress the output of group
+titles.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;no-total</b></p>
+
+<p style="margin-left:18%;">Suppress printing the final
+total line in a balance report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;now</b>
+<i>DATE</i></p>
+
+<p style="margin-left:18%;">Use <i>DATE</i> as the current
+date. This affects the output when using
+<b>&minus;&minus;period</b>, <b>&minus;&minus;begin</b>,
+<b>&minus;&minus;end</b>, or <b>&minus;&minus;current</b> to
+decide which dates lie in the past or future.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;only</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">This is a postings predicate
+that applies after certain transforms have been executed,
+such as periodic gathering.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;options</b></p>
+
+<p style="margin-left:18%;">Display the options in effect
+for this <b>ledger</b> invocation, along with their values
+and the source of those values.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;output</b>
+<i>FILE</i> (<b>&minus;o</b>)</p>
+
+<p style="margin-left:18%;">Redirect the output of
+<b>ledger</b> to <i>FILE</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;pager</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">Use <i>STR</i> as the pager
+program.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;payee</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Sets a value
+expression for formatting the payee. In the <b>register</b>
+report this prevents the second entry from having a date and
+payee for each transaction.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;payee-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Set the number of columns
+dedicated to the payee in the register report to
+<i>INT</i>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;pedantic</b></p>
+
+<p style="margin-left:18%;">Accounts, tags or commodities
+not previously declared will cause errors.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;pending</b></p>
+
+<p style="margin-left:18%;">Use only postings that are
+marked pending.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;percent</b>
+(<b>&minus;%</b>)</p>
+
+<p style="margin-left:18%;">Calculate the percentage value
+of each account in a balance reports. Only works for account
+that have a single commodity.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;period</b>
+<i>PERIOD</i> (<b>&minus;p</b>)</p>
+
+<p style="margin-left:18%;">Define a period expression that
+sets the time period during which transactions are to be
+accounted. For a <b>register</b> report only the
+transactions that satisfy the period expression with be
+displayed. For a balance report only those transactions will
+be accounted in the final balances.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;period-sort</b></p>
+
+<p style="margin-left:18%;">Sort the posting within
+transactions using the given value expression.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;permissive</b></p>
+
+<p style="margin-left:18%;">Quiet balance assertions.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;pivot</b>
+<i>TAG</i></p>
+
+<p style="margin-left:18%;">Produce a balance pivot report
+&quot;around&quot; the given <i>TAG</i>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;plot-amount-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Define the output format for an
+amount data plot.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;plot-total-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Define the output format for a
+total data plot.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;prepend-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Prepend <i>FMT</i> to every
+line of the output.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;prepend-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Reserve <i>INT</i> spaces at
+the beginning of each line of the output.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;price</b>
+(<b>&minus;I</b>)</p>
+
+<p style="margin-left:18%;">Use the price of the commodity
+purchase for performing calculations.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;price-db</b>
+<i>FILE</i></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;price-exp</b>
+<i>STR</i> (<b>&minus;Z</b>)</p>
+
+<p style="margin-left:18%;">Set the expected freshness of
+price quotes, in <i>INT</i> minutes. That is, if the last
+known quote for any commodity is older than this value, and
+if <b>&minus;&minus;download</b> is being used, then the
+Internet will be consulted again for a newer price.
+Otherwise, the old price is still considered to be fresh
+enough. Alias for <b>&minus;&minus;leeway</b>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;prices-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Set the format for the
+<b>prices</b> report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;pricedb-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Set the format expected for the
+historical price file.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;primary-date</b></p>
+
+<p style="margin-left:18%;">Show primary dates for all
+calculations. Alias for
+<b>&minus;&minus;actual-dates</b></p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;quantity</b>
+(<b>&minus;O</b>)</p>
+
+<p style="margin-left:18%;">Report commodity totals (this
+is the default).</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;quarterly</b></p>
+
+<p style="margin-left:18%;">Shorthand for
+<b>&minus;&minus;period</b> <i>quarterly</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;raw</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">In the
+<b>print</b> report, show transactions using the exact same
+syntax as specified by the user in their data file.
+Don&rsquo;t do any massaging or interpreting. Can be useful
+for minor cleanups, like just aligning amounts.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;real</b>
+(<b>&minus;R</b>)</p>
+
+<p style="margin-left:18%;">Account using only real
+transactions ignoring virtual and automatic
+transactions.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;recursive-aliases</b></p>
+
+<p style="margin-left:18%;">Causes <b>ledger</b> to try to
+expand aliases recursively, i.e. try to expand the result of
+an earlier expansion again, until no more expansions
+apply.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;register-format</b>
+<i>FMT</i></p>
+
+<p style="margin-left:18%;">Define the output format for
+the <b>register</b> report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;related</b>
+(<b>&minus;r</b>)</p>
+
+<p style="margin-left:18%;">In a register report show the
+related account. This is the other <i>side</i> of the
+transaction.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;related-all</b></p>
+
+<p style="margin-left:18%;">Show all postings in a
+transaction, similar to <b>&minus;&minus;related</b> but
+show both sides of each transaction.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;revalued</b></p>
+
+<p style="margin-left:18%;">Report discrepancy in values
+for manual reports by inserting &lt;Revalued&gt; postings.
+This is implied when using the <b>&minus;&minus;exchange</b>
+(<b>&minus;X</b>) or <b>&minus;&minus;market</b>
+(<b>&minus;V</b>) option.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;revalued-only</b></p>
+
+<p style="margin-left:18%;">Show only &lt;Revalued&gt;
+postings.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;revalued-total</b></p>
+
+<p style="margin-left:18%;">Display the sum of the revalued
+postings as the running total, which serves to show
+unrealized capital in a gain/losses report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;rich-data</b></p>
+
+<p style="margin-left:18%;">When generating a ledger
+transaction from a CSV file using the <b>convert</b>
+command, add CSV, Imported, and UUID meta-data.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;seed</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Set the random seed to
+<i>INT</i> for the <b>generate</b> command. Used as part of
+development testing.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;script</b>
+<i>FILE</i></p>
+
+<p style="margin-left:18%;">Execute a <b>ledger</b>
+script.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;sort</b>
+<i>EXPR</i> (<b>&minus;S</b>)</p>
+
+<p style="margin-left:18%;">Sort the register report based
+on the value expression <i>EXPR</i>.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;sort-xacts</b></p>
+
+<p style="margin-left:18%;">Sort the posting within
+transactions using the given value expression.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;start-of-week</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">Use <i>STR</i> as the
+particular day of the week to start when using the
+<b>&minus;&minus;weekly</b> option. <i>STR</i> can be day
+names, their abbreviations like &quot;Mon&quot;, or the
+weekday number starting at 0 for Sunday.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;strict</b></p>
+
+<p style="margin-left:18%;">Accounts, tags or commodities
+not previously declared will cause warnings.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;subtotal</b>
+(<b>&minus;s</b>)</p>
+
+<p style="margin-left:18%;">Report register as a single
+subtotal.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;tail</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Report only the last <i>INT</i>
+entries. Only useful on a register report. Alias for
+<b>&minus;&minus;last</b> <i>INT</i></p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;time-colon</b></p>
+
+<p style="margin-left:18%;">Display the value for
+commodities based on seconds as hours and minutes. Thus
+8100s will be displayed as 2:15h instead of 2.25h.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;time-report</b></p>
+
+<p style="margin-left:18%;">Add two columns to the
+<b>balance</b> report to show the earliest checkin and
+checkout times for timelog entries.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;total</b>
+<i>EXPR</i> (<b>&minus;T</b>)</p>
+
+<p style="margin-left:18%;">Define a value expression used
+to calculate the total in reports.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;total-data</b>
+(<b>&minus;J</b>)</p>
+
+<p style="margin-left:18%;">Show only dates and totals to
+format the output for plots.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;total-width</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Set the width of the total
+field in the register report.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;trace</b>
+<i>INT</i></p>
+
+<p style="margin-left:18%;">Enable tracing. The <i>INT</i>
+specifies the level of trace desired.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;truncate</b>
+<i>STR</i></p>
+
+<p style="margin-left:18%;">Indicates how truncation should
+happen when the contents of columns exceed their width.
+Valid arguments for <i>STR</i> are <i>leading</i>,
+<i>middle</i>, and <i>trailing</i>. The default is smarter
+than any of these three, as it considers sub-names within
+the account name (that style is called
+&quot;abbreviate&quot;).</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;unbudgeted</b></p>
+
+<p style="margin-left:18%;">Show only un-budgeted
+postings.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;uncleared</b>
+(<b>&minus;U</b>)</p>
+
+<p style="margin-left:18%;">Use only uncleared transactions
+in calculations and reports.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;unrealized</b></p>
+
+<p style="margin-left:18%;">Show generated unrealized gain
+and loss accounts in the balance report.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;unrealized-gains</b></p>
+
+<p style="margin-left:18%;">Allow the user to specify what
+account name should be used for unrealized gains. Defaults
+to <b>Equity:Unrealized Gains</b>. Often set in one&rsquo;s
+<i>~/.ledgerrc</i> file to change the default.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;unrealized-losses</b></p>
+
+<p style="margin-left:18%;">Allow the user to specify what
+account name should be used for unrealized losses. Defaults
+to <b>Equity:Unrealized Losses</b>. Often set in one&rsquo;s
+<i>~/.ledgerrc</i> file to change the default.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;unround</b></p>
+
+<p style="margin-left:18%;">Perform all calculations
+without rounding and display results to full precision.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;values</b></p>
+
+<p style="margin-left:18%;">Show the values used by each
+tag when used in combination with the <b>tags</b>
+command.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;value-expr</b>
+<i>EXPR</i></p>
+
+<p style="margin-left:18%;">Set a global value expression
+annotation.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;verbose</b></p>
+
+<p style="margin-left:18%;">Print detailed information on
+the execution of <b>ledger</b>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;verify</b></p>
+
+<p style="margin-left:18%;">Enable additional assertions
+during run-time. This causes a significant slowdown. When
+combined with <b>&minus;&minus;debug</b> <i>CODE</i>
+<b>ledger</b> will produce memory trace information.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;verify-memory</b></p>
+
+<p style="margin-left:18%;">Verify that every constructed
+object is properly destructed. This is for debugging
+purposes only.</p>
+
+
+<p style="margin-top: 1em"><b>&minus;&minus;version</b></p>
+
+<p style="margin-left:18%;">Print version information and
+exit.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;weekly</b>
+(<b>&minus;W</b>)</p>
+
+<p style="margin-left:18%;">Shorthand for
+<b>&minus;&minus;period</b> <i>weekly</i>.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;wide</b>
+(<b>&minus;w</b>)</p>
+
+<p style="margin-left:18%;">Assume 132 columns instead of
+the TTY width.</p>
+
+<p style="margin-top: 1em"><b>&minus;&minus;yearly</b>
+(<b>&minus;Y</b>)</p>
+
+<p style="margin-left:18%;">Shorthand for
+<b>&minus;&minus;period</b> <i>yearly</i>.</p>
+
+<p style="margin-top: 1em"><b>PRE-COMMANDS</b></p>
+
+<p style="margin-left:6%;">Pre-commands are useful when you
+aren&rsquo;t sure how a command or option will work. The
+difference between a pre-command and a regular command is
+that pre-commands ignore the journal data file completely,
+nor is the user&rsquo;s init file read.</p>
+
+<p style="margin-top: 1em"><b>args</b> / <b>query</b></p>
+
+<p style="margin-left:18%;">Evaluate the given arguments
+and report how <b>ledger</b> interprets it against the
+following model transaction:</p>
+
+<p style="margin-left:26%; margin-top: 1em">2004/05/27 Book
+Store <br>
+; This note applies to all postings. :SecondTag: <br>
+Expenses:Books 20 BOOK @ $10 <br>
+; Metadata: Some Value <br>
+; Typed:: $100 + $200 <br>
+; :ExampleTag: <br>
+; Here follows a note describing the posting. <br>
+Liabilities:MasterCard $-200.00</p>
+
+<p style="margin-top: 1em"><b>eval</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Evaluate the
+given value expression against the model transaction.</p>
+
+<p style="margin-top: 1em"><b>format</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Print details
+of how <b>ledger</b> uses the given formatting description
+and apply it against a model transaction.</p>
+
+<p style="margin-top: 1em"><b>parse</b> / <b>expr</b></p>
+
+<p style="margin-left:18%;">Print details of how
+<b>ledger</b> uses the given value expression description
+and apply it against a model transaction.</p>
+
+<p style="margin-top: 1em"><b>generate</b></p>
+
+<p style="margin-left:18%;">Randomly generates
+syntactically valid <b>ledger</b> data from a seed. Used by
+the GenerateTests harness for development testing.</p>
+
+<p style="margin-top: 1em"><b>period</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Evaluate the
+given period and report how <b>ledger</b> interprets it.</p>
+
+<p style="margin-top: 1em"><b>template</b></p>
+
+<p style="margin-left:18%;">Shows the insertion template
+that the <b>xact</b> command generates. This is a debugging
+command.</p>
+
+<p style="margin-top: 1em"><b>QUERIES</b></p>
+
+<p style="margin-left:6%;">The syntax for reporting queries
+can get somewhat complex. It is a series of query terms with
+an implicit OR operator between them. The following terms
+are accepted:</p>
+
+<p style="margin-top: 1em"><i>regex</i></p>
+
+<p style="margin-left:26%; margin-top: 1em">A bare string
+is taken as a regular expression matching the full account
+name. Thus, to report the current balance for all assets and
+liabilities, you would use:</p>
+
+<p style="margin-left:33%; margin-top: 1em">ledger bal
+asset liab</p>
+
+<p style="margin-top: 1em"><b>payee</b> <i>regex</i>
+(<b>@</b><i>regex</i>)</p>
+
+<p style="margin-left:26%;">Query on the payee, rather than
+the account.</p>
+
+<p style="margin-top: 1em"><b>tag</b> <i>regex</i>
+(<b>%</b><i>regex</i>)</p>
+
+<p style="margin-top: 1em"><b>note</b> <i>regex</i>
+(<b>=</b><i>regex</i>)</p>
+
+<p style="margin-left:26%;">Query on anything found in an
+item&rsquo;s note.</p>
+
+<p style="margin-top: 1em"><b>code</b> <i>regex</i>
+(<b>#</b><i>regex</i>)</p>
+
+<p style="margin-left:26%;">Query on the xact&rsquo;s
+optional code (which can be any string the user wishes).</p>
+
+<p style="margin-top: 1em"><i>term</i> <b>and</b>
+<i>term</i></p>
+
+<p style="margin-left:26%; margin-top: 1em">Query terms are
+joined by an implicit OR operator. You can change this to
+AND by using the <b>and</b> keyword. For example, to show
+food expenditures occurring at Shakee&rsquo;s Pizza, you
+could say:</p>
+
+<p style="margin-left:33%; margin-top: 1em">ledger reg food
+and @Shakee</p>
+
+<p style="margin-top: 1em"><i>term</i> <b>or</b>
+<i>term</i></p>
+
+<p style="margin-left:26%; margin-top: 1em">When you wish
+to be more explicit, use the OR operator.</p>
+
+<p style="margin-top: 1em"><b>show <br>
+not</b> <i>term</i></p>
+
+<p style="margin-left:26%; margin-top: 1em">Reverse the
+logical meaning of the following term. This can be used with
+parentheses to great effect:</p>
+
+<p style="margin-left:33%; margin-top: 1em">ledger reg food
+and @Shakee and not dining</p>
+
+<p style="margin-top: 1em">( <i>term</i> )</p>
+
+<p style="margin-left:26%; margin-top: 1em">If you wish to
+mix OR and AND operators, it is often helpful to surround
+logical units with parentheses. <b>NOTE</b>: Because of the
+way some shells interpret parentheses, you should always
+escape them:</p>
+
+<p style="margin-left:33%; margin-top: 1em">ledger bal \(
+assets or liab \) and not food</p>
+
+<p style="margin-top: 1em"><b>EXPRESSIONS <br>
+abs</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+absolute value of the given <i>value</i>.</p>
+
+<p style="margin-top: 1em"><b>account</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+posting&rsquo;s account.</p>
+
+<p style="margin-top: 1em"><b>account_base</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the base
+account, i.e. everything after the last account delimiter
+&rsquo;:&rsquo;.</p>
+
+<p style="margin-top: 1em"><b>actual</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the transaction is real, i.e not a automated or virtual
+transaction, false otherwise.</p>
+
+<p style="margin-top: 1em"><b>amount</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+amount of the posting.</p>
+
+<p style="margin-top: 1em"><b>amount_expr</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+calculated amount of the posting according to the
+<b>&minus;&minus;amount</b> option.</p>
+
+<p style="margin-top: 1em"><b>ansify_if</b>(<i>value</i>,
+<i>color</i>, <i>bool</i>)</p>
+
+<p style="margin-left:28%;">Render the given <i>value</i>
+as a string, applying the proper ANSI escape codes to
+display it in the given <i>color</i> if <i>bool</i> is true.
+It typically checks the value of the option
+<b>&minus;&minus;color</b>, for example:</p>
+
+<p style="margin-left:36%;">ansify_if(amount, blue,
+options.color)</p>
+
+<p style="margin-top: 1em"><b>beg_line</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Line number
+where entry for posting begins.</p>
+
+<p style="margin-top: 1em"><b>beg_pos</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Character
+position where entry for posting begins.</p>
+
+
+<p style="margin-top: 1em"><b>ceiling</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the next
+integer of <i>value</i> toward +infinity.</p>
+
+<p style="margin-top: 1em"><b>cleared</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the posting was cleared, false otherwise.</p>
+
+<p style="margin-top: 1em"><b>code</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+transaction code, the string between the parenthesis after
+the date.</p>
+
+
+<p style="margin-top: 1em"><b>commodity</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Return the commodity of
+<i>value</i> or the posting amount when <i>value</i> was not
+specified.</p>
+
+<p style="margin-top: 1em"><b>date</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the date
+of the posting.</p>
+
+<p style="margin-top: 1em"><b>end_line</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Line number
+where entry for posting ends.</p>
+
+<p style="margin-top: 1em"><b>end_pos</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Character
+position where entry for posting ends.</p>
+
+<p style="margin-top: 1em"><b>floor</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the next
+integer of <i>value</i> toward -infinity.</p>
+
+<p style="margin-top: 1em"><b>filename</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">The name of the
+<b>ledger</b> data file from whence the posting came.</p>
+
+
+<p style="margin-top: 1em"><b>format</b>(<i>string</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Evaluate
+<i>string</i> as format just like the
+<b>&minus;&minus;format</b> option.</p>
+
+<p style="margin-top: 1em"><b>format_date</b>(<i>date</i>,
+<i>format</i>)</p>
+
+<p style="margin-left:28%;">Return the <i>date</i> as a
+string using <i>format</i>. Refer to strftime(3) for format
+string details.</p>
+
+
+<p style="margin-top: 1em"><b>format_datetime</b>(<i>datetime</i>,
+<i>format</i>)</p>
+
+<p style="margin-left:28%;">Return the <i>datetime</i> as a
+string using <i>format</i>. Refer to strftime(3) for format
+string details.</p>
+
+<p style="margin-top: 1em"><b>get_at</b>(<i>seq</i>,
+<i>index</i>)</p>
+
+<p style="margin-left:28%;">Return value at <i>index</i>
+from <i>seq</i>. Used internally to construct different
+reports.</p>
+
+<p style="margin-top: 1em"><b>has_meta</b>()</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the posting has metadata named <i>tag</i>, false
+otherwise.</p>
+
+<p style="margin-top: 1em"><b>has_tag</b>(<i>tag</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the posting has metadata named <i>tag</i>, false
+otherwise.</p>
+
+<p style="margin-top: 1em"><b>is_seq</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+<i>value</i> is a sequence. Used internally.</p>
+
+<p style="margin-top: 1em"><b>join</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Replace all
+newlines in <i>value</i> with \n.</p>
+
+<p style="margin-top: 1em"><b>justify</b>(<i>value</i>,
+<i>first_width</i>, <i>latter_width</i>,
+<i>right_justify</i>, <i>colorize</i>)</p>
+
+<p style="margin-left:28%;">Right or left justify the
+string representing <i>value</i>. The width of the field in
+the first line is given by <i>first_width</i>. For
+subsequent lines the width is given by <i>latter_width</i>.
+If <i>latter_width</i> is -1, <i>first_width</i> is used for
+all lines. If <i>right_justify</i> is true then the field is
+right justified within the width of the field. If it is
+false, then the field is left justified and padded to the
+full width of the field. If <i>colorize</i> is true, then
+ledger will honor color settings.</p>
+
+<p style="margin-top: 1em"><b>market</b>(<i>value</i>,
+<i>datetime</i>)</p>
+
+<p style="margin-left:28%;">Return the price of
+<i>value</i> at <i>datetime</i>. Note that <i>datetime</i>
+must be surrounded by brackets in order to be parsed
+correctly, e.g. [2012/03/23].</p>
+
+<p style="margin-top: 1em"><b>meta</b>()</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+value of metadata named <i>name</i>.</p>
+
+<p style="margin-top: 1em"><b>note</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the note
+for the posting.</p>
+
+<p style="margin-top: 1em"><b>now</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+current datetime.</p>
+
+<p style="margin-top: 1em"><b>options</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">A variable that
+allows access to the values of the given command-line
+options using the long option names, e.g. to see whether
+<b>&minus;&minus;daily</b> (<b>&minus;D</b>) was given use
+<b>option.daily</b>.</p>
+
+<p style="margin-top: 1em"><b>payee</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+payee of the posting.</p>
+
+<p style="margin-top: 1em"><b>percent</b>(<i>value_a</i>,
+<i>value_b</i>)</p>
+
+<p style="margin-left:28%;">Return the percentage of
+<i>value_a</i> in relation to <i>value_b</i> (used as
+100%).</p>
+
+<p style="margin-top: 1em"><b>pending</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the posting is marked as pending, false otherwise.</p>
+
+<p style="margin-top: 1em"><b>percent</b>(<i>value_a</i>,
+<i>value_b</i>)</p>
+
+<p style="margin-left:28%;">Return the percentage of
+<i>value_a</i> in relation to <i>value_b</i>.</p>
+
+<p style="margin-top: 1em"><b>print</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Print
+<i>value</i> to stdout. Used internally for debugging.</p>
+
+
+<p style="margin-top: 1em"><b>quantity</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+quantity of <i>value</i> for values that have a per-unit
+cost.</p>
+
+
+<p style="margin-top: 1em"><b>quoted</b>(<i>expression</i>)</p>
+
+<p style="margin-left:28%;">Surround <i>expression</i> with
+double-quotes.</p>
+
+<p style="margin-top: 1em"><b>real</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the transaction is real, i.e not a automated or virtual
+transaction, false otherwise.</p>
+
+<p style="margin-top: 1em"><b>roundto</b>(<i>value</i>,
+<i>n</i>)</p>
+
+<p style="margin-left:28%;">Return <i>value</i> rounded to
+<i>n</i> digits. Does not affect formatting.</p>
+
+<p style="margin-top: 1em"><b>should_bold</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+expression given to <b>&minus;&minus;bold-if</b> evaluates
+to true. Internal use only!</p>
+
+<p style="margin-top: 1em"><b>scrub</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Clean
+<i>value</i> using various transformations such as round,
+stripping value annotations, and more.</p>
+
+<p style="margin-top: 1em"><b>strip</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Strip value
+annotation from <i>value</i>.</p>
+
+<p style="margin-top: 1em"><b>tag</b>(<i>name</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+value of tag named <i>name</i>.</p>
+
+
+<p style="margin-top: 1em"><b>to_amount</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Convert <i>value</i> to an
+amount. Internal use only!</p>
+
+
+<p style="margin-top: 1em"><b>to_balance</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Convert <i>value</i> to a
+balance. Internal use only!</p>
+
+
+<p style="margin-top: 1em"><b>to_boolean</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Convert <i>value</i> to a
+boolean. Internal use only!</p>
+
+
+<p style="margin-top: 1em"><b>to_date</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Convert
+<i>value</i> to a date. Internal use only!</p>
+
+
+<p style="margin-top: 1em"><b>to_datetime</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Convert <i>value</i> to a
+datetime. Internal use only!</p>
+
+<p style="margin-top: 1em"><b>to_int</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+integer value for <i>value</i>.</p>
+
+
+<p style="margin-top: 1em"><b>to_mask</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Convert
+<i>value</i> to a mask. Internal use only!</p>
+
+
+<p style="margin-top: 1em"><b>to_sequence</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Convert <i>value</i> to a
+sequence. Internal use only!</p>
+
+
+<p style="margin-top: 1em"><b>to_string</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%;">Convert <i>value</i> to a
+character string.</p>
+
+<p style="margin-top: 1em"><b>today</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return
+today&rsquo;s date.</p>
+
+<p style="margin-top: 1em"><b>total</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+total of the posting.</p>
+
+<p style="margin-top: 1em"><b>total_expr</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return the
+calculated total of the posting according to the
+<b>&minus;&minus;total</b> option.</p>
+
+<p style="margin-top: 1em"><b>trim</b>(<i>value</i>)</p>
+
+<p style="margin-left:28%; margin-top: 1em">Trim leading
+and trailing whitespace from <i>value</i>.</p>
+
+<p style="margin-top: 1em"><b>truncated</b>(<i>string</i>,
+<i>total_len</i>, <i>account_len</i>)</p>
+
+<p style="margin-left:28%;">Truncate <i>string</i> to
+<i>total_len</i> ensuring that each account is at least
+<i>account_len</i> long.</p>
+
+<p style="margin-top: 1em"><b>virtual</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">Return true if
+the transaction is virtual, e.g automated, false
+otherwise.</p>
+
+<p style="margin-top: 1em"><b>DEBUG COMMANDS</b></p>
+
+<p style="margin-left:6%;">In addition to the regular
+reporting commands, <b>ledger</b> also accepts several debug
+commands:</p>
+
+<p style="margin-top: 1em"><b>args</b> [ <i><br>
+report-query</i>]</p>
+
+<p style="margin-left:18%;">Display complete analysis of
+how <b>ledger</b> interpreted the given <i>report-query</i>.
+Useful if you want to understand how report queries are
+translated into value expressions.</p>
+
+<p style="margin-top: 1em"><b>eval</b> [ <i><br>
+value-expression</i>]</p>
+
+<p style="margin-left:18%;">Evaluate the given
+<i>value-expression</i> and prints the result. For more on
+value expressions, see the section <i>EXPRESSIONS</i>.</p>
+
+<p style="margin-top: 1em"><b>format</b> [ <i><br>
+format-string</i>]</p>
+
+<p style="margin-left:18%;">Display an analysis of how
+<i>format-string</i> was parsed, and what it would look like
+applied to a sample transaction. For more on format strings,
+see the section <i>FORMATS</i>.</p>
+
+<p style="margin-top: 1em"><b>generate</b></p>
+
+<p style="margin-left:18%;">Generate 50 randomly composed
+yet valid <b>ledger</b> transactions.</p>
+
+<p style="margin-top: 1em"><b>parse</b> [ <i><br>
+value-expression</i>]</p>
+
+<p style="margin-left:18%;">Parse the given
+<i>value-expression</i> and display an analysis of the
+expression tree and its evaluated value. For more on value
+expressions, see the section <i>EXPRESSIONS</i>.</p>
+
+<p style="margin-top: 1em"><b>python</b> [ <i><br>
+file</i>]</p>
+
+<p style="margin-left:18%;">Invoke a Python interpreter to
+read the given <i>file</i>. What is special about this is
+that the <b>ledger</b> module is builtin, not read from
+disk, so it doesn&rsquo;t require <b>ledger</b> to be
+installed anywhere, or the shared library variants to be
+built.</p>
+
+<p style="margin-top: 1em"><b>reload</b></p>
+
+<p style="margin-left:18%; margin-top: 1em">Reload all data
+files for the current session immediately. Can only be used
+in the REPL.</p>
+
+<p style="margin-top: 1em"><b>template</b> [ <i><br>
+draft-template</i>]</p>
+
+<p style="margin-left:18%;">Display information about how
+<i>draft-template</i> was parsed. See the section on
+<i>DRAFTS</i>.</p>
+
+<p style="margin-top: 1em"><b>ENVIRONMENT</b></p>
+
+<p style="margin-left:6%;">Every option to <b>ledger</b>
+may be set using an environment variable if the option has a
+long name. For example setting the environment variable
+LEDGER_DATE_FORMAT=&quot;%d.%m.%Y&rsquo; will have the same
+effect as specifying <b>&minus;&minus;date-format</b>
+<i>&rsquo;%d.%m.%Y&rsquo;</i> on the command-line. Options
+on the command-line always take precedence over environment
+variable settings, however.</p>
+
+<p style="margin-top: 1em"><b>FILES</b> <br>
+~/.ledgerrc</p>
+
+<p style="margin-left:18%;">Your personal <b>ledger</b>
+initializations.</p>
+
+<p style="margin-top: 1em"><b>SEE ALSO</b></p>
+
+<p style="margin-left:6%;">beancount(1), hledger(1)</p>
+
+<p style="margin-top: 1em"><b>AUTHORS</b></p>
+
+<p style="margin-left:6%;">John Wiegley &lang;
+johnw@newartisans.com&rang;</p>
+
+<p style="margin-left:6%; margin-top: 1em">BSD
+March&nbsp;23, 2012 BSD</p>
+<hr>
+</body>
+</html>

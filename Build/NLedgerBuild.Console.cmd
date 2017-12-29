@@ -1,0 +1,1 @@
+PowerShell -NoExit -ExecutionPolicy RemoteSigned -File "%~dp0NLedgerBuild.ps1" -interactive

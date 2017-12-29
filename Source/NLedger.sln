@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLedger", "NLedger\NLedger.csproj", "{E689AF5E-55A0-47DE-A270-F3A3012FF814}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLedger.Tests", "NLedger.Tests\NLedger.Tests.csproj", "{BBFA464F-DDB1-441D-8138-FEFFEF7044E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLedger.CLI", "NLedger.CLI\NLedger.CLI.csproj", "{47DAEF6F-2906-4275-86E9-4928F62C1817}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLedger.IntegrationTests", "NLedger.IntegrationTests\NLedger.IntegrationTests.csproj", "{8715ABA4-A44B-4EFE-A3D0-0ED5DF712945}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B75D944A-6385-4188-9D38-CE46D313B020}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E689AF5E-55A0-47DE-A270-F3A3012FF814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E689AF5E-55A0-47DE-A270-F3A3012FF814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E689AF5E-55A0-47DE-A270-F3A3012FF814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E689AF5E-55A0-47DE-A270-F3A3012FF814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBFA464F-DDB1-441D-8138-FEFFEF7044E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBFA464F-DDB1-441D-8138-FEFFEF7044E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBFA464F-DDB1-441D-8138-FEFFEF7044E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBFA464F-DDB1-441D-8138-FEFFEF7044E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47DAEF6F-2906-4275-86E9-4928F62C1817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47DAEF6F-2906-4275-86E9-4928F62C1817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47DAEF6F-2906-4275-86E9-4928F62C1817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47DAEF6F-2906-4275-86E9-4928F62C1817}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8715ABA4-A44B-4EFE-A3D0-0ED5DF712945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8715ABA4-A44B-4EFE-A3D0-0ED5DF712945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8715ABA4-A44B-4EFE-A3D0-0ED5DF712945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8715ABA4-A44B-4EFE-A3D0-0ED5DF712945}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://dmerzlyakov.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = NLedger\\NLedger.csproj
+		SccProjectName1 = NLedger
+		SccLocalPath1 = NLedger
+		SccProjectUniqueName2 = NLedger.Tests\\NLedger.Tests.csproj
+		SccProjectName2 = NLedger.Tests
+		SccLocalPath2 = NLedger.Tests
+		SccProjectUniqueName3 = NLedger.CLI\\NLedger.CLI.csproj
+		SccProjectName3 = NLedger.CLI
+		SccLocalPath3 = NLedger.CLI
+		SccProjectUniqueName4 = NLedger.IntegrationTests\\NLedger.IntegrationTests.csproj
+		SccProjectName4 = NLedger.IntegrationTests
+		SccLocalPath4 = NLedger.IntegrationTests
+	EndGlobalSection
+EndGlobal
