@@ -13,8 +13,9 @@ This is a roadmap for development of next NLedger releases.
 - Code completion: add *man* command (show current Ledger documentation in browser);
 - Update the source code and tests to the latest Ledger version (branch NEXT);
 - Build: configure VSTS builds on hosted agents;
-- Build: VSTS: add automatic commits for built packages; publish MD5 hashes;
-- Build: VSTS: configure Continuous Integration builds for in-development releases;
+- Build: VSTS: add automatic commits for created packages and build logs; publish MD5 hashes;
+- Build: VSTS: create DEV branches and configure Continuous Integration builds for them;
+- Build: improce MD5 to HTML conversion; add automatic updates for doc files (licensing, bug tracking);
 - Bug fixing: prompt in the interactive mode;
 - Bug fixing: fix filtering by categories in *--debug* option;
 - Deploy package: add more interactive examples in a console;

@@ -20,15 +20,15 @@ if you have problems with PowerShell; basic NLedger functions should still work 
 ## Installation
 
 Current NLedger version is published as a zip archive with binary files and helper scripts.
-You can get the latest version of the package by this [link](http://todo).
+You can get the latest version by this [link](https://github.com/dmitry-merzlyakov/nledger/tree/master/Binaries).
 
 Basically, NLedger binaries are immediately ready for using once they are unpacked.
-However, there are three extra recommended steps that make working with NLedger more comfortable:
+However, there are three extra recommended steps that make your work with NLedger more comfortable:
 
 1. It is recommended to create native images for NLedger binaries by calling NGen. 
-   Native images contain very efficient code that speeds up NLedger several times.
+   Native images contain very efficient code that speeds up NLedger several times;
 2. It is recommended to add the path to NLedger binaries to PATH environment variable.
-   It allows you omit path to NLedger in the command line.
+   It allows you omit path to NLedger in the command line;
 3. You might find it useful to create an short alias to NLedger command line utility.
    It is easier to type "ledger" instead of "nledger.cli" every time you call it.
    The script creates a hard link with name "ledger.exe" for it.
@@ -49,7 +49,7 @@ The steps to install NLedger are:
 4. Execute *NLedger.Install.cmd* command file; confirm requested elevated permissions;
 5. Observe the log of installation actions in the console and close it.
 
-NLedger is ready for using. For example, open new Windows Command Prompt and type *ledger*:
+Now NLedger is ready for using. For example, open new Windows Command Prompt and type *ledger*:
 the standard prompt should appear. 
 
 ### Uninstalling NLedger
@@ -67,7 +67,7 @@ Once NLedger is installed, it is available in any Windows command line by typing
 (or *nledger.cli* in case the short alias has not been created). 
 
 As it was mentioned above, NLedger is completely compatible with Ledger, so it is recommended
-to familiar with the Ledger documentation, instructions and guidelines. Ledger community provides
+to familiar with the [Ledger documentation](https://www.ledger-cli.org/docs.html), instructions and [guidelines](http://plaintextaccounting.org/). Ledger community provides
 huge amount of good examples, best practices and recommendations how to deal with command line 
 accounting systems.
 
@@ -90,7 +90,7 @@ Main testing toolkit features are:
   with matched file names;
 - **display results**. Besides showing test results in the console, the toolkit can also generate report files
   with detail information in HTML or XML formats;
-- manage **list of test files to ignore**. Some Ledger tests are not applicable for Windows environment, so we need
+- manage **list of test files to ignore**. Some Ledger tests are not applicable to Windows environment, so we need
   to skip them every time. The toolkit reads this list and do not execute these tests;
 - provide an **easy way to communicate with the user**. The toolkit provides a special console with several
   easy commands. It allows you perform any kind of testing actions just by typing a couple of letters.
@@ -108,7 +108,7 @@ otherwise.*
 
 You can create own test files according to recommendations in Ledger documentation. Created file with .test extension
 should be put into *test* folder (or any its subfolder). The testing toolkit rescans the content of the test folder
-every time so you file is immediately available.
+every time so your file is immediately available.
 
 If you already have your own set of test files, you can put them to the test folder too.
 

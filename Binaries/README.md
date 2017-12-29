@@ -8,7 +8,7 @@ that are ready to deploy on a target machine.
 Current NLedger version provides the packages as zip archives with pre-built binaries and
 other deployment artifacts. You may download the package
 (e.g. *NLedger-v0.6.zip*), unpack to any local temp folder,
-open the file *NLedger\nledger.html* and follow the instruction
+open the file [NLedger\nledger.html](https://github.com/dmitry-merzlyakov/nledger/blob/master/nledger.md) and follow the instruction
 in the section *Installation*.
 
 ### For Very Busy People :) Quick Start

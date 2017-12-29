@@ -12,7 +12,7 @@ This document provides general development guidelines:
 Briefly, you need to have Visual Studio 2015 (any edition) on your development environment
 and PowerShell 5.0 - it is the same what I have on mine. Visual Studio 2017 is appropriate too,
 but you might need to make a couple of corrections in the build script in case you want to use it.
-It is also possible to build NLedger be means of MSBuild only with no Visual Studio installed;
+It is also possible to build NLedger by means of MSBuild only with no Visual Studio installed;
 you will need to install Microsoft build and testing components on your own. 
 
 Therefore, the required development software components are:
@@ -22,7 +22,7 @@ Therefore, the required development software components are:
    - Visual Studio 2015 or higher (any edition);
 3. In case you do not want to have Visual Studio on your machine:
    - .Net Framework 4.0 or higher (4.6.1 is recommended);
-   - MS Build v14.0 or higher
+   - MS Build v14.0 or higher;
    - VS Test Console.
 
 ## Build NLedger from Sources
@@ -102,7 +102,7 @@ In case you want to revert changes, execute *NLedger.Uninstall.cmd*.
 
 ## Working with Ledger Tests
 
-Once you have NLedger built on your dev environment, you may run all Ledger tests against them:
+Once you have NLedger built on your dev environment, you may run all Ledger tests against it:
 
 - Open NLedger Testing Toolkit console (*Contrib\NLTestToolkit\NLTest.cmd*) 
 - Follow the instruction on the screen. E.g. type *run opt* to run all tests with "opt" in the name;
@@ -110,7 +110,7 @@ Once you have NLedger built on your dev environment, you may run all Ledger test
 You can add your own Ledger test files; they are immediately available in the toolkit
 if you put them to *Contrib\test* folder.
 
-However, you want to execute the same test files in Visual Studio as part of *NLedger.IntegrationTests* test,
+However, if you want to execute the same test files in Visual Studio as part of *NLedger.IntegrationTests* test,
 you need to make several extra steps:
 
 1. Create new Ledger test file and put it to either *test\baseline*, *test\manual* or *test\regress* folder.

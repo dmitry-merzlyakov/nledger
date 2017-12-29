@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](http://opensource.org/licenses/BSD-2-Clause)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](http://opensource.org/licenses/BSD-3-Clause)
 
 # .Net Ledger: Double-Entry Accounting System
 
@@ -38,9 +38,9 @@ significant Ledger features:
     5 AAPL but can convert one amount to another; 
   - **Prices and Price History** gives information how to convert one amount to another
     at any moment. You can give this information explicitly (as a price table) but 
-    the application can collect it also in implicit way, by analyzing transactions and
-    data conversion in them.
-  - **Balancing and auto-balancing** make accounting transaction smarter: the application
+    the application can also collect it also in implicit way, by analyzing transactions and
+    data conversions in them;
+  - **Balancing and auto-balancing** make accounting transactions smarter: the application
     can validate that a transaction balances even it has posts in different currencies
     or commodities. Moreover, in some conditions it can auto-complete it (calculate the last amount)
     that simplify writing the journal records;
@@ -50,10 +50,10 @@ significant Ledger features:
     any other components, applications, special data files - only text. It is completely
     under your control;
   - **Never change any file** - yes, Ledger only reads input files and generates reports;
-  - **Easy syntax of the journal** lets you keep your accounting files even in 
+  - **Easy syntax of the journal** lets you keep your accounting files in 
     the natural language;
-  - **huge amount of reports** lets you organize your work in the most preferable way;
-  - **command line interface** is very flexible thing that let you configure
+  - **Huge amount of reports** lets you organize your work in the most efficient way;
+  - **Command line interface** is very flexible thing that let you configure
     your typical commands in batch files. Once you have them, your efficiency will be 
     much better rather you get the same result in any UI tool;
 - As a technically advanced tool:
@@ -101,17 +101,17 @@ applications.
 - **Current limitations** (technical restrictions that will be addressed by next releases) are:
   - No Python integration. Ledger tests that require Python are disabled;
   - NLedger uses Decimal for arithmetic calculations. It limits the quantity of digits in a number
-      with about 30. Ported Amount unit tests are adopted to less number of digits;
+      with about 30 positions. Ported Amount unit tests are adopted to less number of digits;
   - No "*cat*" pager on Windows. Corresponded Ledger test is disabled till further decision;
   - DateTime parser on .Net has less specific error messages and does not allow
-      to detect the same mistakes as Ledger does. Corresponded Ledger tests is disabled till further decision;
+      to detect the same mistakes as Ledger does. Corresponded Ledger test is disabled till further decision;
   - It was found that in some conditions the original Ledger produced incorrect 
     rounding at the last rendering step (*stream_out_mpq*). It was caused by specifics of its
     arbitrary-precision arithmetic library; some combinations of
     divisible and divisor produce rounded result that does not match expected
     banking rounding. Some Ledger tests were corrected (opt-lot-prices, opt-lots, opt-lots_basis).
       
-- **Development Roadmap** is available by this [link](http://todo).
+- **Development Roadmap** is available by this [link](https://github.com/dmitry-merzlyakov/nledger/blob/master/roadmap.md).
   It describes the plan to complete all intended features by the version 1.0.
 
 ## Installation
@@ -129,7 +129,7 @@ Therefore, PowerShell is not required component, you can still use NLedger, but 
 
 ### Install from Binaries
 
-- Download NLedger installation package from [Bin](http://todo) folder;
+- Download NLedger installation package from [Binaries](https://github.com/dmitry-merzlyakov/nledger/tree/master/Binaries) folder;
 - Unpack the package to a temp folder;
 - Open the file *nledger.html* and follow the installation instruction.
 
@@ -146,28 +146,29 @@ is Ledger resources and community. Therefore:
 - Refer to [Ledger documentation](https://www.ledger-cli.org/docs.html) or 
   read [other resources](http://plaintextaccounting.org/) to get conceptual 
   information about command line accounting and Ledger capabilities;
-- Refer to [NLedger documentation](http://todo) if you have questions about running .Net 
+- Refer to [NLedger documentation](https://github.com/dmitry-merzlyakov/nledger/blob/master/nledger.md) if you have questions about running .Net 
   application in your system.
 
 ## Contribution
 
 NLedger is currently under an active development and some big enhancements 
-are coming. You can check the planes in [Roadmap](http://todo).
-However, code quality is a constant primary focus, 
+are coming. You can check the planes in [Roadmap](https://github.com/dmitry-merzlyakov/nledger/blob/master/roadmap.md).
+However, code quality is a primary focus, 
 so any bug fixing requests and/or fixing changes will be processed in the 
-first order. Therefore:
+first order. Therefore, if you want to help this project:
 
 - Any help in testing NLedger are very appreciated. You can leave information about found 
-  defect in Issues Section; they will be processed in the first order.
+  defect on [Issues](https://github.com/dmitry-merzlyakov/nledger/issues) tab; they will be processed in the first order;
 - Anyone who would like to provide a fix for any found defect are welcome.
-  Please, create pull requests for fixing changes; they will be processed in the first order.
-- Coming Enhancements will be developed under my control.
-  Of course, anyone can make a fork from this code and extend it on their own, enjoy!
+  Please, create pull requests for fixing changes; they will be processed in the first order as well;
+- Coming enhancements are developed under my control.
+  Of course, anyone of you can make a fork from this code and extend it on your own, enjoy!
 
 ### How to inform about found defects
 
-1. First of all, please check Project Issues on GitHub and Known Issues in CHANGELOG.
-   The issue you faced might be already recorded.
+1. First of all, please check project [Issues](https://github.com/dmitry-merzlyakov/nledger/issues) 
+   on GitHub and Known Issues in [CHANGELOG](https://github.com/dmitry-merzlyakov/nledger/blob/master/CHANGELOG.md).
+   The issue you found might be already recorded.
 2. Check that the issue is reproducible and describe it.
 3. Ideally, locate the defect and create Ledger test file that exposes the problem.
    This file should properly pass test with the original Ledger and fail with NLedger.
@@ -181,6 +182,6 @@ in the smallest detail. Thought it was quite big challenge for me
 
 ## Licensing
 
-The code is licensed under 2-clause [FreeBSD license](http://todo).
+The code is licensed under 3-clause [FreeBSD license](https://github.com/dmitry-merzlyakov/nledger/blob/master/LICENSE).
 
 (c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
