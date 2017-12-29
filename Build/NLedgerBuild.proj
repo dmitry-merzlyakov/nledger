@@ -19,7 +19,7 @@
 
     <OutputDir Condition=" '$(OutputDir)'=='' ">$(ProjectRoot)BuildOut\</OutputDir>
     <PackageDir>$(OutputDir)package\NLedger\</PackageDir>
-    <ReleaseDir Condition=" '$(ReleaseDir)'=='' ">$(ProjectRoot)Bin\</ReleaseDir>
+    <ReleaseDir Condition=" '$(ReleaseDir)'=='' ">$(ProjectRoot)Binaries\</ReleaseDir>
 
     <!-- Paths to build tools -->
     
