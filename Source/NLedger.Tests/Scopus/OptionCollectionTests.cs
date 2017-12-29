@@ -157,7 +157,7 @@ namespace NLedger.Tests.Scopus
             optionCollection.Add(option2);
 
             string report = optionCollection.Report();
-            Assert.AreEqual(report, ReportResult);
+            Assert.AreEqual(report.Replace("\r\n", "\n"), ReportResult.Replace("\r\n", "\n"));
         }
 
         [TestMethod]

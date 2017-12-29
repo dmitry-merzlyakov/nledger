@@ -37,7 +37,7 @@ namespace NLedger.Tests.Utility.Xml
 @"<ledger version=""196865"">
   <test />
 </ledger>";
-            Assert.AreEqual(expectedDoc, xdoc.ToString());
+            Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
             Assert.AreEqual("<test />", xelem.ToString());
         }
 
@@ -51,7 +51,7 @@ namespace NLedger.Tests.Utility.Xml
 @"<ledger version=""196865"">
   <test>val</test>
 </ledger>";
-            Assert.AreEqual(expectedDoc, xdoc.ToString());
+            Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
             Assert.AreEqual("<test>val</test>", xelem.ToString());
         }
 
