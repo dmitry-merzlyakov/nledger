@@ -124,8 +124,10 @@ function test-elevated {
     RunBuild "IntegrationTests" $True
 }
 
-function publish {
-    RunBuild "Publish" $False
+function package {
+    [CmdletBinding()]
+    Param()
+    RunBuild "Package" $False
 }
 
 function help {
@@ -134,7 +136,7 @@ Param()
      write-host "Interactive console helps you compile, test and build NLedger with various options`r`n"
      write-host -NoNewline "It supports several short commands that run the build process with typical targets:`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "all"
-     write-host -NoNewline "            all build steps (compile, test, package and publish). Does not require admin proviledges (longer build time);`r`n PS> "
+     write-host -NoNewline "            all build steps (compile, test, package). Does not require admin proviledges (longer build time);`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "all-elevated"
      write-host -NoNewline "   all build steps with admin priviledges (testing is faster because of possibility to create native images);`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "build"
@@ -147,8 +149,8 @@ Param()
      write-host -NoNewline "           compile, create a package and run Ledger tests. Does not require admin priviledges (longer testing time);`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "test-elevated"
      write-host -NoNewline "  compile, create a package and run Ledger tests. Requires admin proviledges (faster testing time);`r`n PS> "
-     write-host -NoNewline -ForegroundColor Yellow "publish"
-     write-host -NoNewline "        compile, build a package and and publish; no testing;`r`n PS> "
+     write-host -NoNewline -ForegroundColor Yellow "package"
+     write-host -NoNewline "        compilea and build a package; no testing;`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "help"
      write-host -NoNewline "           show this help page again.`r`n"
      write-host -NoNewline "`r`nNote: some build targets require administrative priviledges because they try to create NLedger native images by means of NGen."

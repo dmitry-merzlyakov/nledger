@@ -19,7 +19,6 @@
 
     <OutputDir Condition=" '$(OutputDir)'=='' ">$(ProjectRoot)BuildOut\</OutputDir>
     <PackageDir>$(OutputDir)package\NLedger\</PackageDir>
-    <ReleaseDir Condition=" '$(ReleaseDir)'=='' ">$(ProjectRoot)Binaries\</ReleaseDir>
 
     <!-- Paths to build tools -->
     
@@ -42,7 +41,6 @@
     <CallTarget Targets="Release" />
     <CallTarget Targets="IntegrationTests" />
     <CallTarget Targets="Package" />
-    <CallTarget Targets="Publish" />
   </Target>
 
   <Target Name="Build" DependsOnTargets="CheckLicensing">
@@ -99,11 +97,6 @@
     <Message Text="Target : Package (creating a zip package)"/>
     <Delete Files="$(OutputDir)NLedger-v$(ProductVersion).zip" />
     <ZipDir ZipFileName="$(OutputDir)NLedger-v$(ProductVersion).zip" DirectoryName="$(PackageDir).." />
-  </Target>
-
-  <Target Name="Publish" DependsOnTargets="GetProductVersion;Package">
-    <Message Text="Target : Publishing (moving the zip package to the public folder)"/>
-    <Copy SourceFiles="$(OutputDir)NLedger-v$(ProductVersion).zip" DestinationFiles="$(ReleaseDir)NLedger-v$(ProductVersion).zip"  />
   </Target>
 
   <!-- Technical task - check output folder -->

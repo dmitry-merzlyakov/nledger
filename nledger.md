@@ -20,7 +20,7 @@ if you have problems with PowerShell; basic NLedger functions should still work 
 ## Installation
 
 Current NLedger version is published as a zip archive with binary files and helper scripts.
-You can get the latest version by this [link](https://github.com/dmitry-merzlyakov/nledger/tree/master/Binaries).
+You can get the latest release by this [link](https://github.com/dmitry-merzlyakov/nledger/releases).
 
 Basically, NLedger binaries are immediately ready for using once they are unpacked.
 However, there are three extra recommended steps that make your work with NLedger more comfortable:

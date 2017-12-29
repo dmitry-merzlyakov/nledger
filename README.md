@@ -127,9 +127,9 @@ you can run Ledger tests only if your system supports PowerShell as well.
 
 Therefore, PowerShell is not required component, you can still use NLedger, but ability to run PowerShell scripts makes your life easier.
 
-### Install from Binaries
+### Install from Binary Package
 
-- Download NLedger installation package from [Binaries](https://github.com/dmitry-merzlyakov/nledger/tree/master/Binaries) folder;
+- Download the latest NLedger installation package from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases);
 - Unpack the package to a temp folder;
 - Open the file *nledger.html* and follow the installation instruction.
 
@@ -178,7 +178,7 @@ first order. Therefore, if you want to help this project:
 Special thanks to *John Wiegley* for the nicest accounting tool I've ever seen.
 I really like it very much and it was a great pleasure for me to analyze its code
 in the smallest detail. Thought it was quite big challenge for me 
-(GDB left calluses on my hands :)) I've got an incomparable experience. Thank you! 
+(GDB left the corns on my hands :)) I've got an invaluable experience. Thank you! 
 
 ## Licensing
 
