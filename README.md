@@ -1,4 +1,6 @@
 [![License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](http://opensource.org/licenses/BSD-3-Clause)
+[![GitHub release](https://img.shields.io/github/release/dmitry-merzlyakov/nledger.svg?style=flat)](https://github.com/dmitry-merzlyakov/nledger/releases)
+[![Gitter chat room](https://badges.gitter.im/nledger/Lobby.svg)](https://gitter.im/nledger/lobby)
 
 # .Net Ledger: Double-Entry Accounting System
 
@@ -179,6 +181,12 @@ Special thanks to *John Wiegley* for the nicest accounting tool I've ever seen.
 I really like it very much and it was a great pleasure for me to analyze its code
 in the smallest detail. Thought it was quite big challenge for me 
 (GDB left the corns on my hands :)) I've got an invaluable experience. Thank you! 
+
+## Contact
+
+- Join us in the chat room here: [![Gitter chat room](https://badges.gitter.im/nledger/Lobby.svg)](https://gitter.im/nledger/lobby);
+- Twitter: [#nledger](https://twitter.com/search?q=%23nledger) .Net Ledger news;
+- Send an email to [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
 
 ## Licensing
 
