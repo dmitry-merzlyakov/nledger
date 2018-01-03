@@ -1,0 +1,5 @@
+*.test text eol=lf
+*.dat text eol=lf
+*.py text eol=lf
+*.save text eol=lf
+*.ledger text eol=lf
