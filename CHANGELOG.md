@@ -45,4 +45,4 @@ that will be addressed by further releases:
 
 *None* at the moment of the first public release.
 
-(c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

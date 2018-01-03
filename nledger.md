@@ -139,4 +139,4 @@ Available configuration options are:
 by means of environment variables. It checks the variables with the same names and with the prefix "nledger":
 nledgerIsAtty, nledgerAnsiTerminalEmulation, nledgerOutputEncoding and nledgerTimeZoneId.*
 
-(c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

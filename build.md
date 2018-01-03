@@ -138,4 +138,4 @@ observe changes and check in updated files when it finishes.
 if it detects any differences*. In such cases, you also need to execute *Build\ProductInfoUpdate.cmd*
 and commit updated files.
 
-(c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

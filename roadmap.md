@@ -71,4 +71,4 @@ on general functionality: date parsing, pager, localization, decimal limitations
 - General performance analyzing and optimization;
 - Code stabilization and bug fixing;
 
-(c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
