@@ -212,4 +212,4 @@ Set-Content -Path $Script:absCIBuildLogPath $Script:ciBuildLogContent -ErrorActi
 
 [string]$Script:commitComment = "Build #$buildID is $buildStatus;***NO_CI***"
 & git commit -m $Script:commitComment $Script:absCIBuildLogPath
-& git push origin 2>&1 | Write-Host
+& git push origin HEAD:next-dev 2>&1 | Write-Host
