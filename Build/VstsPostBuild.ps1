@@ -18,8 +18,7 @@ Param(
     [Parameter(Mandatory=$false)][string]$buildReqFor = $env:BUILD_REQUESTEDFOR,
     [Parameter(Mandatory=$false)][string]$buildReqForEMail = $env:BUILD_REQUESTEDFOREMAIL,
     [Parameter(Mandatory=$false)][string]$buildSourceVersion = $env:BUILD_SOURCEVERSION,
-    [Parameter(Mandatory=$false)][string]$ciBuildLogPath = "..\_CI.BuildLog.md",
-    [Parameter(Mandatory=$false)][string]$branch = "next-dev"
+    [Parameter(Mandatory=$false)][string]$ciBuildLogPath = "..\_CI.BuildLog.md"
 )
 
 trap 
@@ -213,4 +212,4 @@ Set-Content -Path $Script:absCIBuildLogPath $Script:ciBuildLogContent -ErrorActi
 
 [string]$Script:commitComment = "Build #$buildID is $buildStatus;***NO_CI***"
 & git commit -m $Script:commitComment $Script:absCIBuildLogPath
-& git push origin $branch 2>&1 | Write-Host
+& git push origin 2>&1 | Write-Host
