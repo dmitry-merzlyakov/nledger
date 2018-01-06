@@ -18,7 +18,8 @@ Param(
     [Parameter(Mandatory=$false)][string]$buildReqFor = $env:BUILD_REQUESTEDFOR,
     [Parameter(Mandatory=$false)][string]$buildReqForEMail = $env:BUILD_REQUESTEDFOREMAIL,
     [Parameter(Mandatory=$false)][string]$buildSourceVersion = $env:BUILD_SOURCEVERSION,
-    [Parameter(Mandatory=$false)][string]$ciBuildLogPath = "..\_CI.BuildLog.md"
+    [Parameter(Mandatory=$false)][string]$ciBuildLogPath = "..\_CI.BuildLog.md",
+    [Parameter(Mandatory=$false)][string]$branch = "next-dev"
 )
 
 trap 
@@ -206,11 +207,10 @@ $Script:logRecord += "Install package: $Script:buildPackageLink`r`n"
 [string]$Script:ciBuildLogContent = Get-Content -Path $Script:absCIBuildLogPath | Out-String
 [int]$script:pos = $Script:ciBuildLogContent.IndexOf("***")
 $Script:ciBuildLogContent = if ($script:pos -ge 0) { $Script:ciBuildLogContent.Insert($script:pos,$Script:logRecord) } else { $Script:ciBuildLogContent + $Script:logRecord }
-Set-Content -Path $Script:absCIBuildLogPath $Script:ciBuildLogContent -ErrorAction Stop | Out-String
+Set-Content -Path $Script:absCIBuildLogPath $Script:ciBuildLogContent -ErrorAction Stop | Out-Null
 
 # Commit updated CI Log file
 
-#TODO
-
-
-
+[string]$Script:commitComment = "Build #$buildID is $buildStatus;***NO_CI***"
+& git commit -m $Script:commitComment $Script:absCIBuildLogPath
+& git push origin $branch 2>&1 | Write-Host
