@@ -200,6 +200,9 @@ $Script:logRecord += "`r`n"
 $Script:logRecord += "Build logs: $Script:buildLogLink`r`n"
 $Script:logRecord += "`r`n"
 $Script:logRecord += "Install package: $Script:buildPackageLink`r`n"
+Write-Verbose "Prepared a build log record:==="
+Write-Verbose $Script:logRecord
+Write-Verbose "==============================="
 
 # Update CI Log file
 
@@ -207,9 +210,16 @@ $Script:logRecord += "Install package: $Script:buildPackageLink`r`n"
 [int]$script:pos = $Script:ciBuildLogContent.IndexOf("***")
 $Script:ciBuildLogContent = if ($script:pos -ge 0) { $Script:ciBuildLogContent.Insert($script:pos,$Script:logRecord) } else { $Script:ciBuildLogContent + $Script:logRecord }
 Set-Content -Path $Script:absCIBuildLogPath $Script:ciBuildLogContent -ErrorAction Stop | Out-Null
+Write-Verbose "Build log file is updated: $Script:absCIBuildLogPath"
+Write-Verbose "New content of log file is: ==="
+Write-Verbose $Script:ciBuildLogContent
+Write-Verbose "==============================="
 
 # Commit updated CI Log file
 
 [string]$Script:commitComment = "Build #$buildID is $buildStatus;***NO_CI***"
-& git commit -m $Script:commitComment $Script:absCIBuildLogPath
+Write-Verbose "Committing updated log file: git commit -m $Script:commitComment $Script:absCIBuildLogPath"
+& git commit -m $Script:commitComment $Script:absCIBuildLogPath 2>&1 | Write-Host
+Write-Verbose "Pushing updated log file: git push origin HEAD:next-dev"
 & git push origin HEAD:next-dev 2>&1 | Write-Host
+Write-Verbose "Everything is done"
