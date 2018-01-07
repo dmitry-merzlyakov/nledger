@@ -211,9 +211,6 @@ Write-Verbose "==============================="
 $Script:ciBuildLogContent = if ($script:pos -ge 0) { $Script:ciBuildLogContent.Insert($script:pos,$Script:logRecord) } else { $Script:ciBuildLogContent + $Script:logRecord }
 Set-Content -Path $Script:absCIBuildLogPath $Script:ciBuildLogContent -ErrorAction Stop | Out-Null
 Write-Verbose "Build log file is updated: $Script:absCIBuildLogPath"
-#Write-Verbose "New content of log file is: ==="
-#Write-Verbose $Script:ciBuildLogContent
-#Write-Verbose "==============================="
 
 # Commit updated CI Log file
 
