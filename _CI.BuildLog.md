@@ -19,3 +19,18 @@ the latest build status is:
 
 
 ***
+#### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [38] 2018/01/07 00:39:42
+
+>Build #38; Status:Succeeded
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: e93253446bfdf553216208d48bf05b44701b4f87
+
+Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3tb1yov55bqut/NLedger-BuildLogs-v0.6.Build.38.zip?dl=0) MD5: 40A6337930B19863A87A05E1AF36AA4E
+
+Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
+***
+
