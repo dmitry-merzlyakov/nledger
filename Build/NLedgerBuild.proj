@@ -9,7 +9,7 @@
     <SourceRoot>$(ProjectRoot)Source\</SourceRoot>
     <BuildDir>$(ProjectRoot)Build\</BuildDir>
     <TestResultsDir>$(BuildDir)TestResults\</TestResultsDir>
-    <MarkdownDir>$(BuildDir)MarkdownSharp\</MarkdownDir>
+    <CommonMarkDir>$(BuildDir)CommonMark.NET\</CommonMarkDir>
     <!-- Path to ProductInfo file -->
     <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
     <!-- Paths to test project assemblies separated by spaces -->
@@ -78,9 +78,9 @@
     <Copy SourceFiles="$(ProjectRoot)LICENSE" DestinationFiles="$(PackageDir)\LICENSE"  />
     <Copy SourceFiles="$(ProjectRoot)LICENSE.LEDGER" DestinationFiles="$(PackageDir)\LICENSE.LEDGER"  />
     <!-- Add NLedger readme, documentation and release notes -->
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\README.md&quot; -outputFileName &quot;$(PackageDir)\README.html&quot;" />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\CHANGELOG.md&quot; -outputFileName &quot;$(PackageDir)\CHANGELOG.html&quot;" />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\nledger.md&quot; -outputFileName &quot;$(PackageDir)\nledger.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(CommonMarkDir)CommonMark.ps1&quot; -inputFileName &quot;..\..\README.md&quot; -outputFileName &quot;$(PackageDir)\README.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(CommonMarkDir)CommonMark.ps1&quot; -inputFileName &quot;..\..\CHANGELOG.md&quot; -outputFileName &quot;$(PackageDir)\CHANGELOG.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(CommonMarkDir)CommonMark.ps1&quot; -inputFileName &quot;..\..\nledger.md&quot; -outputFileName &quot;$(PackageDir)\nledger.html&quot;" />
   </Target>
 
   <Target Name="IntegrationTests" DependsOnTargets="Release">
