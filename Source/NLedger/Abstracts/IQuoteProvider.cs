@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace NLedger.Abstracts
 {
     /// <summary>
-    /// The service provider that returns stock quotes
+    /// A service provider that returns stock quotes
     /// </summary>
     public interface IQuoteProvider
     {

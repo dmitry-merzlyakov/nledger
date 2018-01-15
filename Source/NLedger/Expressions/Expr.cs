@@ -94,9 +94,13 @@ namespace NLedger.Expressions
             SymbolScope filelocals = new SymbolScope(args);
             int lineNum = 0;
             string line;
+            int pos = 0;
+            int endpos = 0;
 
             while ((line = reader.ReadLine()) != null)
             {
+                pos = endpos;
+                endpos = line.Length + Environment.NewLine.Length;
                 lineNum++;
 
                 line = line.TrimStart();
@@ -109,7 +113,7 @@ namespace NLedger.Expressions
                     catch
                     {
                         ErrorContext.Current.AddErrorContext(String.Format("While parsing value expression on line {0}:", lineNum));
-                        ErrorContext.Current.AddErrorContext(ErrorContext.SourceContext(pathname, /*TODO*/0, /*TODO*/0, "> "));
+                        ErrorContext.Current.AddErrorContext(ErrorContext.SourceContext(pathname, pos, endpos, "> "));
                     }
                 }
             }

@@ -70,6 +70,7 @@ namespace NLedger
         // Abstract Application Services
         public IQuoteProvider QuoteProvider => _QuoteProvider.Value;
         public IProcessManager ProcessManager => _ProcessManager.Value;
+        public IManPageProvider ManPageProvider => _ManPageProvider.Value;
 
         public void SetQuoteProvider(Func<IQuoteProvider> quoteProviderFactory)
         {
@@ -82,5 +83,6 @@ namespace NLedger
         private CommodityPool _CommodityPool;
         private Lazy<IQuoteProvider> _QuoteProvider = new Lazy<IQuoteProvider>(() => new QuoteProvider());
         private Lazy<IProcessManager> _ProcessManager = new Lazy<IProcessManager>(() => new ProcessManager());
+        private Lazy<IManPageProvider> _ManPageProvider = new Lazy<IManPageProvider>(() => new ManPageProvider());
     }
 }

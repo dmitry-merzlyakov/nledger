@@ -29,5 +29,17 @@ namespace NLedger.Abstracts
         /// <param name="output">The output that the running file generates</param>
         /// <returns>Exit code that returns the file</returns>
         int Execute(string fileName, string arguments, string workingDirectory, out string output);
+
+        /// <summary>
+        /// Starts a process that is associated with a particular file type. 
+        /// E.g. opens a default browser for an HTML file.
+        /// </summary>
+        /// <remarks>
+        /// In case of any error while starting a process, it returns False result and puts an error message to stderr.
+        /// </remarks>
+        /// <param name="fileName">Path to an existing file that has a proper file type association (Open With...)</param>
+        /// <param name="arguments">Optional arguments.</param>
+        /// <returns>True if the process is started successfully or False otherwise.</returns>
+        bool Start(string fileName, string arguments = null);
     }
 }

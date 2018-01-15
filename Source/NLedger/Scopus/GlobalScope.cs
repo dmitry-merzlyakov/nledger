@@ -298,7 +298,8 @@ namespace NLedger.Scopus
 
         public void VisitManPage()
         {
-            throw new NotImplementedException("No man pages");
+            if (!MainApplicationContext.Current.ManPageProvider.Show())
+                throw new LogicError("Failed to fork child process");
         }
 
         public string PromptString()

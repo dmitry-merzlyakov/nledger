@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\IManPageProvider.cs" />
+    <Compile Include="Abstracts\Impl\ManPageProvider.cs" />
     <Compile Include="Abstracts\Impl\ProcessManager.cs" />
     <Compile Include="Abstracts\Impl\QuoteProvider.cs" />
     <Compile Include="Abstracts\IProcessManager.cs" />

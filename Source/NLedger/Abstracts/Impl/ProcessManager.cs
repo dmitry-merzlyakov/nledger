@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -87,6 +88,23 @@ namespace NLedger.Abstracts.Impl
                 ExecutionTime = stopWatch.Elapsed,
                 IsTimeouted = !isFinished
             };
+        }
+
+        public bool Start(string fileName, string arguments = null)
+        {
+            if (String.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentNullException("fileName");
+
+            try
+            {
+                Process.Start(fileName, arguments);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                FileSystem.ConsoleError.WriteLine(String.Format("Error: {0}; file name: {1}", ex.Message, fileName));
+                return false;
+            }
         }
     }
 }
