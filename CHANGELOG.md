@@ -1,3 +1,28 @@
+## 0.7 (In development; not released yet)
+
+### Release Information
+
+Code and feature completion; continuous integration.
+
+### Features
+
+- Completed "download" and "price-db" features; added corresponded 
+  tests (test/nledger/opt-download) and example scripts (Extras/getQuote);
+- Added continuous integration for a development repository ("next-dev");
+  build logs and current status are in the file _CI.BuildLog.md;
+
+### Known Issues
+
+TBD
+
+### Bug Fixing
+
+*None* public bug fixing requests at the memoment.
+
+### Breaking Changes
+
+*None*
+
 ## 0.6 (2017-12-29)
 
 ### Release Information
@@ -37,7 +62,7 @@ that will be addressed by further releases:
   (see the test *regress\BF3C1F82.test*)
 - Some file error messages might be differ (NLedger always writes absolute paths in messages).
 
-### Big Fixing
+### Bug Fixing
 
 *None* at the moment of the first public release.
 

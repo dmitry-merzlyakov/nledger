@@ -60,7 +60,7 @@ namespace NLedger.Textual
             if (!ParsingContext.Any())
                 throw new InvalidOperationException("stack is empty");
 
-            ParsingContext.Pop();
+            ParsingContext.Pop().Dispose();     // [DM] Calling Dispose cleans up corresponded to the removed context resources (e.g. open stream readers)
         }
 
         public ParseContext GetCurrent()

@@ -71,10 +71,48 @@ namespace NLedger.Commodities
             GetCommodityQuote = CommodityQuoteFromScript;
         }
 
+        /// <summary>
+        /// Ported from commodity_quote_from_script
+        /// </summary>
         public static PricePoint? CommodityQuoteFromScript(Commodity commodity, Commodity exchange_commodity)
         {
-            // All original code is not intended to work on WIN32 platform...
-            // TODO - future enhancements...
+            Logger.Debug("commodity.download", () => String.Format("downloading quote for symbol {0}", commodity.Symbol));
+            if ((bool)exchange_commodity)
+                Logger.Debug("commodity.download", () => String.Format("  in terms of commodity {0}", exchange_commodity.Symbol));
+
+            string getquote_cmd = String.Format("getquote \"{0}\" \"{1}\"", commodity.Symbol, exchange_commodity?.Symbol);
+
+            Logger.Debug("commodity.download", () => String.Format("invoking command: {0}", getquote_cmd));
+
+            string buf;
+            bool success = MainApplicationContext.Current.QuoteProvider.Get(getquote_cmd, out buf);
+            if (success && buf != null)
+            {
+                buf = buf.GetFirstLine();
+                Logger.Debug("commodity.download", () => String.Format("downloaded quote: {0}", buf));
+
+                Tuple<Commodity, PricePoint> point = Current.ParsePriceDirective(buf);
+                if (point != null)
+                {
+                    if (!String.IsNullOrEmpty(Current.PriceDb))
+                    {
+                        string database = String.Format("P {0} {1} {2}{3}",
+                            TimesCommon.Current.FormatDateTime(point.Item2.When, FormatTypeEnum.FMT_WRITTEN),
+                            commodity.Symbol, point.Item2.Price, Environment.NewLine);
+                        FileSystem.PutStringToFile(Current.PriceDb, database);
+                    }
+                    return point.Item2;
+                }
+            }
+            else
+            {
+                Logger.Debug("commodity.download", () => String.Format("Failed to download price for '{0}' (command: \"getquote {0} {1}\")", 
+                    commodity.Symbol, exchange_commodity != null ? exchange_commodity.Symbol : "''"));
+
+                // Don't try to download this commodity again.
+                commodity.Flags |= CommodityFlagsEnum.COMMODITY_NOMARKET;
+            }
+
             return null;
         }
 

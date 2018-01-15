@@ -57,5 +57,23 @@ namespace NLedger.Tests
             Assert.IsFalse(newPost.XData.Visited);
         }
 
+        [TestMethod]
+        public void Post_Description_ReturnsGeneratedIfNoPos()
+        {
+            Post post = new Post();
+            Assert.IsFalse(post.HasPos);
+            Assert.AreEqual(Post.GeneratedPostingKey, post.Description);
+        }
+
+        [TestMethod]
+        public void Post_Description_ReturnsPositionIfAvailable()
+        {
+            Post post = new Post();
+            post.Pos.BegLine = 5;
+
+            Assert.IsTrue(post.HasPos);
+            Assert.AreEqual("posting at line 5", post.Description);
+        }
+
     }
 }

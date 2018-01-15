@@ -67,6 +67,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TestSetManual.tt</DependentUpon>
     </Compile>
+    <Compile Include="TestSetNLedger.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestSetNLedger.tt</DependentUpon>
+    </Compile>
     <Compile Include="TestSetRegress.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -86,6 +91,10 @@
     <Compile Include="unit\TestValue.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestSetNLedger.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TestSetNLedger.cs</LastGenOutput>
+    </Content>
     <Content Include="TestSetRegress.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TestSetRegress.cs</LastGenOutput>
@@ -1064,6 +1073,18 @@
     </None>
     <None Include="..\..\Contrib\test\manual\transaction-status-4.test">
       <Link>test\manual\transaction-status-4.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\nledger\getquote.cmd">
+      <Link>test\nledger\getquote.cmd</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\nledger\opt-download.test">
+      <Link>test\nledger\opt-download.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\nledger\pricedb.dat">
+      <Link>test\nledger\pricedb.dat</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\regress\012ADB60.test">

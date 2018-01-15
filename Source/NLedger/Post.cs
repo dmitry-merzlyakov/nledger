@@ -28,6 +28,8 @@ namespace NLedger
 {
     public class Post : Item
     {
+        public const string GeneratedPostingKey = "generated posting";
+
         public static void ExtendPost(Post post, Journal journal)
         {
             Commodity comm = post.Amount.Commodity;
@@ -130,7 +132,7 @@ namespace NLedger
 
         public override string Description
         {
-            get { return "TODO!"; }
+            get { return HasPos ? String.Format("posting at line {0}", Pos.BegLine) : GeneratedPostingKey; }
         }
 
         public Account ReportedAccount

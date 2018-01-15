@@ -103,6 +103,11 @@ namespace NLedger.Utility
             }
         }
 
+        public static void PutStringToFile(string fileName, string str)
+        {
+            File.AppendAllText(fileName, str);
+        }
+
         public static StreamReader GetStdInAsStreamReader()
         {
             string input = ConsoleInput.ReadToEnd();

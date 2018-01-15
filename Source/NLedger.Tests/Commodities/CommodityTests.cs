@@ -217,7 +217,10 @@ namespace NLedger.Tests.Commodities
             Assert.IsTrue(commodity11.Equals(commodity12));
             Assert.IsFalse(commodity11.Equals(commodity21));
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsTrue(commodity11 == commodity11);
+            #pragma warning restore
             Assert.IsTrue(commodity11 == commodity12);
             Assert.IsTrue(commodity11 != commodity21);
 
@@ -235,7 +238,10 @@ namespace NLedger.Tests.Commodities
             Assert.IsTrue(commodity11.Equals(commodity12));
             Assert.IsFalse(commodity11.Equals(annCommodity));
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsTrue(commodity11 == commodity11);
+            #pragma warning restore
             Assert.IsTrue(commodity11 == commodity12);
             Assert.IsTrue(commodity11 != annCommodity);
         }

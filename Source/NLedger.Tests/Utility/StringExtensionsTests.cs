@@ -279,6 +279,30 @@ namespace NLedger.Tests.Utility
             Assert.AreEqual(String.Empty, "12345".SafeSubstring(21));
         }
 
+        [TestMethod]
+        public void StringExtensions_GetFirstLine_ReturnsOriginalEmptyString()
+        {
+            Assert.AreEqual(null, StringExtensions.GetFirstLine(null));
+            Assert.AreEqual(String.Empty, String.Empty.GetFirstLine());
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetFirstLine_ReturnsEntireStringIfThereIsNotCrLf()
+        {
+            Assert.AreEqual("abcdef", "abcdef".GetFirstLine());
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetFirstLine_HonoursBothCrLf()
+        {
+            Assert.AreEqual("abc", "abc\rdef".GetFirstLine());
+            Assert.AreEqual("abc", "abc\ndef".GetFirstLine());
+            Assert.AreEqual("abc", "abc\r\ndef".GetFirstLine());
+            Assert.AreEqual("abc", "abc\ndef\rasd\nczxczx\r\nssfdsd".GetFirstLine());
+            Assert.AreEqual("", "\ndef".GetFirstLine());
+            Assert.AreEqual("", "\rdef".GetFirstLine());
+        }
+
         private Func<char, bool> TestIsDigit = (c) => Char.IsDigit(c);
     }
 }

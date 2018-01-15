@@ -8,6 +8,7 @@
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
+using NLedger.Utility;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -59,18 +60,22 @@ namespace NLedger.Xacts
         public override bool Valid()
         {
             if (Date == default(DateTime))
+            {
+                Logger.Debug("ledger.validate", () => "xact_t: ! _date");
                 return false;
+            }
 
             foreach(Post post in Posts)
             {
                 if (post.Xact != this || !post.Valid())
+                {
+                    Logger.Debug("ledger.validate", () => "xact_t: post not valid");
                     return false;
+                }
             }
 
             return true;
         }
-
-        // IN PROGRESS
 
         #region Lookup Functions
 

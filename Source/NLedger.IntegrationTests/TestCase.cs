@@ -16,7 +16,7 @@ namespace NLedger.IntegrationTests
 {
     public sealed class TestCase
     {
-        public TestCase (string fileName, int startLine, int endLine, string commandLine, string expectedOutput, string expectedError)
+        public TestCase (string fileName, int startLine, int endLine, string commandLine, string expectedOutput, string expectedError, IDictionary<string,string> setVariables)
         {
             if (String.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException("fileName");
@@ -37,6 +37,7 @@ namespace NLedger.IntegrationTests
             CommandLine = commandLine;
             ExpectedOutput = expectedOutput;
             ExpectedError = expectedError;
+            SetVariables = (setVariables ?? EmptyDictionary).ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
         public string FileName { get; private set; }
@@ -47,5 +48,8 @@ namespace NLedger.IntegrationTests
         public string CommandLine { get; private set; }
         public string ExpectedOutput { get; private set; }
         public string ExpectedError { get; private set; }
+        public IDictionary<string,string> SetVariables { get; private set; }
+
+        private static IDictionary<string, string> EmptyDictionary = new Dictionary<string, string>();
     }
 }

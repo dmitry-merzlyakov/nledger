@@ -43,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\Impl\ProcessManager.cs" />
+    <Compile Include="Abstracts\Impl\QuoteProvider.cs" />
+    <Compile Include="Abstracts\IProcessManager.cs" />
+    <Compile Include="Abstracts\IQuoteProvider.cs" />
     <Compile Include="Accounts\Account.cs" />
     <Compile Include="Accounts\AccountXData.cs" />
     <Compile Include="Accounts\AccountXDataDetails.cs" />

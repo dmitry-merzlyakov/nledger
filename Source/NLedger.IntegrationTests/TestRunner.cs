@@ -40,6 +40,11 @@ namespace NLedger.IntegrationTests
             foreach (var testCase in TestCases)
             {
                 Console.WriteLine($"Test case: file {Path.GetFileName(testCase.FileName)}; arguments: {testCase.CommandLine}");
+
+                var originalVariables = new Dictionary<string, string>();
+                foreach (var name in testCase.SetVariables.Keys)
+                    originalVariables[name] = Environment.GetEnvironmentVariable(name);
+
                 try
                 {
                     var expectedExitCode = 0;
@@ -76,6 +81,10 @@ namespace NLedger.IntegrationTests
 
                     // Check whether arguments have escaped dollar sign; remove it if so
                     args = args.Replace(@" \$ ", " $ ");
+
+                    // Set custom environment variables
+                    foreach (var name in testCase.SetVariables.Keys)
+                        Environment.SetEnvironmentVariable(name, testCase.SetVariables[name]);
 
                     var envs = new Dictionary<string, string>();
 
@@ -115,6 +124,12 @@ namespace NLedger.IntegrationTests
                 {
                     Assert.Fail($"Test case failed with runtime error: {ex.Message}");
                 }
+                finally
+                {
+                    // Restore original variables (if any changed)
+                    foreach (var name in originalVariables.Keys)
+                        Environment.SetEnvironmentVariable(name, originalVariables[name]);
+                }
             }
         }
 
@@ -131,66 +146,82 @@ namespace NLedger.IntegrationTests
             var output = new StringBuilder();
             var err = new StringBuilder();
             var directToErr = false;
+            var setVariables = new Dictionary<string,string>();
 
             for (int lineNum=0; lineNum<lines.Length; lineNum++)
             {
-                var line = lines[lineNum];
+                var line = lines[lineNum];                
 
-                if (line.StartsWith("test "))
+                if (line.StartsWith("#>") && line.Length > 2)
                 {
-                    startTestLine = lineNum;
-                    commandLine = line.Substring("test".Length).Trim();
-                    output.Clear();
-                    err.Clear();
+                    line = line.Substring(2).Trim();
+                    if (!line.StartsWith("setvar "))
+                        throw new InvalidOperationException("Only 'setvar' command is allowed");
+                    line = line.Substring("setvar ".Length).Trim();
+                    var pos = line.IndexOf('=');
+                    if (pos <= 0)
+                        throw new InvalidOperationException("Cannot find a variable name");
+                    setVariables.Add(line.Substring(0, pos).TrimEnd(), line.Substring(pos + 1).Trim());
                 }
                 else
                 {
-                    if (line.StartsWith("__ERROR__"))
+                    if (line.StartsWith("test "))
                     {
-                        directToErr = true;
+                        startTestLine = lineNum;
+                        commandLine = line.Substring("test".Length).Trim();
+                        output.Clear();
+                        err.Clear();
                     }
                     else
                     {
-                        if (line.StartsWith("end test"))
+                        if (line.StartsWith("__ERROR__"))
                         {
-                            testCases.Add(new TestCase(FileName, startTestLine, lineNum, commandLine, output.ToString(), err.ToString()));
-                            directToErr = false;
+                            directToErr = true;
                         }
                         else
                         {
-                            // If current line contains a template "$sourcepath" - adopt it to current folder
-                            var regexFileName = Regex.Match(line, @"\""\$sourcepath/([^\""]*)\""");
-                            if (regexFileName.Success)
+                            if (line.StartsWith("end test"))
                             {
-                                string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
-                                line = line.Remove(regexFileName.Index, regexFileName.Length);
-                                line = line.Insert(regexFileName.Index, "\"" + fileName + "\"");
+                                testCases.Add(new TestCase(FileName, startTestLine, lineNum, commandLine, output.ToString(), err.ToString(), setVariables));
+                                directToErr = false;
+                                setVariables.Clear();
                             }
-                            // The same but w/o quites
-                            regexFileName = Regex.Match(line, @"\$sourcepath/(.*)");
-                            if (regexFileName.Success)
-                            {
-                                string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
-                                line = line.Remove(regexFileName.Index, regexFileName.Length);
-                                line = line.Insert(regexFileName.Index, fileName);
-                            }
-
-                            // If the line contains $FILE template - replace it with current file name
-                            line = line.Replace("$FILE", FileName);
-
-                            // Special case: if error message contains a relative path in a file name, expand it
-                            var match = ErrFileName.Match(line);
-                            if (match.Success)
-                            {
-                                var idx = match.Groups["path"].Index;
-                                var len = match.Groups["path"].Length;
-                                line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + "\\");
-                            }
-
-                            if (directToErr)
-                                err.AppendLine(line);
                             else
-                                output.AppendLine(line);
+                            {
+                                // If current line contains a template "$sourcepath" - adopt it to current folder
+                                var regexFileName = Regex.Match(line, @"\""\$sourcepath/([^\""]*)\""");
+                                if (regexFileName.Success)
+                                {
+                                    string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
+                                    line = line.Remove(regexFileName.Index, regexFileName.Length);
+                                    line = line.Insert(regexFileName.Index, "\"" + fileName + "\"");
+                                }
+                                // The same but w/o quites
+                                regexFileName = Regex.Match(line, @"\$sourcepath/(.*)");
+                                if (regexFileName.Success)
+                                {
+                                    string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
+                                    line = line.Remove(regexFileName.Index, regexFileName.Length);
+                                    line = line.Insert(regexFileName.Index, fileName);
+                                }
+
+                                // If the line contains $FILE template - replace it with current file name
+                                line = line.Replace("$FILE", FileName);
+
+                                // Special case: if error message contains a relative path in a file name, expand it
+                                var match = ErrFileName.Match(line);
+                                if (match.Success)
+                                {
+                                    var idx = match.Groups["path"].Index;
+                                    var len = match.Groups["path"].Length;
+                                    line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + "\\");
+                                }
+
+                                if (directToErr)
+                                    err.AppendLine(line);
+                                else
+                                    output.AppendLine(line);
+                            }
                         }
                     }
                 }

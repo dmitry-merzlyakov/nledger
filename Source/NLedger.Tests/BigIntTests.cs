@@ -65,7 +65,10 @@ namespace NLedger.Tests
             BigInt value20 = BigInt.FromInt(20);
             BigInt value1 = BigInt.FromInt(1);
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsTrue(value10 == value10);
+            #pragma warning restore
             Assert.IsTrue(value10 == value10_);
             Assert.IsFalse(value10 == value20);
             Assert.IsTrue(value1 == BigInt.One);
@@ -79,7 +82,10 @@ namespace NLedger.Tests
             BigInt value20 = BigInt.FromInt(20);
             BigInt value1 = BigInt.FromInt(1);
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsFalse(value10 != value10);
+            #pragma warning restore
             Assert.IsFalse(value10 != value10_);
             Assert.IsTrue(value10 != value20);
             Assert.IsFalse(value1 != BigInt.One);

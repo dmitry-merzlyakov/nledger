@@ -211,6 +211,11 @@ namespace NLedger.Utility
             return formatString;
         }
 
+        public static string GetFirstLine(this string s)
+        {
+            return String.IsNullOrEmpty(s) ? s : s.Split(new[] { '\r', '\n' }).FirstOrDefault();
+        }
+
         private static readonly IDictionary<int, string> WidthAlignFormatStrings = new Dictionary<int, string>();
     }
 }

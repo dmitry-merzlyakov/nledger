@@ -21,7 +21,7 @@ namespace NLedger.Textual
     /// <summary>
     /// Ported from parse_context_t (context.h)
     /// </summary>
-    public class ParseContext
+    public class ParseContext : IDisposable
     {
         public const int MAX_LINE = 4096;
 
@@ -76,6 +76,12 @@ namespace NLedger.Textual
         public void Warning(string what)
         {
             ErrorContext.Current.WriteWarning(Location + " " + what);
+        }
+
+        public void Dispose()
+        {
+            if (Reader != null)
+                Reader.Dispose();
         }
     }
 }
