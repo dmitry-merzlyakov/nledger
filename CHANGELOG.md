@@ -6,8 +6,13 @@ Code and feature completion; continuous integration.
 
 ### Features
 
+- Added arbitrary precision arithmetic to deal with Amount
+  quantities; original Ledger tests that validate big numbers are passed;
+  performance degradation is not detected. Decimal arithmetic is still 
+  available as a compilation option;
 - Completed "download" and "price-db" features; added corresponded 
   tests (test/nledger/opt-download) and example scripts (Extras/getQuote);
+- Added support of "--help" option; it shows Ledger Man Pages in a default browser;
 - Added continuous integration for a development repository ("next-dev");
   build logs and current status are in the file _CI.BuildLog.md;
 

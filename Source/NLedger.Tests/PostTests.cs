@@ -26,7 +26,7 @@ namespace NLedger.Tests
         public void Post_ExtendPost_DoesNotExtendCommodityIfNoValueTag()
         {
             Commodity comm = CommodityPool.Current.FindOrCreate("test-comm-post");            
-            Post post = new Post() { Amount = new Amount(BigInt.FromInt(100), comm), Account = new Account(null, "test") };
+            Post post = new Post() { Amount = new Amount(100, comm), Account = new Account(null, "test") };
 
             Post.ExtendPost(post, new Journal());
 

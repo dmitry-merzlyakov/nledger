@@ -471,8 +471,8 @@ namespace NLedger.Tests.Values
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("ValAmtBool1"));
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("ValAmtBool2")) { Precision = 5 };
 
-            Amount amt1 = new Amount(BigInt.Parse("0.05"), commodity1);
-            Amount amt2 = new Amount(BigInt.Parse("0.05"), commodity2);
+            Amount amt1 = new Amount(Quantity.Parse("0.05"), commodity1);
+            Amount amt2 = new Amount(Quantity.Parse("0.05"), commodity2);
 
             Value val1 = Value.Get(amt1);
             Value val2 = Value.Get(amt2);
@@ -504,8 +504,8 @@ namespace NLedger.Tests.Values
             Commodity commodityB = new Commodity(CommodityPool.Current, new CommodityBase("valNZeroB"));
 
             // Commodity precision is "0"; add values that are less than commodity precision
-            Amount amountA = new Amount(BigInt.Parse("0.1"), commodityA);
-            Amount amountB = new Amount(BigInt.Parse("0.1"), commodityB);
+            Amount amountA = new Amount(Quantity.Parse("0.1"), commodityA);
+            Amount amountB = new Amount(Quantity.Parse("0.1"), commodityB);
 
             Balance balance = new Balance();
             balance.Add(amountA);

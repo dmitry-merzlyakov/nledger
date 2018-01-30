@@ -6,16 +6,18 @@ This is a roadmap for development of next NLedger releases.
 
 **Code completion and verification; improve builds.**
 
+- [Complete] Code completion: add arbitrary precision arithmetic to deal with Amount quantities;
+  enable validation of big numbers in Ledger unit tests;
 - Code verification: process all *TODO/TBD/In Progress/NotImplemented* markers in code;
-- Code verification: process warnings in unit test projects;
+- [Complete] Code verification: process warnings in unit test projects;
 - Code completion: verify and complete DEBUG and TRACE messages;
 - Code completion: handle special options (*verify*, *verbose*, *memory*, *init-file*);
-- Code completion: add *man* command (show current Ledger documentation in browser);
+- [Complete] Code completion: add *man* command (show current Ledger documentation in browser);
 - Update the source code and tests to the latest Ledger version (branch NEXT);
-- Build: configure VSTS builds on hosted agents;
-- Build: VSTS: add automatic commits for created packages and build logs; publish MD5 hashes;
-- Build: VSTS: create DEV branches and configure Continuous Integration builds for them;
-- Build: improce MD5 to HTML conversion; add automatic updates for doc files (licensing, bug tracking);
+- [Complete] Build: configure VSTS builds on hosted agents;
+- [Complete] Build: VSTS: add automatic commits for created packages and build logs; publish MD5 hashes;
+- [Complete] Build: VSTS: create DEV branches and configure Continuous Integration builds for them;
+- [Complete] Build: improve MD5 to HTML conversion; add automatic updates for doc files (licensing, bug tracking);
 - Bug fixing: prompt in the interactive mode;
 - Bug fixing: fix filtering by categories in *--debug* option;
 - Deploy package: add more interactive examples in a console;
@@ -35,9 +37,6 @@ on general functionality: date parsing, pager, localization, decimal limitations
   solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
 - Code completion: add localization for errors and messages; 
   verify and process method *gettext_*, *throw_*;
-- Code completion: consider replacement of decimal for number calculation with
-  bigger alternatives; solve limitations in Ledger unit tests; consider 
-  rounding issues in ledger integration tests;
 
 ## NLedger 0.9
 

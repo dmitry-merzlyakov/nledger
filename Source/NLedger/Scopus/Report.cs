@@ -811,7 +811,7 @@ namespace NLedger.Scopus
 
             if (arg0.Type == ValueTypeEnum.String)
             {
-                Amount tmp = new Amount(BigInt.One, CommodityPool.Current.FindOrCreate(arg0.AsString));
+                Amount tmp = new Amount(1, CommodityPool.Current.FindOrCreate(arg0.AsString));
                 arg0 = Value.Get(tmp);
             }
 

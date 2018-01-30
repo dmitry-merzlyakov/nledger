@@ -8,6 +8,7 @@
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Commodities;
+using NLedger.Utility.BigValues;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,12 @@ using System.Threading.Tasks;
 
 namespace NLedger.Tests
 {
+    // By default, this test uses BigRational arithmetic to validate BigInt.
+    // In case you want to validate BigInt with Decimal arithmetic, uncomment the next alias.
+    // See Amount.cs for further information about Qunatity Arithmetics in NLedger
+    using BigInt = BigInt<BigRational>;
+    //using BigInt = BigInt<BigDecimal>;
+
     [TestClass]
     public class BigIntTests : TestFixture
     {

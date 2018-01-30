@@ -101,7 +101,7 @@ namespace NLedger.Annotate
                         throw new AmountError(AmountError.ErrorMessageCommodityLotPriceLacksClosingBrace);
                     }
 
-                    Price = new Amount(BigInt.Zero, null);
+                    Price = new Amount();
                     PriceParse(ref buf);
                 }
                 else if (line.StartsWith("["))

@@ -102,8 +102,6 @@ applications.
     - 0 failed.
 - **Current limitations** (technical restrictions that will be addressed by next releases) are:
   - No Python integration. Ledger tests that require Python are disabled;
-  - NLedger uses Decimal for arithmetic calculations. It limits the quantity of digits in a number
-      with about 30 positions. Ported Amount unit tests are adopted to less number of digits;
   - No "*cat*" pager on Windows. Corresponded Ledger test is disabled till further decision;
   - DateTime parser on .Net has less specific error messages and does not allow
       to detect the same mistakes as Ledger does. Corresponded Ledger test is disabled till further decision;

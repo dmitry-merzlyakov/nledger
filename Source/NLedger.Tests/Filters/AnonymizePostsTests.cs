@@ -43,8 +43,8 @@ namespace NLedger.Tests.Filters
             string commodityName2 = "comm-name-2";
             Commodity commodity1 = CommodityPool.Current.FindOrCreate(commodityName1);
             Commodity commodity2 = CommodityPool.Current.FindOrCreate(commodityName2);
-            Amount amount1 = new Amount(BigInt.FromLong(10), commodity1);
-            Amount amount2 = new Amount(BigInt.FromLong(10), commodity2);
+            Amount amount1 = new Amount(10, commodity1);
+            Amount amount2 = new Amount(10, commodity2);
 
             AnonymizePosts anonymizePosts = new AnonymizePosts(null);
             anonymizePosts.RenderCommodity(amount1);

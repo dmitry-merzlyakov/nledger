@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,6 +65,10 @@
     <Compile Include="Mask.cs" />
     <Compile Include="Textual\ApplyStack.cs" />
     <Compile Include="Times\CTimeToNetFormatConverter.cs" />
+    <Compile Include="Utility\BigValues\BigDecimal.cs" />
+    <Compile Include="Utility\BigValues\BigRational.cs" />
+    <Compile Include="Utility\BigValues\BigValueExtensions.cs" />
+    <Compile Include="Utility\BigValues\IBigValue.cs" />
     <Compile Include="Utility\CommandLine.cs" />
     <Compile Include="Utility\Date.cs" />
     <Compile Include="Utility\DateExtension.cs" />

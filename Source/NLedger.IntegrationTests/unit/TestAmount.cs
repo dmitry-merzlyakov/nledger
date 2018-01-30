@@ -21,9 +21,6 @@ namespace NLedger.IntegrationTests.unit
     /// <summary>
     /// Ported from t_amount.cc
     /// </summary>
-    /// <remarks>
-    /// [DM] Corrections related with Decimal type limitations are marked as #too_large_for_decimal
-    /// </remarks>
     [TestClass]
     public class TestAmount
     {
@@ -542,13 +539,11 @@ namespace NLedger.IntegrationTests.unit
             x1 += (Amount)456L;
             Assert.AreEqual(new Amount("1492.035"), x1);
 
-            //[DM] The original value is too large for Decimal. Reduced. #too_large_for_decimal
-            //Amount x2=new Amount("123456789123456789.123456789123456789");
-            Amount x2 = new Amount("123456789123456789.12345678912");
+            Amount x2=new Amount("123456789123456789.123456789123456789");
 
-            // #too_large_for_decimal
-            //Assert.AreEqual(new Amount("246913578246913578.246913578246913578"), x2 + x2);
-            Assert.AreEqual(new Amount("246913578246913578.24691357824"), x2 + x2);
+            var xx = x2 + x2;
+            var xs = xx.ToString();
+            Assert.AreEqual(new Amount("246913578246913578.246913578246913578"), x2 + x2);
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(y1.Valid());
@@ -601,13 +596,9 @@ namespace NLedger.IntegrationTests.unit
             x1 += new Amount("$456");
             Assert.AreEqual(new Amount("$1492.35"), x1);
 
-            // #too_large_for_decimal
-            //Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
-            Amount x7 = Amount.Exact("$123456789123456789.12345678912");
+            Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
 
-            // #too_large_for_decimal
-            //Assert.AreEqual(Amount.Exact("$246913578246913578.246913578246913578"), x7 + x7);
-            Assert.AreEqual(Amount.Exact("$246913578246913578.24691357824"), x7 + x7);
+            Assert.AreEqual(Amount.Exact("$246913578246913578.246913578246913578"), x7 + x7);
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(x2.Valid());
@@ -664,17 +655,11 @@ namespace NLedger.IntegrationTests.unit
             x1 -= (Amount)456L;
             Assert.AreEqual(new Amount("-1245.789"), x1);
 
-            // #too_large_for_decimal
-            // Amount x2 = new Amount("123456789123456789.123456789123456789");
-            Amount x2 = new Amount("123456789123456789.12345678912");
+            Amount x2 = new Amount("123456789123456789.123456789123456789");
             Amount y2 = new Amount("9872345982459.248974239578");
 
-            // #too_large_for_decimal
-            //Assert.AreEqual(new Amount("123446916777474329.874482549545456789"), x2 - y2);
-            Assert.AreEqual(new Amount("123446916777474329.87448254954"), x2 - y2);
-            // #too_large_for_decimal
-            //Assert.AreEqual(new Amount("-123446916777474329.874482549545456789"), y2 - x2);
-            Assert.AreEqual(new Amount("-123446916777474329.87448254954"), y2 - x2);
+            Assert.AreEqual(new Amount("123446916777474329.874482549545456789"), x2 - y2);
+            Assert.AreEqual(new Amount("-123446916777474329.874482549545456789"), y2 - x2);
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(y1.Valid());
@@ -744,23 +729,15 @@ namespace NLedger.IntegrationTests.unit
             x1 -= new Amount("$456");
             Assert.AreEqual(new Amount("$-1245.45"), x1);
 
-            // #too_large_for_decimal
-            //Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
-            Amount x7 = Amount.Exact("$123456789123456789.12345678912");
+            Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
             Amount x8 = Amount.Exact("$2354974984698.98459845984598");
 
-            // #too_large_for_decimal
-            //Assert.AreEqual(Amount.Exact("$123454434148472090.138858329277476789"), x7 - x8);
-            //Assert.AreEqual("$123454434148472090.138858329277476789", (x7 - x8).ToString());
-            Assert.AreEqual(Amount.Exact("$123454434148472090.13885832927"), x7 - x8);
-            Assert.AreEqual("$123454434148472090.13885832927", (x7 - x8).ToString());
+            Assert.AreEqual(Amount.Exact("$123454434148472090.138858329277476789"), x7 - x8);
+            Assert.AreEqual("$123454434148472090.138858329277476789", (x7 - x8).ToString());
             Assert.AreEqual("$123454434148472090.14",
                         (new Amount("$1.00") * (x7 - x8)).ToString());
-            // #too_large_for_decimal
-            //Assert.AreEqual(Amount.Exact("$-123454434148472090.138858329277476789"), x8 - x7);
-            //Assert.AreEqual("$-123454434148472090.138858329277476789", (x8 - x7).ToString());
-            Assert.AreEqual(Amount.Exact("$-123454434148472090.13885832927"), x8 - x7);
-            Assert.AreEqual("$-123454434148472090.13885832927", (x8 - x7).ToString());
+            Assert.AreEqual(Amount.Exact("$-123454434148472090.138858329277476789"), x8 - x7);
+            Assert.AreEqual("$-123454434148472090.138858329277476789", (x8 - x7).ToString());
             Assert.AreEqual("$-123454434148472090.14",
                         (new Amount("$1.00") * (x8 - x7)).ToString());
 
@@ -801,11 +778,8 @@ namespace NLedger.IntegrationTests.unit
             x1 *= (Amount)123L;
             Assert.AreEqual(new Amount(1860867L), x1);
 
-            // #too_large_for_decimal
-            //Amount x4 = new Amount("123456789123456789123456789");
-            //Assert.AreEqual(new Amount("15241578780673678546105778281054720515622620750190521"), x4 * x4);
-            Amount x4 = new Amount("123456789123456");
-            Assert.AreEqual(new Amount("15241578780673483700809383936"), x4 * x4);
+            Amount x4 = new Amount("123456789123456789123456789");
+            Assert.AreEqual(new Amount("15241578780673678546105778281054720515622620750190521"), x4 * x4);
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(y1.Valid());
@@ -841,11 +815,8 @@ namespace NLedger.IntegrationTests.unit
             x1 *= (Amount)123L;
             Assert.AreEqual(new Amount("229573987.811809641"), x1);
 
-            // #too_large_for_decimal
-            //Amount x2 = new Amount("123456789123456789.123456789123456789");
-            //Assert.AreEqual(new Amount("15241578780673678546105778311537878.046486820281054720515622620750190521"), x2 * x2);
-            Amount x2 = new Amount("12345678912345.12345678912345");
-            Assert.AreEqual(new Amount("152415787806723070509155159.42"), x2 * x2);
+            Amount x2 = new Amount("123456789123456789.123456789123456789");
+            Assert.AreEqual(new Amount("15241578780673678546105778311537878.046486820281054720515622620750190521"), x2 * x2);
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(y1.Valid());
@@ -899,11 +870,8 @@ namespace NLedger.IntegrationTests.unit
             Assert.AreEqual(Amount.Exact("$229557206.905344"), x1);
             Assert.AreEqual("$229557206.91", x1.ToString());
 
-            //#too_large_for_decimal
-            //Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
-            //Assert.AreEqual(Amount.Exact("$15241578780673678546105778311537878.046486820281054720515622620750190521"), x7 * x7);
-            Amount x7 = Amount.Exact("$12345678912.123456789123456789");
-            Assert.AreEqual(Amount.Exact("$152415787801249819500.06462447"), x7 * x7);
+            Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
+            Assert.AreEqual(Amount.Exact("$15241578780673678546105778311537878.046486820281054720515622620750190521"), x7 * x7);
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(x2.Valid());
@@ -944,13 +912,9 @@ namespace NLedger.IntegrationTests.unit
             Amount y4 = new Amount("56");
 
             Assert.AreEqual(new Amount(1L), x4 / x4);
-            // #too_large_for_decimal
-            //Assert.AreEqual("2204585520061728377204585.517857", (x4 / y4).ToString());
-            Assert.AreEqual("2204585520061728377204585.5179", (x4 / y4).ToString());
+            Assert.AreEqual("2204585520061728377204585.517857", (x4 / y4).ToString());
 
-            // #too_large_for_decimal
-            //Assert.AreEqual(new Amount("0.000000000000000000000000000001"), new Amount("10") / new Amount("10000000000000000000000000000000"));
-            Assert.AreEqual(new Amount("0.000001"), new Amount("10") / new Amount("10000000"));
+            Assert.AreEqual(new Amount("0.000000000000000000000000000001"), new Amount("10") / new Amount("10000000000000000000000000000000"));
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(y1.Valid());
@@ -985,17 +949,13 @@ namespace NLedger.IntegrationTests.unit
             x1 /= new Amount("456.456");
             Assert.AreEqual("0.000590937225286255757", x1.ToString());
             x1 /= (Amount)456L;
-            // #too_large_for_decimal
-            //Assert.AreEqual("0.000001295914967733017011337", x1.ToString());
-            Assert.AreEqual("0.000001295914967733017011338", x1.ToString());
+            Assert.AreEqual("0.000001295914967733017011337", x1.ToString());
 
             Amount x4 = new Amount("1234567891234567.89123456789");
             Amount y4 = new Amount("56.789");
 
             Assert.AreEqual(new Amount("1.0"), x4 / x4);
-            // #too_large_for_decimal
-            //Assert.AreEqual("21739560323910.75544972737484371973", (x4 / y4).ToString());
-            Assert.AreEqual("21739560323910.755449727374844", (x4 / y4).ToString());
+            Assert.AreEqual("21739560323910.75544972737484371973", (x4 / y4).ToString());
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(y1.Valid());
@@ -1047,16 +1007,11 @@ namespace NLedger.IntegrationTests.unit
             Assert.AreEqual("$0.00", x1.ToString());
 
             Amount x6 = Amount.Exact("$237235987235987.98723987235978");
-            // #too_large_for_decimal
-            //Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
-            Amount x7 = Amount.Exact("$1234567891234567.1234567891234");
+            Amount x7 = Amount.Exact("$123456789123456789.123456789123456789");
 
             Assert.AreEqual(new Amount("$1"), x7 / x7);
-            // #too_large_for_decimal
-            //Assert.AreEqual("$0.0019216115121765559608381226612019501", (x6 / x7).ToFullString());
-            //Assert.AreEqual("$520.39654928343335571379527154924040947272", (x7 / x6).ToFullString());
-            Assert.AreEqual("$0.1921611512176557155888333305", (x6 / x7).ToFullString());
-            Assert.AreEqual("$5.2039654928343303207917823341", (x7 / x6).ToFullString());
+            Assert.AreEqual("$0.0019216115121765559608381226612019501", (x6 / x7).ToFullString());
+            Assert.AreEqual("$520.39654928343335571379527154924040947272", (x7 / x6).ToFullString());
 
             Assert.IsTrue(x1.Valid());
             Assert.IsTrue(x2.Valid());
@@ -1286,11 +1241,8 @@ namespace NLedger.IntegrationTests.unit
         public void AutoTestCase_Amount_TestSign()
         {
             Amount x0 = new Amount();
-            //#too_large_for_decimal
-            //Amount x1 = new Amount("0.0000000000000000000000000000000000001");
-            //Amount x2 = new Amount("-0.0000000000000000000000000000000000001");
-            Amount x1 = new Amount("0.000000000000000001");
-            Amount x2 = new Amount("-0.000000000000000001");
+            Amount x1 = new Amount("0.0000000000000000000000000000000000001");
+            Amount x2 = new Amount("-0.0000000000000000000000000000000000001");
             Amount x3 = new Amount("1");
             Amount x4 = new Amount("-1");
 
@@ -1445,14 +1397,10 @@ namespace NLedger.IntegrationTests.unit
         public void AutoTestCase_Amount_TestPrinting()
         {
             Amount x0 = new Amount();
-            // #too_large_for_decimal
-            //Amount x1 = new Amount("982340823.380238098235098235098235098");
-            Amount x1 = new Amount("982340823.380238098235098235");
+            Amount x1 = new Amount("982340823.380238098235098235098235098");
 
             Assert.AreEqual("<null>", x0.Print());
-            // #too_large_for_decimal
-            //Assert.AreEqual("982340823.380238098235098235098235098", x1.Print());
-            Assert.AreEqual("982340823.380238098235098235", x1.Print());
+            Assert.AreEqual("982340823.380238098235098235098235098", x1.Print());
 
             Assert.IsTrue(x0.Valid());
             Assert.IsTrue(x1.Valid());
@@ -1463,17 +1411,11 @@ namespace NLedger.IntegrationTests.unit
         [TestCategory("BoostAutoTest")]
         public void AutoTestCase_Amount_TestCommodityPrinting()
         {
-            // #too_large_for_decimal
-            //Amount x1 = Amount.Exact("$982340823.386238098235098235098235098");
-            Amount x1 = Amount.Exact("$982340823.386238098235098235");
+            Amount x1 = Amount.Exact("$982340823.386238098235098235098235098");
             Amount x2 = new Amount("$982340823.38");
 
-            // #too_large_for_decimal
-            //Assert.AreEqual("$982340823.386238098235098235098235098", x1.Print());
-            //Assert.AreEqual("$964993493285024293.18099172508158508135413499124", (x1 * x2).Print());
-            //Assert.AreEqual("$964993493285024293.18", (x2 * x1).Print());
-            Assert.AreEqual("$982340823.386238098235098235", x1.Print());
-            Assert.AreEqual("$964993493285024293.180991725", (x1 * x2).Print());
+            Assert.AreEqual("$982340823.386238098235098235098235098", x1.Print());
+            Assert.AreEqual("$964993493285024293.18099172508158508135413499124", (x1 * x2).Print());
             Assert.AreEqual("$964993493285024293.18", (x2 * x1).Print());
 
             Assert.IsTrue(x1.Valid());

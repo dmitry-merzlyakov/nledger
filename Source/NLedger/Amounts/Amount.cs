@@ -14,9 +14,39 @@ using System.Threading.Tasks;
 using NLedger.Utility;
 using NLedger.Annotate;
 using NLedger.Commodities;
+using NLedger.Utility.BigValues;
 
 namespace NLedger.Amounts
 {
+    // This alias specifies the implementation of NLedger Quantity Arithmetic.
+    // By default, it uses arbitrary precision arithmetic provided by BigRational.
+    // If you need to use Decimal arithmetic for some reason, uncomment the next alias
+    // and recompile the application.
+    using BigInt = BigInt<BigRational>;
+    //using BigInt = BigInt<BigDecimal>;
+
+    /// <summary>
+    /// Helper class that provides generalized factory methods for BigInt
+    /// but hides implementation of NLedger Quantity Arithmetic
+    /// </summary>
+    /// <remarks>
+    /// Located here (instead of BigInt.cs) because Quantity Arithmetic implementation is specified in this file.
+    /// </remarks>
+    public static class Quantity
+    {
+        public static readonly BigInt Empty = new BigInt();
+
+        public static BigInt Parse(string s, int precision = 0, bool keepPrecsion = false)
+        {
+            return BigInt.Parse(s, precision, keepPrecsion);
+        }
+
+        public static BigInt FromLong(long value, int precision = 0)
+        {
+            return BigInt.FromLong(value, precision);
+        }
+    }
+
     /// <summary>
     /// Basic type for handling commoditized math: amount_t
     /// 
@@ -198,6 +228,11 @@ namespace NLedger.Amounts
             Commodity = commodity ?? CommodityPool.Current.NullCommodity;
         }
 
+        public Amount(long value, Commodity commodity)
+        {
+            Quantity = BigInt.FromLong(value);
+            Commodity = commodity ?? CommodityPool.Current.NullCommodity;
+        }
 
         /// <summary>
         /// Convert a long to an amount.  It's precision is zero, and the sign
@@ -832,7 +867,7 @@ namespace NLedger.Amounts
             BigInt quantity = Quantity - amount.Quantity;
 
             if (HasCommodity == amount.HasCommodity && quantity.Precision < amount.Quantity.Precision)
-                quantity.SetPrecision(amount.Quantity.Precision);
+                quantity = quantity.SetPrecision(amount.Quantity.Precision);
 
             Quantity = quantity;
             return this;

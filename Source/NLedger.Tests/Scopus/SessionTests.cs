@@ -229,7 +229,7 @@ namespace NLedger.Tests.Scopus
             Amount price = new Amount(5);
             Annotation annotation = new Annotation(price);
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, annotation);
-            Amount amount2 = new Amount(BigInt.FromInt(10), annotatedCommodity);  // With price
+            Amount amount2 = new Amount(10, annotatedCommodity);  // With price
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
@@ -251,7 +251,7 @@ namespace NLedger.Tests.Scopus
             Date date = (Date)DateTime.Now.Date;
             Annotation annotation = new Annotation() { Date = date };
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, annotation);
-            Amount amount2 = new Amount(BigInt.FromInt(10), annotatedCommodity);  // With date
+            Amount amount2 = new Amount(10, annotatedCommodity);  // With date
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
@@ -273,7 +273,7 @@ namespace NLedger.Tests.Scopus
             string tag = "my-tag";
             Annotation annotation = new Annotation() { Tag = tag };
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, annotation);
-            Amount amount2 = new Amount(BigInt.FromInt(10), annotatedCommodity);  // With date
+            Amount amount2 = new Amount(10, annotatedCommodity);  // With date
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));

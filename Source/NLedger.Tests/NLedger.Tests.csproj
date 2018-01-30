@@ -40,6 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -71,6 +72,7 @@
     <Compile Include="TimeLogging\TimeLogTests.cs" />
     <Compile Include="Times\CTimeToNetFormatConverterTests.cs" />
     <Compile Include="Times\DateParserLexerTests.cs" />
+    <Compile Include="Utility\BigValues\BigRationalTests.cs" />
     <Compile Include="Utility\CommandLineTests.cs" />
     <Compile Include="Utility\DateExtensionTests.cs" />
     <Compile Include="Utility\DateTests.cs" />

@@ -30,9 +30,9 @@ namespace NLedger.Tests.Output
             Commodity commodity12 = new Commodity(CommodityPool.Current, commBase1) { QualifiedSymbol = "A2" };
             Commodity commodity13 = new Commodity(CommodityPool.Current, commBase1) { QualifiedSymbol = "A3" };
 
-            Post post1 = new Post() { Amount = new NLedger.Amounts.Amount(BigInt.One, commodity13) };
-            Post post2 = new Post() { Amount = new NLedger.Amounts.Amount(BigInt.One, commodity11) };
-            Post post3 = new Post() { Amount = new NLedger.Amounts.Amount(BigInt.One, commodity12) };
+            Post post1 = new Post() { Amount = new NLedger.Amounts.Amount(1, commodity13) };
+            Post post2 = new Post() { Amount = new NLedger.Amounts.Amount(1, commodity11) };
+            Post post3 = new Post() { Amount = new NLedger.Amounts.Amount(1, commodity12) };
 
             Report report = new Report(new Session());
             StringWriter output = new StringWriter();

@@ -369,7 +369,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount 
         {
-            get { return new Amount(BigInt.FromLong(AsLong), null); }
+            get { return new Amount(AsLong); }
         }
 
         public override Balance AsBalance
@@ -465,7 +465,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount
         {
-            get { return new Amount(BigInt.FromLong(AsLong), null); }
+            get { return new Amount(AsLong); }
         }
 
         public override Balance AsBalance
@@ -572,7 +572,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount
         {
-            get { return new Amount(BigInt.FromLong(AsLong), null); }
+            get { return new Amount(AsLong); }
         }
 
         public override Balance AsBalance
@@ -674,7 +674,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount
         {
-            get { return new Amount(BigInt.FromLong(Val), null); }
+            get { return new Amount(Val); }
         }
 
         public override Balance AsBalance
@@ -1115,7 +1115,7 @@ namespace NLedger.Values
                 if (Val.IsSingleAmount)
                     return Val.SingleAmount;
                 else if (Val.IsEmpty)
-                    return new Amount(BigInt.Zero, null);
+                    return new Amount(0);
                 else
                     throw new ValueError(ValueError.CannotConvertBalanceWithMultipleCommoditiesToAmount);
             }

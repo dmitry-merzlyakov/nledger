@@ -160,7 +160,7 @@ namespace NLedger.Tests.Values
             Commodity commodity = CommodityPool.Current.Find(commodityName) ?? CommodityPool.Current.Create(commodityName);
 
             IntegerValueStorage storage1 = new IntegerValueStorage(100);
-            AmountValueStorage storage2 = new AmountValueStorage(new Amount(BigInt.FromLong(200), commodity));
+            AmountValueStorage storage2 = new AmountValueStorage(new Amount(200, commodity));
 
             IValueStorage result = storage1.Add(storage2);
             Assert.AreEqual(ValueTypeEnum.Balance, result.Type);

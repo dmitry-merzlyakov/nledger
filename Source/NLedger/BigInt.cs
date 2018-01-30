@@ -7,6 +7,8 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Commodities;
+using NLedger.Utility;
+using NLedger.Utility.BigValues;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,84 +18,101 @@ using System.Threading.Tasks;
 
 namespace NLedger
 {
-    public struct BigInt : IEquatable<BigInt>
+    public struct BigInt<T> : IEquatable<BigInt<T>> where T : IBigValue<T>, new()
     {
-        public static BigInt Zero = new BigInt(0, 0);
-        public static BigInt One = new BigInt(1, 0);
+        public static BigInt<T> Zero = FromInt(0);
+        public static BigInt<T> One = FromInt(1);
 
-        public static BigInt operator /(BigInt dividend, BigInt divisor)
+        public static BigInt<T> operator /(BigInt<T> dividend, BigInt<T> divisor)
         {
             if (!divisor.HasValue || divisor == Zero)
                 throw new DivideByZeroException("Division by zero");
 
-            return new BigInt((dividend.Value ?? 0) / divisor.Value, dividend.Precision + divisor.Precision, dividend.KeepPrecision);
+            T value;
+            dividend.Value.Divide(out value, ref divisor.Value);
+            return new BigInt<T>(value, dividend.Precision + divisor.Precision, dividend.KeepPrecision);
         }
 
-        public static BigInt operator *(BigInt left, BigInt right)
+        public static BigInt<T> operator *(BigInt<T> left, BigInt<T> right)
         {
-            return new BigInt((left.Value ?? 0) * (right.Value ?? 0), left.Precision + right.Precision, left.KeepPrecision);
+            T value;
+            left.Value.Multiply(out value, ref right.Value);
+            return new BigInt<T>(value, left.Precision + right.Precision, left.KeepPrecision);
         }
 
-        public static BigInt operator +(BigInt left, BigInt right)
+        public static BigInt<T> operator +(BigInt<T> left, BigInt<T> right)
         {
-            return new BigInt((left.Value ?? 0) + (right.Value ?? 0), left.Precision, left.KeepPrecision);
+            T value;
+            left.Value.Add(out value, ref right.Value);
+            return new BigInt<T>(value, left.Precision, left.KeepPrecision);
         }
 
-        public static BigInt operator -(BigInt left, BigInt right)
+        public static BigInt<T> operator -(BigInt<T> left, BigInt<T> right)
         {
-            return new BigInt((left.Value ?? 0) - (right.Value ?? 0), left.Precision, left.KeepPrecision);
+            T value;
+            left.Value.Subtract(out value, ref right.Value);
+            return new BigInt<T>(value, left.Precision, left.KeepPrecision);
         }
 
-        public static bool operator ==(BigInt left, BigInt right)
+        public static bool operator ==(BigInt<T> left, BigInt<T> right)
         {
-            return left.Value == right.Value;
+            return left.Equals(right);
         }
 
-        public static bool operator !=(BigInt left, BigInt right)
+        public static bool operator !=(BigInt<T> left, BigInt<T> right)
         {
-            return left.Value != right.Value;
+            return !left.Equals(right);
         }
 
-        public static BigInt Parse(string s, int precision = 0, bool keepPrecision = false)
+        public static BigInt<T> Parse(string s, int precision = 0, bool keepPrecision = false)
         {
-            decimal value = decimal.Parse(s, CultureInfo.InvariantCulture);
-            return new BigInt(value, precision, keepPrecision);
+            T value;
+            Empty.Parse(out value, s, CultureInfo.InvariantCulture);
+            return new BigInt<T>(value, precision, keepPrecision);
         }
 
-        public static BigInt FromInt(int value, int precision = 0)
+        public static BigInt<T> FromInt(int value, int precision = 0)
         {
-            return new BigInt(value, precision);
+            T val;
+            Empty.FromLong(out val, value);
+            return new BigInt<T>(val, precision);
         }
 
-        public static BigInt FromLong(long value, int precision = 0)
+        public static BigInt<T> FromLong(long value, int precision = 0)
         {
-            return new BigInt(value, precision);
+            T val;
+            Empty.FromLong(out val, value);
+            return new BigInt<T>(val, precision);
         }
 
-        public static BigInt FromDouble(double value, int precision = 0)
+        public static BigInt<T> FromDouble(double value, int precision = 0)
         {
-            return new BigInt((decimal)value, precision);
+            T val;
+            Empty.FromDouble(out val, value);
+            return new BigInt<T>(val, precision);
         }
 
-        private BigInt(decimal? value, int precision, bool keepPrecision = false) : this()
+        private BigInt(T value, int precision, bool keepPrecision = false) : this()
         {
             Value = value;
             Precision = precision;
             KeepPrecision = keepPrecision;
+            HasValue = true; // DM - whatever is assigned here, it indicates that the value is not empty. The only opposite case is a default constructor.
         }
+
+        //private BigInt(decimal value, int precision, bool keepPrecision = false) 
+        //    : this(new BigValue(value), precision, keepPrecision)
+        //{ }
 
         public int Precision { get; private set; }
 
         public bool KeepPrecision { get; private set; }
 
-        public bool HasValue
-        {
-            get { return Value.HasValue; }
-        }
+        public bool HasValue { get; private set; }
 
         public bool FitsInLong
         {
-            get { return HasValue && Value.Value < long.MaxValue && Value.Value > long.MinValue; }
+            get { return HasValue && Value.ConvertibleToLong(); }
         }
 
         public bool Valid()
@@ -104,40 +123,54 @@ namespace NLedger
             return true;
         }
 
-        public BigInt Negative()
+        public BigInt<T> Negative()
         {
             if (HasValue)
-                return new BigInt(-Value, Precision, KeepPrecision);
+            {
+                T value;
+                Value.Negate(out value);
+                return new BigInt<T>(value, Precision, KeepPrecision);
+            }
             else
                 return this;
         }
 
-        public BigInt Abs()
+        public BigInt<T> Abs()
         {
             if (HasValue)
-                return new BigInt(Math.Abs(Value.Value), Precision, KeepPrecision);
+            {
+                T value;
+                Value.Abs(out value);
+                return new BigInt<T>(value, Precision, KeepPrecision);
+            }
             else
                 return this;
         }
 
-        public BigInt Floor()
+        public BigInt<T> Floor()
         {
-            return new BigInt(Math.Floor(Value.Value), Precision, KeepPrecision);
+            T value;
+            Value.Floor(out value);
+            return new BigInt<T>(value, Precision, KeepPrecision);
         }
 
-        public BigInt Ceiling()
+        public BigInt<T> Ceiling()
         {
-            return new BigInt(Math.Ceiling(Value.Value), Precision, KeepPrecision);
+            T value;
+            Value.Ceiling(out value);
+            return new BigInt<T>(value, Precision, KeepPrecision);
         }
 
-        public BigInt RoundTo(int places)
+        public BigInt<T> RoundTo(int places)
         {
-            return new BigInt(Math.Round(Value.Value, places), Precision, KeepPrecision);
+            T value;
+            Value.Round(out value, places);
+            return new BigInt<T>(value, Precision, KeepPrecision);
         }
 
         public int Sign
         {
-            get { return HasValue && Value != 0 ? (Value.Value > 0 ? 1 : -1) : 0; }
+            get { return Value.Sign(); }
         }
 
         public bool IsZeroInPrecision()
@@ -148,25 +181,30 @@ namespace NLedger
         public bool IsZeroInPrecision(int precision)
         {
             if (HasValue)
-                return Math.Round(Value.Value, precision) == 0;
+            {
+                T value;
+                Value.Round(out value, precision);
+                return value.IsZero();
+            }
             else
                 return true;
         }
 
-        public BigInt SetPrecision(int precision)
+        public BigInt<T> SetPrecision(int precision)
         {
-            return new BigInt(Value, precision, KeepPrecision);
+            return new BigInt<T>(Value, precision, KeepPrecision);
         }
 
-        public BigInt SetScale(int scale)
+        public BigInt<T> SetScale(int scale)
         {
-            long pow = (long)Math.Pow(10, scale);
-            return new BigInt((Value ?? 0) / pow, Precision, KeepPrecision);
+            T value;
+            Value.Scale(out value, scale);
+            return new BigInt<T>(value, Precision, KeepPrecision);
         }
 
-        public BigInt SetKeepPrecision(bool keepPrecision)
+        public BigInt<T> SetKeepPrecision(bool keepPrecision)
         {
-            return new BigInt(Value, Precision, keepPrecision);
+            return new BigInt<T>(Value, Precision, keepPrecision);
         }
 
         // stream_out_mpq
@@ -192,9 +230,11 @@ namespace NLedger
                     decimalMark = ",";
             }
 
-            decimal val = Value ?? default(decimal);
+            T val = Value;
             if (Precision > precision)
-                val = Math.Round(Value.Value, precision);
+            {
+                Value.Round(out val, precision);
+            }
 
             NumberFormatInfo formatInfo = new NumberFormatInfo();
             formatInfo.NumberDecimalSeparator = decimalMark;
@@ -203,15 +243,21 @@ namespace NLedger
             return val.ToString(BuildNumericFormatString(digitSeparator, decimalMark, precision, zerosSpec), formatInfo);
         }
 
-        public bool Equals(BigInt other)
+        public bool Equals(BigInt<T> other)
         {
-            return Value == other.Value;
+            if (!HasValue && !other.HasValue)
+                return true;
+            if ((HasValue && !other.HasValue) || (!HasValue && other.HasValue))
+                return false;
+            return Value.Equals(ref other.Value);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is BigInt)
-                return this.Equals((BigInt)obj);
+            if (obj is BigInt<T>)
+            {
+                return this.Equals((BigInt<T>)obj);
+            }
             else
                 return false;
         }
@@ -229,15 +275,24 @@ namespace NLedger
         public long ToLong()
         {
             // TODO - GMP_RNDN (see mpfr_get_si)
-            return Value.HasValue ? (long)(Math.Round(Value.Value)) : 0;
+            if (HasValue)
+            {
+                T value;
+                Value.Round(out value, 0);
+                return value.ToLong();
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public decimal ToDecimal()
         {
-            return Value ?? 0;
+            return Value.ToDecimal();
         }
 
-        public int Compare(BigInt bigInt)
+        public int Compare(BigInt<T> bigInt)
         {
             if (!HasValue)
                 return bigInt.HasValue ? -1 : 0;
@@ -245,13 +300,14 @@ namespace NLedger
             if (!bigInt.HasValue)
                 return 1;
 
-            if (Value.Value == bigInt.Value.Value)
+            if (Value.Equals(ref bigInt.Value))
                 return 0;
             else
-                return Value.Value < bigInt.Value.Value ? -1 : 1;
+                return Value.CompareTo(ref bigInt.Value) < 0 ? -1 : 1;
         }
 
-        private decimal? Value { get; set; }
+        private T Value;
+        private readonly static T Empty = new T();
 
         private string BuildNumericFormatString(string digitSeparator, string decimalMark, int precision, int zerosSpec)
         {
