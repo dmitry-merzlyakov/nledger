@@ -19,6 +19,20 @@ the latest build status is:
 
 
 ***
+#### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [48] 2018/02/20 22:49:28
+
+>Build #48; Status:Succeeded
+
+>Queued by Microsoft.VisualStudio.Services.TFS; Reason:IndividualCI
+
+>Requested for Microsoft.VisualStudio.Services.TFS (Email:\*)
+
+>Latest commit: f0f677d8a067ca176a0d6d157a33954312341504
+
+Build logs: [NLedger-BuildLogs-v0.7.Build.48.zip](https://www.dropbox.com/s/entngy1msp5jkg0/NLedger-BuildLogs-v0.7.Build.48.zip?dl=0) MD5: C4417B6292A389E727694337FE10F655
+
+Install package: [NLedger-v0.7.Build.48.zip](https://www.dropbox.com/s/x22lpnyr1n6jcfl/NLedger-v0.7.Build.48.zip?dl=0) MD5: 9589CE750650AA66529AF7968C518292
+***
 #### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [47] 2018/01/30 11:20:36
 
 >Build #47; Status:Succeeded
@@ -159,6 +173,7 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
 
 
 
