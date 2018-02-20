@@ -10,6 +10,7 @@ using NLedger.Accounts;
 using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,12 @@ namespace NLedger.Iterators
             {
                 PushAll(account, AccountsList.Last());
                 StableSort(AccountsList.Last());
+
+                if (Logger.Current.ShowDebug("account.sorted"))
+                {
+                    foreach (var acct in AccountsList.Last())
+                        Logger.Current.Debug("account.sorted", () => String.Format("Account (flat): {0}", acct.FullName));
+                }
             }
             else
             {
@@ -70,6 +77,12 @@ namespace NLedger.Iterators
                 accounts.Add(pair.Value);
 
             StableSort(accounts);
+
+            if (Logger.Current.ShowDebug("account.sorted"))
+            {
+                foreach (var acct in accounts)
+                    Logger.Current.Debug("account.sorted", () => String.Format("Account (flat): {0}", acct.FullName));
+            }
         }
 
         private void StableSort(List<Account> list)

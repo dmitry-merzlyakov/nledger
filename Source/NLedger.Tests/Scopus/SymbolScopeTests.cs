@@ -25,7 +25,7 @@ namespace NLedger.Tests.Scopus
         {
             MockScope mockScope = new MockScope();
             SymbolScope symbolScope = new SymbolScope(mockScope);
-            Assert.AreEqual(0, symbolScope.Symbols.Count);
+            Assert.IsNull(symbolScope.Symbols);  // By default, Symbols is empty until Define is called
         }
 
         [TestMethod]

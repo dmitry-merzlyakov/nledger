@@ -151,7 +151,7 @@ namespace NLedger.IntegrationTests.unit
         {
             Amount x0 = new Amount();
             Amount x1 = new Amount(123456L);
-            Amount x2 = new Amount((long)123456UL);   // TODO - create ulong in constructor?
+            Amount x2 = new Amount(123456UL);
             Amount x3 = new Amount("123.456");
             Amount x5 = new Amount("123456");
             Amount x6 = new Amount("123.456");
@@ -250,7 +250,7 @@ namespace NLedger.IntegrationTests.unit
             Amount x10;
 
             x1 = (Amount)123456L;
-            x2 = (Amount)(long)123456UL;  // TODO - ulong in constructor?
+            x2 = (Amount)123456UL;
             x3 = (Amount)"123.456";
             x5 = (Amount)"123456";
             x6 = (Amount)"123.456";
@@ -888,7 +888,7 @@ namespace NLedger.IntegrationTests.unit
             Amount x1 = new Amount(123L);
             Amount y1 = new Amount(456L);
 
-            Boost.CheckThrow<DivideByZeroException, Amount>(() => x1 / (Amount)0L);  // [DM] BigInt generates DivideByZeroException
+            Boost.CheckThrow<AmountError, Amount>(() => x1 / (Amount)0L);  // [DM] "Divide by zero"
             Assert.AreEqual(new Amount(0L), new Amount(0L) / x1);
             Assert.AreEqual(new Amount(0L), (Amount)0L / x1);
             Assert.AreEqual(x1, x1 / (Amount)1L);
@@ -929,7 +929,7 @@ namespace NLedger.IntegrationTests.unit
             Amount x1 = new Amount("123.123");
             Amount y1 = new Amount("456.456");
 
-            Boost.CheckThrow<DivideByZeroException, Amount>(() => x1 / (Amount)0L);  // [DM] BigInt generates DivideByZeroException
+            Boost.CheckThrow<AmountError, Amount>(() => x1 / (Amount)0L);  // "Divide by zero"
             Assert.AreEqual("0.0081219593", (new Amount("1.0") / x1).ToString());
             Assert.AreEqual("0.0081219593", (new Amount("1.0") / x1).ToString());
             Assert.AreEqual(x1, x1 / new Amount("1.0"));
@@ -975,7 +975,7 @@ namespace NLedger.IntegrationTests.unit
             Amount x4 = new Amount("123.45 euro");
             Amount x5 = new Amount("123.45€");
 
-            Boost.CheckThrow<DivideByZeroException, Amount>(() => x1 / (Amount)0L);  // [DM] BigInt generates DivideByZeroException
+            Boost.CheckThrow<AmountError, Amount>(() => x1 / (Amount)0L);  // "Divide by zero"
             Assert.AreEqual(new Amount("$0.00"), (Amount)0L / x1);
             Assert.AreEqual(x1, x1 / (Amount)1L);
             Assert.AreEqual("$0.00812216", ((Amount)1L / x1).ToFullString());

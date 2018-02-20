@@ -11,6 +11,7 @@ using NLedger.Filters;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,10 @@ namespace NLedger.Chain
 
             // This filter_posts will only pass through posts matching the `predicate'.
             if (report.LimitHandler.Handled)
+            {
+                Logger.Current.Debug("report.predicate", () => String.Format("Report predicate expression = {0}", report.LimitHandler.Str()));
                 handler = new FilterPosts(handler, new Predicate(report.LimitHandler.Str(), report.WhatToKeep()), report);
+            }
 
             // budget_posts takes a set of posts from a data file and uses them to
             // generate "budget posts" which balance against the reported posts.

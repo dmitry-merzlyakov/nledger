@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Scopus;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,6 +105,7 @@ namespace NLedger.Expressions
                 sb.AppendFormat(";{0});__tmp_{0}", Term);
 
                 exprStr = sb.ToString();
+                Logger.Current.Debug("expr.merged.compile", () => String.Format("Compiled expr: {0}", exprStr));
             }
             Parse(exprStr);
 

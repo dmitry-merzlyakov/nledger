@@ -8,7 +8,7 @@
 // **********************************************************************************
 using NLedger.Commodities;
 using NLedger.Times;
-using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,10 +41,14 @@ namespace NLedger.Annotate
 
         public override Commodity StripAnnotations(AnnotationKeepDetails whatToKeep)
         {
+            Logger.Current.Debug("commodity.annotated.strip", () => String.Format("Reducing commodity {0}\r\n  keep price {1}   keep date {2}   keep tag {3}", this, whatToKeep.KeepPrice, whatToKeep.KeepDate, whatToKeep.KeepTag));
+
             bool keepPrice = (whatToKeep.KeepPrice || (Details.IsPriceFixated && Flags.HasFlag(CommodityFlagsEnum.COMMODITY_SAW_ANN_PRICE_FLOAT) && Flags.HasFlag(CommodityFlagsEnum.COMMODITY_SAW_ANN_PRICE_FIXATED)))
                 && (!whatToKeep.OnlyActuals || !Details.IsPriceCalculated);
             bool keepDate = whatToKeep.KeepDate && (!whatToKeep.OnlyActuals || !Details.IsDateCalculated);
             bool keepTag = whatToKeep.KeepTag && (!whatToKeep.OnlyActuals || !Details.IsTagCalculated);
+
+            Logger.Current.Debug("commodity.annotated.strip", () => String.Format("Reducing commodity {0}\r\n  keep price {1}   keep date {2}   keep tag {3}", this, keepPrice, keepDate, keepTag));
 
             if ((keepPrice && Details.Price != null) || (keepDate && Details.Date.HasValue) || (keepTag && !String.IsNullOrEmpty(Details.Tag)))
             {
@@ -77,7 +81,7 @@ namespace NLedger.Annotate
         /// </summary>
         public override PricePoint? FindPrice(Commodity commodity = null, DateTime moment = default(DateTime), DateTime oldest = default(DateTime))
         {
-            Logger.Debug("commodity.price.find", () => String.Format("annotated_commodity_t::find_price({0})", Symbol));
+            Logger.Current.Debug("commodity.price.find", () => String.Format("annotated_commodity_t::find_price({0})", Symbol));
 
             DateTime when;
             if (moment != default(DateTime))
@@ -87,7 +91,7 @@ namespace NLedger.Annotate
             else
                 when = TimesCommon.Current.CurrentTime;
 
-            Logger.Debug("commodity.price.find", () => String.Format("reference time: {0}", when));
+            Logger.Current.Debug("commodity.price.find", () => String.Format("reference time: {0}", when));
 
             Commodity target = null;
             if (commodity != null)
@@ -95,22 +99,22 @@ namespace NLedger.Annotate
 
             if (Details.Price != null)
             {
-                Logger.Debug("commodity.price.find", () => String.Format("price annotation: {0}", Details.Price));
+                Logger.Current.Debug("commodity.price.find", () => String.Format("price annotation: {0}", Details.Price));
 
                 if (Details.IsPriceFixated)
                 {
-                    Logger.Debug("commodity.price.find", () => String.Format("amount_t::value: fixated price = {0}", Details.Price));
+                    Logger.Current.Debug("commodity.price.find", () => String.Format("amount_t::value: fixated price = {0}", Details.Price));
                     return new PricePoint(when, Details.Price);
                 }
                 else if (target == null)
                 {
-                    Logger.Debug("commodity.price.find", () => "setting target commodity from price");
+                    Logger.Current.Debug("commodity.price.find", () => "setting target commodity from price");
                     target = Details.Price.Commodity;
                 }
             }
 
             if (target != null)
-                Logger.Debug("commodity.price.find", () => String.Format("target commodity: {0}", target.Symbol));
+                Logger.Current.Debug("commodity.price.find", () => String.Format("target commodity: {0}", target.Symbol));
 
             if (Details.ValueExpr != null)
                 return FindPriceFromExpr(Details.ValueExpr, commodity, when);

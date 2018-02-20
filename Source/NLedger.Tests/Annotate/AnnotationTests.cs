@@ -281,7 +281,6 @@ namespace NLedger.Tests.Annotate
             }));
         }
 
-        // TODO - rework using Moq
         public class TestAnnotation : Annotation
         {
             public int PriceParseCallCounter = 0;

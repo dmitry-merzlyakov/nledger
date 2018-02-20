@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger
 {
@@ -297,27 +298,49 @@ namespace NLedger
                 _XData = new PostXData(post.XData);            
         }
 
-        public bool Valid()
+        /// <summary>
+        /// Ported from bool post_t::valid()
+        /// </summary>
+        /// <returns></returns>
+        public override bool Valid()
         {
             if (Xact == null)
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! xact");
                 return false;
+            }
 
             if (!Xact.Posts.Contains(this))
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! found");
                 return false;
+            }
 
             if (Account == null)
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! account");
                 return false;
+            }
 
             if (!Amount.Valid())
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! amount.valid()");
                 return false;
+            }
 
             if (Cost != null)
             {
                 if (!Cost.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "post_t: cost && ! cost->valid()");
                     return false;
+                }
 
                 if (!Cost.KeepPrecision)
+                {
+                    Logger.Current.Debug("ledger.validate", () => "post_t: ! cost->keep_precision()");
                     return false;
+                }
             }
 
             return true;

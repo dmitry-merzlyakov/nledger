@@ -408,7 +408,7 @@ namespace NLedger.Tests.Amounts
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(AmountError))]
         public void Amount_Add_InvalidAmountCausesException()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -500,7 +500,7 @@ namespace NLedger.Tests.Amounts
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(AmountError))]
         public void Amount_Subtract_InvalidAmountCausesException()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -1044,5 +1044,25 @@ namespace NLedger.Tests.Amounts
             Assert.AreEqual(100.12M, amt2.Truncated().Quantity.ToDecimal());
         }
 
+        [TestMethod]
+        public void Amount_Valid_ReturnsTrueIfNoQuantityAndCommodity()
+        {
+            Amount amount = new Amount();
+            Assert.IsFalse(amount.Quantity.HasValue);
+            Assert.IsFalse(amount.HasCommodity);
+            Assert.IsTrue(amount.Valid());
+        }
+
+        [TestMethod]
+        public void Amount_Valid_ReturnsFalseIfQuantityIsNotValid()
+        {
+            Amount amount = new Amount(100);
+            Assert.IsTrue(amount.Valid());
+
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+            Assert.IsFalse(amount.Quantity.Valid());
+            Assert.IsFalse(amount.Valid());
+        }
     }
 }

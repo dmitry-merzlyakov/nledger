@@ -13,6 +13,7 @@ using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -301,14 +302,25 @@ namespace NLedger.Values
             return this;
         }
 
+        /// <summary>
+        /// Not exactly copied but very close to void value_t::in_place_simplify()
+        /// </summary>
         public IValueStorage Simplify()
         {
             if (IsRealZero())
+            {
+                Logger.Current.Debug("value.simplify", () => String.Format("Zeroing type {0}", Type));
                 return new IntegerValueStorage(0);
+            }
 
             IValueStorage value = this;
             if (Type == ValueTypeEnum.Balance && AsBalance.IsSingleAmount)
+            {
+                Logger.Current.Debug("value.simplify", () => "Reducing balance to amount");
+                Logger.Current.Debug("value.simplify", () => String.Format("as a balance it looks like: {0}", Dump(false)));
                 value = new AmountValueStorage(AsAmount);
+                Logger.Current.Debug("value.simplify", () => String.Format("as an amount it looks like: {0}", value.ToString()));
+            }
 
             // [DM] - commented out according to the source code - #if REDUCE_TO_INTEGER        // this is off by default
             //if (value.Type == ValueTypeEnum.Amount && !value.AsAmount.HasCommodity && value.AsAmount.FitsInLong)
@@ -834,7 +846,9 @@ namespace NLedger.Values
     {
         public AmountValueStorage(Amount val)
             : base(ValueTypeEnum.Amount, val)
-        { }
+        {
+            Validator.Verify(() => val.Valid());
+        }
 
         public override bool Bool
         {
@@ -1081,7 +1095,9 @@ namespace NLedger.Values
     {
         public BalanceValueStorage(Balance val)
             : base(ValueTypeEnum.Balance, val)
-        { }
+        {
+            Validator.Verify(() => val.Valid());
+        }
 
         public override bool Bool
         {

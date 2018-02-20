@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Drafts
 {
@@ -199,25 +200,25 @@ namespace NLedger.Drafts
             Xact xact = Lookup.LookupProbableAccount(Tmpl.PayeeMask.ToString(), journal.Xacts.Reverse()).Item1;
             if (xact != null)
             {
-                Logger.Debug("draft.xact", () => String.Format("Found payee by lookup: transaction on line {0}", xact.Pos.BegLine));
+                Logger.Current.Debug("draft.xact", () => String.Format("Found payee by lookup: transaction on line {0}", xact.Pos.BegLine));
                 matching = xact;
             }
             else
             {
                 matching = journal.Xacts.LastOrDefault(x => Tmpl.PayeeMask.Match(x.Payee));
                 if (matching != null)
-                    Logger.Debug("draft.xact", () => String.Format("Found payee match: transaction on line {0}", matching.Pos.BegLine));
+                    Logger.Current.Debug("draft.xact", () => String.Format("Found payee match: transaction on line {0}", matching.Pos.BegLine));
             }
 
             if (!Tmpl.Date.HasValue)
             {
                 added.Date = TimesCommon.Current.CurrentDate;
-                Logger.Debug("draft.xact", () => "Setting date to current date");
+                Logger.Current.Debug("draft.xact", () => "Setting date to current date");
             }
             else
             {
                 added.Date = Tmpl.Date;
-                Logger.Debug("draft.xact", () => String.Format("Setting date to template date: {0}", Tmpl.Date));
+                Logger.Current.Debug("draft.xact", () => String.Format("Setting date to template date: {0}", Tmpl.Date));
             }
 
             added.State = ItemStateEnum.Uncleared;
@@ -227,31 +228,31 @@ namespace NLedger.Drafts
                 added.Payee = matching.Payee;
                 //added->code  = matching->code;
                 //added->note  = matching->note;
-                Logger.Debug("draft.xact", () => String.Format("Setting payee from match: {0}", added.Payee));
+                Logger.Current.Debug("draft.xact", () => String.Format("Setting payee from match: {0}", added.Payee));
             }
             else
             {
                 added.Payee = Tmpl.PayeeMask.ToString();
-                Logger.Debug("draft.xact", () => String.Format("Setting payee from template: {0}", added.Payee));
+                Logger.Current.Debug("draft.xact", () => String.Format("Setting payee from template: {0}", added.Payee));
             }
 
             if (!String.IsNullOrEmpty(Tmpl.Code))
             {
                 added.Code = Tmpl.Code;
-                Logger.Debug("draft.xact", () => String.Format("Now setting code from template:  {0}", added.Code));
+                Logger.Current.Debug("draft.xact", () => String.Format("Now setting code from template:  {0}", added.Code));
             }
 
             if (!String.IsNullOrEmpty(Tmpl.Note))
             {
                 added.Note = Tmpl.Note;
-                Logger.Debug("draft.xact", () => String.Format("Now setting note from template:  {0}", added.Note));
+                Logger.Current.Debug("draft.xact", () => String.Format("Now setting note from template:  {0}", added.Note));
             }
 
             if (!Tmpl.Posts.Any())
             {
                 if (matching != null)
                 {
-                    Logger.Debug("draft.xact", () => "Template had no postings, copying from match");
+                    Logger.Current.Debug("draft.xact", () => "Template had no postings, copying from match");
 
                     foreach (Post post in matching.Posts)
                         added.AddPost(new Post(post) { State = ItemStateEnum.Uncleared });
@@ -263,10 +264,10 @@ namespace NLedger.Drafts
             }
             else
             {
-                Logger.Debug("draft.xact", () => "Template had postings");
+                Logger.Current.Debug("draft.xact", () => "Template had postings");
                 bool anyPostHasAmount = Tmpl.Posts.Any(p => (bool)p.Amount);
                 if (anyPostHasAmount)
-                    Logger.Debug("draft.xact", () => "  and at least one has an amount specified");
+                    Logger.Current.Debug("draft.xact", () => "  and at least one has an amount specified");
 
                 foreach (DraftXactPostTemplate post in Tmpl.Posts)
                 {
@@ -278,12 +279,12 @@ namespace NLedger.Drafts
                     {
                         if (post.AccountMask != null)
                         {
-                            Logger.Debug("draft.xact", () => "Looking for matching posting based on account mask");
+                            Logger.Current.Debug("draft.xact", () => "Looking for matching posting based on account mask");
                             Post x = matching.Posts.FirstOrDefault(p => post.AccountMask.Match(p.Account.FullName));
                             if (x != null)
                             {
                                 newPost = new Post(x);
-                                Logger.Debug("draft.xact", () => String.Format("Founding posting from line {0}", x.Pos.BegLine));
+                                Logger.Current.Debug("draft.xact", () => String.Format("Founding posting from line {0}", x.Pos.BegLine));
                             }
                         }
                         else
@@ -294,7 +295,7 @@ namespace NLedger.Drafts
                                 if (x != null)
                                 {
                                     newPost = new Post(x);
-                                    Logger.Debug("draft.xact", () => "Copied last real posting from matching");
+                                    Logger.Current.Debug("draft.xact", () => "Copied last real posting from matching");
                                 }
                             }
                             else
@@ -303,7 +304,7 @@ namespace NLedger.Drafts
                                 if (x != null)
                                 {
                                     newPost = new Post(x);
-                                    Logger.Debug("draft.xact", () => "Copied first real posting from matching");
+                                    Logger.Current.Debug("draft.xact", () => "Copied first real posting from matching");
                                 }
                             }
                         }
@@ -312,27 +313,27 @@ namespace NLedger.Drafts
                     if (newPost == null)
                     {
                         newPost = new Post();
-                        Logger.Debug("draft.xact", () => "New posting was NULL, creating a blank one");
+                        Logger.Current.Debug("draft.xact", () => "New posting was NULL, creating a blank one");
                     }
 
                     if (newPost.Account == null)
                     {
-                        Logger.Debug("draft.xact", () => "New posting still needs an account");
+                        Logger.Current.Debug("draft.xact", () => "New posting still needs an account");
 
                         if (post.AccountMask != null)
                         {
-                            Logger.Debug("draft.xact", () => "The template has an account mask");
+                            Logger.Current.Debug("draft.xact", () => "The template has an account mask");
 
                             Account acct = journal.FindAccountRe(post.AccountMask.ToString());
                             if (acct != null)
                             {
-                                Logger.Debug("draft.xact", () => "Found account as a regular expression");
+                                Logger.Current.Debug("draft.xact", () => "Found account as a regular expression");
                             }
                             else
                             {
                                 acct = journal.FindAccount(post.AccountMask.ToString());
                                 if (acct != null)
-                                    Logger.Debug("draft.xact", () => "Found (or created) account by name");
+                                    Logger.Current.Debug("draft.xact", () => "Found (or created) account by name");
                             }
 
                             // Find out the default commodity to use by looking at the last
@@ -343,25 +344,25 @@ namespace NLedger.Drafts
                                 if (x != null)
                                 {
                                     newPost = new Post(x);
-                                    Logger.Debug("draft.xact", () => "Found account in journal postings, setting new posting");
+                                    Logger.Current.Debug("draft.xact", () => "Found account in journal postings, setting new posting");
                                     break;
                                 }
                             }
 
                             newPost.Account = acct;
-                            Logger.Debug("draft.xact", () => String.Format("Set new posting's account to: {0}", acct.FullName));
+                            Logger.Current.Debug("draft.xact", () => String.Format("Set new posting's account to: {0}", acct.FullName));
                         }
                         else
                         {
                             if (post.From)
                             {
                                 newPost.Account = journal.FindAccount("Liabilities:Unknown");
-                                Logger.Debug("draft.xact", () => "Set new posting's account to: Liabilities:Unknown");
+                                Logger.Current.Debug("draft.xact", () => "Set new posting's account to: Liabilities:Unknown");
                             }
                             else
                             {
                                 newPost.Account = journal.FindAccount("Expenses:Unknown");
-                                Logger.Debug("draft.xact", () => "Set new posting's account to: Expenses:Unknown");
+                                Logger.Current.Debug("draft.xact", () => "Set new posting's account to: Expenses:Unknown");
                             }
                         }
                     }
@@ -375,24 +376,24 @@ namespace NLedger.Drafts
                         if (anyPostHasAmount)
                         {
                             newPost.Amount = new Amount();
-                            Logger.Debug("draft.xact", () => "New posting has an amount, but we cleared it");
+                            Logger.Current.Debug("draft.xact", () => "New posting has an amount, but we cleared it");
                         }
                         else
                         {
                             anyPostHasAmount = true;
-                            Logger.Debug("draft.xact", () => "New posting has an amount, and we're using it");
+                            Logger.Current.Debug("draft.xact", () => "New posting has an amount, and we're using it");
                         }
                     }
 
                     if ((bool)post.Amount)
                     {
                         newPost.Amount = post.Amount;
-                        Logger.Debug("draft.xact", () => "Copied over posting amount");
+                        Logger.Current.Debug("draft.xact", () => "Copied over posting amount");
 
                         if (post.From)
                         {
                             newPost.Amount.InPlaceNegate();
-                            Logger.Debug("draft.xact", () => "Negated new posting amount");
+                            Logger.Current.Debug("draft.xact", () => "Negated new posting amount");
                         }
                     }
 
@@ -418,23 +419,23 @@ namespace NLedger.Drafts
                         }
 
                         newPost.Cost = post.Cost;
-                        Logger.Debug("draft.xact", () => "Copied over posting cost");
+                        Logger.Current.Debug("draft.xact", () => "Copied over posting cost");
                     }
 
                     if (foundCommodity!=null && !(newPost.Amount==null) && !(newPost.Amount.IsEmpty) && !(newPost.Amount.HasCommodity))
                     {
                         newPost.Amount.SetCommodity(foundCommodity);
-                        Logger.Debug("draft.xact", () => String.Format("Set posting amount commodity to: {0}", newPost.Amount.Commodity));
+                        Logger.Current.Debug("draft.xact", () => String.Format("Set posting amount commodity to: {0}", newPost.Amount.Commodity));
 
                         newPost.Amount = newPost.Amount.Rounded();
-                        Logger.Debug("draft.xact", () => String.Format("Rounded posting amount to: {0}", newPost.Amount));
+                        Logger.Current.Debug("draft.xact", () => String.Format("Rounded posting amount to: {0}", newPost.Amount));
                     }
 
                     added.AddPost(newPost);
                     newPost.Account.AddPost(newPost);
                     newPost.State = ItemStateEnum.Uncleared;
 
-                    Logger.Debug("draft.xact", () => "Added new posting to derived entry");
+                    Logger.Current.Debug("draft.xact", () => "Added new posting to derived entry");
                 }
             }
 

@@ -240,5 +240,35 @@ namespace NLedger.Tests.Journals
             journal.AddXact(xact2);
         }
 
+        [TestMethod]
+        public void Journal_Valid_ReturnsFalseIfMasterNotValid()
+        {
+            Journal journal = new Journal();
+            Assert.IsTrue(journal.Valid());
+
+            var master = new Account();
+            master.Accounts.Add("wrong-self-loop", master);
+            journal.Master = master;
+
+            Assert.IsFalse(journal.Master.Valid());
+            Assert.IsFalse(journal.Valid());
+        }
+
+        [TestMethod]
+        public void Journal_Valid_ReturnsFalseIfXactNotValid()
+        {
+            Journal journal = new Journal();
+            journal.Master = new Account();
+            Assert.IsTrue(journal.Valid());
+
+            Xact xact = new Xact();
+            xact.AddPost(new Post(journal.Master, new Amount(10)));
+            xact.AddPost(new Post(journal.Master, new Amount(-10)));
+            journal.AddXact(xact);
+
+            Assert.IsFalse(xact.Valid()); // [DM] - Xact is not valid (but finalizable to add to the journal) because of no date.
+            Assert.IsFalse(journal.Valid());
+        }
+
     }
 }

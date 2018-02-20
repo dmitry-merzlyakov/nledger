@@ -9,6 +9,7 @@
 using NLedger.Amounts;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,8 +112,14 @@ namespace NLedger.Expressions
         public ResultType Calc(Scope scope)
         {
             if (!IsCompiled)
+            {
+                Logger.Current.Debug("expr.compile", () => String.Format("Before compilation:{0}", Dump()));
+                Logger.Current.Debug("expr.compile", () => String.Format("Compiling: {0}", Str));
                 Compile(scope);
+                Logger.Current.Debug("expr.compile", () => String.Format("After compilation:{0}", Dump()));
+            }
 
+            Logger.Current.Debug("expr.calc", () => String.Format("Calculating: {0}", Str));
             return RealCalc(scope);
         }
 

@@ -154,8 +154,9 @@ namespace NLedger.Expressions
             Value = Value.Get(buf);
         }
 
-        // TODO - AmountParseFlagsEnum to ParseFlagsEnum
-        // Ported from void expr_t::token_t::next(std::istream& in, const parse_flags_t& pflags)
+        /// <summary>
+        /// Ported from void expr_t::token_t::next(std::istream& in, const parse_flags_t& pflags)
+        /// </summary>
         public void Next(InputTextStream inStream, AmountParseFlagsEnum pflags)
         {
             if (inStream.Eof)

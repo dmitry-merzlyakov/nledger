@@ -8,6 +8,7 @@
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -368,6 +369,36 @@ namespace NLedger.Accounts
             return FullName;
         }
 
+        /// <summary>
+        /// Ported from bool account_t::valid()
+        /// </summary>
+        /// <returns></returns>
+        public bool Valid()
+        {
+            if (Depth > 256)
+            {
+                Logger.Current.Debug("ledger.validate", () => "account_t: depth > 256");
+                return false;
+            }
+
+            foreach(var account in Accounts.Values)
+            {
+                if (this == account)
+                {
+                    Logger.Current.Debug("ledger.validate", () => "account_t: parent refers to itself!");
+                    return false;
+                }
+
+                if (!account.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "account_t: child not valid");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private static bool HasXFlags(AccountXData xdata, bool toDisplay, bool visited)
         {
             if (toDisplay && !xdata.ToDisplay)
@@ -531,7 +562,7 @@ namespace NLedger.Accounts
             LookupItems.MakeFunctor("amount", scope => GetWrapper((CallScope)scope, a => GetAmount(a)), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("account", scope => GetAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("account_base", scope => GetWrapper((CallScope)scope, a => Value.StringValue(a.Name)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, a => Value.Get(a) /* TODO not allowed in .Net */ ), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, a => Value.Get(a) /* [DM] Address is not allowed in .Net; return a whole entity */ ), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("any", scope => FnAny((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("all", scope => FnAll((CallScope)scope), SymbolKindEnum.FUNCTION);
 

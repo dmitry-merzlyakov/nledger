@@ -12,6 +12,7 @@ using NLedger.Expressions;
 using NLedger.Output;
 using NLedger.Print;
 using NLedger.Scopus;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -81,6 +82,9 @@ namespace NLedger
             return result;
         }
 
+        /// <summary>
+        /// Ported from value_t select_command(call_scope_t& args)
+        /// </summary>
         public static Value SelectCommand(CallScope args)
         {
             string text = "select " + CallScope.JoinArgs(args);
@@ -112,6 +116,9 @@ namespace NLedger
             {
                 string keyword = match.Groups[1].Value;
                 string arg = match.Groups[2].Value;
+
+                Logger.Current.Debug("select.parse", () => String.Format("keyword: {0}", keyword));
+                Logger.Current.Debug("select.parse", () => String.Format("arg: {0}", arg));
 
                 if (keyword == "select")
                 {
@@ -208,6 +215,7 @@ namespace NLedger
                     while ((sawAccount || sawPayee) && colsNeeded > cols &&
                            accountWidth > 5 && payeeWidth > 5)
                     {
+                        Logger.Current.Debug("auto.columns", () => "adjusting account down");
                         if (sawAccount && colsNeeded > cols)
                         {
                             --accountWidth;
@@ -223,6 +231,7 @@ namespace NLedger
                             --payeeWidth;
                             --colsNeeded;
                         }
+                        Logger.Current.Debug("auto.columns", () => String.Format("account_width now = {0}", accountWidth));
                     }
 
                     if (!report.DateWidthHandler.Handled)
@@ -353,6 +362,7 @@ namespace NLedger
                         formatter.Append(")");
                     }
                     formatter.AppendLine();
+                    Logger.Current.Debug("select.parse", () => String.Format("formatter: {0}", formatter.ToString()));
                 }
                 else if (keyword == "from")
                 {

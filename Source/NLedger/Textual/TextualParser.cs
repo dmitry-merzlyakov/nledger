@@ -26,6 +26,7 @@ using NLedger.Xacts;
 using NLedger.Journals;
 using NLedger.Values;
 using NLedger.Scopus;
+using NLedger.Utils;
 
 namespace NLedger.Textual
 {
@@ -105,9 +106,13 @@ namespace NLedger.Textual
             get { return ApplyStack.GetApplication<Account>(); }
         }
 
+        /// <summary>
+        /// Ported from instance_t::parse
+        /// </summary>
         public void Parse()
         {
-            Logger.Info(String.Format("Parsing file {0}", Context.PathName));
+            Logger.Current.Info(() => String.Format("Parsing file \"{0}\"", Context.PathName));
+            var trace = Logger.Current.TraceContext(TimerName.InstanceParse, 1)?.Message(String.Format("Done parsing file {0}", Context.PathName)).Start(); // TRACE_START
 
             if (In.IsEof())
                 return;
@@ -145,6 +150,8 @@ namespace NLedger.Textual
                 TimesCommon.Current.Epoch = ApplyStack.Front<DateTime?>().Value;
 
             ApplyStack.PopFront();
+
+            trace?.Stop(); // TRACE_STOP
         }
 
         /// <summary>
@@ -310,6 +317,8 @@ namespace NLedger.Textual
         // instance_t::xact_directive
         private void ReadXactDirective(string line, ITextualReader textualReader)
         {
+            var trace = Logger.Current.TraceContext(TimerName.Xacts, 1)?.Message("Time spent handling transactions:").Start(); // TRACE_START
+
             Xact xact = ParseXact(line, textualReader, TopAccount);
             if (xact != null)
             {
@@ -323,6 +332,8 @@ namespace NLedger.Textual
             }
             else
                 throw new ParseError(ParseError.ParseError_FailedToParseTransaction);
+
+            trace?.Stop(); // TRACE_STOP
         }
 
         /// <summary>
@@ -330,6 +341,8 @@ namespace NLedger.Textual
         /// </summary>
         public Xact ParseXact(string line, ITextualReader textualReader, Account masterAccount)
         {
+            var trace = Logger.Current.TraceContext(TimerName.XactText, 1)?.Message("Time spent parsing transaction text:").Start(); // TRACE_START
+
             Xact xact = new Xact();
 
             xact.Pos = new ItemPosition();
@@ -375,7 +388,12 @@ namespace NLedger.Textual
                 if (!String.IsNullOrEmpty(xactNote))
                     xact.AppendNote(xactNote, Context.Scope, false);
 
+                trace?.Stop(); // TRACE_STOP
+
                 // Parse all of the posts associated with this xact
+
+                trace = Logger.Current.TraceContext(TimerName.XactDetails, 1)?.Message("Time spent parsing transaction details:").Start(); // TRACE_START
+
                 Post lastPost = null;
                 while (textualReader.PeekWhitespaceLine())
                 {
@@ -443,6 +461,8 @@ namespace NLedger.Textual
                 foreach (string tag in ApplyStack.GetApplications<string>())
                     xact.ParseTags(tag, Context.Scope, false);
 
+                trace?.Stop();  // TRACE_STOP
+
                 return xact;
             }
             catch
@@ -456,10 +476,15 @@ namespace NLedger.Textual
             }
         }
 
+        /// <summary>
+        /// Ported from instance_t::parse_post
+        /// </summary>
         public Post ParsePost(string line, Xact xact, Account masterAccount, bool deferExpr = false)
         {
             if (String.IsNullOrWhiteSpace(line))
                 throw new ArgumentNullException("line");
+
+            var trace = Logger.Current.TraceContext(TimerName.PostDetails, 1)?.Message("Time spent parsing postings:").Start(); // TRACE_START
 
             Post post = new Post();
             post.Xact = xact; // this could be NULL
@@ -499,23 +524,23 @@ namespace NLedger.Textual
                 if ((firstChar == '[' && lastChar == ']') || (firstChar == '(' && lastChar == ')'))
                 {
                     post.Flags = post.Flags | SupportsFlagsEnum.POST_VIRTUAL;
-                    Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed a virtual account name", Context.LineNum));
+                    Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed a virtual account name", Context.LineNum));
 
                     if (firstChar == '[')
                     {
                         post.Flags = post.Flags | SupportsFlagsEnum.POST_MUST_BALANCE;
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Posting must balance", Context.LineNum));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Posting must balance", Context.LineNum));
                     }
                     line = line.Substring(1, line.Length - 2);
                 }
                 else if (firstChar == '<' && lastChar == '>')
                 {
                     post.Flags = post.Flags | SupportsFlagsEnum.POST_DEFERRED;
-                    Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed a deferred account name", Context.LineNum));
+                    Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed a deferred account name", Context.LineNum));
                     line = line.Substring(1, line.Length - 2);
                 }
 
-                Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed account name {1}", Context.LineNum, line));
+                Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed account name {1}", Context.LineNum, line));
                 post.Account = Context.Journal.RegisterAccount(line, post, masterAccount);
 
                 // Parse the optional amount
@@ -537,7 +562,7 @@ namespace NLedger.Textual
                                 AmountParseFlagsEnum.PARSE_NO_REDUCE | AmountParseFlagsEnum.PARSE_SINGLE | AmountParseFlagsEnum.PARSE_NO_ASSIGN,
                                 deferExpr, amtExpr => post.AmountExpr = amtExpr);
 
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1}", Context.LineNum, post.Amount));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1}", Context.LineNum, post.Amount));
 
                         if (!post.Amount.IsEmpty && post.Amount.HasCommodity)
                         {
@@ -553,7 +578,7 @@ namespace NLedger.Textual
                                         Annotation details = new Annotation(rate.Item2);
                                         details.IsPriceFixated = true;
                                         post.Amount.Annotate(details);
-                                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: applied rate = {1}", Context.LineNum, post.Amount));
+                                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: applied rate = {1}", Context.LineNum, post.Amount));
                                         break;
                                     }
                                 }
@@ -569,7 +594,7 @@ namespace NLedger.Textual
 
                     if (next.StartsWith("@") || next.StartsWith("(@"))
                     {
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Found a price indicator", Context.LineNum));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Found a price indicator", Context.LineNum));
 
                         if (next.StartsWith("("))
                         {
@@ -583,7 +608,7 @@ namespace NLedger.Textual
                         {
                             per_unit = false;
                             post.Flags = post.Flags | SupportsFlagsEnum.POST_COST_IN_FULL;
-                            Logger.Debug(DebugTextualParse, () => String.Format("line {0}: And it's for a total price", Context.LineNum));
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: And it's for a total price", Context.LineNum));
                             next = next.Remove(0, 1);
                         }
 
@@ -637,8 +662,8 @@ namespace NLedger.Textual
 
                             post.GivenCost = new Amount(post.Cost);
 
-                            Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Total cost is {1}", Context.LineNum, post.Cost));
-                            Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Annotated amount is {1}", Context.LineNum, post.Amount));
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Total cost is {1}", Context.LineNum, post.Cost));
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Annotated amount is {1}", Context.LineNum, post.Amount));
 
                             next = next.TrimStart();
                         }
@@ -653,7 +678,7 @@ namespace NLedger.Textual
 
                 if (xact != null && !String.IsNullOrEmpty(next) && next.StartsWith("="))
                 {
-                    Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Found a balance assignment indicator", Context.LineNum));
+                    Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Found a balance assignment indicator", Context.LineNum));
 
                     next = next.Remove(0, 1).TrimStart();
                     if (!String.IsNullOrEmpty(next))
@@ -678,13 +703,13 @@ namespace NLedger.Textual
                                 throw new ParseError(ParseError.ParseError_BalanceAssertionMustEvaluateToConstant);
                         }
 
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: parsed amt = {1}", Context.LineNum, post.AssignedAmount));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: parsed amt = {1}", Context.LineNum, post.AssignedAmount));
 
                         Amount amt = post.AssignedAmount;
                         Value accountTotal = post.Account.Amount().StripAnnotations(new AnnotationKeepDetails());
 
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: account balance = {1}", Context.LineNum, accountTotal));
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1}", Context.LineNum, amt));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: account balance = {1}", Context.LineNum, accountTotal));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1}", Context.LineNum, amt));
 
                         Amount diff = new Amount(amt);
 
@@ -700,8 +725,8 @@ namespace NLedger.Textual
                                 diff.InPlaceSubtract(commBal);
                         }
 
-                        Logger.Debug("post.assign", () => String.Format("line {0}: diff = {1}", Context.LineNum, diff));
-                        Logger.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: diff = {1}", Context.LineNum, diff));
+                        Logger.Current.Debug("post.assign", () => String.Format("line {0}: diff = {1}", Context.LineNum, diff));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: diff = {1}", Context.LineNum, diff));
 
                         // Subtract amounts from previous posts to this account in the xact.
                         foreach (var p in xact.Posts)
@@ -709,7 +734,7 @@ namespace NLedger.Textual
                             if (p.Account == post.Account && p.Amount.Commodity == diff.Commodity)
                             {
                                 diff.InPlaceSubtract(p.Amount);
-                                Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Subtract {1}, diff = {2}", Context.LineNum, p.Amount, diff));
+                                Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Subtract {1}, diff = {2}", Context.LineNum, p.Amount, diff));
                             }
                         }
 
@@ -719,7 +744,7 @@ namespace NLedger.Textual
                             if (!diff.IsZero)
                             {
                                 post.Amount = diff;
-                                Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Overwrite null posting", Context.LineNum));
+                                Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Overwrite null posting", Context.LineNum));
                             }
                         }
                         else
@@ -746,7 +771,7 @@ namespace NLedger.Textual
                 if (next.StartsWith(";"))
                 {
                     post.AppendNote(next.Remove(0, 1), Context.Scope, true);
-                    Logger.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed a posting note", Context.LineNum));
+                    Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Parsed a posting note", Context.LineNum));
                 }
                 else
                 {
@@ -758,6 +783,8 @@ namespace NLedger.Textual
 
                 foreach (string tag in ApplyStack.GetApplications<string>())
                     post.ParseTags(tag, Context.Scope, true);
+
+                trace?.Stop(); // TRACE_STOP
 
                 return post;
             }
@@ -772,6 +799,8 @@ namespace NLedger.Textual
         /// <remarks>ported from parse_posts</remarks>
         public bool ParsePosts(ITextualReader textualReader, Account account, XactBase xact, bool deferExpr = false)
         {
+            var trace = Logger.Current.TraceContext(TimerName.XactPosts, 1)?.Message("Time spent parsing postings:").Start();  // TRACE_START
+
             bool added = false;
 
             while (textualReader.PeekWhitespaceLine())
@@ -785,6 +814,8 @@ namespace NLedger.Textual
                 }
             }
 
+            trace?.Stop();  // TRACE_STOP
+
             return added;
         }
 
@@ -795,7 +826,7 @@ namespace NLedger.Textual
             Expr expr = new Expr(inStream, flags | AmountParseFlagsEnum.PARSE_PARTIAL);
             line = inStream.RemainSource;
 
-            Logger.Debug(DebugTextualParse, () => "Parsed an amount expression");
+            Logger.Current.Debug(DebugTextualParse, () => "Parsed an amount expression");
 
             if (expr != null)
             {
@@ -813,9 +844,9 @@ namespace NLedger.Textual
                 item.State = line[0] == '*' ? ItemStateEnum.Cleared : ItemStateEnum.Pending;
                 line = line.Remove(0, 1).TrimStart();
                 if (item.State == ItemStateEnum.Cleared)
-                    Logger.Debug(DebugTextualParse, () => String.Format("line: {0}: Parsed the CLEARED flag", item.Pos.BegLine));
+                    Logger.Current.Debug(DebugTextualParse, () => String.Format("line: {0}: Parsed the CLEARED flag", item.Pos.BegLine));
                 else
-                    Logger.Debug(DebugTextualParse, () => String.Format("line: {0}: Parsed the PENDING flag", item.Pos.BegLine));
+                    Logger.Current.Debug(DebugTextualParse, () => String.Format("line: {0}: Parsed the PENDING flag", item.Pos.BegLine));
             }
         }
 
@@ -904,12 +935,12 @@ namespace NLedger.Textual
         private void ReadIncludeDirective(string line)
         {
             string fileName;
-            Logger.Debug(DebugTextualInclude, () => "include: " + line);
+            Logger.Current.Debug(DebugTextualInclude, () => "include: " + line);
 
             if (line[0] != '/' && line[0] != '\\' && line[0] != '~')
             {
-                Logger.Debug(DebugTextualInclude, () => "received a relative path");
-                Logger.Debug(DebugTextualInclude, () => "parent file path: " + Context.PathName);
+                Logger.Current.Debug(DebugTextualInclude, () => "received a relative path");
+                Logger.Current.Debug(DebugTextualInclude, () => "parent file path: " + Context.PathName);
                 var parent_Path = Path.GetDirectoryName(Context.PathName);
 
                 if (String.IsNullOrWhiteSpace(parent_Path))
@@ -917,7 +948,7 @@ namespace NLedger.Textual
                 else
                 {
                     fileName = Path.Combine(parent_Path, line);
-                    Logger.Debug(DebugTextualInclude, () => "normalized path: " + fileName);
+                    Logger.Current.Debug(DebugTextualInclude, () => "normalized path: " + fileName);
                 }
             }
             else
@@ -926,7 +957,7 @@ namespace NLedger.Textual
             }
 
             fileName = FileSystem.ResolvePath(fileName);
-            Logger.Debug(DebugTextualInclude, () => "resolved path: " + fileName);
+            Logger.Current.Debug(DebugTextualInclude, () => "resolved path: " + fileName);
 
             string parentPath = FileSystem.GetParentPath(fileName);
             var glob = Mask.AssignGlob(String.Format("^{0}$", FileSystem.GetFileName(fileName)));
@@ -947,8 +978,8 @@ namespace NLedger.Textual
                         //int count = Context.Count;
                         //int sequence = Context.Sequence;
 
-                        Logger.Debug(DebugTextualInclude, () => "Including: " + iter);
-                        Logger.Debug(DebugTextualInclude, () => "Master account: " + master.FullName);
+                        Logger.Current.Debug(DebugTextualInclude, () => "Including: " + iter);
+                        Logger.Current.Debug(DebugTextualInclude, () => "Master account: " + master.FullName);
 
                         ContextStack.Push(iter);
 
@@ -1080,7 +1111,7 @@ namespace NLedger.Textual
             format = format.Trim();
             Amount amt = new Amount();
             amt.Parse(ref format);
-            Validator.Verify(amt.Valid());
+            Validator.Verify(() => amt.Valid());
         }
 
         /// <summary>
@@ -1200,7 +1231,7 @@ namespace NLedger.Textual
             {
                 int year = int.Parse(line.Trim());
                 ApplyStack.PushFront("year", TimesCommon.Current.Epoch);
-                Logger.Debug(DebugTimesEpoch, () => String.Format("Setting current year to {0}", year));
+                Logger.Current.Debug(DebugTimesEpoch, () => String.Format("Setting current year to {0}", year));
                 // This must be set to the last day of the year, otherwise partial
                 // dates like "11/01" will refer to last year's november, not the
                 // current year.
@@ -1354,7 +1385,7 @@ namespace NLedger.Textual
         private void ReadDefaultCommodityDirective(string line)
         {
             Amount amt = new Amount(line.Substring(1).Trim());
-            Validator.Verify(amt.Valid());
+            Validator.Verify(() => amt.Valid());
             CommodityPool.Current.DefaultCommodity = amt.Commodity;
             amt.Commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;
         }
@@ -1529,7 +1560,7 @@ namespace NLedger.Textual
                     {
                         revealContext = false;
 
-                        Post post = ParsePost(p, null, TopAccount); // TODO - "true" at the end
+                        Post post = ParsePost(p, null, TopAccount, true);
                         if (post != null)
                         {
                             revealContext = true;

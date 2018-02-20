@@ -12,26 +12,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLedger.Utility
+namespace NLedger.Utils
 {
-    public class Validator
+    /// <summary>
+    /// Ported from enum log_level_t
+    /// </summary>
+    public enum LogLevelEnum
     {
-        public static bool IsVerifyEnabled { get; set; }
-
-        public static void Verify(bool result)
-        {
-            if (IsVerifyEnabled && !result)
-                throw new InvalidOperationException("Validation failed");
-        }
-
-        public static void Verify(Func<bool> resultFunc)
-        {
-            if (resultFunc == null)
-                throw new ArgumentNullException("resultFunc");
-
-            if (IsVerifyEnabled && !resultFunc())
-                throw new InvalidOperationException("Validation failed");
-        }
-
+        LOG_OFF = 0,
+        LOG_CRIT,
+        LOG_FATAL,
+        LOG_ASSERT,
+        LOG_ERROR,
+        LOG_VERIFY,
+        LOG_WARN,
+        LOG_INFO,
+        LOG_EXCEPT,
+        LOG_DEBUG,
+        LOG_TRACE,
+        LOG_ALL
     }
 }

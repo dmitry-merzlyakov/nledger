@@ -8,6 +8,7 @@
 // **********************************************************************************
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +27,6 @@ namespace NLedger
 
         public int Execute(string argString, IDictionary<string, string> envp, TextReader inReader, TextWriter outWriter, TextWriter errorWriter)
         {
-            Logger.Current.OutWriter = errorWriter;
             FileSystem.SetConsoleInput(inReader);
             FileSystem.SetConsoleOutput(outWriter);
             FileSystem.SetConsoleError(errorWriter);
@@ -35,7 +35,7 @@ namespace NLedger
             int status = 1;
             GlobalScope.HandleDebugOptions(args);
             // initialize_memory_tracing - not implemented
-            Logger.Info(LedgerStarting);
+            Logger.Current.Info(() => LedgerStarting);
             // ::textdomain("ledger"); - not implemented
             GlobalScope globalScope = null;
             try
@@ -128,7 +128,7 @@ namespace NLedger
                 globalScope.QuickClose();
                 globalScope.Dispose();  // {DM] It is the most appropriate place to call Dispose for the global scope.
             }
-            Logger.Info(LedgerEnded); // let global_scope leak!
+            Logger.Current.Info(() => LedgerEnded); // let global_scope leak!
 
             // Return the final status to the operating system, either 1 for error or 0
             // for a successful completion.

@@ -10,6 +10,7 @@ using NLedger.Amounts;
 using NLedger.Expressions;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,6 +104,7 @@ namespace NLedger.Annotate
 
                     Price = new Amount();
                     PriceParse(ref buf);
+                    Logger.Current.Debug("commodity.annotations", () => String.Format("Parsed annotation price: {0}", Price));
                 }
                 else if (line.StartsWith("["))
                 {
@@ -165,6 +167,9 @@ namespace NLedger.Annotate
                     break;
                 }
             }
+
+            if (Logger.Current.ShowDebug("amount.commodities") && !IsNullOrEmpty(this))
+                Logger.Current.Debug("amount.commodities", () => String.Format("Parsed commodity annotations:\r\n{0}", this));
         }
 
         public bool Equals(Annotation other)

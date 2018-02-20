@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Filters
 {
@@ -110,6 +111,7 @@ namespace NLedger.Filters
 
                 if (((next - last).Days) > (365 * ForecastYears))
                 {
+                    Logger.Current.Debug("filters.forecast", () => String.Format("Forecast transaction exceeds {0} years beyond today", ForecastYears));
                     PendingPosts.Remove(least);
                     continue;
                 }
@@ -124,6 +126,7 @@ namespace NLedger.Filters
                 Post temp = Temps.CopyPost(post, xact);
 
                 // Submit the generated posting
+                Logger.Current.Debug("filters.forecast", () => String.Format("Forecast transaction: {0} {1} {2}", temp.GetDate(), temp.Account.FullName, temp.Amount));
                 base.Handle(temp);
 
                 // If the generated posting matches the user's report query, check whether
@@ -131,9 +134,11 @@ namespace NLedger.Filters
                 // it does, drop this periodic posting from consideration.
                 if (temp.HasXData && temp.XData.Matches)
                 {
+                    Logger.Current.Debug("filters.forecast", () => "  matches report query");
                     BindScope boundScope = new BindScope(Context, temp);
                     if (!Pred.Calc(boundScope).Bool)
                     {
+                        Logger.Current.Debug("filters.forecast", () => "  fails to match continuation criteria");
                         PendingPosts.Remove(least);
                         continue;
                     }

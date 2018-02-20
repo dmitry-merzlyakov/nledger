@@ -6,6 +6,8 @@ Code and feature completion; continuous integration.
 
 ### Features
 
+- Completed all TRACE, DEBUG and INFO messages;
+- Completed all VERIFY assertions;
 - Added arbitrary precision arithmetic to deal with Amount
   quantities; original Ledger tests that validate big numbers are passed;
   performance degradation is not detected. Decimal arithmetic is still 
@@ -23,6 +25,8 @@ TBD
 ### Bug Fixing
 
 *None* public bug fixing requests at the memoment.
+
+- Fixed handling a category name for "debug" option;
 
 ### Breaking Changes
 

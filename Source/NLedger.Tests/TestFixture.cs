@@ -8,6 +8,8 @@
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Times;
+using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,7 +26,7 @@ namespace NLedger.Tests
     {
         InitMainApplicationContext = 1,
         InitTimesCommon = 2,
-        SaveCultureInfo
+        SaveCultureInfo= 3
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]

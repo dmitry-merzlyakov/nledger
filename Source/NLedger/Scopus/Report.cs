@@ -23,6 +23,7 @@ using NLedger.Print;
 using NLedger.Querying;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -502,11 +503,19 @@ namespace NLedger.Scopus
 
             if (cols > 0)
             {
+                Logger.Current.Debug("auto.columns", () => String.Format("cols = {0}", cols));
+
                 long dateWidth = DateWidthHandler.Handled ? long.Parse(DateWidthHandler.Str()) : TimesCommon.Current.FormatDate(TimesCommon.Current.CurrentDate, FormatTypeEnum.FMT_PRINTED).Length;
                 long payeeWidth = PayeeWidthHandler.Handled ? long.Parse(PayeeWidthHandler.Str()) : (long)(((double)cols) * 0.263157);
                 long accountWidth = AccountWidthHandler.Handled ? long.Parse(AccountWidthHandler.Str()) : (long)(((double)cols) * 0.302631);
                 long amountWidth = AmountWidthHandler.Handled ? long.Parse(AmountWidthHandler.Str()) : (long)(((double)cols) * 0.157894);
                 long totalWidth = TotalWidthHandler.Handled ? long.Parse(TotalWidthHandler.Str()) : amountWidth;
+
+                Logger.Current.Debug("auto.columns", () => String.Format("date_width    = {0}", dateWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("payee_width   = {0}", payeeWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("account_width = {0}", accountWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("amount_width  = {0}", amountWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("total_width   = {0}", totalWidth));
 
                 if (!DateWidthHandler.Handled && !PayeeWidthHandler.Handled && !AccountWidthHandler.Handled && !AmountWidthHandler.Handled && !TotalWidthHandler.Handled)
                 {
@@ -516,6 +525,7 @@ namespace NLedger.Scopus
 
                     while (total > cols && accountWidth > 5 && payeeWidth > 5)
                     {
+                        Logger.Current.Debug("auto.columns", () => "adjusting account down");
                         if (total > cols)
                         {
                             --accountWidth;
@@ -531,6 +541,7 @@ namespace NLedger.Scopus
                             --payeeWidth;
                             --total;
                         }
+                        Logger.Current.Debug("auto.columns", () => String.Format("account_width now = {0}", accountWidth));
                     }
                 }
 
@@ -580,20 +591,34 @@ namespace NLedger.Scopus
             Query query = new Query(args, WhatToKeep());
 
             if (query.HasQuery(QueryKindEnum.QUERY_LIMIT))
+            {
                 LimitHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_LIMIT));
+                Logger.Current.Debug("report.predicate", () => String.Format("Limit predicate   = {0}", LimitHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_ONLY))
+            {
                 OnlyHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_ONLY));
+                Logger.Current.Debug("report.predicate", () => String.Format("Only predicate    = {0}", OnlyHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_SHOW))
+            {
                 DisplayHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_SHOW));
+                Logger.Current.Debug("report.predicate", () => String.Format("Display predicate = {0}", DisplayHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_BOLD))
+            {
                 BoldIfHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_BOLD));
+                Logger.Current.Debug("report.predicate", () => String.Format("Bolding predicate = {0}", BoldIfHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_FOR))
             {
                 PeriodHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_FOR));
+                Logger.Current.Debug("report.predicate", () => String.Format("Report period     = {0}", PeriodHandler.Str()));
+
                 NormalizePeriod();   // it needs normalization
             }
         }
@@ -704,6 +729,7 @@ namespace NLedger.Scopus
 
                 if (Report.DisplayHandler.Handled)
                 {
+                    Logger.Current.Debug("report.predicate", () => String.Format("Display predicate = {0}", Report.DisplayHandler.Str()));
                     if (!Report.SortHandler.Handled)
                     {
                         BasicAccountsIterator iter = new BasicAccountsIterator(Report.Session.Journal.Master);

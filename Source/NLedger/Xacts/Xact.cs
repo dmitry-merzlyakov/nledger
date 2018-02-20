@@ -8,7 +8,7 @@
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
-using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -59,9 +59,9 @@ namespace NLedger.Xacts
 
         public override bool Valid()
         {
-            if (Date == default(DateTime))
+            if (!Date.HasValue)
             {
-                Logger.Debug("ledger.validate", () => "xact_t: ! _date");
+                Logger.Current.Debug("ledger.validate", () => "xact_t: ! _date");
                 return false;
             }
 
@@ -69,7 +69,7 @@ namespace NLedger.Xacts
             {
                 if (post.Xact != this || !post.Valid())
                 {
-                    Logger.Debug("ledger.validate", () => "xact_t: post not valid");
+                    Logger.Current.Debug("ledger.validate", () => "xact_t: post not valid");
                     return false;
                 }
             }

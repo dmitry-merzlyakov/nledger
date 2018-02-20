@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLedger.Utility;
+using NLedger.Utils;
 
 namespace NLedger.Times
 {
@@ -138,10 +139,10 @@ namespace NLedger.Times
             traits = default(DateTraits);
             if (!when.IsNotADate())
             {
-                Logger.Debug(DebugTimesParse, () => String.Format("Passed date string:  {0}", dateStr));
-                Logger.Debug(DebugTimesParse, () => String.Format("Parsed date string:  {0}", buf));
-                Logger.Debug(DebugTimesParse, () => String.Format("Parsed result is:    {0}", when));
-                Logger.Debug(DebugTimesParse, () => String.Format("Formatted result is: {0}", io.Format(when)));
+                Logger.Current.Debug(DebugTimesParse, () => String.Format("Passed date string:  {0}", dateStr));
+                Logger.Current.Debug(DebugTimesParse, () => String.Format("Parsed date string:  {0}", buf));
+                Logger.Current.Debug(DebugTimesParse, () => String.Format("Parsed result is:    {0}", when));
+                Logger.Current.Debug(DebugTimesParse, () => String.Format("Formatted result is: {0}", io.Format(when)));
 
                 string whenStr = io.Format(when);
 

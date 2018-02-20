@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,6 +27,8 @@ namespace NLedger.Times
             DateTime parsedDate;
             if (DateTime.TryParseExact(str, ParseDotNetFmtStr, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate))
                 return parsedDate;
+
+            Logger.Current.Debug("times.parse", () => String.Format("Failed to parse date/time '{0}' using pattern '{1}'", str, FmtStr));
 
             return default(DateTime);
         }

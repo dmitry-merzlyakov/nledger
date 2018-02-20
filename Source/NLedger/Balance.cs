@@ -15,6 +15,7 @@ using NLedger.Utility;
 using NLedger.Amounts;
 using NLedger.Annotate;
 using NLedger.Commodities;
+using NLedger.Utils;
 
 namespace NLedger
 {
@@ -119,7 +120,6 @@ namespace NLedger
 
         public Balance(Amount amount) : this()
         {
-            /// TODO - VERIFY
             Add(amount);
         }
 
@@ -183,7 +183,15 @@ namespace NLedger
         /// </summary>
         public bool Valid()
         {
-            return Amounts.All(amt => amt.Value.Valid());
+            foreach(var amount in Amounts.Values)
+            {
+                if (!amount.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "balance_t: ! pair.second.valid()");
+                    return false;
+                }
+            }
+            return true;
         }
 
         public IDictionary<Commodity, Amount> Amounts { get; private set; }

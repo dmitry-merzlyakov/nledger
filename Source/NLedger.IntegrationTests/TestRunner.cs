@@ -234,7 +234,6 @@ namespace NLedger.IntegrationTests
 
         private string NormalizeOutput(string s)
         {
-            // TODO - should we consider tailing \n as a problem for .Net code? 
             return s.Replace("\r\n", "\n").Trim();
         }
 

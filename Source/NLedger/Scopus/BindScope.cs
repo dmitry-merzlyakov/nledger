@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,15 @@ using System.Threading.Tasks;
 
 namespace NLedger.Scopus
 {
+    /// <summary>
+    /// Ported from bind_scope_t
+    /// </summary>
     public class BindScope : ChildScope
     {
         public BindScope(Scope parent, Scope grandChild) : base(parent)
         {
             GrandChild = grandChild;
+            Logger.Current.Debug("scope.symbols", () => String.Format("Binding scope {0} with {1}", parent, grandChild));
         }
 
         public Scope GrandChild { get; private set; }

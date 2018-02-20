@@ -214,5 +214,19 @@ namespace NLedger.Tests.Expressions
             Assert.IsTrue(Object.ReferenceEquals(val, result));
         }
 
+        [TestMethod]
+        public void ExprOp_Dump_ReturnsContentOfExprOp()
+        {
+            Value val = Value.StringValue("some-left-string-value");
+            ExprOp exprOp1 = new ExprOp(OpKindEnum.VALUE) { AsValue = val };
+            Assert.AreEqual("VALUE: \"some-left-string-value\" (0)", exprOp1.Dump().TrimEnd());
+
+            ExprOp exprOp2 = new ExprOp(OpKindEnum.O_OR);
+            exprOp2.Left = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(10) };
+            exprOp2.Right = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.False };
+            Assert.AreEqual("O_OR (0)\r\n VALUE: 10 (0)\r\n VALUE: false (0)", exprOp2.Dump().TrimEnd());
+
+        }
+
     }
 }

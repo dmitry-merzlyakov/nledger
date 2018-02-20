@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,15 @@ namespace NLedger.Scopus
 {
     public static class ScopeExtensions
     {
+        /// <summary>
+        /// Ported from T * search_scope(scope_t * ptr, bool prefer_direct_parents = false)
+        /// </summary>
         public static T SearchScope<T>(this Scope scope, bool preferDirectParent = false) where T : Scope
         {
             if (scope == null)
                 throw new ArgumentNullException("scope");
+
+            Logger.Current.Debug("scope.search", () => String.Format("Searching scope {0}", scope.Description));
 
             T sought = scope as T;
             if (sought != null)

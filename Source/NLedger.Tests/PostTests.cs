@@ -11,6 +11,7 @@ using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Commodities;
 using NLedger.Journals;
+using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,58 @@ namespace NLedger.Tests
 
             Assert.IsTrue(post.HasPos);
             Assert.AreEqual("posting at line 5", post.Description);
+        }
+
+        [TestMethod]
+        public void Post_Valid_CheckWhetherXactIsPopulated()
+        {
+            Post post = new Post(new Account(), new Amount(10));
+            Xact xact = new Xact();
+            xact.Posts.Add(post);
+
+            Assert.IsFalse(post.Valid());
+            post.Xact = xact;
+            Assert.IsTrue(post.Valid());
+        }
+
+        [TestMethod]
+        public void Post_Valid_CheckWhetherXactRefersToPost()
+        {
+            Post post = new Post(new Account(), new Amount(10));
+            Xact xact = new Xact();
+            post.Xact = xact;
+
+            Assert.IsFalse(post.Valid());
+            xact.Posts.Add(post);
+            Assert.IsTrue(post.Valid());
+        }
+
+        [TestMethod]
+        public void Post_Valid_CheckWhetherAccountIsPopulated()
+        {
+            Post post = new Post(null, new Amount(10));
+            Xact xact = new Xact();
+            post.Xact = xact;
+            xact.Posts.Add(post);
+
+            Assert.IsFalse(post.Valid());
+            post.Account = new Account();
+            Assert.IsTrue(post.Valid());
+        }
+
+        [TestMethod]
+        public void Post_Valid_CheckWhetherAmountIsValid()
+        {
+            Post post = new Post(new Account(), new Amount(10));
+            Xact xact = new Xact();
+            post.Xact = xact;
+            xact.Posts.Add(post);
+
+            Assert.IsTrue(post.Valid());
+            var quantity = new Amount(10).Quantity.SetPrecision(2048);
+            post.Amount = new Amount(quantity, null);
+            Assert.IsFalse(post.Amount.Valid());
+            Assert.IsFalse(post.Valid());
         }
 
     }

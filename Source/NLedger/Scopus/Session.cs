@@ -14,6 +14,7 @@ using NLedger.Journals;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -216,18 +217,24 @@ namespace NLedger.Scopus
                 ParsingContext.Pop();
             }
 
+            Logger.Current.Debug("ledger.read", () => String.Format("xact_count [{0}] == journal->xacts.size() [{1}]", xactCount, Journal.Xacts.Count));
             if (xactCount != Journal.Xacts.Count)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("assert(xact_count == journal->xacts.size())");
 
             if (populatedDataFiles)
                 FileHandler.DataFiles.Clear();
 
+            Validator.Verify(() => Journal.Valid());
+
             return Journal.Xacts.Count();
         }
 
+        /// <summary>
+        /// Ported from journal_t * session_t::read_journal_files
+        /// </summary>
         public Journal ReadJournalFiles()
         {
-            Logger.Info("Read journal file");
+            var info = Logger.Current.InfoContext(TimerName.Journal)?.Message("Read journal file").Start();  // INFO_START
 
             string masterAccount = null;
             if (MasterAccountHandler.Handled)
@@ -235,7 +242,9 @@ namespace NLedger.Scopus
 
             int count = ReadData(masterAccount);
 
-            Logger.Info("Finished, found {0} transactions", count);
+            info?.Finish(); // INFO_FINISH
+
+            Logger.Current.Info(() => String.Format("Found {0} transactions", count));
 
             return Journal;
         }

@@ -9,6 +9,7 @@
 using NLedger.Amounts;
 using NLedger.Textual;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,13 @@ namespace NLedger.Expressions
                     ErrorContext.Current.AddErrorContext("While parsing value expression:");
                     int endPos = inStream.Pos;
                     int pos = endPos > 0 ? endPos - Lookahead.Length : 0;
+
+                    Logger.Current.Debug("parser.error", () => String.Format("original_string = '{0}'", originalString));
+                    Logger.Current.Debug("parser.error", () => String.Format("            pos = {0}", pos));
+                    Logger.Current.Debug("parser.error", () => String.Format("        end_pos = {0}", endPos));
+                    Logger.Current.Debug("parser.error", () => String.Format("     token kind = {0}", Lookahead.Kind));
+                    Logger.Current.Debug("parser.error", () => String.Format("   token length = {0}", Lookahead.Length));
+
                     ErrorContext.Current.AddErrorContext(ErrorContext.LineContext(originalString, pos, endPos));
                 }
                 throw;

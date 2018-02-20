@@ -16,6 +16,7 @@ using System.IO;
 using NLedger.Amounts;
 using NLedger.Values;
 using NLedger.Scopus;
+using NLedger.Utils;
 
 namespace NLedger.Expressions
 {
@@ -253,7 +254,7 @@ namespace NLedger.Expressions
                         ErrorContext.Current.AddErrorContext("While evaluating value expression:");
                         ErrorContext.Current.AddErrorContext(ErrorContext.OpContext(Op, locus));
 
-                        if (Logger.Current.LogLevel >= LogLevelEnum.LOG_INFO)
+                        if (Logger.Current.ShowInfo())
                         {
                             ErrorContext.Current.AddErrorContext("The value expression tree was:");
                             ErrorContext.Current.AddErrorContext(Op.Dump());

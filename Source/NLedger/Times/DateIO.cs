@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NLedger.Utility;
 using System.Globalization;
+using NLedger.Utils;
 
 namespace NLedger.Times
 {
@@ -40,6 +41,8 @@ namespace NLedger.Times
                 if (Date.TryParseExact(s, fmt, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                     return parsedDate;
             }
+
+            Logger.Current.Debug("times.parse", () => String.Format("Failed to parse date '{0}' using pattern '{1}'", str, FmtStr));
 
             return default(Date);
         }

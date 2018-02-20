@@ -8,6 +8,7 @@
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
+using NLedger.Utility;
 using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
@@ -75,6 +76,16 @@ namespace NLedger.Tests.Xacts
             xact.Detach();
 
             Assert.AreEqual(1, account.Posts.Count);  // Post has not been removed
+        }
+
+        [TestMethod]
+        public void Xact_Valid_FailsIfNoDateValue()
+        {
+            Xact xact = new Xact();
+            Assert.IsFalse(xact.Valid());
+
+            xact.Date = (Date)DateTime.Today;
+            Assert.IsTrue(xact.Valid());
         }
     }
 }

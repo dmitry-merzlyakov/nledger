@@ -40,6 +40,6 @@ namespace NLedger.Times
         protected string ParseDotNetFmtStr { get; set; }
         protected string PrintDotNetFmtStr { get; set; }
 
-        private string FmtStr { get; set; }
+        protected string FmtStr { get; private set; }
     }
 }

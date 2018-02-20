@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +75,9 @@ namespace NLedger
 
         public bool Match(string text)
         {
-            return IsEmpty ? false : Expr.IsMatch(text);
+            var match = IsEmpty ? false : Expr.IsMatch(text);
+            Logger.Current.Debug("mask.match", () => String.Format("Matching: \"{0}\" =~ /{1}/ = {2}", text, Str(), match));
+            return match;
         }
 
         public IEnumerable<Match> Matches(string text)

@@ -10,6 +10,7 @@ using NLedger.Expressions;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -227,8 +228,13 @@ namespace NLedger.Scopus
             }
         }
 
+        /// <summary>
+        /// Ported from global_scope_t::read_environment_settings
+        /// </summary>
         public void ReadEnvironmentSettings(IDictionary<string, string> envp)
         {
+            var trace = Logger.Current.TraceContext(TimerName.Environment, 1)?.Message("Processed environment variables").Start(); // TRACE_START
+
             Option.ProcessEnvironment(envp, "LEDGER_", Report);
 
             // These are here for backwards compatibility, but are deprecated.
@@ -249,6 +255,8 @@ namespace NLedger.Scopus
             variable = Environment.GetEnvironmentVariable("PRICE_EXP");
             if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("LEDGER_PRICE_EXP")))
                 Option.ProcessOption("environ", "price-exp", Report, variable, "PRICE_EXP");
+
+            trace?.Finish(); // TRACE_FINISH
         }
 
         public void ReadInit()
@@ -277,9 +285,13 @@ namespace NLedger.Scopus
                 ParseInit(initFile);
         }
 
+        /// <summary>
+        /// Ported from global_scope_t::parse_init
+        /// </summary>
         public void ParseInit(string initFile)
         {
-            // Read initialization file
+            var trace = Logger.Current.TraceContext(TimerName.Init, 1)?.Message("Read initialization file").Start(); // TRACE_START
+
             ParseContextStack parsingContext = new ParseContextStack();
             parsingContext.Push(initFile);
             parsingContext.GetCurrent().Journal = Session.Journal;
@@ -289,11 +301,19 @@ namespace NLedger.Scopus
                 Session.Journal.AutoXacts.Count > 0 ||
                 Session.Journal.PeriodXacts.Count > 0)
                 throw new ParseError(String.Format(ParseError.ParseError_TransactionsFoundInInitializationFile, initFile));
+
+            trace?.Finish(); // TRACE_FINISH
         }
 
+        /// <summary>
+        /// Ported from global_scope_t::read_command_arguments
+        /// </summary>
         public IEnumerable<string> ReadCommandArguments(Scope scope, IEnumerable<string> args)
         {
-            return Option.ProcessArguments(args, scope);
+            var trace = Logger.Current.TraceContext(TimerName.Arguments, 1)?.Message("Processed command-line arguments").Start(); // TRACE_START
+            var remaining = Option.ProcessArguments(args, scope);
+            trace?.Finish();  // TRACE_FINISH
+            return remaining;
         }
 
         public void VisitManPage()
@@ -421,9 +441,9 @@ namespace NLedger.Scopus
             foreach (string arg in args)
                 commandArgs.PushBack(Value.Get(arg));
 
-            // INFO_START(command, "Finished executing command");  TODO
+            var info = Logger.Current.InfoContext(TimerName.Command)?.Message("Finished executing command").Start(); // INFO_START
             command(commandArgs);
-            // INFO_FINISH(command);
+            info?.Finish(); // INFO_FINISH
         }
 
         public void QuickClose()

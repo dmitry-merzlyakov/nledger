@@ -80,6 +80,7 @@
     <Compile Include="Utility\Graph\GraphExtensionsTests.cs" />
     <Compile Include="Utility\InputTextStreamTests.cs" />
     <Compile Include="Utility\SHA1Tests.cs" />
+    <Compile Include="Utils\TimerContextTests.cs" />
     <Compile Include="Values\DefaultValueComparerTests.cs" />
     <Compile Include="Xacts\AddBalancingPostTests.cs" />
     <Compile Include="Amounts\AmountTests.cs" />
@@ -137,7 +138,7 @@
     <Compile Include="Utility\Graph\ShortestPathSearcherTests.cs" />
     <Compile Include="Utility\Graph\VertexDescriptorTests.cs" />
     <Compile Include="Utility\CollectionIteratorTests.cs" />
-    <Compile Include="Utility\LoggerTests.cs" />
+    <Compile Include="Utils\LoggerTests.cs" />
     <Compile Include="Utility\ObjectExtensionsTests.cs" />
     <Compile Include="Utility\Rnd\BoolGeneratorTests.cs" />
     <Compile Include="Utility\Rnd\CharGeneratorTests.cs" />

@@ -9,6 +9,7 @@
 using NLedger.Accounts;
 using NLedger.Expressions;
 using NLedger.Scopus;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,9 @@ namespace NLedger
             }
         }
 
+        /// <summary>
+        /// Ported from bool sort_value_is_less_than
+        /// </summary>
         public static int SortValueIsLessThan(IList<Tuple<Value,bool>> leftValues, IList<Tuple<Value,bool>> rightValues)
         {
             using(IEnumerator<Tuple<Value,bool>> left = leftValues.GetEnumerator())
@@ -66,10 +70,17 @@ namespace NLedger
                         // Don't even try to sort balance values
                         if (leftVal.Type != ValueTypeEnum.Balance && rightVal.Type != ValueTypeEnum.Balance)
                         {
+                            Logger.Current.Debug("value.sort", () => String.Format(" Comparing {0} < {1}", leftVal, rightVal));
                             if (leftVal.IsLessThan(rightVal))
+                            {
+                                Logger.Current.Debug("value.sort", () => "  is less");
                                 return left.Current.Item2 ? -1 : 1;
+                            }
                             if (leftVal.IsGreaterThan(rightVal))
+                            {
+                                Logger.Current.Debug("value.sort", () => "  is greater");
                                 return left.Current.Item2 ? 1 : -1;
+                            }
                         }
                     }
                 }
@@ -136,6 +147,9 @@ namespace NLedger
             : base(sortOrder, report)
         { }
 
+        /// <summary>
+        /// Ported from bool compare_items<account_t>::operator()(account_t * left, account_t * right)
+        /// </summary>
         public override int Compare(Account left, Account right)
         {
             if (left == null)
@@ -159,6 +173,8 @@ namespace NLedger
                 FindSortValues(rXData.SortValues, boundScope);
                 rXData.SortCalc = true;
             }
+
+            Logger.Current.Debug("value.sort", () => String.Format("Comparing accounts {0} <> {1}", left.FullName, right.FullName));
 
             return - SortValueIsLessThan(lXData.SortValues, rXData.SortValues); // [DM] Invert result because it is used as IComparer output that requires opposite meaning
         }

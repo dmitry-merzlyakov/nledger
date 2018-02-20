@@ -7,8 +7,8 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Commodities;
-using NLedger.Utility;
 using NLedger.Utility.BigValues;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -118,7 +118,10 @@ namespace NLedger
         public bool Valid()
         {
             if (Precision > 1024)
+            {
+                Logger.Current.Debug("ledger.validate", () => "amount_t::bigint_t: prec > 1024");
                 return false;
+            }
 
             return true;
         }
@@ -210,6 +213,14 @@ namespace NLedger
         // stream_out_mpq
         public string Print(int precision, int zerosSpec = -1, Commodity comm = null)
         {
+            if (Logger.Current.ShowDebug("amount.convert"))
+            {
+                var value = Value;
+                var prec = Precision;
+                Logger.Current.Debug("amount.convert", () => String.Format("Rational to convert = {0}", value.ToString("B", CultureInfo.CurrentCulture)));
+                Logger.Current.Debug("amount.convert", () => String.Format("mpfr_print = {0} (precision {1}, zeros_prec {2})", value.ToString(), prec, zerosSpec));
+            }
+
             string digitSeparator = "";
             if (comm != null && comm.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_STYLE_THOUSANDS))
             {

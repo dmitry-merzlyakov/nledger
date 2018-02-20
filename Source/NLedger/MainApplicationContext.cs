@@ -13,6 +13,7 @@ using NLedger.Formatting;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,8 +57,9 @@ namespace NLedger
         public Scope DefaultScope { get; set; }
         public Scope EmptyScope { get; set; }
 
-        // For Logger
-        public Logger Logger { get; set; }
+        // For Logger & Validator
+        public ILogger Logger { get; set; } = new Logger();
+        public bool IsVerifyEnabled { get; set; }
 
         // For Format
         public FormatElisionStyleEnum DefaultStyle { get; set; }

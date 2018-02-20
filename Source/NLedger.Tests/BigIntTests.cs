@@ -147,7 +147,7 @@ namespace NLedger.Tests
         }
 
         [TestMethod]
-        public void BigInt_Valid_CheckdWhetherPrecisonLessThan2014()
+        public void BigInt_Valid_CheckdWhetherPrecisonLessThan1024()
         {
             BigInt value1 = BigInt.FromInt(10);
             Assert.IsTrue(value1.Valid());

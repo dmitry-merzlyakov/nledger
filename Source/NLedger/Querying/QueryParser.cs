@@ -9,6 +9,7 @@
 using NLedger.Annotate;
 using NLedger.Expressions;
 using NLedger.Textual;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -145,7 +146,9 @@ namespace NLedger.Querying
                                 }
 
                                 ExprOp mask = new ExprOp(OpKindEnum.VALUE);
+                                Logger.Current.Debug("query.mask", () => String.Format("Mask from string: {0}", tok.Value));
                                 mask.AsValue = Value.Get(new Mask(tok.Value));
+                                Logger.Current.Debug("query.mask", () => String.Format("Mask is: {0}", mask.AsValue.AsMask.Str()));
 
                                 node.Left = ident;
                                 node.Right = mask;

@@ -9,8 +9,8 @@
 using NLedger.Accounts;
 using NLedger.Chain;
 using NLedger.Scopus;
-using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -59,7 +59,7 @@ namespace NLedger.Filters
                         if (pair.DateInterval.Range != null)
                             rangeBegin = pair.DateInterval.Range.Begin;
 
-                        Logger.Debug(DebugBudgetGenerate, () => "Finding period for pending post");
+                        Logger.Current.Debug(DebugBudgetGenerate, () => "Finding period for pending post");
                         if (!pair.DateInterval.FindPeriod(rangeBegin ?? date))
                             continue;
                         if (!pair.DateInterval.Start.HasValue)
@@ -67,10 +67,10 @@ namespace NLedger.Filters
                         begin = pair.DateInterval.Start;
                     }
 
-                    Logger.Debug(DebugBudgetGenerate, () => String.Format("begin = {0}", begin));
-                    Logger.Debug(DebugBudgetGenerate, () => String.Format("date  = {0}", date));
+                    Logger.Current.Debug(DebugBudgetGenerate, () => String.Format("begin = {0}", begin));
+                    Logger.Current.Debug(DebugBudgetGenerate, () => String.Format("date  = {0}", date));
                     if (pair.DateInterval.Finish.HasValue)
-                        Logger.Debug(DebugBudgetGenerate, () => String.Format("pair.first.finish = {0}", pair.DateInterval.Finish));
+                        Logger.Current.Debug(DebugBudgetGenerate, () => String.Format("pair.first.finish = {0}", pair.DateInterval.Finish));
 
                     if (begin <= date && (!pair.DateInterval.Finish.HasValue || begin < pair.DateInterval.Finish))
                     {
@@ -80,7 +80,7 @@ namespace NLedger.Filters
                         if (!pair.DateInterval.Start.HasValue)
                             postsToErase.Add(pair);
 
-                        Logger.Debug(DebugBudgetGenerate, () => "Reporting budget for " + post.ReportedAccount.FullName);
+                        Logger.Current.Debug(DebugBudgetGenerate, () => "Reporting budget for " + post.ReportedAccount.FullName);
 
                         Xact xact = Temps.CreateXact();
                         xact.Payee = "Budget transaction";

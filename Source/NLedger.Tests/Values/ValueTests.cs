@@ -17,11 +17,12 @@ using System.Text.RegularExpressions;
 using NLedger.Scopus;
 using NLedger.Expressions;
 using NLedger.Commodities;
+using NLedger.Utils;
 
 namespace NLedger.Tests.Values
 {
     [TestClass]
-    [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
+    [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon )]
     public class ValueTests : TestFixture
     {
         [TestMethod]
@@ -515,6 +516,38 @@ namespace NLedger.Tests.Values
 
             Assert.IsFalse((bool)balance);
             Assert.IsFalse(val.Bool);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionFailedError))]
+        public void Value_Get_AmountMustBeValid()
+        {
+            Validator.IsVerifyEnabled = true;
+
+            Amount amount = new Amount(10);
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+
+            Assert.IsFalse(amount.Valid());
+            Value.Get(amount);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionFailedError))]
+        public void Value_Get_BalanceMustBeValid()
+        {
+            Validator.IsVerifyEnabled = true;
+
+            Balance balance = new Balance();
+
+            Amount amount = new Amount(10);
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+            balance.Add(amount);
+
+            Assert.IsFalse(amount.Valid());
+            Assert.IsFalse(balance.Valid());
+            Value.Get(balance);
         }
 
     }

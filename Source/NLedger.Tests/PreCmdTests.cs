@@ -56,7 +56,13 @@ namespace NLedger.Tests
 --- Text as parsed ---
 (2 + 2)
 --- Expression tree ---
+O_ADD (0)
+ VALUE: 2 (0)
+ VALUE: 2 (0)
 --- Compiled tree ---
+O_ADD (0)
+ VALUE: 2 (0)
+ VALUE: 2 (0)
 --- Calculated value ---
 {4}
 ";

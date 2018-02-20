@@ -13,6 +13,7 @@ using NLedger.Items;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -123,6 +124,7 @@ namespace NLedger.Csv
                             bool found = false;
                             foreach (Tuple<Mask,string> value in Context.Journal.PayeeAliasMappings)
                             {
+                                Logger.Current.Debug("csv.mappings", () => String.Format("Looking for payee mapping: {0}", value.Item1));
                                 if (value.Item1.Match(field))
                                 {
                                     xact.Payee = value.Item2;
@@ -314,6 +316,8 @@ namespace NLedger.Csv
                     Index.Add(CsvHeadersEnum.FIELD_NOTE);
                 else
                     Index.Add(CsvHeadersEnum.FIELD_UNKNOWN);
+
+                Logger.Current.Debug("csv.parse", () => String.Format("Header field: {0}", field));
             }
         }
 

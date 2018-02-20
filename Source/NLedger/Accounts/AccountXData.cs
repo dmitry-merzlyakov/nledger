@@ -27,14 +27,14 @@ namespace NLedger.Accounts
             ReportedPosts = new List<Post>();
         }
 
-        public bool SortCalc { get; set; }
-        public bool HasNonVirtuals { get; set; }
-        public bool HasUnbVirtuals { get; set; }
-        public bool AutoVirtualize { get; set; }
-        public bool Visited { get; set; }
-        public bool Matching { get; set; }
-        public bool ToDisplay { get; set; }
-        public bool Displayed { get; set; }
+        public bool SortCalc { get; set; }              // ACCOUNT_EXT_SORT_CALC
+        public bool HasNonVirtuals { get; set; }        // ACCOUNT_EXT_HAS_NON_VIRTUALS
+        public bool HasUnbVirtuals { get; set; }        // ACCOUNT_EXT_HAS_UNB_VIRTUALS
+        public bool AutoVirtualize { get; set; }        // ACCOUNT_EXT_AUTO_VIRTUALIZE
+        public bool Visited { get; set; }               // ACCOUNT_EXT_VISITED
+        public bool Matching { get; set; }              // ACCOUNT_EXT_MATCHING
+        public bool ToDisplay { get; set; }             // ACCOUNT_EXT_TO_DISPLAY
+        public bool Displayed { get; set; }             // ACCOUNT_EXT_DISPLAYED
 
         public AccountXDataDetails SelfDetails { get; private set; }
         public AccountXDataDetails FamilyDetails { get; private set; }

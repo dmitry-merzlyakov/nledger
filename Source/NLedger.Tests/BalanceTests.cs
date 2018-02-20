@@ -602,5 +602,19 @@ namespace NLedger.Tests
             Assert.IsTrue(balance.IsNonZero);  // Results in True
         }
 
+        [TestMethod]
+        public void Balance_Valid_ReturnsFalseIfAmountIsNotValid()
+        {
+            Balance balance = new Balance();
+            Assert.IsTrue(balance.Valid());
+
+            Amount amount = new Amount(10);
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+            balance.Add(amount);
+
+            Assert.IsFalse(amount.Valid());
+            Assert.IsFalse(balance.Valid());
+        }
     }
 }

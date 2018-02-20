@@ -9,6 +9,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,13 @@ using System.Threading.Tasks;
 namespace NLedger.Tests.Scopus
 {
     [TestClass]
+    [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class GlobalScopeTests : TestFixture
     {
         public override void CustomTestInitialize()
         {
             GlobalScopeArgsOnly = GlobalScope.ArgsOnly;
             ValidatorIsVerifyEnabled = Validator.IsVerifyEnabled;
-            LoggerLogLevel = Logger.Current.LogLevel;
-            LoggerLogCategory = Logger.Current.LogCategory;
-            LoggerTraceLevel = Logger.Current.TraceLevel;
             GlobalScopeInitFile = GlobalScope.InitFile;
         }
 
@@ -34,9 +33,6 @@ namespace NLedger.Tests.Scopus
         {
             GlobalScope.ArgsOnly = GlobalScopeArgsOnly;
             Validator.IsVerifyEnabled = ValidatorIsVerifyEnabled;
-            Logger.Current.LogLevel = LoggerLogLevel;
-            Logger.Current.LogCategory = LoggerLogCategory;
-            Logger.Current.TraceLevel = LoggerTraceLevel;
             GlobalScope.InitFile = GlobalScopeInitFile;
         }
 
@@ -121,9 +117,6 @@ namespace NLedger.Tests.Scopus
 
         private bool GlobalScopeArgsOnly;
         private bool ValidatorIsVerifyEnabled;
-        private LogLevelEnum LoggerLogLevel;
-        private string LoggerLogCategory;
-        private int LoggerTraceLevel;
         private string GlobalScopeInitFile;
     }
 }

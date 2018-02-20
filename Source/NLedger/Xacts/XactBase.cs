@@ -12,6 +12,7 @@ using NLedger.Commodities;
 using NLedger.Items;
 using NLedger.Journals;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -120,7 +121,7 @@ namespace NLedger.Xacts
                 // flag in a temporary to avoid it propagating into the balance.
                 balance = Value.AddOrSetValue(balance, Value.Get(p.KeepPrecision ? p.Rounded().Reduced() : p.Reduced()));
             }
-            Validator.Verify(balance.IsValid);
+            Validator.Verify(() => balance.IsValid);
 
             // Now that the post list has its final form, calculate the balance once
             // more in terms of total cost, accounting for any possible gain/loss
@@ -145,12 +146,12 @@ namespace NLedger.Xacts
                 throw new BalanceError(BalanceError.ErrorMessageTransactionDoesNotBalance);
             }
 
-            Validator.Verify(Valid());
+            Validator.Verify(() => Valid());
 
             return true;
         }
 
-        public virtual bool Valid()
+        public override bool Valid()
         {
             return true;
         }
@@ -172,7 +173,7 @@ namespace NLedger.Xacts
                 Amount p = post.Cost ?? post.Amount;
                 if (p != null && !p.IsEmpty)
                 {
-                    Logger.Debug("xact.finalize", () => String.Format("post must balance = {0}", p.Reduced()));
+                    Logger.Current.Debug("xact.finalize", () => String.Format("post must balance = {0}", p.Reduced()));
                     // If the amount was a cost, it very likely has the
                     // "keep_precision" flag set, meaning commodity display precision
                     // is ignored when displaying the amount.  We never want this set
@@ -195,12 +196,12 @@ namespace NLedger.Xacts
                     nullPost = post;
                 }
             }
-            Validator.Verify(balance == null || balance.IsValid);
+            Validator.Verify(() => balance == null || balance.IsValid);
 
-            Logger.Debug("xact.finalize", () => String.Format("initial balance = {0}", balance));
-            Logger.Debug("xact.finalize", () => String.Format("balance is {0}", balance.Label()));
+            Logger.Current.Debug("xact.finalize", () => String.Format("initial balance = {0}", balance));
+            Logger.Current.Debug("xact.finalize", () => String.Format("balance is {0}", balance.Label()));
             if (balance != null && balance.Type == ValueTypeEnum.Balance)
-                Logger.Debug("xact.finalize", () => String.Format("balance commodity count = {0}", balance.AsBalance.Amounts.Count()));
+                Logger.Current.Debug("xact.finalize", () => String.Format("balance commodity count = {0}", balance.AsBalance.Amounts.Count()));
 
             // If there is only one post, balance against the default account if one has
             // been set.
@@ -219,7 +220,7 @@ namespace NLedger.Xacts
                 // total value of one commodity by the total value of the other.  This
                 // establishes the per-unit cost for this post for both commodities.
 
-                Logger.Debug("xact.finalize", () => "there were exactly two commodities, and no null post");
+                Logger.Current.Debug("xact.finalize", () => "there were exactly two commodities, and no null post");
 
                 bool sawCost = false;
                 Post topPost = null;
@@ -245,7 +246,7 @@ namespace NLedger.Xacts
                 {
                     Balance bal = balance.AsBalance;
 
-                    Logger.Debug("xact.finalize", () => "there were no costs, and a valid top_post");
+                    Logger.Current.Debug("xact.finalize", () => "there were no costs, and a valid top_post");
 
                     Amount x = bal.Amounts.ElementAt(0).Value;
                     Amount y = bal.Amounts.ElementAt(1).Value;
@@ -257,13 +258,13 @@ namespace NLedger.Xacts
                             Amount z = x; x = y; y = z;
                         }
 
-                        Logger.Debug("xact.finalize", () => String.Format("primary   amount = {0}", x));
-                        Logger.Debug("xact.finalize", () => String.Format("secondary amount = {0}", y));
+                        Logger.Current.Debug("xact.finalize", () => String.Format("primary   amount = {0}", x));
+                        Logger.Current.Debug("xact.finalize", () => String.Format("secondary amount = {0}", y));
 
                         Commodity comm = x.Commodity;
                         Amount perUnitCost = (y / x).Abs().Unrounded();
 
-                        Logger.Debug("xact.finalize", () => String.Format("per_unit_cost = {0}", perUnitCost));
+                        Logger.Current.Debug("xact.finalize", () => String.Format("per_unit_cost = {0}", perUnitCost));
 
                         foreach (Post post in Posts)
                         {
@@ -276,7 +277,7 @@ namespace NLedger.Xacts
                                 post.Flags = post.Flags | SupportsFlagsEnum.POST_COST_CALCULATED;
                                 balance.InPlaceAdd(Value.Get(post.Cost));
 
-                                Logger.Debug("xact.finalize", () => String.Format("set post->cost to = {0}", post.Cost));
+                                Logger.Current.Debug("xact.finalize", () => String.Format("set post->cost to = {0}", post.Cost));
                             }
                         }
                     }
@@ -301,23 +302,23 @@ namespace NLedger.Xacts
                     {
                         if (breakdown.BasisCost.Commodity == breakdown.FinalCost.Commodity)
                         {
-                            Logger.Debug("xact.finalize", () => String.Format("breakdown.basis_cost = {0}", breakdown.BasisCost));
-                            Logger.Debug("xact.finalize", () => String.Format("breakdown.final_cost = {0}", breakdown.FinalCost));
+                            Logger.Current.Debug("xact.finalize", () => String.Format("breakdown.basis_cost = {0}", breakdown.BasisCost));
+                            Logger.Current.Debug("xact.finalize", () => String.Format("breakdown.final_cost = {0}", breakdown.FinalCost));
                             Amount gainLoss = breakdown.BasisCost - breakdown.FinalCost;
                             if (gainLoss != null && !gainLoss.IsZero)  // TODO - iszero?
                             {
-                                Logger.Debug("xact.finalize", () => String.Format("gain_loss = {0}", gainLoss));
+                                Logger.Current.Debug("xact.finalize", () => String.Format("gain_loss = {0}", gainLoss));
                                 gainLoss.InPlaceRound();
-                                Logger.Debug("xact.finalize", () => String.Format("gain_loss rounds to = {0}", gainLoss));
+                                Logger.Current.Debug("xact.finalize", () => String.Format("gain_loss rounds to = {0}", gainLoss));
                                 if (post.MustBalance)
                                     balance = Value.AddOrSetValue(balance, Value.Get(gainLoss.Reduced()));
 
                                 post.Cost.InPlaceAdd(gainLoss);
-                                Logger.Debug("xact.finalize", () => String.Format("added gain_loss, balance = {0}", balance));
+                                Logger.Current.Debug("xact.finalize", () => String.Format("added gain_loss, balance = {0}", balance));
                             }
                             else
                             {
-                                Logger.Debug("xact.finalize", () => "gain_loss would have displayed as zero");
+                                Logger.Current.Debug("xact.finalize", () => "gain_loss would have displayed as zero");
                             }
                         }
                     }
@@ -328,12 +329,12 @@ namespace NLedger.Xacts
                             post.Amount.HasAnnotation ? post.Amount.Annotation.Tag : breakdown.Amount.Annotation.Tag) 
                             { ValueExpr = breakdown.Amount.Annotation.ValueExpr })
                             : breakdown.Amount;
-                        Logger.Debug("xact.finalize", () => String.Format("added breakdown, balance = {0}", balance));
+                        Logger.Current.Debug("xact.finalize", () => String.Format("added breakdown, balance = {0}", balance));
                     }
 
                     if (post.Flags.HasFlag(SupportsFlagsEnum.POST_COST_FIXATED) && post.Amount.HasAnnotation && post.Amount.Annotation.Price != null)
                     {
-                        Logger.Debug("xact.finalize", () => "fixating annotation price");
+                        Logger.Current.Debug("xact.finalize", () => "fixating annotation price");
                         post.Amount.Annotation.IsPriceFixated = true;
                     }
                 }
@@ -345,7 +346,7 @@ namespace NLedger.Xacts
                 // the rest.  If multiple commodities are involved, multiple posts are
                 // generated to balance them all.
 
-                Logger.Debug("xact.finalize", () => "there was a null posting");
+                Logger.Current.Debug("xact.finalize", () => "there was a null posting");
                 AddBalancingPost postAdder = new AddBalancingPost(this, nullPost);
 
                 if (balance != null) // DM - all further steps makes sense only if the balance is not null
@@ -362,7 +363,7 @@ namespace NLedger.Xacts
 
                 balance = Value.Empty;
             }
-            Logger.Debug("xact.finalize", () => String.Format("resolved balance = ", balance));
+            Logger.Current.Debug("xact.finalize", () => String.Format("resolved balance = ", balance));
 
             if (!Value.IsNullOrEmpty(balance) && !balance.IsZero)
             {
@@ -408,7 +409,7 @@ namespace NLedger.Xacts
                     throw new BalanceError(BalanceError.ErrorMessageThereCannotBeNullAmountsAfterBalancingATransaction);
             }
 
-            Validator.Verify(Valid());
+            Validator.Verify(() => Valid());
 
             return true;
         }

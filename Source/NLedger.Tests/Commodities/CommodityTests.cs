@@ -332,5 +332,22 @@ namespace NLedger.Tests.Commodities
             Assert.IsTrue(commodity2 == result);
         }
 
+        [TestMethod]
+        public void Commodity_Valid_ReturnsFalseIfEmptySymbol()
+        {
+            Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase(null));
+            Assert.IsTrue(String.IsNullOrEmpty(commodity.Symbol));
+            Assert.IsFalse(commodity == CommodityPool.Current.NullCommodity);
+            Assert.IsFalse(commodity.Valid());
+        }
+
+        [TestMethod]
+        public void Commodity_Valid_ReturnsFalseIfPrecisionIsToBig()
+        {
+            Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("cmdtestvalidprec"));
+            Assert.IsTrue(commodity.Valid());
+            commodity.Precision = 17;
+            Assert.IsFalse(commodity.Valid());
+        }
     }
 }

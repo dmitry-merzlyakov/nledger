@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Filters
 {
@@ -122,11 +123,16 @@ namespace NLedger.Filters
                 post.XData.Date = default(Date);
             }
 
+            Logger.Current.Debug("filters.changed_value", () => String.Format("output_revaluation(last_total)     = {0}", LastTotal));
+            Logger.Current.Debug("filters.changed_value", () => String.Format("output_revaluation(repriced_total) = {0}", RepricedTotal));
+
             if (!Value.IsNullOrEmpty(LastTotal))
             {
                 Value diff = RepricedTotal - LastTotal;
                 if (!Value.IsNullOrEmptyOrFalse(diff))
                 {
+                    Logger.Current.Debug("filters.changed_value", () => String.Format("output_revaluation(strip(diff)) = {0}", diff.StripAnnotations(Report.WhatToKeep())));
+
                     Xact xact = Temps.CreateXact();
                     xact.Payee = "Commodities revalued";
                     xact.Date = date.IsValid() ? date : post.ValueDate;
@@ -190,6 +196,8 @@ namespace NLedger.Filters
                 if (current.IsValid())
                     xdata.Date = current;
 
+                Logger.Current.Debug("filters.revalued", () => String.Format("intermediate last_total = {0}", LastTotal));
+
                 switch(LastTotal.Type)
                 {
                     case ValueTypeEnum.Boolean:
@@ -214,6 +222,8 @@ namespace NLedger.Filters
 
                 BindScope innerScope = new BindScope(Report, temp);
                 displayTotal = DisplayTotalExpr.Calc(innerScope);
+
+                Logger.Current.Debug("filters.revalued", () => String.Format("intermediate display_total = {0}", displayTotal));
             }
 
             switch(displayTotal.Type)
@@ -242,7 +252,7 @@ namespace NLedger.Filters
                             // This insert will fail if a later price has already been inserted
                             // for that date.
                             var priceDate = (Date)price.Key.Date;
-                            Logger.Debug("filters.revalued", () => String.Format("re-inserting {0} at {1}", price.Value, priceDate));
+                            Logger.Current.Debug("filters.revalued", () => String.Format("re-inserting {0} at {1}", price.Value, priceDate));
                             pricingDates[priceDate] = true;
                         }
 

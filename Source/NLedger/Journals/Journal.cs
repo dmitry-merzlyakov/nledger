@@ -13,6 +13,7 @@ using NLedger.Items;
 using NLedger.Scopus;
 using NLedger.Textual;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -318,14 +319,29 @@ namespace NLedger.Journals
             return count;
         }
 
+        /// <summary>
+        /// Ported from journal_t::read_textual(parse_context_stack_t& context_stack)
+        /// </summary>
         public int ReadTextual(ParseContextStack contextStack)
         {
+            var trace = Logger.Current.TraceContext(TimerName.ParsingTotal, 1)?.Message("Total time spent parsing text:").Start(); // TRACE_START
+
             TextualParser instance = new TextualParser(contextStack, contextStack.GetCurrent(), null, CheckingStyle == JournalCheckingStyleEnum.CHECK_PERMISSIVE);
             instance.ApplyStack.PushFront("account", contextStack.GetCurrent().Master);
             instance.Parse();
 
+            trace?.Stop(); // TRACE_STOP
+
             // Apply any deferred postings at this time
             Master.ApplyDeferredPosts();
+
+            // These tracers were started in textual.cc
+            Logger.Current.TraceContext(TimerName.XactText, 1)?.Finish();   // TRACE_FINISH
+            Logger.Current.TraceContext(TimerName.XactDetails, 1)?.Finish();
+            Logger.Current.TraceContext(TimerName.XactPosts, 1)?.Finish();
+            Logger.Current.TraceContext(TimerName.Xacts, 1)?.Finish();
+            Logger.Current.TraceContext(TimerName.InstanceParse, 1)?.Finish();  // report per-instance timers
+            Logger.Current.TraceContext(TimerName.ParsingTotal, 1)?.Finish();
 
             if (contextStack.GetCurrent().Errors > 0)
                 throw new CountError(contextStack.GetCurrent().Errors);
@@ -485,6 +501,30 @@ namespace NLedger.Journals
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Ported from bool journal_t::valid()
+        /// </summary>
+        /// <returns></returns>
+        public bool Valid()
+        {
+            if (!Master.Valid())
+            {
+                Logger.Current.Debug("ledger.validate", () => "journal_t: master not valid");
+                return false;
+            }
+
+            foreach(var xact in Xacts)
+            {
+                if (!xact.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "journal_t: xact not valid");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

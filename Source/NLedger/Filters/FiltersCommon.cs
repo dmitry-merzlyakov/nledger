@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Filters
 {
@@ -107,7 +108,7 @@ namespace NLedger.Filters
             if (directAmount)
                 xdata.DirectAmt = true;
 
-            Logger.Debug("filters.changed_value.rounding", () => String.Format("post.amount = {0}", post.Amount));
+            Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("post.amount = {0}", post.Amount));
 
             handler.Handle(post);
 

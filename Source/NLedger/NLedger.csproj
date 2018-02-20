@@ -60,6 +60,7 @@
     <Compile Include="Annotate\AnnotatedCommodity.cs" />
     <Compile Include="Annotate\Annotation.cs" />
     <Compile Include="Annotate\AnnotationKeepDetails.cs" />
+    <Compile Include="AssertionFailedError.cs" />
     <Compile Include="CountError.cs" />
     <Compile Include="MainApplicationContext.cs" />
     <Compile Include="Mask.cs" />
@@ -73,6 +74,11 @@
     <Compile Include="Utility\Date.cs" />
     <Compile Include="Utility\DateExtension.cs" />
     <Compile Include="Utility\StreamReaderExtensions.cs" />
+    <Compile Include="Utils\ILogger.cs" />
+    <Compile Include="Utils\ITimerContext.cs" />
+    <Compile Include="Utils\LogLevelEnum.cs" />
+    <Compile Include="Utils\TimerContext.cs" />
+    <Compile Include="Utils\TimerName.cs" />
     <Compile Include="Values\DefaultValueComparer.cs" />
     <Compile Include="Xacts\AddBalancingPost.cs" />
     <Compile Include="Xacts\AutoXact.cs" />
@@ -255,13 +261,13 @@
     <Compile Include="Utility\Rnd\CharGenerator.cs" />
     <Compile Include="Utility\Rnd\DoubleGenerator.cs" />
     <Compile Include="Utility\Rnd\IntegerGenerator.cs" />
-    <Compile Include="Utility\Logger.cs" />
+    <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utility\MultiMap.cs" />
     <Compile Include="Utility\ObjectExtensions.cs" />
     <Compile Include="Utility\SHA1.cs" />
     <Compile Include="Utility\StringExtensions.cs" />
     <Compile Include="Utility\UniString.cs" />
-    <Compile Include="Utility\Validator.cs" />
+    <Compile Include="Utils\Validator.cs" />
     <Compile Include="Utility\VersionInfo.cs" />
     <Compile Include="Utility\Xml\XmlExtensions.cs" />
     <Compile Include="Values\Value.cs" />

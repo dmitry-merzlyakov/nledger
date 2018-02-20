@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Filters
 {
@@ -59,7 +60,7 @@ namespace NLedger.Filters
             if (ShowRounding)
             {
                 newDisplayTotal = DisplayTotalExpr.Calc(boundScope).StripAnnotations(Report.WhatToKeep());
-                Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.new_display_total     = {0}", newDisplayTotal));
+                Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.new_display_total     = {0}", newDisplayTotal));
             }
 
             // Allow the posting to be displayed if:
@@ -81,17 +82,17 @@ namespace NLedger.Filters
             {
                 if (!Value.IsNullOrEmpty(LastDisplayTotal))
                 {
-                    Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.repriced_amount       = {0}", repricedAmount));
+                    Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.repriced_amount       = {0}", repricedAmount));
 
                     Value preciseDisplayTotal = newDisplayTotal.Truncated() - repricedAmount.Truncated();
 
-                    Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.precise_display_total = {0}", preciseDisplayTotal));
-                    Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.last_display_total    = {0}", LastDisplayTotal));
+                    Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.precise_display_total = {0}", preciseDisplayTotal));
+                    Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.last_display_total    = {0}", LastDisplayTotal));
 
                     Value diff = preciseDisplayTotal - LastDisplayTotal;
                     if (!Value.IsNullOrEmptyOrFalse(diff))
                     {
-                        Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.diff                  = {0}", diff));
+                        Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.diff                  = {0}", diff));
 
                         FiltersCommon.HandleValue(
                             /* value=         */ diff,
