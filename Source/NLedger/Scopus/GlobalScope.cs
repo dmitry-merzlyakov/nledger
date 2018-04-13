@@ -152,6 +152,8 @@ namespace NLedger.Scopus
         {
             if (!ReportStack.Any())
                 throw new InvalidOperationException("Stack is empty");
+
+            ReportStack.Peek().QuickClose(); // DM - this code simulates calling Report's destructor at this moment
             ReportStack.Pop();
 
             // There should always be the "default report" waiting on the stack.
@@ -240,20 +242,20 @@ namespace NLedger.Scopus
             // These are here for backwards compatibility, but are deprecated.
             string variable;
 
-            variable = Environment.GetEnvironmentVariable("LEDGER");
-            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("LEDGER_FILE")))
+            variable = envp.GetEnvironmentVariable("LEDGER");
+            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(envp.GetEnvironmentVariable("LEDGER_FILE")))
                 Option.ProcessOption("environ", "file", Report, variable, "LEDGER");
 
-            variable = Environment.GetEnvironmentVariable("LEDGER_INIT");
-            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("LEDGER_INIT_FILE")))
+            variable = envp.GetEnvironmentVariable("LEDGER_INIT");
+            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(envp.GetEnvironmentVariable("LEDGER_INIT_FILE")))
                 Option.ProcessOption("environ", "init-file", Report, variable, "LEDGER_INIT");
 
-            variable = Environment.GetEnvironmentVariable("PRICE_HIST");
-            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("LEDGER_PRICE_DB")))
+            variable = envp.GetEnvironmentVariable("PRICE_HIST");
+            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(envp.GetEnvironmentVariable("LEDGER_PRICE_DB")))
                 Option.ProcessOption("environ", "price-db", Report, variable, "PRICE_HIST");
 
-            variable = Environment.GetEnvironmentVariable("PRICE_EXP");
-            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(Environment.GetEnvironmentVariable("LEDGER_PRICE_EXP")))
+            variable = envp.GetEnvironmentVariable("PRICE_EXP");
+            if (!String.IsNullOrEmpty(variable) && String.IsNullOrEmpty(envp.GetEnvironmentVariable("LEDGER_PRICE_EXP")))
                 Option.ProcessOption("environ", "price-exp", Report, variable, "PRICE_EXP");
 
             trace?.Finish(); // TRACE_FINISH
@@ -452,13 +454,26 @@ namespace NLedger.Scopus
                 ReportStack.Peek().QuickClose();
         }
 
+        /// <summary>
+        /// Ported from void global_scope_t::report_error(const std::exception& err)
+        /// </summary>
         public void ReportError(Exception ex)
         {
-            // Display any pending error context information
-            string context = ErrorContext.Current.GetContext();
-            if (!String.IsNullOrWhiteSpace(context))
-                FileSystem.ConsoleError.WriteLine(context);
-            FileSystem.ConsoleError.WriteLine(String.Format("Error: {0}", ex.Message));
+            VirtualConsole.Output.Flush();   // first display anything that was pending
+
+            if (!CancellationManager.IsCancellationRequested)
+            {
+                // Display any pending error context information
+                string context = ErrorContext.Current.GetContext();
+                if (!String.IsNullOrWhiteSpace(context))
+                    VirtualConsole.Error.WriteLine(context);
+
+                VirtualConsole.Error.WriteLine(String.Format("Error: {0}", ex.Message));
+            }
+            else
+            {
+                CancellationManager.DiscardCancellationRequest();
+            }
         }
 
         public ExprFunc LookForPrecommand(Scope scope, string verb)
@@ -523,8 +538,8 @@ namespace NLedger.Scopus
             VerifyMemoryHandler = Options.Add(new Option(OptionVerifyMemory));
             VersionHandler = Options.Add(new Option(OptionVersion, (o, w) =>
             {
-                FileSystem.ConsoleOutput.WriteLine(ShowVersionInfo());
-                Environment.Exit(0); // exit immediately
+                VirtualConsole.Output.WriteLine(ShowVersionInfo());
+                throw new CountError(0); // exit immediately
             }));
 
             Options.AddLookupOpt(OptionArgsOnly);

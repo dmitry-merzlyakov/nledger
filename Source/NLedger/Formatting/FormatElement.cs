@@ -55,7 +55,7 @@ namespace NLedger.Formatting
             {
                 case FormatElementEnum.STRING: sb.Append(" STRING"); break;
                 case FormatElementEnum.EXPR: sb.Append("   EXPR"); break;
-                default: throw new NotImplementedException();
+                default: throw new InvalidOperationException();
             }
 
             sb.AppendFormat("  flags: 0x{0}", IsElementAlignLeft ? 1 : 0);
@@ -66,7 +66,7 @@ namespace NLedger.Formatting
             {
                 case FormatElementEnum.STRING: sb.AppendFormat("   str: '{0}'", Data.GetValue<string>()); break;
                 case FormatElementEnum.EXPR: sb.AppendFormat("  expr: {0}", Data.Value); break;
-                default: throw new NotImplementedException();
+                default: throw new InvalidOperationException();
             }
 
             sb.AppendLine();

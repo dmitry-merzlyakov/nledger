@@ -213,7 +213,7 @@ namespace NLedger.Values
 
         public T1 AsAny<T1>()
         {
-            // TODO: consider removing boxing
+            // #remove-boxing - Consider removing excess boxing in this method.
             object val = (object)Val;
             if (val == null)
                 return (T1)val;

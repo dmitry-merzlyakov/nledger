@@ -26,6 +26,8 @@ namespace NLedger.Tests
         [TestMethod]
         public void Select_SelectCommand_GetEmptyAccountsListTest()
         {
+            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider());
+
             Report report = new Report(new Session());
             StringWriter output = new StringWriter();
             report.OutputStream = output;

@@ -628,6 +628,9 @@ namespace NLedger.Formatting
             return result;
         }
 
+        /// <summary>
+        /// Ported from parse_single_expression
+        /// </summary>
         private Expr ParseSingleExpression(InputTextStream inStream, bool singleExpr = true)
         {
             string p = inStream.RemainSource;
@@ -644,7 +647,7 @@ namespace NLedger.Formatting
             {
                 expr.Text = p.Substring(0, inStream.Pos - pIndex);
 
-                inStream.Pos--; // [DM] - fox inSTrem.Get issue... TBD
+                inStream.Pos--;
                 // Don't gobble up any whitespace
                 while (char.IsWhiteSpace(inStream.Peek)) inStream.Pos--;
             }

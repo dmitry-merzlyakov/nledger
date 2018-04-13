@@ -7,11 +7,13 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLedger.Abstracts.Impl;
 using NLedger.Scopus;
 using NLedger.Utility;
 using NLedger.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,6 +115,71 @@ namespace NLedger.Tests.Scopus
             string expected =  String.Format(GlobalScope.ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH);
             GlobalScope globalScope = new GlobalScope();
             Assert.AreEqual(expected, globalScope.ShowVersionInfo());
+        }
+
+        [TestMethod]
+        public void GlobalScope_ReportError_WritesErrorIfNoCancellationReques()
+        {
+            var globalScope = new GlobalScope();
+            var ex = new Exception("some exception");
+
+            using (var textWriter = new StringWriter())
+            {
+                MainApplicationContext.Current.SetVirtualConsoleProvider(() =>
+                    new VirtualConsoleProvider(consoleError: textWriter));
+
+                globalScope.ReportError(ex);
+
+                textWriter.Flush();
+                Assert.AreEqual("Error: some exception", textWriter.ToString().TrimEnd());
+            }
+        }
+
+        [TestMethod]
+        public void GlobalScope_ReportError_DiscardsCancellationRequestAndDoesNothing()
+        {
+            var globalScope = new GlobalScope();
+            var ex = new Exception("some exception");
+
+            using (var textWriter = new StringWriter())
+            {
+                MainApplicationContext.Current.SetVirtualConsoleProvider(() =>
+                    new VirtualConsoleProvider(consoleError: textWriter));
+
+                MainApplicationContext.Current.CancellationSignal = CaughtSignalEnum.INTERRUPTED;
+                globalScope.ReportError(ex);
+
+                textWriter.Flush();
+                Assert.AreEqual("", textWriter.ToString().TrimEnd());
+                Assert.AreEqual(CaughtSignalEnum.NONE_CAUGHT, MainApplicationContext.Current.CancellationSignal);
+            }
+        }
+
+        private class StubTextWriter : TextWriter
+        {
+            public override Encoding Encoding { get; }
+            public bool IsClosed { get; private set; }
+
+            public override void Close()
+            {
+                IsClosed = true;
+            }
+        }
+
+        [TestMethod]
+        public void GlobalScope_PopReport_ClosesOutputStream()
+        {
+            var globalScope = new GlobalScope();
+            using (var textWriter = new StubTextWriter())  // Note that this textwriter neither StdOut nor StdErr
+            {
+                var report = new Report() { OutputStream = textWriter };
+                globalScope.ReportStack.Push(report);
+                globalScope.ReportStack.Push(report);
+
+                Assert.IsFalse(textWriter.IsClosed);
+                globalScope.PopReport();
+                Assert.IsTrue(textWriter.IsClosed);
+            }
         }
 
         private bool GlobalScopeArgsOnly;

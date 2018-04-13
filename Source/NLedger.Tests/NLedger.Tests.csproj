@@ -60,6 +60,7 @@
     <Compile Include="Abstracts\Impl\ProcessManagerTests.cs" />
     <Compile Include="Accounts\AccountTests.cs" />
     <Compile Include="Accounts\AccountXDataDetailsTests.cs" />
+    <Compile Include="Chain\ItemHandlerTests.cs" />
     <Compile Include="Commodities\MemoizedPriceEntryTests.cs" />
     <Compile Include="CompareItemsTests.cs" />
     <Compile Include="Filters\ForecastPostsTests.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Filters\SortPostsTests.cs" />
     <Compile Include="Filters\SubtotalPostsTests.cs" />
     <Compile Include="Output\ReportCommoditiesTests.cs" />
+    <Compile Include="TestConsoleProvider.cs" />
     <Compile Include="TestFixture.cs" />
     <Compile Include="TextualReaderTests.cs" />
     <Compile Include="TimeLogging\TimeLogTests.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Utility\Graph\GraphExtensionsTests.cs" />
     <Compile Include="Utility\InputTextStreamTests.cs" />
     <Compile Include="Utility\SHA1Tests.cs" />
+    <Compile Include="Utils\CancellationManagerTests.cs" />
     <Compile Include="Utils\TimerContextTests.cs" />
     <Compile Include="Values\DefaultValueComparerTests.cs" />
     <Compile Include="Xacts\AddBalancingPostTests.cs" />

@@ -18,7 +18,10 @@ namespace NLedger.Utility
 {
     public class ErrorContext
     {
-        public static readonly ErrorContext Current = new ErrorContext();
+        public static ErrorContext Current
+        {
+            get { return MainApplicationContext.Current.ErrorContext; }
+        }
 
         public static string FileContext(string path, long line)
         {
@@ -110,7 +113,7 @@ namespace NLedger.Utility
         public void WriteError(string msg)
         {
             if (!String.IsNullOrEmpty(msg))
-                FileSystem.ConsoleError.WriteLine("{0}", msg);
+                VirtualConsole.Error.WriteLine("{0}", msg);
         }
 
         /// <summary>
@@ -119,7 +122,7 @@ namespace NLedger.Utility
         public void WriteWarning(string msg)
         {
             if (!String.IsNullOrEmpty(msg))
-                FileSystem.ConsoleError.WriteLine("Warning: {0}", msg);
+                VirtualConsole.Error.WriteLine("Warning: {0}", msg);
         }
 
         public void WriteError(Exception ex)

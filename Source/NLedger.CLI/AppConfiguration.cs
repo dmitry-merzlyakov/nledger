@@ -23,12 +23,14 @@ namespace NLedger.CLI
             TimeZoneId = GetString("TimeZoneId", null);
             OutputEncoding = GetEncoding("OutputEncoding", Encoding.Default);
             IsAnsiTerminalEmulation = GetBool("AnsiTerminalEmulation", true);
+            DefaultPager = GetString("DefaultPager", null);
         }
 
         public bool IsAtty { get; private set; }
         public string TimeZoneId { get; private set; }
         public Encoding OutputEncoding { get; private set; }
         public bool IsAnsiTerminalEmulation { get; private set; }
+        public string DefaultPager { get; private set; }
 
         private bool GetBool(string key, bool defaultValue)
         {

@@ -305,7 +305,7 @@ namespace NLedger.Xacts
                             Logger.Current.Debug("xact.finalize", () => String.Format("breakdown.basis_cost = {0}", breakdown.BasisCost));
                             Logger.Current.Debug("xact.finalize", () => String.Format("breakdown.final_cost = {0}", breakdown.FinalCost));
                             Amount gainLoss = breakdown.BasisCost - breakdown.FinalCost;
-                            if (gainLoss != null && !gainLoss.IsZero)  // TODO - iszero?
+                            if ((bool)gainLoss)
                             {
                                 Logger.Current.Debug("xact.finalize", () => String.Format("gain_loss = {0}", gainLoss));
                                 gainLoss.InPlaceRound();

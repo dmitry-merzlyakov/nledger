@@ -25,18 +25,26 @@ namespace NLedger
             MainApplicationContext.Initialize();
         }
 
-        public int Execute(string argString, IDictionary<string, string> envp, TextReader inReader, TextWriter outWriter, TextWriter errorWriter)
+        public int Execute(string argString)
         {
-            FileSystem.SetConsoleInput(inReader);
-            FileSystem.SetConsoleOutput(outWriter);
-            FileSystem.SetConsoleError(errorWriter);
+            var envp = VirtualEnvironment.GetEnvironmentVariables();
             var args = CommandLine.PreprocessSingleQuotes(argString);
 
             int status = 1;
+
+            // The very first thing we do is handle some very special command-line
+            // options, since they affect how the environment is setup:
+            //
+            //   --verify            ; turns on memory tracing
+            //   --verbose           ; turns on logging
+            //   --debug CATEGORY    ; turns on debug logging
+            //   --trace LEVEL       ; turns on trace logging
+            //   --memory            ; turns on memory usage tracing
+            //   --init-file         ; directs ledger to use a different init file
             GlobalScope.HandleDebugOptions(args);
-            // initialize_memory_tracing - not implemented
+            // initialize_memory_tracing - [DM] #memory-tracing
             Logger.Current.Info(() => LedgerStarting);
-            // ::textdomain("ledger"); - not implemented
+            // ::textdomain("ledger"); - [DM] #localization
             GlobalScope globalScope = null;
             try
             {
@@ -74,26 +82,26 @@ namespace NLedger
                 else
                 {
                     // Commence the REPL by displaying the current Ledger version
-                    FileSystem.ConsoleOutput.WriteLine(globalScope.ShowVersionInfo());
+                    VirtualConsole.Output.WriteLine(globalScope.ShowVersionInfo());
 
                     globalScope.Session.ReadJournalFiles();
 
                     bool exitLoop = false;
 
-                    // rl_readline_name - TODO
+                    VirtualConsole.ReadLineName = "Ledger";
 
                     string p;
-                    while ((p = FileSystem.ReadLine(globalScope.PromptString())) != null)
+                    while ((p = VirtualConsole.ReadLine(globalScope.PromptString())) != null)
                     {
                         string expansion = null;
-                        int result = HistoryExtensions.HistoryExpand(p.Trim(), ref expansion);
+                        int result = VirtualConsole.HistoryExpand(p.Trim(), ref expansion);
 
                         if (result < 0 || result == 2)
                             throw new LogicError(String.Format(LogicError.ErrorMessageFailedToExpandHistoryReference, p));
                         else if (expansion != null)
-                            HistoryExtensions.AddHistory(expansion);
+                            VirtualConsole.AddHistory(expansion);
 
-                        // CheckForSignal(); - TODO (most likely, not required)
+                        CancellationManager.CheckForSignal();
 
                         if (!String.IsNullOrWhiteSpace(p) && p != "#")
                         {
@@ -120,7 +128,7 @@ namespace NLedger
                 if (globalScope != null)
                     globalScope.ReportError(err);
                 else
-                    FileSystem.ConsoleError.WriteLine(String.Format(ExceptionDuringInitialization, err.Message));
+                    VirtualConsole.Error.WriteLine(String.Format(ExceptionDuringInitialization, err.Message));
             }
 
             if (globalScope != null)

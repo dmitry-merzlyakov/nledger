@@ -66,11 +66,11 @@ namespace NLedger.Tests.Values
         public void Value_Get_Returns_Amount_WhenLiteralIsFalse()
         {
             Value val1 = Value.Get("123", false);
-            //Value val2 = Value.Get("1234");  TODO - consider how to fix the second case (default parameter)
+            Value val2 = Value.Get("1234");
             Assert.AreEqual(ValueTypeEnum.Amount, val1.Type);
-            //Assert.AreEqual(ValueTypeEnum.Amount, val2.Type);
+            Assert.AreEqual(ValueTypeEnum.String, val2.Type);
             Assert.AreEqual("123", val1.ToString());
-            //Assert.AreEqual("1234", val2.ToString());
+            Assert.AreEqual("1234", val2.ToString());
         }
 
         [TestMethod]

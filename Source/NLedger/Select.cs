@@ -12,6 +12,7 @@ using NLedger.Expressions;
 using NLedger.Output;
 using NLedger.Print;
 using NLedger.Scopus;
+using NLedger.Utility;
 using NLedger.Utils;
 using NLedger.Values;
 using System;
@@ -35,13 +36,13 @@ namespace NLedger
                 if (name == "date" || name == "aux_date" || name == "payee")
                 {
                     if (!String.IsNullOrEmpty(ident) &&
-                        !(name == "date" || name == "aux_date" || name == "payee"))  // TODO - should it be "ident"?
+                        !(name == "date" || name == "aux_date" || name == "payee"))
                         result = false;
                     ident = name;
                 }
                 else if (name == "account")
                 {
-                    if (!String.IsNullOrEmpty(ident) && !(name == "account"))  // TODO - the same
+                    if (!String.IsNullOrEmpty(ident) && !(name == "account"))
                         result = false;
                     ident = name;
                     if (doTransforms)
@@ -49,7 +50,7 @@ namespace NLedger
                 }
                 else if (name == "amount")
                 {
-                    if (!String.IsNullOrEmpty(ident) && !(name == "amount"))    // TODO - the same
+                    if (!String.IsNullOrEmpty(ident) && !(name == "amount"))
                         result = false;
                     ident = name;
                     if (doTransforms)
@@ -57,7 +58,7 @@ namespace NLedger
                 }
                 else if (name == "total")
                 {
-                    if (!String.IsNullOrEmpty(ident) && !(name == "total"))    // TODO - the same
+                    if (!String.IsNullOrEmpty(ident) && !(name == "total"))
                         result = false;
                     ident = name;
                     if (doTransforms)
@@ -133,10 +134,10 @@ namespace NLedger
                         cols = Int32.Parse(report.ColumnsHandler.Value);
                     else
                     {
-                        string columnsEnv = Environment.GetEnvironmentVariable("COLUMNS");  // TODO - use list of variables
+                        string columnsEnv = VirtualEnvironment.GetEnvironmentVariable("COLUMNS");
                         if (!Int32.TryParse(columnsEnv, out cols))
                         {
-                            try { cols = Console.WindowWidth; } catch { cols = 0; }   // TODO - virtualize getter.
+                            cols = VirtualConsole.WindowWidth;
                             if (cols == 0)
                                 cols = 80;
                         }
@@ -405,7 +406,6 @@ namespace NLedger
                 }
                 else if (keyword == "style")
                 {
-                    // TODO - something has not been done in the original code...
                     if (arg == "csv")
                     {
                     }

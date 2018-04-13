@@ -27,8 +27,18 @@ namespace NLedger.Abstracts
         /// <param name="arguments">Optional collection of arguments</param>
         /// <param name="workingDirectory">Optional path to working directory</param>
         /// <param name="output">The output that the running file generates</param>
-        /// <returns>Exit code that returns the file</returns>
+        /// <returns>Exit code that the process returns</returns>
         int Execute(string fileName, string arguments, string workingDirectory, out string output);
+
+        /// <summary>
+        /// Runs an executable file that requires an input but does not generate any output
+        /// </summary>
+        /// <param name="fileName">The name (and optional path) to an executable file</param>
+        /// <param name="arguments">Optional collection of arguments</param>
+        /// <param name="workingDirectory">Optional path to working directory</param>
+        /// <param name="input">The input that will be send to the process</param>
+        /// <returns>Exit code that the process returns</returns>
+        int Execute(string fileName, string arguments, string workingDirectory, string input, bool noTimeout = false);
 
         /// <summary>
         /// Starts a process that is associated with a particular file type. 

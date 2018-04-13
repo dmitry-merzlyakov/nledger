@@ -6,23 +6,36 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NLedger.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLedger.Tests.Utility
+namespace NLedger.Utility
 {
-    [TestClass]
-    public class FileSystemTests : TestFixture
+    public static class VirtualEnvironment
     {
-        [TestMethod]
-        public void FileSystem_IsAtty_ReflectsContextState()
+        public static IDictionary<string,string> GetEnvironmentVariables()
         {
-            Assert.AreEqual(MainApplicationContext.Current.IsAtty, VirtualConsole.IsAtty());
+            return MainApplicationContext.Current.EnvironmentVariables;
+        }
+
+        public static string GetEnvironmentVariable(string variable)
+        {
+            return GetEnvironmentVariables().GetEnvironmentVariable(variable);
+        }
+
+        public static string GetEnvironmentVariable(this IDictionary<string, string> variables, string variable)
+        {
+            if (variables == null)
+                return string.Empty;
+
+            string value;
+            if (!variables.TryGetValue(variable, out value))
+                return string.Empty;
+
+            return value ?? String.Empty;
         }
     }
 }

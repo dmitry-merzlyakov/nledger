@@ -14,7 +14,6 @@ using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -440,7 +439,7 @@ namespace NLedger.Items
         private static Value GetFileBase(Item item)
         {
             if (item.Pos != null)
-                return Value.StringValue(Path.GetFileName(item.Pos.PathName));
+                return Value.StringValue(FileSystem.GetFileName(item.Pos.PathName));
             else
                 return Value.Empty;
         }
@@ -448,7 +447,7 @@ namespace NLedger.Items
         private static Value GetFilePath(Item item)
         {
             if (item.Pos != null)
-                return Value.StringValue(Path.GetDirectoryName(item.Pos.PathName));
+                return Value.StringValue(FileSystem.GetDirectoryName(item.Pos.PathName));
             else
                 return Value.Empty;
         }

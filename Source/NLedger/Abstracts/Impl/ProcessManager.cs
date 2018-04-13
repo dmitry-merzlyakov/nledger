@@ -12,10 +12,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NLedger.Abstracts.Impl
 {
+    [Flags]
+    public enum RunProcessOptionsEnum
+    {
+        None = 0,
+        NoWindow = 1,
+        RedirectOutput = 2,
+        RedirectError = 4
+    }
+
     public sealed class ProcessManager : IProcessManager
     {
         public const int DefaultExecutionTimeout = 60 * 1000; // 60 seconds
@@ -36,7 +46,15 @@ namespace NLedger.Abstracts.Impl
             return result.ExitCode;
         }
 
-        public static ProcessExecutionResult RunProcess(string fileName, string arguments, string workingDirectory = null,  string stdInput = null, int msTimeout = DefaultExecutionTimeout)
+        public int Execute(string fileName, string arguments, string workingDirectory, string input, bool noTimeout = false)
+        {
+            var timeOut = noTimeout ? Timeout.Infinite : DefaultExecutionTimeout;
+            var result = RunProcess(fileName, arguments, workingDirectory, stdInput: input, runProcessOptions: RunProcessOptionsEnum.None, msTimeout: timeOut);
+            return result.ExitCode;
+        }
+
+        public static ProcessExecutionResult RunProcess(string fileName, string arguments, string workingDirectory = null,  string stdInput = null, int msTimeout = DefaultExecutionTimeout, 
+            RunProcessOptionsEnum runProcessOptions = RunProcessOptionsEnum.NoWindow | RunProcessOptionsEnum.RedirectOutput | RunProcessOptionsEnum.RedirectError)
         {
             bool hasInput = !String.IsNullOrEmpty(stdInput);
 
@@ -49,14 +67,16 @@ namespace NLedger.Abstracts.Impl
                 pInfo.WorkingDirectory = workingDirectory;
 
             pInfo.RedirectStandardInput = hasInput;
-            pInfo.RedirectStandardOutput = true;
-            pInfo.RedirectStandardError = true;
+            pInfo.RedirectStandardOutput = runProcessOptions.HasFlag(RunProcessOptionsEnum.RedirectOutput);
+            pInfo.RedirectStandardError = runProcessOptions.HasFlag(RunProcessOptionsEnum.RedirectError);
 
             pInfo.UseShellExecute = false;
-            pInfo.CreateNoWindow = true;
+            pInfo.CreateNoWindow = runProcessOptions.HasFlag(RunProcessOptionsEnum.NoWindow);
 
-            pInfo.StandardOutputEncoding = Encoding.UTF8;
-            pInfo.StandardErrorEncoding = Encoding.UTF8;
+            if (pInfo.RedirectStandardOutput)
+                pInfo.StandardOutputEncoding = Encoding.UTF8;
+            if (pInfo.RedirectStandardError)
+                pInfo.StandardErrorEncoding = Encoding.UTF8;
 
             // Run process
 
@@ -71,8 +91,8 @@ namespace NLedger.Abstracts.Impl
                 process.StandardInput.Close();
             }
 
-            var outTask = process.StandardOutput.ReadToEndAsync();
-            var errTask = process.StandardError.ReadToEndAsync();
+            var outTask = runProcessOptions.HasFlag(RunProcessOptionsEnum.RedirectOutput) ? process.StandardOutput.ReadToEndAsync() : null;
+            var errTask = runProcessOptions.HasFlag(RunProcessOptionsEnum.RedirectError) ? process.StandardError.ReadToEndAsync() : null;
             var isFinished = process.WaitForExit(msTimeout);
             if (!isFinished)
                 process.Kill();
@@ -82,8 +102,8 @@ namespace NLedger.Abstracts.Impl
 
             return new ProcessExecutionResult()
             {
-                StandardOutput = outTask.Result,
-                StandardError = errTask.Result,
+                StandardOutput = outTask?.Result,
+                StandardError = errTask?.Result,
                 ExitCode = process.ExitCode,
                 ExecutionTime = stopWatch.Elapsed,
                 IsTimeouted = !isFinished
@@ -102,7 +122,7 @@ namespace NLedger.Abstracts.Impl
             }
             catch (Exception ex)
             {
-                FileSystem.ConsoleError.WriteLine(String.Format("Error: {0}; file name: {1}", ex.Message, fileName));
+                VirtualConsole.Error.WriteLine(String.Format("Error: {0}; file name: {1}", ex.Message, fileName));
                 return false;
             }
         }

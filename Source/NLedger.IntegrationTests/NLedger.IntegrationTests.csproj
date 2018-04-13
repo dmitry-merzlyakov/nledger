@@ -123,6 +123,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="..\..\Contrib\Extras\cat.cmd">
+      <Link>cat.cmd</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\baseline\cmd-accounts.test">
       <Link>test\baseline\cmd-accounts.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -88,6 +88,9 @@ namespace NLedger.Scopus
             return false;
         }
 
+        /// <summary>
+        /// Ported from void process_option(const string& whence, const expr_t::func_t& opt,
+        /// </summary>
         public static void ProcessOption(string whence, ExprFunc opt, Scope scope, string arg, string name)
         {
             try
@@ -100,7 +103,11 @@ namespace NLedger.Scopus
 
                 opt(args);
             }
-            catch
+            catch (CountError)
+            {
+                throw; // DM - error_count is not std::exception and may pass by "catch" block
+            }
+            catch (Exception)
             {
                 if (!String.IsNullOrEmpty(name) && name.StartsWith("-"))
                     throw new Exception(String.Format("While parsing option '{0}'", name));

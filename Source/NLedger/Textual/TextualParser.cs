@@ -8,7 +8,6 @@
 // **********************************************************************************
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,14 +61,6 @@ namespace NLedger.Textual
         public const string UUIDTag = "UUID";
 
         public const string UnspecifiedPayeeKey = "<Unspecified payee>";
-
-        /*
-        public TextualParser()
-        {
-            Context = new ParseContext();
-            ApplyStack = new ApplyStack(); // TODO - parent
-        }
-         */
 
         public TextualParser(ParseContextStack contextStack, ParseContext context, TextualParser parent = null, bool noAssertions = false)
         {
@@ -138,6 +129,9 @@ namespace NLedger.Textual
 
                     ErrorContext.Current.AddErrorContext(String.Format("While parsing file {0}", Context.Location));
 
+                    if (CancellationManager.IsCancellationRequested)
+                        throw;
+
                     ErrorContext.Current.WriteError(ErrorContext.Current.GetContext());
                     ErrorContext.Current.WriteError(currentContext);
                     ErrorContext.Current.WriteError(ex);
@@ -164,7 +158,7 @@ namespace NLedger.Textual
 
             Context.LineBegPos = Context.CurrPos;
 
-            // check_for_signal();
+            CancellationManager.CheckForSignal();
 
             Context.LineBuf = textualReader.ReadLine();
             
@@ -941,13 +935,13 @@ namespace NLedger.Textual
             {
                 Logger.Current.Debug(DebugTextualInclude, () => "received a relative path");
                 Logger.Current.Debug(DebugTextualInclude, () => "parent file path: " + Context.PathName);
-                var parent_Path = Path.GetDirectoryName(Context.PathName);
+                var parent_Path = FileSystem.GetDirectoryName(Context.PathName);
 
                 if (String.IsNullOrWhiteSpace(parent_Path))
-                    fileName = Path.Combine(".", line);
+                    fileName = FileSystem.Combine(line, ".");
                 else
                 {
-                    fileName = Path.Combine(parent_Path, line);
+                    fileName = FileSystem.Combine(line, parent_Path);
                     Logger.Current.Debug(DebugTextualInclude, () => "normalized path: " + fileName);
                 }
             }

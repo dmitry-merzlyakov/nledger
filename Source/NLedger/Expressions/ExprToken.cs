@@ -415,8 +415,6 @@ namespace NLedger.Expressions
                         if (char.IsLetter(c) && result == 1)
                             break;
 
-                        // TODO - insteam - stack of positions (push\pop); ParseReservedWord - return enum
-
                         // If not, rewind back to the beginning of the word to scan it
                         // again.  If the result was -1, it means no identifier was scanned
                         // so we don't have to rewind.

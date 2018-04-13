@@ -69,22 +69,60 @@ namespace NLedger
         public string TimeZoneId { get; set; }
         public TimeZoneInfo TimeZone { get; set; }
 
+        // For Error Context
+        public ErrorContext ErrorContext { get; private set; } = new ErrorContext();
+
+        // Cancellation Management
+        private volatile CaughtSignalEnum _CancellationSignal;
+        public CaughtSignalEnum CancellationSignal
+        {
+            get { return _CancellationSignal; }
+            set { _CancellationSignal = value; }
+        }
+
+        // Default Pager Name
+        public string DefaultPager { get; set; }
+
+        // Environment Variables
+        public IDictionary<string,string> EnvironmentVariables
+        {
+            get { return _EnvironmentVariables ?? Empty; }
+        }
+
+        public void SetEnvironmentVariables(IDictionary<string, string> variables)
+        {
+            _EnvironmentVariables = new Dictionary<string, string>(variables ?? Empty, StringComparer.InvariantCultureIgnoreCase);
+        }
+
         // Abstract Application Services
         public IQuoteProvider QuoteProvider => _QuoteProvider.Value;
         public IProcessManager ProcessManager => _ProcessManager.Value;
         public IManPageProvider ManPageProvider => _ManPageProvider.Value;
+        public IVirtualConsoleProvider VirtualConsoleProvider => _VirtualConsoleProvider.Value;
+        public IFileSystemProvider FileSystemProvider => _FileSystemProvider.Value;
+        public IPagerProvider PagerProvider => _PagerProvider.Value;
 
         public void SetQuoteProvider(Func<IQuoteProvider> quoteProviderFactory)
         {
             _QuoteProvider = new Lazy<IQuoteProvider>(quoteProviderFactory);
         }
 
+        public void SetVirtualConsoleProvider(Func<IVirtualConsoleProvider> virtualConsoleProviderFactory)
+        {
+            _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(virtualConsoleProviderFactory);
+        }
+
         [ThreadStatic]
         private static MainApplicationContext CurrentInstance;
+        private static readonly IDictionary<string, string> Empty = new Dictionary<string, string>();
 
         private CommodityPool _CommodityPool;
         private Lazy<IQuoteProvider> _QuoteProvider = new Lazy<IQuoteProvider>(() => new QuoteProvider());
         private Lazy<IProcessManager> _ProcessManager = new Lazy<IProcessManager>(() => new ProcessManager());
         private Lazy<IManPageProvider> _ManPageProvider = new Lazy<IManPageProvider>(() => new ManPageProvider());
+        private Lazy<IVirtualConsoleProvider> _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(() => new VirtualConsoleProvider());
+        private Lazy<IFileSystemProvider> _FileSystemProvider = new Lazy<IFileSystemProvider>(() => new FileSystemProvider());
+        private Lazy<IPagerProvider> _PagerProvider = new Lazy<IPagerProvider>(() => new PagerProvider());
+        private IDictionary<string, string> _EnvironmentVariables;
     }
 }

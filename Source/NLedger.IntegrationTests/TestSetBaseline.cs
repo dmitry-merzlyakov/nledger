@@ -12,6 +12,7 @@ namespace NLedger.IntegrationTests
     [TestClass]
     [DeploymentItem(@"test\baseline", @"test\baseline")]
     [DeploymentItem(@"test\input", @"test\input")]
+    [DeploymentItem(@"cat.cmd")]
     public class TestSet1_test_baseline
     {
 		
@@ -1051,7 +1052,6 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
-        [Ignore]  // Reason: Windows environment does not have 'cat' application. Disabled for further decision.
         public void IntegrationTest_test_baseline_opt_pager()
         {
             new TestRunner(@"test\baseline\opt-pager.test").Run();

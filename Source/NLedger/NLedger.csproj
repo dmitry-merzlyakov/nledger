@@ -44,12 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\IFileSystemProvider.cs" />
     <Compile Include="Abstracts\IManPageProvider.cs" />
+    <Compile Include="Abstracts\Impl\FileSystemProvider.cs" />
     <Compile Include="Abstracts\Impl\ManPageProvider.cs" />
+    <Compile Include="Abstracts\Impl\PagerProvider.cs" />
     <Compile Include="Abstracts\Impl\ProcessManager.cs" />
     <Compile Include="Abstracts\Impl\QuoteProvider.cs" />
+    <Compile Include="Abstracts\Impl\VirtualConsoleProvider.cs" />
+    <Compile Include="Abstracts\IPagerProvider.cs" />
     <Compile Include="Abstracts\IProcessManager.cs" />
     <Compile Include="Abstracts\IQuoteProvider.cs" />
+    <Compile Include="Abstracts\IVirtualConsoleProvider.cs" />
     <Compile Include="Accounts\Account.cs" />
     <Compile Include="Accounts\AccountXData.cs" />
     <Compile Include="Accounts\AccountXDataDetails.cs" />
@@ -74,6 +80,10 @@
     <Compile Include="Utility\Date.cs" />
     <Compile Include="Utility\DateExtension.cs" />
     <Compile Include="Utility\StreamReaderExtensions.cs" />
+    <Compile Include="Utility\VirtualConsole.cs" />
+    <Compile Include="Utility\VirtualEnvironment.cs" />
+    <Compile Include="Utility\VirtualPager.cs" />
+    <Compile Include="Utils\CancellationManager.cs" />
     <Compile Include="Utils\ILogger.cs" />
     <Compile Include="Utils\ITimerContext.cs" />
     <Compile Include="Utils\LogLevelEnum.cs" />
@@ -253,7 +263,6 @@
     <Compile Include="Utility\Graph\ReadOnlyGraph.cs" />
     <Compile Include="Utility\Graph\ShortestPathSearcher.cs" />
     <Compile Include="Utility\Graph\VertexDescriptor.cs" />
-    <Compile Include="Utility\HistoryExtensions.cs" />
     <Compile Include="Utility\IMultiMap.cs" />
     <Compile Include="Utility\InputTextStream.cs" />
     <Compile Include="Utility\InputTextStreamWrapper.cs" />

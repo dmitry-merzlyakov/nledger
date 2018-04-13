@@ -15,6 +15,7 @@ Code and feature completion; continuous integration.
 - Completed "download" and "price-db" features; added corresponded 
   tests (test/nledger/opt-download) and example scripts (Extras/getQuote);
 - Added support of "--help" option; it shows Ledger Man Pages in a default browser;
+- Added support of external pagers ("--pager" option);
 - Added continuous integration for a development repository ("next-dev");
   build logs and current status are in the file _CI.BuildLog.md;
 

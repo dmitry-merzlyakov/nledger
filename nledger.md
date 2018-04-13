@@ -74,6 +74,26 @@ accounting systems.
 *Note: the example journal file (drewr3.dat) and some other example files that are mentioned in 
 the documentation are available in the folder with Ledger tests (NLedger\test\input).*
 
+### About Coloring and Pagination
+
+The original Ledger colors the output by means of VT100 color codes. Since the standard Windows console
+does not support them, NLedger manages coloring on its own by direct calling of console API functions
+(see *AnsiTerminalEmulation* setting that is turned on by default).
+
+If you prefer using a specific terminal application with full VT100 support
+(for example, [ANSICON](https://github.com/adoxa/ansicon/downloads)), you may want
+to turn the embedded coloring off by setting *AnsiTerminalEmulation* to False.
+
+By default, NLedger produces the output without pagination. The default Windows console
+allows scrolling and searching (by Ctrl-F); it may be sufficient in most cases. However,
+if you have a favorite pager with wider capabilities (for example, [Less for Windows](http://gnuwin32.sourceforge.net/packages/less.htm)),
+you can integrate it with NLedger. You can either set it as a default pager 
+in the configuration file (see *DefaultPager*) or you can use an input parameter *pager*.
+
+*Note: if your pager does not support VT100 codes, you may either run NLedger
+in a specific terminal application that supports VT100 or you can disable coloring 
+at all to get rid of artifacts in the output text.*
+
 ## NLedger Testing Toolkit
 
 Like the original application, NLedger has a special testing framework that executes Ledger-style test files
@@ -134,6 +154,11 @@ Available configuration options are:
   If this value is empty, it uses the computer time zone.
   It should be a valid Time Zome Info name (see more about TimeZoneInfo.FindSystemTimeZoneById),
   for example "*Central Standard Time*"
+- **DefaultPager** (String, default value is empty) - specifies a default pager name.
+  When this value is not empty and *IsAtty* is turned on, NLedger attempts to find
+  the specified application and sends all the output to its input stream. If the name does not have a path,
+  NLedger searches an executable file in folders listed in PATH variable. Extension can be omitted in this case.
+  Command line arguments (if any) should be separated from the name by '|' symbol.
 
 *Note: if any modifications in the configuration file are not acceptable, NLedger can receive these values
 by means of environment variables. It checks the variables with the same names and with the prefix "nledger":

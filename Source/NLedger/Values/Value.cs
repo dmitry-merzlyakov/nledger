@@ -109,7 +109,7 @@ namespace NLedger.Values
             if (value == null)
                 return new Value();
 
-            if (Object.Equals(value, default(T)) && !typeof(T).IsValueType)  // DM - TODO - concerns!!
+            if (Object.Equals(value, default(T)) && !typeof(T).IsValueType)
                 return new Value();
 
             if (typeof(T) == typeof(String) && String.IsNullOrEmpty((string)(object)value))
@@ -718,7 +718,6 @@ namespace NLedger.Values
                 }
             }
 
-            // TODO - verify this approach
             switch(type)
             {
                 case ValueTypeEnum.Integer:

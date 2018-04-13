@@ -145,7 +145,7 @@ namespace NLedger.Scopus
             else
             {
                 priceDbPath = FileSystem.HomePath(DefaultPriceDbFileName);
-                // TODO - ./.ledgerrc - ?
+                // DM - Home path always exists; "./.ledgerrc" is never assigned.
             }
 
             if (DayBreakHandler.Handled)
@@ -190,7 +190,7 @@ namespace NLedger.Scopus
 
             foreach(string pathName in FileHandler.DataFiles)
             {
-                if (pathName == "-" || pathName == "/dev/stdin")  // TODO - verify
+                if (pathName == "-" || FileSystem.IsStdIn(pathName)) // (pathname == "-" || pathname == "/dev/stdin")
                 {
                     // To avoid problems with stdin and pipes, etc., we read the entire
                     // file in beforehand into a memory buffer, and then parcel it out

@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLedger.Abstracts;
 using NLedger.Utility;
 using System;
 using System.Collections.Generic;
@@ -34,16 +35,16 @@ namespace NLedger.IntegrationTests
 
         public void Run()
         {
-            // Tests are configured for 80 symbols in row
-            Environment.SetEnvironmentVariable("COLUMNS", "80");
 
             foreach (var testCase in TestCases)
             {
                 Console.WriteLine($"Test case: file {Path.GetFileName(testCase.FileName)}; arguments: {testCase.CommandLine}");
 
-                var originalVariables = new Dictionary<string, string>();
-                foreach (var name in testCase.SetVariables.Keys)
-                    originalVariables[name] = Environment.GetEnvironmentVariable(name);
+                // Environment variables
+                var envs = new Dictionary<string, string>();
+
+                // Tests are configured for 80 symbols in row
+                envs["COLUMNS"] = "80";
 
                 try
                 {
@@ -63,6 +64,13 @@ namespace NLedger.IntegrationTests
                     var regexHasFileOption = Regex.Match(args, @"(^|\s)-f\s");
                     if (!regexHasFileOption.Success)
                         args += $" -f '{FileName}'";
+
+                    // Check whether "--pager" option is presented to add extra options for paging test
+                    if (args.Contains("--pager"))
+                    {
+                        args += " --force-pager";   // Pager test requires this option to override IsAtty=false that is default for other tests
+                        envs["nledgerPagerForceOutput"] = "true";   // Pager test needs to force writing to output to test text that is ate by the pager process
+                    }
 
                     // Check whether output is redirected to null; remove it if so
                     var ignoreStdErr = false;
@@ -84,9 +92,7 @@ namespace NLedger.IntegrationTests
 
                     // Set custom environment variables
                     foreach (var name in testCase.SetVariables.Keys)
-                        Environment.SetEnvironmentVariable(name, testCase.SetVariables[name]);
-
-                    var envs = new Dictionary<string, string>();
+                        envs[name] = testCase.SetVariables[name];
 
                     using (var inReader = new StringReader(stdInContent))
                     {
@@ -97,8 +103,10 @@ namespace NLedger.IntegrationTests
                                 var main = new Main();
                                 MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
                                 MainApplicationContext.Current.TimeZoneId = "Central Standard Time"; // Equals to TZ=America/Chicago
+                                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
+                                MainApplicationContext.Current.SetEnvironmentVariables(envs);
 
-                                var exitCode = main.Execute(args, envs, inReader, outWriter, errWriter);
+                                var exitCode = main.Execute(args);
 
                                 outWriter.Flush();
                                 var output = outWriter.ToString();
@@ -123,12 +131,6 @@ namespace NLedger.IntegrationTests
                 catch (Exception ex)
                 {
                     Assert.Fail($"Test case failed with runtime error: {ex.Message}");
-                }
-                finally
-                {
-                    // Restore original variables (if any changed)
-                    foreach (var name in originalVariables.Keys)
-                        Environment.SetEnvironmentVariable(name, originalVariables[name]);
                 }
             }
         }
@@ -269,5 +271,28 @@ namespace NLedger.IntegrationTests
             return s.Substring(pos, len);
         }
 
+        private class TestConsoleProvider : IVirtualConsoleProvider
+        {
+            public TestConsoleProvider(TextReader consoleInput, TextWriter consoleOutput, TextWriter consoleError)
+            {
+                ConsoleInput = consoleInput;
+                ConsoleOutput = consoleOutput;
+                ConsoleError = consoleError;
+            }
+
+            public TextWriter ConsoleError { get; private set; }
+            public TextReader ConsoleInput { get; private set; }
+            public TextWriter ConsoleOutput { get; private set; }
+            public int WindowWidth 
+            {
+                get { return 0; }
+            }
+            public void AddHistory(string readLineName, string str)
+            { }
+            public int HistoryExpand(string readLineName, string str, ref string output)
+            {
+                return 0;
+            }
+        }
     }
 }

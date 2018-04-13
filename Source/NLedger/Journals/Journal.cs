@@ -141,7 +141,6 @@ namespace NLedger.Journals
             // the payee indicates an account that should be used.
             if (result.Name == Account.UnknownName && post != null)
             {
-                // TODO = replace tuple with own stuct; create a separated method to simplify testing
                 Tuple<Mask, Account> tuple = PayeesForUnknownAccounts.FirstOrDefault(t => t.Item1.Match(post.Xact.Payee));
                 if (tuple != null)
                     result = tuple.Item2;

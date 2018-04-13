@@ -107,7 +107,7 @@ namespace NLedger.Scopus
         public T Get<T>(int index, bool convert = true)
         {
             // DM - this method was completely rewritten to handle conversion to the expected type
-            // TODO - reconsider to get rid of boxing
+            // #remove-boxing - Consider removing excess boxing in this method.
 
             if (typeof(T) == typeof(int))
                 convert = true; // see - inline int call_scope_t::get<int>(std::size_t index, bool) {

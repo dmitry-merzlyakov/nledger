@@ -6,27 +6,31 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Abstracts;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NLedger.Utility
 {
-    public class HistoryExtensions
+    public static class VirtualPager
     {
-        public static int HistoryExpand(string str, ref string output)
+        public static IPagerProvider PagerProvider
         {
-            // see http://www.delorie.com/gnu/docs/readline/rlman_28.html
-            // See https://cnswww.cns.cwru.edu/php/chet/readline/history.html
-            // See http://stackoverflow.com/questions/2024170/is-there-a-net-library-similar-to-gnu-readline
-            return 0; // TODO
+            get { return MainApplicationContext.Current.PagerProvider; }
         }
 
-        public static void AddHistory(string str)
+        public static TextWriter GetPager(string pagerPath)
         {
-            // TODO
+            return PagerProvider.GetPager(pagerPath);
+        }
+
+        public static string GetDefaultPagerPath()
+        {
+            return PagerProvider.GetDefaultPagerPath();
         }
     }
 }

@@ -245,7 +245,7 @@ namespace NLedger.Tests.Amounts
         public void Amount_HasAnnotation_FailsIfAnnotatedCommodityHasNoDetails()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
-            AnnotatedCommodity annComm = new AnnotatedCommodity(comm, null);  /* not sure it is a valid case. TBD */
+            AnnotatedCommodity annComm = new AnnotatedCommodity(comm, null);
             Amount amount = new Amount(1, annComm);
             Assert.IsTrue(amount.HasAnnotation);
         }

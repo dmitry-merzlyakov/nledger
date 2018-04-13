@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLedger.Abstracts.Impl;
 using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Annotate;
@@ -30,16 +31,6 @@ namespace NLedger.Tests.Scopus
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class SessionTests : TestFixture
     {
-        public override void CustomTestInitialize()
-        {
-            SavedConsoleInput = FileSystem.ConsoleInput;
-        }
-
-        public override void CustomTestCleanup()
-        {
-            FileSystem.SetConsoleInput(SavedConsoleInput);
-        }
-
         [TestMethod]
         public void Session_Constructor_SetsDefaultProperties()
         {
@@ -88,8 +79,10 @@ namespace NLedger.Tests.Scopus
         [TestMethod]
         public void Session_ReadData_UsesInputStreamIfFileNameIsMinus()
         {
+            var input = new System.IO.StringReader(Session_ReadJournalFromString_Example);
+            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(input));
+
             Scope.DefaultScope = new EmptyScope();
-            FileSystem.SetConsoleInput(new System.IO.StringReader(Session_ReadJournalFromString_Example));
             Session session = new Session();
             session.FileHandler.DataFiles.Add("-");
             int xacts = session.ReadData(null);
@@ -211,7 +204,7 @@ namespace NLedger.Tests.Scopus
 
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushBack(val);
-            Assert.AreEqual(23, session.FnStr(scope1).AsAmount.Quantity.ToLong());  // TODO - validate this case
+            Assert.AreEqual(23, session.FnStr(scope1).AsAmount.Quantity.ToLong());
         }
 
         [TestMethod]
@@ -349,8 +342,6 @@ namespace NLedger.Tests.Scopus
             reportOptions = session.ReportOptions();
             Assert.AreEqual(Session_ReportOptions_Example, reportOptions.TrimEnd());
         }
-
-        private System.IO.TextReader SavedConsoleInput;
 
         private const string Session_ReportOptions_Example = "            check-payees                                             whence";
         private const string Session_ReadJournalFromString_Example = @"2009/10/30 (DEP) Pay day!

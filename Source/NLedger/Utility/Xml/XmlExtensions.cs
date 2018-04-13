@@ -183,7 +183,7 @@ namespace NLedger.Utility.Xml
                     }
 
                 default: // ValueTypeEnum.Scope, Any
-                    throw new NotImplementedException("assert(false);");
+                    throw new InvalidOperationException("assert(false);");
             }
         }
 

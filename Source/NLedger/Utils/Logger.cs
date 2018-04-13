@@ -199,7 +199,7 @@ namespace NLedger.Utils
 
         private TextWriter Writer
         {
-            get { return OutWriter ?? FileSystem.ConsoleError; }
+            get { return OutWriter ?? VirtualConsole.Error; }
         }
 
         private DateTime? LoggerStart = null;

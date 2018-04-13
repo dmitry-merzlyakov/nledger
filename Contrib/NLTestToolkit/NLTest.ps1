@@ -293,6 +293,11 @@ function RunTestCase {
     }
     # Check whether -f option is already presented; add it otherwise
     if ($Private:testCaseResult.arguments -cnotmatch "(^|\s)-f\s") { $Private:testCaseResult.arguments += " -f '$($testCase.FileName)'" }
+    # Check whether "--pager" option is presented to add extra options for paging test
+    if ($Private:testCaseResult.arguments.Contains("--pager")) {
+        $Private:testCaseResult.arguments += "  --force-pager" # Pager test requires this option to override IsAtty=false that is default for other tests
+        $env:PATH += ";$(Resolve-Path (Join-Path $Script:ScriptPath '..\Extras'))"
+    }
     # Check whether output is redirected to null; remove it if so
     if ($Private:testCaseResult.arguments.Contains("2>/dev/null")) { 
         $Private:testCaseResult.arguments = $Private:testCaseResult.arguments.Replace("2>/dev/null", "")

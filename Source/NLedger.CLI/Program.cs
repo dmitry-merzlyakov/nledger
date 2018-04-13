@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Abstracts.Impl;
 using NLedger.Utility;
 using System;
 using System.Collections;
@@ -31,11 +32,15 @@ namespace NLedger.CLI
             Console.OutputEncoding = config.OutputEncoding;
             if (config.IsAnsiTerminalEmulation)
                 AnsiTextWriter.Attach();
+            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(Console.In, Console.Out, Console.Error));
+            MainApplicationContext.Current.DefaultPager = config.DefaultPager;
+
+            var envs = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().ToDictionary(d => d.Key.ToString(), d => d.Value.ToString());
+            MainApplicationContext.Current.SetEnvironmentVariables(envs);
 
             var argString = GetCommandLine(); // This way is prefferable because of double quotas that are missed by using args
-            var envs = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().ToDictionary(d => d.Key.ToString(), d => d.Value.ToString());
 
-            Environment.ExitCode = main.Execute(argString, envs, Console.In, Console.Out, Console.Error);            
+            Environment.ExitCode = main.Execute(argString);
         }
 
         private static string GetCommandLine()

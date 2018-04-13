@@ -27,7 +27,6 @@ namespace NLedger.Commodities
         {
             if (!PriceGraph.HasVertex(commodity))
             {
-                // commodity.GraphIndex.. no needs.. TODO - remove property
                 PriceGraph.AddVertex(commodity);
             }
         }

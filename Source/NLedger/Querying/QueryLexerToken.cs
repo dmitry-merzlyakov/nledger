@@ -105,8 +105,8 @@ namespace NLedger.Querying
             { QueryLexerTokenKind.TOK_SINCE, "since"},
             { QueryLexerTokenKind.TOK_UNTIL, "until"},
             { QueryLexerTokenKind.END_REACHED, "<EOF>"},
-            { QueryLexerTokenKind.TERM, "<TERM>"},  // ?? assert(false)
-            { QueryLexerTokenKind.UNKNOWN, "<UNKNOWN>"}  // ?? assert(false)
+            { QueryLexerTokenKind.TERM, "<TERM>"},  // [DM] assert(false)
+            { QueryLexerTokenKind.UNKNOWN, "<UNKNOWN>"}  // [DM] assert(false)
         };
     }
 }

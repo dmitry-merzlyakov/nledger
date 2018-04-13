@@ -285,7 +285,7 @@ namespace NLedger
 
         public long ToLong()
         {
-            // TODO - GMP_RNDN (see mpfr_get_si)
+            // GMP_RNDN (see mpfr_get_si)
             if (HasValue)
             {
                 T value;

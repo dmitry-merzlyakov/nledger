@@ -89,7 +89,7 @@ namespace NLedger.Expressions
             else
             {
                 pathname = "<stdin>";
-                reader = FileSystem.ConsoleInput;
+                reader = VirtualConsole.Input;
             }
 
             SymbolScope filelocals = new SymbolScope(args);

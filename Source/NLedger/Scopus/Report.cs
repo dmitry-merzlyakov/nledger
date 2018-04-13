@@ -185,7 +185,9 @@ namespace NLedger.Scopus
         public Report(Report report) : this()
         {
             Session = report.Session;
+            OutputStream = report.OutputStream;
             Terminus = report.Terminus;
+            BudgetFlags = report.BudgetFlags;
         }
 
         public override string Description
@@ -347,7 +349,7 @@ namespace NLedger.Scopus
         public void QuickClose()
         {
             if (OutputStream != null)
-                OutputStream.Close();
+                OutputStream = FileSystem.OutputStreamClose(OutputStream);
         }
 
         public string ReportOptions()
@@ -363,9 +365,9 @@ namespace NLedger.Scopus
             // #if HAVE_ISATTY
             if (!ForceColorHandler.Handled)
             {
-                if (!NoColorHandler.Handled && FileSystem.IsAtty())
+                if (!NoColorHandler.Handled && VirtualConsole.IsAtty())
                     ColorHandler.On("?normalize");
-                if (ColorHandler.Handled && !FileSystem.IsAtty())
+                if (ColorHandler.Handled && !VirtualConsole.IsAtty())
                     ColorHandler.Off();
             }
             else
@@ -375,7 +377,7 @@ namespace NLedger.Scopus
 
             if (!ForcePagerHandler.Handled)
             {
-                if (PagerHandler.Handled && !FileSystem.IsAtty())
+                if (PagerHandler.Handled && !VirtualConsole.IsAtty())
                     PagerHandler.Off();
             }
             // #endif
@@ -491,7 +493,7 @@ namespace NLedger.Scopus
                 cols = long.Parse(ColumnsHandler.Value);
             else
             {
-                string columns = Environment.GetEnvironmentVariable("COLUMNS");
+                string columns = VirtualEnvironment.GetEnvironmentVariable("COLUMNS");
                 if (!string.IsNullOrEmpty(columns))
                     cols = long.Parse(columns);
                 else
@@ -1762,8 +1764,10 @@ namespace NLedger.Scopus
             OutputHandler = Options.Add(new Option(OptionOutput));
 
             // setenv() is not available on WIN32
-            // DM - TODO - point to add an onw implementation of LESS
             PagerHandler = Options.Add(new Option(OptionPager));
+            var defaultPagerPath = VirtualPager.GetDefaultPagerPath();
+            if (!String.IsNullOrEmpty(defaultPagerPath) && VirtualConsole.IsAtty())
+                PagerHandler.On(null, defaultPagerPath);
 
             NoPagerHandler = Options.Add(new Option(OptionNoPager, (o, w) =>
             {

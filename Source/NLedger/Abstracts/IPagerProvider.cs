@@ -6,28 +6,34 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using NLedger.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLedger.Abstracts.Impl
+namespace NLedger.Abstracts
 {
     /// <summary>
-    /// Default implementation of a quote provider that executes a script
-    /// in the same manner as Ledger does it.
+    /// This interface virtualizes access to a pager
     /// </summary>
-    public sealed class QuoteProvider : IQuoteProvider
+    public interface IPagerProvider
     {
-        public bool Get(string command, out string response)
-        {
-            if (String.IsNullOrWhiteSpace(command))
-                throw new ArgumentNullException("command");
+        /// <summary>
+        /// Returns an output stream that will be routed to a pager.
+        /// </summary>
+        /// <remarks>
+        /// The output stream will be closed by NLedger when it finishes sending data.
+        /// </remarks>
+        /// <param name="pagerPath">Path to a pager</param>
+        /// <returns>TextWriter that holds the output for the pager.</returns>
+        TextWriter GetPager(string pagerPath);
 
-            var getQuotePath = VirtualEnvironment.GetEnvironmentVariable("GETQUOTEPATH");
-            return MainApplicationContext.Current.ProcessManager.Execute("cmd", "/c " + command, getQuotePath, out response) == 0;
-        }
+        /// <summary>
+        /// Returns a default pager path
+        /// </summary>
+        /// <returns>Pager path if it is specified or an empty string otherwise</returns>
+        string GetDefaultPagerPath();
     }
 }

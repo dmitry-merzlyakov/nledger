@@ -8,17 +8,17 @@ This is a roadmap for development of next NLedger releases.
 
 - [Complete] Code completion: add arbitrary precision arithmetic to deal with Amount quantities;
   enable validation of big numbers in Ledger unit tests;
-- Code verification: process all *TODO/TBD/In Progress/NotImplemented* markers in code;
+- [Complete] Code verification: process all *TODO/TBD/In Progress/NotImplemented* markers in code;
 - [Complete] Code verification: process warnings in unit test projects;
 - [Complete] Code completion: verify and complete DEBUG and TRACE messages;
-- Code completion: handle special options (*verify*, *verbose*, *memory*, *init-file*);
+- [Complete] Code completion: handle special options (*verify*, *verbose*, *memory*, *init-file*);
 - [Complete] Code completion: add *man* command (show current Ledger documentation in browser);
 - Update the source code and tests to the latest Ledger version (branch NEXT);
 - [Complete] Build: configure VSTS builds on hosted agents;
 - [Complete] Build: VSTS: add automatic commits for created packages and build logs; publish MD5 hashes;
 - [Complete] Build: VSTS: create DEV branches and configure Continuous Integration builds for them;
 - [Complete] Build: improve MD5 to HTML conversion; add automatic updates for doc files (licensing, bug tracking);
-- Bug fixing: prompt in the interactive mode;
+- [Complete] Bug fixing: prompt in the interactive mode;
 - [Complete] Bug fixing: fix filtering by categories in *--debug* option;
 - Deploy package: add more interactive examples in a console;
 - Build: add creating MSI packages (Wix);

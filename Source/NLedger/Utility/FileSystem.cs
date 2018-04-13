@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Abstracts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,34 +18,13 @@ namespace NLedger.Utility
 {
     public static class FileSystem
     {
-        public static string DevNull = @"/dev/null";
-        public static string DevStdErr = @"/dev/stderr";
-
-        public static TextReader ConsoleInput
-        {
-            get { return _ConsoleInput ?? Console.In; }
-        }
-
-        public static TextWriter ConsoleOutput
-        {
-            get { return _ConsoleOutput ?? Console.Out; }
-        }
-
-        public static TextWriter ConsoleError
-        {
-            get { return _ConsoleError ?? Console.Error; }
-        }
-
-        public static string ReadLine(string prompt)
-        {
-            if (String.IsNullOrWhiteSpace(prompt))
-                ConsoleOutput.WriteLine(prompt);
-            return ConsoleInput.ReadLine();
-        }
+        public static readonly string DevNull = @"/dev/null";
+        public static readonly string DevStdErr = @"/dev/stderr";
+        public static readonly string DevStdIn = @"/dev/stdin";
 
         public static string CurrentPath()
         {
-            return Directory.GetCurrentDirectory();
+            return FileSystemProvider.GetCurrentDirectory();
         }
 
         public static bool FileExists(string fileName)
@@ -52,27 +32,32 @@ namespace NLedger.Utility
             if (IsDevNull(fileName) || IsStdErr(fileName))
                 return true;
 
-            return File.Exists(fileName);
+            return FileSystemProvider.FileExists(fileName);
         }
 
         public static string GetParentPath(string fileName)
         {
-            return Path.GetDirectoryName(fileName);
+            return FileSystemProvider.GetDirectoryName(fileName);
         }
 
         public static bool DirectoryExists(string directoryName)
         {
-            return Directory.Exists(directoryName);
+            return FileSystemProvider.DirectoryExists(directoryName);
         }
 
         public static IEnumerable<string> GetDirectoryFiles(string directoryName)
         {
-            return Directory.GetFiles(directoryName);
+            return FileSystemProvider.GetFiles(directoryName);
         }
 
         public static string GetFileName(string pathAndFileName)
         {
-            return Path.GetFileName(pathAndFileName);
+            return FileSystemProvider.GetFileName(pathAndFileName);
+        }
+
+        public static string GetDirectoryName(string path)
+        {
+            return FileSystemProvider.GetDirectoryName(path);
         }
 
         public static StreamReader GetStreamReader(string fileName)
@@ -80,7 +65,7 @@ namespace NLedger.Utility
             if (IsDevNull(fileName))
                 return StreamReader.Null;
 
-            return File.OpenText(fileName);
+            return FileSystemProvider.OpenText(fileName);
         }
 
         public static StreamReader GetStreamReaderFromString(string data)
@@ -91,7 +76,7 @@ namespace NLedger.Utility
 
         public static string GetStringFromFile(string fileName, long bytePosition, long byteLength)
         {
-            using (var fileStream = File.OpenRead(fileName))
+            using (var fileStream = FileSystemProvider.OpenRead(fileName))
             {
                 fileStream.Position = bytePosition;
                 var bytes = new byte[byteLength];
@@ -105,12 +90,12 @@ namespace NLedger.Utility
 
         public static void PutStringToFile(string fileName, string str)
         {
-            File.AppendAllText(fileName, str);
+            FileSystemProvider.AppendAllText(fileName, str);
         }
 
         public static StreamReader GetStdInAsStreamReader()
         {
-            string input = ConsoleInput.ReadToEnd();
+            string input = VirtualConsole.Input.ReadToEnd();
             return GetStreamReaderFromString(input);
         }
 
@@ -118,18 +103,28 @@ namespace NLedger.Utility
         public static TextWriter OutputStreamInitialize(string outputFile, string pagerPath)
         {
             if (IsStdErr(outputFile))
-                return ConsoleError;
+                return VirtualConsole.Error;
             else if (!String.IsNullOrWhiteSpace(outputFile) && outputFile != "-")
-                return File.CreateText(outputFile);
+                return FileSystemProvider.CreateText(outputFile);
             else if (!String.IsNullOrWhiteSpace(pagerPath))
-                throw new NotImplementedException("stream.do_fork does not work on WIN32. Future enhancements...");
+                return VirtualPager.GetPager(pagerPath);
             else
-                return ConsoleOutput;
+                return VirtualConsole.Output;
+        }
+
+        // output_stream_t::close()
+        public static TextWriter OutputStreamClose(TextWriter outputStream)
+        {
+            if (outputStream != VirtualConsole.Output && outputStream != VirtualConsole.Error)
+            {
+                outputStream.Close();
+            }
+            return VirtualConsole.Output;
         }
 
         public static string Combine(string fileName, string folderName)
         {
-            return Path.Combine(folderName, fileName);
+            return FileSystemProvider.PathCombine(folderName, fileName);
         }
 
         public static string ResolvePath(string pathName)
@@ -140,7 +135,7 @@ namespace NLedger.Utility
             if (IsDevNull(pathName) || IsStdErr(pathName))
                 return pathName;
 
-            pathName = Path.GetFullPath(pathName);  // path temp.normalize(); - TODO check whether it is equalent replacement
+            pathName = FileSystemProvider.GetFullPath(pathName);  // #fix-path-normalization - path temp.normalize(); - GetFullPath is not equal replacement
             return pathName;
         }
 
@@ -151,7 +146,7 @@ namespace NLedger.Utility
 
         public static string HomePath(string fileName)
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
+            return FileSystemProvider.PathCombine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
         }
 
         public static string ExpandPath(string pathName)
@@ -188,50 +183,103 @@ namespace NLedger.Utility
 
         public static long FileSize(string fileName)
         {
-            return new FileInfo(fileName).Length;
+            return FileSystemProvider.GetFileSize(fileName);
         }
 
         public static DateTime LastWriteTime(string fileName)
         {
-            return File.GetLastWriteTimeUtc(fileName);
+            return FileSystemProvider.GetLastWriteTimeUtc(fileName);
         }
 
-        public static void SetConsoleInput(TextReader consoleInput)
-        {
-            _ConsoleInput = consoleInput;
-        }
-
-        public static void SetConsoleOutput(TextWriter consoleOutput)
-        {
-            _ConsoleOutput = consoleOutput;
-        }
-
-        public static void SetConsoleError(TextWriter consoleError)
-        {
-            _ConsoleError = consoleError;
-        }
-
-        public static bool IsAtty()
-        {
-            return MainApplicationContext.Current.IsAtty;
-        }
-
-        private static bool IsDevNull(string fileName)
+        public static bool IsDevNull(string fileName)
         {
             return String.Equals(fileName, DevNull, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private static bool IsStdErr(string fileName)
+        public static bool IsStdErr(string fileName)
         {
             return String.Equals(fileName, DevStdErr, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static bool IsStdIn(string fileName)
+        {
+            return String.Equals(fileName, DevStdIn, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// This method returns a path to an executable file by its name w/ or w/o extension.
+        /// </summary>
+        /// <param name="filePath">Executable file name (w/ or w/o extension and relative path)</param>
+        /// <returns>Relative or absolute path to an executable file or null if it is not found</returns>
+        public static string GetExecutablePath(string filePath)
+        {
+            if (String.IsNullOrWhiteSpace(filePath))
+                return null;
+
+            if (FileExists(filePath))
+                return filePath;
+
+            var hasPath = Path.IsPathRooted(filePath);
+            var fileNames = ComposePossibleExecutableFileNames(filePath);
+
+            var foundFile = FindExistingFile(null, fileNames);
+            if (!String.IsNullOrEmpty(foundFile))
+                return foundFile;
+
+            if (!hasPath)
+            {
+                var pathValues = VirtualEnvironment.GetEnvironmentVariable("PATH") ?? String.Empty;
+                foreach (var path in pathValues.Split(';'))
+                {
+                    foreach (var fName in fileNames)
+                    {
+                        var fullPath = Path.Combine(path, fName);
+                        if (File.Exists(fullPath))
+                            return fullPath;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static string[] ExecutableExtensions = { ".BAT", ".CMD", ".COM", ".EXE" };
+
+        public static IEnumerable<string> ComposePossibleExecutableFileNames(string filePath)
+        {
+            if (String.IsNullOrEmpty(filePath))
+                return Enumerable.Empty<string>();
+
+            foreach (var ext in ExecutableExtensions)
+                if (filePath.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase))
+                    return new string[] { filePath };
+
+            var result = new string[ExecutableExtensions.Length];
+            for (int i = 0; i < ExecutableExtensions.Length; i++)
+                result[i] = filePath + ExecutableExtensions[i];
+
+            return result;
+        }
+
+        public static string FindExistingFile(string folder, IEnumerable<string> files)
+        {
+            if (files == null)
+                throw new ArgumentNullException("files");
+
+            if (!String.IsNullOrEmpty(folder))
+                files = files.Select(s => Path.Combine(folder, s));
+
+            return files.FirstOrDefault(s => FileExists(s));
+        }
+
+        private static IFileSystemProvider FileSystemProvider
+        {
+            get { return MainApplicationContext.Current.FileSystemProvider; }
         }
 
         private static readonly string DirectorySeparatorChar = new string(new char[] { Path.DirectorySeparatorChar });
         private static readonly string AltDirectorySeparatorChar = new string(new char[] { Path.AltDirectorySeparatorChar });
         private static readonly char[] AnyDirectorySeparatorChar = new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
-        private static TextReader _ConsoleInput = null;
-        private static TextWriter _ConsoleOutput = null;
-        private static TextWriter _ConsoleError = null;
 
     }
 }

@@ -447,7 +447,7 @@ namespace NLedger.Drafts
 
         protected override Value RealCalc(Scope scope)
         {
-            throw new NotImplementedException("assert(false)");
+            throw new InvalidOperationException("assert(false)");
         }
 
         private static Regex DateMask = new Regex("([0-9]+(?:[-/.][0-9]+)?(?:[-/.][0-9]+))?");

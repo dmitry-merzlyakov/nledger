@@ -96,6 +96,16 @@ namespace NLedger.Tests.Scopus
         }
 
         [TestMethod]
+        [ExpectedException(typeof(CountError))]
+        public void Option_ProcessOption_PassesThroughCountError()
+        {
+            ExprFunc func = s => { throw new CountError(1); };
+            MockScope mockScope = new MockScope();
+
+            Option.ProcessOption("whence", func, mockScope, "arg", "name");
+        }
+
+        [TestMethod]
         public void Option_ProcessEnvironment_HandlesOptionsByTagName()
         {
             OptFunctScopes.Clear();

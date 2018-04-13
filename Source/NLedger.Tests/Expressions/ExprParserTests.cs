@@ -61,7 +61,7 @@ namespace NLedger.Tests.Expressions
         [TestMethod]
         public void ExprParser_Parse_HandlesSubtractExpression()
         {
-            string expr = "4 - 3";  // TODO - note that '4-3' does not work (parse_quantity issue)
+            string expr = "4 - 3";  // #fix-expr-parser - note that '4-3' does not work (parse_quantity issue)
             InputTextStream inStream = new InputTextStream(expr);
 
             ExprParser parser = new ExprParser();

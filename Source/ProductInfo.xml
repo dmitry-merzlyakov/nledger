@@ -34,4 +34,14 @@
         // **********************************************************************************
     </FileHeader>
   </SourceLicensing>
+  <DeferredImprovements>
+    <!-- This section contains a collection of items that indicate areas in the source code to be improved. 
+         Search by 'code' to locate such areas -->
+    <Item code="readline-library" category="functional" description="Add functions similar to GNU Readline" />
+    <Item code="remove-boxing" category="refactor" description="Reconsider design to get rid of boxing" />
+    <Item code="fix-expr-parser" category="known-bug" description="Expression parser cannot handle '4-3' though '4 - 3' works (parse_quantity issue in Ledger)" />
+    <Item code="fix-path-normalization" category="known-bug" description="Path.GetFullPath() is not equal replacement for 'path temp.normalize();' the former always returns an absolute rooted path though the latter - the normalized." />
+    <Item code="memory-tracing" category="functional" description="Add functions similar to memory tracing" />
+    <Item code="localization" category="functional" description="Add functions similar to textdomain" />
+  </DeferredImprovements>
 </ProductInfo>

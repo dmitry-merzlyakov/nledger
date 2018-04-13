@@ -502,7 +502,7 @@ namespace NLedger.Amounts
             // precision if something greater was used for the quantity.
 
             if (String.IsNullOrEmpty(symbol))
-                ClearCommodity(); //Commodity = null;  TODO - validate approach
+                ClearCommodity();
             else
             {
                 Commodity = CommodityPool.Current.Find(symbol);
@@ -647,8 +647,6 @@ namespace NLedger.Amounts
                         throw new InvalidOperationException("Details do not have a price");
                     details.Price /= Abs();
                 }
-                // TODO - I cannot find any use of set_commodity
-                //set_commodity(*commodity_pool_t::current_pool->find_or_create(*commodity_, details));
                 Commodity = CommodityPool.Current.FindOrCreate(Commodity, details);
             }
 
@@ -1329,7 +1327,7 @@ namespace NLedger.Amounts
         /// </summary>
         public void ClearCommodity()
         {
-            Commodity = CommodityPool.Current.NullCommodity; // Commodity = null; TODO - validate approach
+            Commodity = CommodityPool.Current.NullCommodity;
         }
 
         public int DisplayPrecision
