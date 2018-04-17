@@ -42,20 +42,20 @@ namespace NLedger.Output
 
         public virtual void GatherMetadata(Item item)
         {
-            if (item.GetMetadata() != null)
-            {
-                foreach (KeyValuePair<string, ItemTag> data in item.GetMetadata())
-                {
-                    string tag = data.Key;
-                    if (Report.ValuesHandler.Handled && !Value.IsNullOrEmptyOrFalse(data.Value.Value))
-                        tag += ": " + data.Value.Value.ToString();
+            if (item.GetMetadata() == null)
+                return;
 
-                    int count;
-                    if (Tags.TryGetValue(tag, out count))
-                        Tags[tag] = count + 1;
-                    else
-                        Tags[tag] = 1;
-                }
+            foreach (KeyValuePair<string, ItemTag> data in item.GetMetadata())
+            {
+                string tag = data.Key;
+                if (Report.ValuesHandler.Handled && !Value.IsNullOrEmptyOrFalse(data.Value.Value))
+                    tag += ": " + data.Value.Value.ToString();
+
+                int count;
+                if (Tags.TryGetValue(tag, out count))
+                    Tags[tag] = count + 1;
+                else
+                    Tags[tag] = 1;
             }
         }
 

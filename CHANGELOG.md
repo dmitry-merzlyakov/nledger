@@ -16,18 +16,20 @@ Code and feature completion; continuous integration.
   tests (test/nledger/opt-download) and example scripts (Extras/getQuote);
 - Added support of "--help" option; it shows Ledger Man Pages in a default browser;
 - Added support of external pagers ("--pager" option);
+- Code is synced with latest changed in Ledger code base (up to 4/9/2018);
 - Added continuous integration for a development repository ("next-dev");
   build logs and current status are in the file _CI.BuildLog.md;
 
 ### Known Issues
 
-TBD
+Listed in ProductInfo.xml
 
 ### Bug Fixing
 
 *None* public bug fixing requests at the memoment.
 
 - Fixed handling a category name for "debug" option;
+- Fixed showing prompt in interactive mode;
 
 ### Breaking Changes
 

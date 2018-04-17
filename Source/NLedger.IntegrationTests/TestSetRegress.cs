@@ -178,6 +178,20 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1182_1()
+        {
+            new TestRunner(@"test\regress\1182_1.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1182_2()
+        {
+            new TestRunner(@"test\regress\1182_2.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_1187_1()
         {
             new TestRunner(@"test\regress\1187_1.test").Run();
@@ -1068,6 +1082,41 @@ namespace NLedger.IntegrationTests
         public void IntegrationTest_test_regress_FDFBA165()
         {
             new TestRunner(@"test\regress\FDFBA165.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_fix_missing_trans_in_last_budget_period()
+        {
+            new TestRunner(@"test\regress\fix-missing-trans-in-last-budget-period.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_GH520()
+        {
+            new TestRunner(@"test\regress\GH520.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_market_group_by()
+        {
+            new TestRunner(@"test\regress\market-group-by.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_total_1()
+        {
+            new TestRunner(@"test\regress\total-1.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_total_2()
+        {
+            new TestRunner(@"test\regress\total-2.test").Run();
         }
 		
         [TestMethod]

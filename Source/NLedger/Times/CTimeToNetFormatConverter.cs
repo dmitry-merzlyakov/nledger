@@ -129,6 +129,7 @@ namespace NLedger.Times
             { 'I', new Tuple<string, string> ("hh",   "hh") },
             { 'p', new Tuple<string, string> ("tt",   "tt") },
             { 'A', new Tuple<string, string> ("dddd", "dddd") },
+            { 'F', new Tuple<string, string> ("yyyy-M-d", "yyyy-MM-dd") },  // equivalent to "%Y-%m-%d" (the ISO 8601 date format) 
         };
 
         private const char MarkerChar = '%';

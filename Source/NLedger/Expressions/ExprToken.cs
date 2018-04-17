@@ -151,7 +151,7 @@ namespace NLedger.Expressions
             char c;
             Length = inStream.ReadInto(out buf, out c, ch => char.IsLetterOrDigit(ch) || ch == '_');
 
-            Value = Value.Get(buf);
+            Value = Value.Get(buf, true); // [DM] It equals to 'value.set_string(buf);'
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace NLedger.Expressions
                         c = inStream.Get();
                         Length++;
                         Kind = ExprTokenKind.VALUE;
-                        Value = Value.Get(buf);
+                        Value = Value.Get(buf, true);  // [DM] It equals to 'value.set_string(buf);'
                         break;
                     }
 

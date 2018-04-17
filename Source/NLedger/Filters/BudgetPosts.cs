@@ -41,17 +41,31 @@ namespace NLedger.Filters
         /// </summary>
         public void ReportBudgetItems(Date date)
         {
+            // Cleanup pending items that finished before date
+            // We have to keep them until the last day they apply because operator() needs them to see if a
+            // posting is budgeted or not
+            IList<PendingPostsPair> postsToErase = new List<PendingPostsPair>();
+            foreach (PendingPostsPair pair in PendingPosts)
+            {
+                if (pair.DateInterval.Finish.HasValue && !pair.DateInterval.Start.HasValue && pair.DateInterval.Finish < date)
+                    postsToErase.Add(pair);
+            }
+            foreach (PendingPostsPair pair in postsToErase)
+                PendingPosts.Remove(pair);
+
             if (!PendingPosts.Any())
                 return;
 
             bool reported;
             do
             {
-                IList<PendingPostsPair> postsToErase = new List<PendingPostsPair>();
                 reported = false;
 
                 foreach (PendingPostsPair pair in PendingPosts)
                 {
+                    if (pair.DateInterval.Finish.HasValue && !pair.DateInterval.Start.HasValue)
+                        continue;       // skip expired posts
+
                     Date? begin = pair.DateInterval.Start;
                     if (!begin.HasValue)
                     {
@@ -77,9 +91,6 @@ namespace NLedger.Filters
                         Post post = pair.Post;
 
                         pair.DateInterval++;
-                        if (!pair.DateInterval.Start.HasValue)
-                            postsToErase.Add(pair);
-
                         Logger.Current.Debug(DebugBudgetGenerate, () => "Reporting budget for " + post.ReportedAccount.FullName);
 
                         Xact xact = Temps.CreateXact();
@@ -104,10 +115,6 @@ namespace NLedger.Filters
                         reported = true;
                     }
                 }
-
-                foreach (PendingPostsPair pair in postsToErase)
-                    PendingPosts.Remove(pair);
-
             }                
             while (reported);
         }

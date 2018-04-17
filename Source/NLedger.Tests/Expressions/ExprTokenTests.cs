@@ -141,6 +141,26 @@ namespace NLedger.Tests.Expressions
             ReadAndCheckTokenProps(act, ref token, inStream, 0, ExprTokenKind.VALUE, 2, Value.Get(new Amount("23")), "2");
         }
 
+        [TestMethod]
+        public void ExprToken_ParseIdent_ReturnsEmptyStringValueForEmptyIdent()
+        {
+            var source = "";
+            ExprToken token = new ExprToken();
+            token.ParseIdent(new InputTextStream(source));
+            Assert.AreEqual(ValueTypeEnum.String, token.Value.Type);
+            Assert.AreEqual(String.Empty, token.Value.AsString);
+        }
+
+        [TestMethod]
+        public void ExprToken_Next_ReturnsEmptyStringValueForEmptyInput()
+        {
+            var source = "\"\"";
+            ExprToken token = new ExprToken();
+            token.Next(new InputTextStream(source), AmountParseFlagsEnum.PARSE_DEFAULT);
+            Assert.AreEqual(ValueTypeEnum.String, token.Value.Type);
+            Assert.AreEqual(String.Empty, token.Value.AsString);
+        }
+
         private void ReadAndCheckTokenProps(Func<int> act, ref ExprToken token, InputTextStream inStream, int expectedResult, ExprTokenKind expectedKind, int expectedLength, Value expectedValue, string expectedSymbol)
         {
             inStream.PeekNextNonWS();

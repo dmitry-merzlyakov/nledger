@@ -8,7 +8,9 @@
 // **********************************************************************************
 using NLedger.Accounts;
 using NLedger.Chain;
+using NLedger.Formatting;
 using NLedger.Scopus;
+using NLedger.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +30,25 @@ namespace NLedger.Output
         public override void Flush()
         {
             StringBuilder sb = new StringBuilder();
+            Format prependFormat = null;
+            int prependWidth = 0;
+
+            if (Report.PrependFormatHandler.Handled)
+            {
+                prependFormat = new Format(Report.PrependFormatHandler.Str());
+                if (Report.PrependWidthHandler.Handled)
+                    prependWidth = Int32.Parse(Report.PrependWidthHandler.Str());
+            }
+
             foreach(KeyValuePair<Account,int> pair in Accounts.OrderBy(p => p.Key.FullName, StringComparer.Ordinal))
             {
+                if (prependFormat != null)
+                {
+                    BindScope boundScope = new BindScope(Report, pair.Key);
+                    sb.AppendFormat(StringExtensions.GetWidthAlignFormatString(prependWidth), 
+                        prependFormat.Calc(boundScope));
+                }
+
                 if (Report.CountHandler.Handled)
                     sb.AppendFormat("{0} ", pair.Value);
                 sb.AppendLine(pair.Key.ToString());

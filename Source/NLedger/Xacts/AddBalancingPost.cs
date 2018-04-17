@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace NLedger.Xacts
 {
     /// <summary>
-    /// Porrted from add_balancing_post (xact.cc)
+    /// Ported from add_balancing_post (xact.cc)
     /// </summary>
     public struct AddBalancingPost
     {
@@ -49,7 +49,7 @@ namespace NLedger.Xacts
             else
             {
                 Post p = new Post(NullPost.Account, amount.Negated());
-                p.Flags = p.Flags | SupportsFlagsEnum.ITEM_GENERATED | SupportsFlagsEnum.POST_CALCULATED;
+                p.Flags |= (NullPost.Flags | SupportsFlagsEnum.ITEM_GENERATED | SupportsFlagsEnum.POST_CALCULATED);
                 p.State = NullPost.State;
                 Xact.AddPost(p);
             }

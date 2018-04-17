@@ -79,6 +79,7 @@
     <Compile Include="Utility\CommandLine.cs" />
     <Compile Include="Utility\Date.cs" />
     <Compile Include="Utility\DateExtension.cs" />
+    <Compile Include="Utility\FileNameComparer.cs" />
     <Compile Include="Utility\StreamReaderExtensions.cs" />
     <Compile Include="Utility\VirtualConsole.cs" />
     <Compile Include="Utility\VirtualEnvironment.cs" />

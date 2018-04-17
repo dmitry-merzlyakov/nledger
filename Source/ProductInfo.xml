@@ -7,7 +7,7 @@
     <OriginalSource>
         <Repository>https://github.com/ledger/ledger</Repository>
         <Branch>NEXT</Branch>
-        <Commit>b414544</Commit>  <!-- The date of the latest commit was 2017/02/17 -->
+        <Commit>fd486a59</Commit>  <!-- The date of the latest commit was 4/9/2018 10:09:04 AM -->
     </OriginalSource>
   </General>
   <AssemblyInfo>

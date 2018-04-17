@@ -302,9 +302,9 @@ namespace NLedger.Filters
             LastTotal = new Value();
 
             Temps.Clear();
-            CreateAccounts();
-
             base.Clear();
+
+            CreateAccounts();
         }
     }
 }

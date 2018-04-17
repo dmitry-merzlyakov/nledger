@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <!-- 
-Copyright (C) 2003â2015, John Wiegley.  All rights reserved.
+Copyright (C) 2003-2018, John Wiegley.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -104,6 +104,7 @@ ul.no-bullet {list-style: none}
     <li><a name="toc-Fat_002dfree-Accounting-1" href="#Fat_002dfree-Accounting">1.1 Fat-free Accounting</a></li>
     <li><a name="toc-Building-the-program-1" href="#Building-the-program">1.2 Building the program</a></li>
     <li><a name="toc-Getting-help-1" href="#Getting-help">1.3 Getting help</a></li>
+    <li><a name="toc-Third_002dParty-Ledger-Tutorials-1" href="#Third_002dParty-Ledger-Tutorials">1.4 Third-Party Ledger Tutorials</a></li>
   </ul></li>
   <li><a name="toc-Ledger-Tutorial-1" href="#Ledger-Tutorial">2 Ledger Tutorial</a>
   <ul class="no-bullet">
@@ -415,7 +416,7 @@ Next: <a href="#Introduction-to-Ledger" accesskey="n" rel="next">Introduction to
 <p>Ledger is a command-line accounting tool that provides double-entry
 accounting based on a text journal.  It provides no bells or whistles,
 and returns the user to the days before user interfaces were even a
-twinkling in their father&rsquo;s CRT.
+twinkling in their fathers&rsquo; CRTs.
 </p>
 
 <table class="menu" border="0" cellspacing="0">
@@ -474,6 +475,8 @@ Next: <a href="#Ledger-Tutorial" accesskey="n" rel="next">Ledger Tutorial</a>, P
 <tr><td align="left" valign="top">&bull; <a href="#Building-the-program" accesskey="2">Building the program</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 <tr><td align="left" valign="top">&bull; <a href="#Getting-help" accesskey="3">Getting help</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Third_002dParty-Ledger-Tutorials" accesskey="4">Third-Party Ledger Tutorials</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 </table>
 
@@ -693,6 +696,29 @@ join the Ledger mailing list at
 </p>
 <p>You can also find help in the <code>#ledger</code> channel on the IRC server
 <code>irc.freenode.net</code>.
+</p>
+<hr>
+<a name="Third_002dParty-Ledger-Tutorials"></a>
+<div class="header">
+<p>
+Previous: <a href="#Getting-help" accesskey="p" rel="prev">Getting help</a>, Up: <a href="#Introduction-to-Ledger" accesskey="u" rel="up">Introduction to Ledger</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concepts-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Third_002dParty-Ledger-Tutorials-1"></a>
+<h3 class="section">1.4 Third-Party Ledger Tutorials</h3>
+
+<p>There are plenty of people using Ledger for accounting applications.
+Some have documented how they use Ledger&rsquo;s features to solve their
+accounting problems.
+</p>
+<p>Once such tutorial, specifically designed for non-profit charities that seek
+to use Ledger, can be found at
+<a href="https://k.sfconservancy.org/npo-ledger-cli">https://k.sfconservancy.org/npo-ledger-cli</a> (with a copy on GitHub also
+available at <a href="https://github.com/conservancy/npo-ledger-cli/">https://github.com/conservancy/npo-ledger-cli/</a>).  If
+you&rsquo;re looking for information about how to use Ledger&rsquo;s tagging system to
+handle invoicing, track expenses by program targets, and other such concepts,
+you might find the tutorial useful.  (Some of the auditor reporting scripts
+that relate to the aformentioned Ledger setup can be found
+<var>contrib/non-profit-audit-reports/</var> in Ledger&rsquo;s own source repository.)
 </p>
 <hr>
 <a name="Ledger-Tutorial"></a>
@@ -1442,7 +1468,7 @@ since the prices database uses that currency.
 
 <p>You can convert from any commodity to any other commodity.  Let&rsquo;s say
 you had $5000 in your checking account, and for whatever reason you
-wanted to know many ounces of gold that would buy, in terms of the
+wanted to know how many ounces of gold that would buy, in terms of the
 current price of gold:
 </p>
 <div class="smallexample">
@@ -1645,7 +1671,7 @@ worth $5000, then you have $5000 in equity in that car.  In order to
 turn that car (a commodity) into a cash flow, or a credit to your bank
 account, you will have to debit the equity by selling it.
 </p>
-<p>When you start a ledger, you are probably already worth something.
+<p>When you start a ledger, you probably already have a net worth.
 Your net worth is your current equity.  By transferring the money in
 the ledger from your equity to your bank accounts, you are crediting
 the ledger account based on your prior equity.  That is why, when you
@@ -1741,7 +1767,7 @@ account point of view and from the fund point of view&mdash;yet both sets
 should reflect the same overall expenses and cash flow.  It&rsquo;s simply
 where the money resides that differs.
 </p>
-<p>This situation can be handled one of two ways.  The first is using
+<p>This situation can be handled in one of two ways.  The first is using
 virtual postings to represent the fact that money is moving to and
 from two kind of accounts at the same time:
 </p>
@@ -1897,11 +1923,11 @@ nature of your transactions.
 </p>
 <p>For example, you do not need to tell Ledger about the accounts you
 use.  Any time Ledger sees a posting involving an account it knows
-nothing about, it will create it<a name="DOCF2" href="#FOOT2"><sup>2</sup></a>.  If you use a commodity that is new to
-Ledger, it will create that commodity, and determine its display
-characteristics (placement of the symbol before or after the amount,
-display precision, etc.) based on how you used the commodity in the
-posting.
+nothing about, it will create it<a name="DOCF2" href="#FOOT2"><sup>2</sup></a>.  If you
+use a commodity that is new to Ledger, it will create that commodity,
+and determine its display characteristics (placement of the symbol
+before or after the amount, display precision, etc.) based on how you
+used the commodity in the posting.
 </p>
 <table class="menu" border="0" cellspacing="0">
 <tr><td align="left" valign="top">&bull; <a href="#The-Most-Basic-Entry" accesskey="1">The Most Basic Entry</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
@@ -2445,7 +2471,7 @@ amount using the &lsquo;<samp>(( ))</samp>&rsquo; commodity annotation.
 
 2012-03-07 KFC
     Expenses:Food7                1 CAD
-    Assets:Cas7
+    Assets:Cash7
 
 2012-03-08 XACT
     Expenses:Food8               $1
@@ -2915,7 +2941,7 @@ should never be auto-downloaded.
 </dd>
 <dt><code>end</code></dt>
 <dd><a name="index-end"></a>
-<p>Closes block commands like <code>tag</code> or <code>comment</code>.
+<p>Closes block commands like <code>apply</code> or <code>comment</code>.
 </p>
 </dd>
 <dt><code>expr</code></dt>
@@ -3221,14 +3247,17 @@ that make it very simple: <code>print</code>, and <code>equity</code>.
 </p>
 <p>Let&rsquo;s take an example file, with data ranging from year 2000 until
 2004.  We want to archive years 2000 and 2001 to their own file,
-leaving just 2003 and 2004 in the current file.  So, use
-<code>print</code> to output all the earlier transactions to a file
-called <samp>ledger-old.dat</samp>:
+leaving 2002&ndash;2004 in the current file.  So, use <code>print</code> to
+output all the earlier transactions to a file called
+<samp>ledger-old.dat</samp>:
 </p>
 <div class="smallexample">
-<pre class="smallexample">$ ledger -f ledger.dat -b 2000 -e 2001 print &gt; ledger-old.dat
+<pre class="smallexample">$ ledger -f ledger.dat -b 2000 -e 2002 print &gt; ledger-old.dat
 </pre></div>
 
+<p>Note that <samp>-e</samp> limits output to transactions <em>before</em> the
+date specified.
+</p>
 <p>To delete older data from the current ledger file, use <code>print</code>
 again, this time specifying year 2002 as the starting date:
 </p>
@@ -3516,7 +3545,7 @@ Next: <a href="#Metadata" accesskey="n" rel="next">Metadata</a>, Previous: <a hr
 <h3 class="section">5.6 Transaction notes</h3>
 
 <p>After the payee, and after at least one tab or two spaces (or a space
-and a tab, which Ledger calls a &ldquo;hard separator&rdquo;), you may
+and a tab), which Ledger calls a &ldquo;hard separator&rdquo;, you may
 introduce a note about the transaction using the &lsquo;<samp>;</samp>&rsquo; character:
 </p>
 <div class="smallexample">
@@ -3630,7 +3659,7 @@ used as the payee name for that posting.  This affects the
 </p>
 <p>This is useful when for example you deposit 4 checks at a time to the
 bank.  On the bank statement, there is just one amount &lsquo;<samp>$400</samp>&rsquo;, but
-you can specify from whom each check came from, as shown by example
+you can specify from whom each check came, as shown by example
 below:
 </p>
 <div class="smallexample">
@@ -3866,7 +3895,7 @@ adjustment transaction using balance assignments:
     Equity:Adjustments
 </pre></div>
 
-<p>Since the second posting is also null, it&rsquo;s value will become the
+<p>Since the second posting is also null, its value will become the
 inverse of whatever amount is generated for the first posting.
 </p>
 <p>This is the only time in ledger when more than one posting&rsquo;s amount
@@ -4184,7 +4213,7 @@ double braces price form is a shorthand only.
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage            10 AAPL @ $50.00
-    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage:Cash      $-500.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
@@ -4216,11 +4245,11 @@ following two transactions are equivalent:
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage            10 AAPL @ $50.00
-    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage:Cash      $-500.00
 
 2012-04-10 My Broker
     Assets:Brokerage            10 AAPL {$50.00}
-    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage:Cash      $-500.00
 </pre></div>
 
 <p>However, note that what you see in some reports may differ, for
@@ -4237,15 +4266,16 @@ Next: <a href="#Lot-dates" accesskey="n" rel="next">Lot dates</a>, Previous: <a 
 <a name="Fixated-prices-and-costs-1"></a>
 <h3 class="section">5.18 Fixated prices and costs</h3>
 
-<p>If you buy a stock last year, and ask for its value today, Ledger will
-consult its price database to see what the most recent price for that
-stock is.  You can short-circuit this lookup by &ldquo;fixing&rdquo; the price
-at the time of a transaction.  This is done using &lsquo;<samp>{=AMOUNT}</samp>&rsquo;:
+<p>If you bought a stock last year, and ask for its value today, Ledger
+will consult its price database to see what the most recent price for
+that stock is.  You can short-circuit this lookup by &ldquo;fixing&rdquo; the
+price at the time of a transaction.  This is done using
+&lsquo;<samp>{=AMOUNT}</samp>&rsquo;:
 </p>
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage            10 AAPL {=$50.00}
-    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage:Cash      $-500.00
 </pre></div>
 
 <p>These 10 AAPL will now always be reported as being worth $50, no
@@ -4261,7 +4291,7 @@ fixated prices by way of the cost:
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage            10 AAPL @ =$50.00
-    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage:Cash      $-500.00
 </pre></div>
 
 <p>This is the same as the previous transaction, with the same caveats
@@ -7868,11 +7898,25 @@ accounts in the budget (see <a href="#Budgeting-and-Forecasting">Budgeting and F
 <dd><p>Specify the format to use for the <code>budget</code> report (see <a href="#Format-Strings">Format Strings</a>).  The default is:
 </p>
 <div class="smallexample">
-<pre class="smallexample">&quot;%(justify(scrub(display_total), 20, -1, true, color))&quot;
+<pre class="smallexample">&quot;%(justify(scrub(get_at(display_total, 0)), 12, -1, true, color))&quot;
+&quot; %(justify(-scrub(get_at(display_total, 1)), 12, &quot;
+&quot;           12 + 1 + 12, true, color))&quot;
+&quot; %(justify(scrub(get_at(display_total, 1) + &quot;
+&quot;                 get_at(display_total, 0)), 12, &quot;
+&quot;           12 + 1 + 12 + 1 + 12, true, color))&quot;
+&quot; %(ansify_if(&quot;
+&quot;   justify((get_at(display_total, 1) ? &quot;
+&quot;            (100% * quantity(scrub(get_at(display_total, 0)))) / &quot;
+&quot;             -quantity(scrub(get_at(display_total, 1))) : 0), &quot;
+&quot;           5, -1, true, false),&quot;
+&quot;   magenta if (color and get_at(display_total, 1) and &quot;
+&quot;               (abs(quantity(scrub(get_at(display_total, 0))) / &quot;
+&quot;                    quantity(scrub(get_at(display_total, 1)))) &gt;= 1))))&quot;
 &quot;  %(!options.flat ? depth_spacer : \&quot;\&quot;)&quot;
-&quot;%-(ansify_if(partial_account(options.flat), blue if color))\n%/&quot;
-&quot;%$1\n%/&quot;
-&quot;--------------------\n&quot;
+&quot;%-(ansify_if(partial_account(options.flat), blue if color))\n&quot;
+&quot;%/%$1 %$2 %$3 %$4\n%/&quot;
+&quot;%(prepend_width ? \&quot; \&quot; * int(prepend_width) : \&quot;\&quot;)&quot;
+&quot;------------ ------------ ------------ -----\n&quot;
 </pre></div>
 
 </dd>
@@ -9843,7 +9887,9 @@ Previous: <a href="#Detailed-Option-Description" accesskey="p" rel="prev">Detail
 <h3 class="section">8.4 Period Expressions</h3>
 
 <p>A period expression indicates a span of time, or a reporting interval,
-or both.  The full syntax is:
+or both. Ledger&rsquo;s end dates are always exclusive, imagine the date is
+followed by 00:00:00 time. They are instants in time not entire days.
+The full syntax is:
 </p>
 <div class="smallexample">
 <pre class="smallexample">[INTERVAL] [BEGIN] [END]
@@ -10728,7 +10774,7 @@ was given use <code>option.daily</code>.
 
 <dl>
 <dt><a name="index-quoted"></a>Function: <strong>quoted</strong> <em>expression</em></dt>
-<dd><p>Surround <var>expression</var> with double-quotes.
+<dd><p>Surround <var>expression</var> with double-quotes.  If expression contains a double-quote, it will be escaped with a backslash.
 </p><div class="smallexample">
 <pre class="smallexample">$ ledger -f expr.dat --format &quot;%(quoted(account)) %(quoted(amount))\n&quot; reg
 </pre></div>
@@ -10737,6 +10783,7 @@ was given use <code>option.daily</code>.
 &quot;Expenses:Office Supplies&quot; &quot;¤ 123,45&quot;
 </pre></div>
 </dd></dl>
+
 
 <dl>
 <dt><a name="index-round"></a>Function: <strong>round</strong></dt>
@@ -11450,7 +11497,7 @@ as
 </p>
 </dd>
 <dt><code>%j</code></dt>
-<dd><p>day of year, zero padded 000–366.
+<dd><p>day of year, zero padded 000&ndash;366.
 </p>
 </dd>
 <dt><code>%u</code></dt>
@@ -11517,19 +11564,19 @@ Previous: <a href="#Month" accesskey="p" rel="prev">Month</a>, Up: <a href="#Dat
 </p>
 <dl compact="compact">
 <dt><code>%U</code></dt>
-<dd><p>week number Sunday as first day of week, ranging 01–53.
+<dd><p>week number Sunday as first day of week, ranging 01&ndash;53.
 </p>
 </dd>
 <dt><code>%W</code></dt>
-<dd><p>week number Monday as first day of week, ranging 01–53.
+<dd><p>week number Monday as first day of week, ranging 01&ndash;53.
 </p>
 </dd>
 <dt><code>%V</code></dt>
-<dd><p>week of the year, ranging 01–53.
+<dd><p>week of the year, ranging 01&ndash;53.
 </p>
 </dd>
 <dt><code>%C</code></dt>
-<dd><p>century, ranging 00–99.
+<dd><p>century, ranging 00&ndash;99.
 </p>
 </dd>
 <dt><code>%D</code></dt>
@@ -11670,7 +11717,7 @@ Even if you don&rsquo;t create a session manually, one is created for you by
 the top-level interface functions.  The Session is where objects live
 like the Commodities that Amounts refer to.
 </p>
-<p>The make a Session useful, you must read a Journal into it, using the
+<p>To make a Session useful, you must read a Journal into it, using the
 function &lsquo;<code>read_journal</code>&lsquo;.  This reads Ledger data from the given
 file, populates a Journal object within the current Session, and
 returns a reference to that Journal object.
@@ -11749,7 +11796,7 @@ looking at its <code>xact</code> member:
 <pre class="smallexample">last_xact = None
 for post in ledger.read_journal(&quot;sample.dat&quot;).query(&quot;&quot;):
     if post.xact != last_xact:
-        for post in post.xact.posts:
+        for post in post.xact.posts():
             print &quot;Transferring %s to/from %s&quot; % (post.amount,
             post.account)
         last_xact = post.xact
@@ -14148,9 +14195,10 @@ Previous: <a href="#Concepts-Index" accesskey="p" rel="prev">Concepts Index</a>,
 cases, it automatically balances this transaction for you.</p>
 <h3><a name="FOOT2" href="#DOCF2">(2)</a></h3>
 <p>This also means if you
-misspell an account it will end up getting counted separately from what
-you intended.  The provided Emacs major mode provides for automatically
-filling in account names.</p>
+misspell an account it will end up getting counted separately from
+what you intended.  An Emacs major mode
+<a href="https://github.com/ledger/ledger-mode/">ledger-mode</a> provides
+tab completion for automatically filling in account names.</p>
 <h3><a name="FOOT3" href="#DOCF3">(3)</a></h3>
 <p>You
 can track <em>anything</em>, even time or distance traveled.  As long as

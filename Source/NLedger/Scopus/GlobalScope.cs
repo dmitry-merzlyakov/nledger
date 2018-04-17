@@ -272,9 +272,7 @@ namespace NLedger.Scopus
             if (InitFileHandler.Handled)
             {
                 initFile = InitFileHandler.Str();
-                if (FileSystem.FileExists(initFile))
-                    ParseInit(initFile);
-                else
+                if (!FileSystem.FileExists(initFile))
                     throw new ParseError(String.Format(ParseError.ParseError_CouldNotFindSpecifiedInitFile, initFile));
             }
             else

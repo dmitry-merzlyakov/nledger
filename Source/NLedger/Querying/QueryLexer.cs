@@ -241,7 +241,7 @@ namespace NLedger.Querying
 
         private void SetArg()
         {
-            Arg = BeginEnumerator.Current.AsString;
+            Arg = BeginEnumerator.Current.AsString ?? String.Empty;
             ArgI = 0;
             ArgEnd = Arg.Length;
         }

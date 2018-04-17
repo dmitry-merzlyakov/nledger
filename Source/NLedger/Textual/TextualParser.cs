@@ -1105,6 +1105,7 @@ namespace NLedger.Textual
             format = format.Trim();
             Amount amt = new Amount();
             amt.Parse(ref format);
+            amt.Commodity.Flags |= CommodityFlagsEnum.COMMODITY_STYLE_NO_MIGRATE;
             Validator.Verify(() => amt.Valid());
         }
 
@@ -1509,6 +1510,9 @@ namespace NLedger.Textual
                 Query query = new Query();
                 AnnotationKeepDetails keeper = new AnnotationKeepDetails(true, true, true);
                 ExprOp expr = query.ParseArgs(Value.Get(Value.StringValue(line.Substring(1).TrimStart()).AsSequence), keeper, false, true);
+
+                if (expr == null)
+                    throw new ParseError("Expected predicate after '='");
 
                 AutoXact ae = new AutoXact(new Predicate(expr, keeper))
                 {

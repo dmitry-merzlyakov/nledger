@@ -294,6 +294,9 @@ namespace NLedger.Commodities
             if (!cost.HasCommodity)
                 perUnitCost.ClearCommodity();
 
+            if (cost.HasAnnotation)
+                perUnitCost = perUnitCost.StripAnnotations(new AnnotationKeepDetails());
+
             Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: per-unit-cost = {0}", perUnitCost));
 
             // Do not record commodity exchanges where amount's commodity has a

@@ -281,7 +281,10 @@ namespace NLedger.Xacts
 
                             xact.AddPost(newPost);
                             newPost.Account.AddPost(newPost);
-                                
+
+                            // Add flag so this post updates the account balance
+                            newPost.XData.Visited = true; // POST_EXT_VISITED
+
                             if (newPost.MustBalance)
                                 needsFurtherVerification = true;
 

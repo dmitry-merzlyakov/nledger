@@ -1057,6 +1057,13 @@ namespace NLedger.Scopus
             return Value.Get(args.Get<Amount>(0).Commodity.Symbol);
         }
 
+        public Value FnClearCommodity(CallScope args)
+        {
+            Amount amt = args.Get<Amount>(0);
+            amt.ClearCommodity();
+            return Value.Get(amt);
+        }
+
         /// <summary>
         /// Ported from value_t report_t::fn_nail_down(call_scope_t& args)
         /// </summary>
@@ -1454,12 +1461,12 @@ namespace NLedger.Scopus
 
             BudgedFormatHandler = Options.Add(new Option(OptionBudgetFormat));
             BudgedFormatHandler.On(null,
-               "%(justify(scrub(get_at(display_total, 0)), 12, -1, true, color))" +
-               " %(justify(-scrub(get_at(display_total, 1)), 12, " +
-               "           12 + 1 + 12, true, color))" +
-               " %(justify(scrub(get_at(display_total, 1) + " +
-               "                 get_at(display_total, 0)), 12, " +
-               "           12 + 1 + 12 + 1 + 12, true, color))" +
+               "%(justify(scrub(get_at(display_total, 0)), int(amount_width), -1, true, color))" +
+               " %(justify(-scrub(get_at(display_total, 1)), int(amount_width), " +
+               "           int(amount_width) + 1 + int(amount_width), true, color))" +
+               " %(justify(scrub((get_at(display_total, 1) || 0) + " +
+               "                 (get_at(display_total, 0) || 0)), int(amount_width), " +
+               "           int(amount_width) + 1 + int(amount_width) + 1 + int(amount_width), true, color))" +
                " %(ansify_if(" +
                "   justify((get_at(display_total, 1) ? " +
                "            (100% * quantity(scrub(get_at(display_total, 0)))) / " +
@@ -2215,6 +2222,7 @@ namespace NLedger.Scopus
             LookupItems.MakeFunctor("cyan", scope => FnCyan((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("commodity", scope => FnCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("ceiling", scope => FnCeiling((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("clear_commodity", scope => FnClearCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             LookupItems.MakeFunctor("display_amount", scope => FnDisplayAmount((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("display_total", scope => FnDisplayTotal((CallScope)scope), SymbolKindEnum.FUNCTION);

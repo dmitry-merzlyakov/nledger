@@ -13,7 +13,7 @@ This is a roadmap for development of next NLedger releases.
 - [Complete] Code completion: verify and complete DEBUG and TRACE messages;
 - [Complete] Code completion: handle special options (*verify*, *verbose*, *memory*, *init-file*);
 - [Complete] Code completion: add *man* command (show current Ledger documentation in browser);
-- Update the source code and tests to the latest Ledger version (branch NEXT);
+- [Complete] Update the source code and tests to the latest Ledger version (branch NEXT);
 - [Complete] Build: configure VSTS builds on hosted agents;
 - [Complete] Build: VSTS: add automatic commits for created packages and build logs; publish MD5 hashes;
 - [Complete] Build: VSTS: create DEV branches and configure Continuous Integration builds for them;

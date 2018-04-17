@@ -79,6 +79,7 @@
     <Compile Include="Utility\DateExtensionTests.cs" />
     <Compile Include="Utility\DateTests.cs" />
     <Compile Include="Utility\ErrorContextTests.cs" />
+    <Compile Include="Utility\FileNameComparerTests.cs" />
     <Compile Include="Utility\Graph\GraphExtensionsTests.cs" />
     <Compile Include="Utility\InputTextStreamTests.cs" />
     <Compile Include="Utility\SHA1Tests.cs" />

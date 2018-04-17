@@ -30,6 +30,7 @@ namespace NLedger.Commodities
         COMMODITY_SAW_ANNOTATED          = 0x200,
         COMMODITY_SAW_ANN_PRICE_FLOAT    = 0x400,
         COMMODITY_SAW_ANN_PRICE_FIXATED  = 0x800,
-        COMMODITY_STYLE_TIME_COLON       = 0x1000
+        COMMODITY_STYLE_TIME_COLON       = 0x1000,
+        COMMODITY_STYLE_NO_MIGRATE       = 0x2000
     }
 }

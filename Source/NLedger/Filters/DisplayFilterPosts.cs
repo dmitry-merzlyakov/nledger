@@ -132,9 +132,10 @@ namespace NLedger.Filters
             LastDisplayTotal = new Value();
 
             Temps.Clear();
+            base.Clear();
+
             CreateAccounts();
 
-            base.Clear();
         }
     }
 }

@@ -79,6 +79,8 @@ namespace NLedger.Tests.Times
             Assert.AreEqual("'no marker string'", CTimeToNetFormatConverter.ConvertCTimeToNet("no marker string", NetDateTimeFormat.ParseFormat));
             Assert.AreEqual("yyyyyyMMMMdHHmmsshhttdddd", CTimeToNetFormatConverter.ConvertCTimeToNet("%Y%y%m%b%d%H%M%S%I%p%A", NetDateTimeFormat.ParseFormat));
             Assert.AreEqual("yyyyyyMMMMMddHHmmsshhttdddd", CTimeToNetFormatConverter.ConvertCTimeToNet("%Y%y%m%b%d%H%M%S%I%p%A", NetDateTimeFormat.PrintFormat));
+            Assert.AreEqual("yyyy-M-d", CTimeToNetFormatConverter.ConvertCTimeToNet("%F", NetDateTimeFormat.ParseFormat));
+            Assert.AreEqual("yyyy-MM-dd", CTimeToNetFormatConverter.ConvertCTimeToNet("%F", NetDateTimeFormat.PrintFormat));
             Assert.AreEqual("'Today is 'yyyy' 'dd' - 'MM", CTimeToNetFormatConverter.ConvertCTimeToNet("Today is %Y %d - %m", NetDateTimeFormat.PrintFormat));
         }
 

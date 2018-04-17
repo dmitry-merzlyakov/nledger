@@ -518,6 +518,7 @@ namespace NLedger.Amounts
 
             bool noMoreCommas = false;
             bool noMorePeriods = false;
+            bool noMigrateStyle = Commodity.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_STYLE_NO_MIGRATE);
             bool decimalCommaStyle = Commodity.Defaults.DecimalCommaByDefault || 
                 (Commodity != null && Commodity.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_STYLE_DECIMAL_COMMA));
 
@@ -609,7 +610,7 @@ namespace NLedger.Amounts
             }
             else
             {
-                if (HasCommodity)
+                if (HasCommodity && !noMigrateStyle)
                 {
                     Commodity.Flags |= commodityFlags;
 
