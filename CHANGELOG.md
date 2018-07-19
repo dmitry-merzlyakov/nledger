@@ -19,6 +19,8 @@ Code and feature completion; continuous integration.
 - Code is synced with latest changed in Ledger code base (up to 4/9/2018);
 - Added continuous integration for a development repository ("next-dev");
   build logs and current status are in the file _CI.BuildLog.md;
+- Added interactive Live Demo web console;
+- Added Setup console that manages application settings;
 
 ### Known Issues
 

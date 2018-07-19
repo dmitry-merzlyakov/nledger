@@ -82,6 +82,19 @@
     <Compile Include="Utility\FileNameComparerTests.cs" />
     <Compile Include="Utility\Graph\GraphExtensionsTests.cs" />
     <Compile Include="Utility\InputTextStreamTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\CascadeSettingsContainerTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\BaseSettingDefinitionTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\BoolSettingDefinitionTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\EncodingSettingDefinitionTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\IntegerSettingDefinitionTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\StringSettingDefinitionTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\TimeZoneSettingDefinitionTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\SettingValueTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSourceTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\CustomDataSourceTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\DefaultSettingsSourceTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\EnvironmentVariablesSettingsSourceTests.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\SystemConfigurationSettingsSourceTests.cs" />
     <Compile Include="Utility\SHA1Tests.cs" />
     <Compile Include="Utils\CancellationManagerTests.cs" />
     <Compile Include="Utils\TimerContextTests.cs" />
@@ -167,6 +180,14 @@
     <None Include="Abstracts\Impl\ProcessManagerErrBatch.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.incomplete.config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.normal.config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -1,0 +1,2 @@
+﻿= /^Expenses:/
+    ; VALUE:: market(amount, post.date, exchange)

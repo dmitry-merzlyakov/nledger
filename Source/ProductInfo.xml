@@ -43,5 +43,7 @@
     <Item code="fix-path-normalization" category="known-bug" description="Path.GetFullPath() is not equal replacement for 'path temp.normalize();' the former always returns an absolute rooted path though the latter - the normalized." />
     <Item code="memory-tracing" category="functional" description="Add functions similar to memory tracing" />
     <Item code="localization" category="functional" description="Add functions similar to textdomain" />
+    <Item code="fix-demo-Val-7792" category="known-bug" description="Demo example causes RTE - ledger --file drewr3.dat --forecast &quot;T&gt;{\$-500.00}&quot; register ^assets ^liabilities" />
+    <Item code="fix-demo-B4DFB9F" category="known-bug" description="Demo example causes RTE - ledger -f expr.dat --format &quot;%(account) %(roundto(amount, 1))\n&quot;" />
   </DeferredImprovements>
 </ProductInfo>

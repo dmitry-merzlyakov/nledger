@@ -20,7 +20,8 @@ This is a roadmap for development of next NLedger releases.
 - [Complete] Build: improve MD5 to HTML conversion; add automatic updates for doc files (licensing, bug tracking);
 - [Complete] Bug fixing: prompt in the interactive mode;
 - [Complete] Bug fixing: fix filtering by categories in *--debug* option;
-- Deploy package: add more interactive examples in a console;
+- [Complete] Deploy package: add interactive examples in a console;
+- [Complete] Deploy package: add a setup console;
 - Build: add creating MSI packages (Wix);
 
 ## NLedger 0.8

@@ -1,0 +1,6 @@
+﻿alias Dining=Expenses:Entertainment:Dining
+alias Checking=Assets:Credit Union:Joint Checking Account
+
+2011/11/28 YummyPalace
+    Dining        $10.00
+    Checking

@@ -78,7 +78,6 @@ namespace NLedger.Tests.Utility
         [TestMethod]
         public void DateExtension_CurrentTimeZone_ReturnsLocalIfNoneSpecified()
         {
-            MainApplicationContext.Current.TimeZoneId = null;
             MainApplicationContext.Current.TimeZone = null;
             Assert.AreEqual(TimeZoneInfo.Local, DateExtension.CurrentTimeZone());
         }
@@ -86,7 +85,6 @@ namespace NLedger.Tests.Utility
         [TestMethod]
         public void DateExtension_CurrentTimeZone_ReturnsContextTimeZone()
         {
-            MainApplicationContext.Current.TimeZoneId = "something that will be disregarded";
             MainApplicationContext.Current.TimeZone = TimeZoneInfo.Utc;
             Assert.AreEqual(TimeZoneInfo.Utc, DateExtension.CurrentTimeZone());
         }
@@ -94,8 +92,7 @@ namespace NLedger.Tests.Utility
         [TestMethod]
         public void DateExtension_CurrentTimeZone_ReturnsTimeZoneByCode()
         {
-            MainApplicationContext.Current.TimeZoneId = "Central Standard Time";
-            MainApplicationContext.Current.TimeZone = null;
+            MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
             Assert.AreEqual(TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"), DateExtension.CurrentTimeZone());
         }
 

@@ -1,0 +1,10 @@
+﻿; This is a single line comment,
+#  and this,
+%   and this,
+|    and this,
+*     and this.
+
+comment
+    This is a block comment with
+    multiple lines
+end comment

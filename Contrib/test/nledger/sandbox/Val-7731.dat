@@ -1,0 +1,14 @@
+﻿~ Monthly
+    Expenses:Rent               $500.00
+    Expenses:Food               $450.00
+    Expenses:Auto:Gas           $120.00
+    Expenses:Insurance          $150.00
+    Expenses:Phone              $125.00
+    Expenses:Utilities          $100.00
+    Expenses:Movies              $50.00
+    Expenses                    $200.00  ; all other expenses
+    Assets
+
+~ Yearly
+    Expenses:Auto:Repair        $500.00
+    Assets

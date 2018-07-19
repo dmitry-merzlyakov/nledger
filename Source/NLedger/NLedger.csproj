@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
@@ -80,6 +81,24 @@
     <Compile Include="Utility\Date.cs" />
     <Compile Include="Utility\DateExtension.cs" />
     <Compile Include="Utility\FileNameComparer.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\CascadeSettingsContainer.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\BaseSettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\BoolSettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\EncodingSettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\IntegerSettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\StringSettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Definitions\TimeZoneSettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\ISettingDefinition.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\ISettingsSource.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\SettingScopeEnum.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\SettingValue.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\CustomDataSource.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\DefaultSettingsSource.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\EnvironmentVariablesSettingsSource.cs" />
+    <Compile Include="Utility\Settings\CascadeSettings\Sources\SystemConfigurationSettingsSource.cs" />
+    <Compile Include="Utility\Settings\NLedgerConfiguration.cs" />
+    <Compile Include="Utility\Settings\NLedgerSettingsContainer.cs" />
     <Compile Include="Utility\StreamReaderExtensions.cs" />
     <Compile Include="Utility\VirtualConsole.cs" />
     <Compile Include="Utility\VirtualEnvironment.cs" />

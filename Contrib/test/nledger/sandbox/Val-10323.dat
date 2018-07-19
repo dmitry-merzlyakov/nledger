@@ -1,0 +1,8 @@
+﻿= /^Income:Taxable/
+  (Liabilities:Tithe Owed)    -0.1
+= /Noah/
+  (Liabilities:Tithe Owed)    -0.1
+= /Jonah/
+  (Liabilities:Tithe Owed)    -0.1
+= /Tithe/
+  (Liabilities:Tithe Owed)    -1.0

@@ -1,0 +1,5 @@
+﻿commodity $
+   note American Dollars
+   format $1,000.00
+   nomarket
+   default

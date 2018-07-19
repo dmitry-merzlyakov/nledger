@@ -1,0 +1,17 @@
+﻿2011/01/25 Tom's Used Cars
+    ; :hastag:
+    ; nestedtag: true
+    Expenses:Auto                    $ 5,500.00
+    ; :nobudget:
+    Assets:Checking
+
+2011/01/27 Book Store
+    ; :hastag:
+    ; nestedtag: true
+    Expenses:Books                       $20.00
+    Liabilities:MasterCard
+
+2011/12/01 Sale
+    ; :hastag:
+    Assets:Checking:Business            $ 30.00
+    Income:Sales

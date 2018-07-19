@@ -74,6 +74,28 @@ accounting systems.
 *Note: the example journal file (drewr3.dat) and some other example files that are mentioned in 
 the documentation are available in the folder with Ledger tests (NLedger\test\input).*
 
+### Setup Console
+
+There is a Powershell tool that simplifies managing of NLedger settings.
+You can run the tool by executing *NLedger\Contrib\NLManagement\NLSetup.Console.cmd*.
+It allows to observe application settings, its descriptions, available values
+and set own values. Type "help" in the console for further information.
+
+### Live Demo Web Console
+
+In a nutshell, it is a web page showing the original Ledger documentation
+that allows to run all examples in an interactive manner. You can also
+play with command line arguments, type modified commands and review
+how the application responds. You can observe and modify the corresponded
+data file and, in case of any issues, revert your changes. All the actions
+are available on the page, so you can read the documentation and play with
+Ledger at the same time.
+
+You can run the console by executing *NLedger\Contrib\NLManagement\NLDoc.LiveDemo.WebConsole.cmd*.
+It will run a powershell tool that starts http listener and runs your default browser.
+If you want to change either the browser or the page url or a default editor -
+you Setup Console to customize Live Demo settings.
+
 ### About Coloring and Pagination
 
 The original Ledger colors the output by means of VT100 color codes. Since the standard Windows console
@@ -136,6 +158,8 @@ If you already have your own set of test files, you can put them to the test fol
 
 As a regular .Net application, NLedger command line utility has the own configuration file: *NLedger-cli.exe.config*.
 It contains several options that are specific for .Net product and Windows environment.
+
+*Note: you can manage setting values by means of Setup Console.*
 
 Available configuration options are:
 

@@ -1,0 +1,6 @@
+﻿= expr true
+    (Foo)                  (amount * 2)  ; same as just "2" in this case
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash

@@ -1,0 +1,9 @@
+﻿; this is a global comment that is not applied to a specific transaction
+; it can start with any of the five characters but is not included in the
+; output from 'print' or 'output'
+
+2011/12/11  Something Sweet
+    ; German Chocolate Cake
+    ; :Broke Diet:
+    Expenses:Food                  $10.00 ; Friends: The gang
+    Assets:Credit Union:Checking

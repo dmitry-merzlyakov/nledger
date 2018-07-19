@@ -8,6 +8,7 @@
 // **********************************************************************************
 using NLedger.Abstracts.Impl;
 using NLedger.Utility;
+using NLedger.Utility.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,21 +26,9 @@ namespace NLedger.CLI
             // System.Diagnostics.Debugger.Launch(); // This debugging option might be useful in case of troubleshooting of NLTest issues
 
             var main = new Main();
+            new NLedgerConfiguration().ConfigureConsole(MainApplicationContext.Current);
 
-            var config = new AppConfiguration();
-            MainApplicationContext.Current.IsAtty = config.IsAtty;
-            MainApplicationContext.Current.TimeZoneId = config.TimeZoneId;
-            Console.OutputEncoding = config.OutputEncoding;
-            if (config.IsAnsiTerminalEmulation)
-                AnsiTextWriter.Attach();
-            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(Console.In, Console.Out, Console.Error));
-            MainApplicationContext.Current.DefaultPager = config.DefaultPager;
-
-            var envs = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().ToDictionary(d => d.Key.ToString(), d => d.Value.ToString());
-            MainApplicationContext.Current.SetEnvironmentVariables(envs);
-
-            var argString = GetCommandLine(); // This way is prefferable because of double quotas that are missed by using args
-
+            var argString = GetCommandLine(); // This way is preferrable because of double quotas that are missed by using args
             Environment.ExitCode = main.Execute(argString);
         }
 

@@ -66,7 +66,6 @@ namespace NLedger
         public bool DefaultStyleChanged { get; set; }
 
         // For datetime extensions
-        public string TimeZoneId { get; set; }
         public TimeZoneInfo TimeZone { get; set; }
 
         // For Error Context

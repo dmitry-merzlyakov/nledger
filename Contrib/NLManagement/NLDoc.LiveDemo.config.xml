@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ledger-demo>
+  <demo-files>
+    <file name="Val-1937.dat" path="..\test\nledger\sandbox\Val-1937.dat" />
+    <file name="582C8C2.dat" path="..\test\nledger\sandbox\582C8C2.dat" />
+    <file name="Val-3936.dat" path="..\test\nledger\sandbox\Val-3936.dat" />
+    <file name="Val-2592.dat" path="..\test\nledger\sandbox\Val-2592.dat" />
+    <file name="Val-2559.dat" path="..\test\nledger\sandbox\Val-2559.dat" />
+    <file name="Val-2656.dat" path="..\test\nledger\sandbox\Val-2656.dat" />
+    <file name="Val-3257.dat" path="..\test\nledger\sandbox\Val-3257.dat" />
+    <file name="Val-1669.dat" path="..\test\nledger\sandbox\Val-1669.dat" />
+    <file name="Val-3170.dat" path="..\test\nledger\sandbox\Val-3170.dat" />
+    <file name="Val-3813.dat" path="..\test\nledger\sandbox\Val-3813.dat" />
+    <file name="94A99E8.dat" path="..\test\nledger\sandbox\94A99E8.dat" />
+    <file name="Val-9725.dat" path="..\test\nledger\sandbox\Val-9725.dat" />
+    <file name="Val-3181.dat" path="..\test\nledger\sandbox\Val-3181.dat" />
+    <file name="Val-3129.dat" path="..\test\nledger\sandbox\Val-3129.dat" />
+    <file name="Val-1538.dat" path="..\test\nledger\sandbox\Val-1538.dat" />
+    <file name="Val-1186.dat" path="..\test\nledger\sandbox\Val-1186.dat" />
+    <file name="Val-2828.dat" path="..\test\nledger\sandbox\Val-2828.dat" />
+    <file name="Val-3829.dat" path="..\test\nledger\sandbox\Val-3829.dat" />
+    <file name="Val-3663.dat" path="..\test\nledger\sandbox\Val-3663.dat" />
+    <file name="Val-8143.dat" path="..\test\nledger\sandbox\Val-8143.dat" />
+    <file name="Val-2842.dat" path="..\test\nledger\sandbox\Val-2842.dat" />
+    <file name="Val-2193.dat" path="..\test\nledger\sandbox\Val-2193.dat" />
+    <file name="Val-1922.dat" path="..\test\nledger\sandbox\Val-1922.dat" />
+    <file name="Val-3772.dat" path="..\test\nledger\sandbox\Val-3772.dat" />
+    <file name="Val-3196.dat" path="..\test\nledger\sandbox\Val-3196.dat" />
+    <file name="Val-3718.dat" path="..\test\nledger\sandbox\Val-3718.dat" />
+    <file name="Val-2043.dat" path="..\test\nledger\sandbox\Val-2043.dat" />
+    <file name="Val-9769.dat" path="..\test\nledger\sandbox\Val-9769.dat" />
+    <file name="Val-8131.dat" path="..\test\nledger\sandbox\Val-8131.dat" />
+    <file name="Val-1768.dat" path="..\test\nledger\sandbox\Val-1768.dat" />
+    <file name="Val-2217.dat" path="..\test\nledger\sandbox\Val-2217.dat" />
+    <file name="Val-9607.dat" path="..\test\nledger\sandbox\Val-9607.dat" />
+    <file name="Val-3487.dat" path="..\test\nledger\sandbox\Val-3487.dat" />
+    <file name="Val-919.dat" path="..\test\nledger\sandbox\Val-919.dat" />
+    <file name="Val-7814.dat" path="..\test\nledger\sandbox\Val-7814.dat" />
+    <file name="Val-1929.dat" path="..\test\nledger\sandbox\Val-1929.dat" />
+    <file name="Val-1848.dat" path="..\test\nledger\sandbox\Val-1848.dat" />
+    <file name="03ACB97.dat" path="..\test\nledger\sandbox\03ACB97.dat" />
+    <file name="Val-3115.dat" path="..\test\nledger\sandbox\Val-3115.dat" />
+    <file name="94C5675.dat" path="..\test\nledger\sandbox\94C5675.dat" />
+    <file name="Val-3802.dat" path="..\test\nledger\sandbox\Val-3802.dat" />
+    <file name="Val-2426.dat" path="..\test\nledger\sandbox\Val-2426.dat" />
+    <file name="Val-1263.dat" path="..\test\nledger\sandbox\Val-1263.dat" />
+    <file name="Val-3442.dat" path="..\test\nledger\sandbox\Val-3442.dat" />
+    <file name="Val-310.dat" path="..\test\nledger\sandbox\Val-310.dat" />
+    <file name="Val-9535.dat" path="..\test\nledger\sandbox\Val-9535.dat" />
+    <file name="Val-2601.dat" path="..\test\nledger\sandbox\Val-2601.dat" />
+    <file name="Val-2816.dat" path="..\test\nledger\sandbox\Val-2816.dat" />
+    <file name="Val-946.dat" path="..\test\nledger\sandbox\Val-946.dat" />
+    <file name="Val-3866.dat" path="..\test\nledger\sandbox\Val-3866.dat" />
+    <file name="Val-2854.dat" path="..\test\nledger\sandbox\Val-2854.dat" />
+    <file name="Val-2504.dat" path="..\test\nledger\sandbox\Val-2504.dat" />
+    <file name="Val-2978.dat" path="..\test\nledger\sandbox\Val-2978.dat" />
+    <file name="Val-7485.dat" path="..\test\nledger\sandbox\Val-7485.dat" />
+    <file name="Val-2866.dat" path="..\test\nledger\sandbox\Val-2866.dat" />
+    <file name="Val-3005.dat" path="..\test\nledger\sandbox\Val-3005.dat" />
+    <file name="Val-2671.dat" path="..\test\nledger\sandbox\Val-2671.dat" />
+    <file name="Val-3052.dat" path="..\test\nledger\sandbox\Val-3052.dat" />
+    <file name="Val-3735.dat" path="..\test\nledger\sandbox\Val-3735.dat" />
+    <file name="Val-1073.dat" path="..\test\nledger\sandbox\Val-1073.dat" />
+    <file name="Val-3657.dat" path="..\test\nledger\sandbox\Val-3657.dat" />
+    <file name="Val-10100.dat" path="..\test\nledger\sandbox\Val-10100.dat" />
+    <file name="48F4E47.dat" path="..\test\nledger\sandbox\48F4E47.dat" />
+    <file name="Val-3892.dat" path="..\test\nledger\sandbox\Val-3892.dat" />
+    <file name="Val-2337.dat" path="..\test\nledger\sandbox\Val-2337.dat" />
+    <file name="Val-4767.dat" path="..\test\nledger\sandbox\Val-4767.dat" />
+    <file name="Val-3504.dat" path="..\test\nledger\sandbox\Val-3504.dat" />
+    <file name="Val-2884.dat" path="..\test\nledger\sandbox\Val-2884.dat" />
+    <file name="Val-7473.dat" path="..\test\nledger\sandbox\Val-7473.dat" />
+    <file name="Val-3928.dat" path="..\test\nledger\sandbox\Val-3928.dat" />
+    <file name="Val-2520.dat" path="..\test\nledger\sandbox\Val-2520.dat" />
+    <file name="Val-3386.dat" path="..\test\nledger\sandbox\Val-3386.dat" />
+    <file name="Val-1654.dat" path="..\test\nledger\sandbox\Val-1654.dat" />
+    <file name="C371854.dat" path="..\test\nledger\sandbox\C371854.dat" />
+    <file name="Val-3726.dat" path="..\test\nledger\sandbox\Val-3726.dat" />
+    <file name="Val-3409.dat" path="..\test\nledger\sandbox\Val-3409.dat" />
+    <file name="Val-6906.dat" path="..\test\nledger\sandbox\Val-6906.dat" />
+    <file name="Val-3043.dat" path="..\test\nledger\sandbox\Val-3043.dat" />
+    <file name="Val-2470.dat" path="..\test\nledger\sandbox\Val-2470.dat" />
+    <file name="Val-1944.dat" path="..\test\nledger\sandbox\Val-1944.dat" />
+    <file name="Val-1798.dat" path="..\test\nledger\sandbox\Val-1798.dat" />
+    <file name="Val-3840.dat" path="..\test\nledger\sandbox\Val-3840.dat" />
+    <file name="Val-9736.dat" path="..\test\nledger\sandbox\Val-9736.dat" />
+    <file name="Val-3451.dat" path="..\test\nledger\sandbox\Val-3451.dat" />
+    <file name="Val-1421.dat" path="..\test\nledger\sandbox\Val-1421.dat" />
+    <file name="Val-10206.dat" path="..\test\nledger\sandbox\Val-10206.dat" />
+    <file name="drewr3.dat" path="..\test\input\drewr3.dat" />
+    <file name="DB128F3.dat" path="..\test\nledger\sandbox\DB128F3.dat" />
+    <file name="Val-6560.dat" path="..\test\nledger\sandbox\Val-6560.dat" />
+    <file name="Val-885.dat" path="..\test\nledger\sandbox\Val-885.dat" />
+    <file name="Val-7459.dat" path="..\test\nledger\sandbox\Val-7459.dat" />
+    <file name="sample.dat" path="..\test\input\sample.dat" />
+    <file name="A9349E4.dat" path="..\test\nledger\sandbox\A9349E4.dat" />
+    <file name="Val-1131.dat" path="..\test\nledger\sandbox\Val-1131.dat" />
+    <file name="Val-7612.dat" path="..\test\nledger\sandbox\Val-7612.dat" />
+    <file name="Val-1592.dat" path="..\test\nledger\sandbox\Val-1592.dat" />
+    <file name="Val-3945.dat" path="..\test\nledger\sandbox\Val-3945.dat" />
+    <file name="Val-3303.dat" path="..\test\nledger\sandbox\Val-3303.dat" />
+    <file name="Val-9746.dat" path="..\test\nledger\sandbox\Val-9746.dat" />
+    <file name="Val-2955.dat" path="..\test\nledger\sandbox\Val-2955.dat" />
+    <file name="Val-3784.dat" path="..\test\nledger\sandbox\Val-3784.dat" />
+    <file name="Val-2247.dat" path="..\test\nledger\sandbox\Val-2247.dat" />
+    <file name="Val-9193.dat" path="..\test\nledger\sandbox\Val-9193.dat" />
+    <file name="814A366.dat" path="..\test\nledger\sandbox\814A366.dat" />
+    <file name="Val-7373.dat" path="..\test\nledger\sandbox\Val-7373.dat" />
+    <file name="Val-3328.dat" path="..\test\nledger\sandbox\Val-3328.dat" />
+    <file name="396F24E.dat" path="..\test\nledger\sandbox\396F24E.dat" />
+    <file name="Val-3319.dat" path="..\test\nledger\sandbox\Val-3319.dat" />
+    <file name="Val-7497.dat" path="..\test\nledger\sandbox\Val-7497.dat" />
+    <file name="990E0D1.dat" path="..\test\nledger\sandbox\990E0D1.dat" />
+    <file name="Val-735.dat" path="..\test\nledger\sandbox\Val-735.dat" />
+    <file name="Val-7731.dat" path="..\test\nledger\sandbox\Val-7731.dat" />
+    <file name="Val-1952.dat" path="..\test\nledger\sandbox\Val-1952.dat" />
+    <file name="AD068BA.dat" path="..\test\nledger\sandbox\AD068BA.dat" />
+    <file name="Val-4059.dat" path="..\test\nledger\sandbox\Val-4059.dat" />
+    <file name="Val-1834.dat" path="..\test\nledger\sandbox\Val-1834.dat" />
+    <file name="Val-7533.dat" path="..\test\nledger\sandbox\Val-7533.dat" />
+    <file name="Val-1960.dat" path="..\test\nledger\sandbox\Val-1960.dat" />
+    <file name="2F1CB75.dat" path="..\test\nledger\sandbox\2F1CB75.dat" />
+    <file name="DF3FEBE.dat" path="..\test\nledger\sandbox\DF3FEBE.dat" />
+    <file name="Val-4102.dat" path="..\test\nledger\sandbox\Val-4102.dat" />
+    <file name="Val-1550.dat" path="..\test\nledger\sandbox\Val-1550.dat" />
+    <file name="Val-8115.dat" path="..\test\nledger\sandbox\Val-8115.dat" />
+    <file name="6B43DD4.dat" path="..\test\nledger\sandbox\6B43DD4.dat" />
+    <file name="Val-2965.dat" path="..\test\nledger\sandbox\Val-2965.dat" />
+    <file name="Val-2681.dat" path="..\test\nledger\sandbox\Val-2681.dat" />
+    <file name="Val-3373.dat" path="..\test\nledger\sandbox\Val-3373.dat" />
+    <file name="6453542.dat" path="..\test\nledger\sandbox\6453542.dat" />
+    <file name="Val-9174.dat" path="..\test\nledger\sandbox\Val-9174.dat" />
+    <file name="Val-1861.dat" path="..\test\nledger\sandbox\Val-1861.dat" />
+    <file name="Val-3854.dat" path="..\test\nledger\sandbox\Val-3854.dat" />
+    <file name="9B43E57.dat" path="..\test\nledger\sandbox\9B43E57.dat" />
+    <file name="ledger.dat" path="..\test\nledger\sandbox\ledger.dat" />
+    <file name="Val-2919.dat" path="..\test\nledger\sandbox\Val-2919.dat" />
+    <file name="Val-1788.dat" path="..\test\nledger\sandbox\Val-1788.dat" />
+    <file name="expr.dat" path="..\test\nledger\sandbox\expr.dat" />
+    <file name="Val-1303.dat" path="..\test\nledger\sandbox\Val-1303.dat" />
+    <file name="Val-2928.dat" path="..\test\nledger\sandbox\Val-2928.dat" />
+    <file name="Val-2513.dat" path="..\test\nledger\sandbox\Val-2513.dat" />
+    <file name="Val-1313.dat" path="..\test\nledger\sandbox\Val-1313.dat" />
+    <file name="Val-874.dat" path="..\test\nledger\sandbox\Val-874.dat" />
+    <file name="Val-8137.dat" path="..\test\nledger\sandbox\Val-8137.dat" />
+    <file name="E30B2FC.dat" path="..\test\nledger\sandbox\E30B2FC.dat" />
+    <file name="Val-9559.dat" path="..\test\nledger\sandbox\Val-9559.dat" />
+    <file name="Val-2400.dat" path="..\test\nledger\sandbox\Val-2400.dat" />
+    <file name="Val-3394.dat" path="..\test\nledger\sandbox\Val-3394.dat" />
+    <file name="Val-2358.dat" path="..\test\nledger\sandbox\Val-2358.dat" />
+    <file name="Val-9185.dat" path="..\test\nledger\sandbox\Val-9185.dat" />
+    <file name="example.dat" path="..\test\nledger\sandbox\example.dat" />
+    <file name="Val-10323.dat" path="..\test\nledger\sandbox\Val-10323.dat" />
+    <file name="83E1FB3.dat" path="..\test\nledger\sandbox\83E1FB3.dat" />
+    <file name="Val-932.dat" path="..\test\nledger\sandbox\Val-932.dat" />
+    <file name="Val-7511.dat" path="..\test\nledger\sandbox\Val-7511.dat" />
+    <file name="Val-2903.dat" path="..\test\nledger\sandbox\Val-2903.dat" />
+    <file name="Val-2391.dat" path="..\test\nledger\sandbox\Val-2391.dat" />
+    <file name="Val-9714.dat" path="..\test\nledger\sandbox\Val-9714.dat" />
+    <file name="Val-1636.dat" path="..\test\nledger\sandbox\Val-1636.dat" />
+    <file name="Val-2988.dat" path="..\test\nledger\sandbox\Val-2988.dat" />
+    <file name="Val-2456.dat" path="..\test\nledger\sandbox\Val-2456.dat" />
+    <file name="Val-2534.dat" path="..\test\nledger\sandbox\Val-2534.dat" />
+    <file name="Val-3880.dat" path="..\test\nledger\sandbox\Val-3880.dat" />
+  </demo-files>
+  <demo-cases>
+    <case test-id="Val-310" command="ledger bal --file Val-310.dat" filename="Val-310.dat" />
+    <case test-id="48DDF26" command="ledger -f ledger.dat balance" filename="ledger.dat" />
+    <case test-id="48DDF26" command="ledger -f ledger.dat balance" filename="ledger.dat" />
+    <case test-id="8C7295F" command="ledger -f ledger.dat register checking" filename="ledger.dat" />
+    <case test-id="BB32EF2" command="ledger -f ledger.dat register Bell" filename="ledger.dat" />
+    <case test-id="1071890" command="ledger -f drewr3.dat balance" filename="drewr3.dat" />
+    <case test-id="5BF4D8E" command="ledger -f drewr3.dat balance Assets Liabilities" filename="drewr3.dat" />
+    <case test-id="66E3A2C" command="ledger -f drewr3.dat register" filename="drewr3.dat" />
+    <case test-id="96B0EB3" command="ledger -f drewr3.dat register Groceries" filename="drewr3.dat" />
+    <case test-id="AECD64E" command="ledger -f drewr3.dat balance Groceries" filename="drewr3.dat" />
+    <case test-id="C6BC57E" command="ledger -f drewr3.dat register payee &quot;Organic&quot;" filename="drewr3.dat" />
+    <case test-id="B86F6A6" command="ledger -f drewr3.dat cleared" filename="drewr3.dat" />
+    <case test-id="Val-735" command="ledger bal --file Val-735.dat" filename="Val-735.dat" />
+    <case test-id="6B43DD4" command="ledger balance ^assets ^liabilities --file 6B43DD4.dat" filename="6B43DD4.dat" />
+    <case test-id="6B43DD4" command="ledger balance ^assets ^liabilities --file 6B43DD4.dat" filename="6B43DD4.dat" />
+    <case test-id="6B43DD4" command="ledger balance ^assets ^liabilities --file 6B43DD4.dat" filename="6B43DD4.dat" />
+    <case test-id="DB128F3" command="ledger balance ^income ^expenses --file DB128F3.dat" filename="DB128F3.dat" />
+    <case test-id="DB524E4" command="ledger -M register -f drewr3.dat expenses:auto" filename="drewr3.dat" />
+    <case test-id="Val-874" command="ledger bal --file Val-874.dat" filename="Val-874.dat" />
+    <case test-id="Val-885" command="ledger bal --file Val-885.dat" filename="Val-885.dat" />
+    <case test-id="Val-874" command="ledger bal --file Val-874.dat" filename="Val-874.dat" />
+    <case test-id="Val-919" command="ledger bal --file Val-919.dat" filename="Val-919.dat" />
+    <case test-id="Val-932" command="ledger bal --file Val-932.dat" filename="Val-932.dat" />
+    <case test-id="Val-946" command="ledger bal --file Val-946.dat" filename="Val-946.dat" />
+    <case test-id="990E0D1" command="ledger balance --no-total --file 990E0D1.dat" filename="990E0D1.dat" />
+    <case test-id="990E0D1" command="ledger balance --no-total --file 990E0D1.dat" filename="990E0D1.dat" />
+    <case test-id="990E0D1" command="ledger balance --no-total --file 990E0D1.dat" filename="990E0D1.dat" />
+    <case test-id="Val-1073" command="ledger bal --file Val-1073.dat" filename="Val-1073.dat" />
+    <case test-id="Val-1131" command="ledger bal --file Val-1131.dat" filename="Val-1131.dat" />
+    <case test-id="DF3FEBE" command="ledger --no-total balance Billable Project --file DF3FEBE.dat" filename="DF3FEBE.dat" />
+    <case test-id="DF3FEBE" command="ledger --no-total balance Billable Project --file DF3FEBE.dat" filename="DF3FEBE.dat" />
+    <case test-id="Val-1186" command="ledger bal --file Val-1186.dat" filename="Val-1186.dat" />
+    <case test-id="48F4E47" command="ledger balance EverQuest --file 48F4E47.dat" filename="48F4E47.dat" />
+    <case test-id="48F4E47" command="ledger balance EverQuest --file 48F4E47.dat" filename="48F4E47.dat" />
+    <case test-id="48F4E47" command="ledger balance EverQuest --file 48F4E47.dat" filename="48F4E47.dat" />
+    <case test-id="Val-1263" command="ledger bal --file Val-1263.dat" filename="Val-1263.dat" />
+    <case test-id="Val-1303" command="ledger bal --file Val-1303.dat" filename="Val-1303.dat" />
+    <case test-id="Val-1313" command="ledger bal --file Val-1313.dat" filename="Val-1313.dat" />
+    <case test-id="396F24E" command="ledger --no-total bal not ^Assets --file 396F24E.dat" filename="396F24E.dat" />
+    <case test-id="396F24E" command="ledger --no-total bal not ^Assets --file 396F24E.dat" filename="396F24E.dat" />
+    <case test-id="396F24E" command="ledger --no-total bal not ^Assets --file 396F24E.dat" filename="396F24E.dat" />
+    <case test-id="2F1CB75" command="ledger --real --no-total bal --file 2F1CB75.dat" filename="2F1CB75.dat" />
+    <case test-id="Val-1421" command="ledger bal --file Val-1421.dat" filename="Val-1421.dat" />
+    <case test-id="AD068BA" command="ledger --payee=code -P reg ^Assets --file AD068BA.dat" filename="AD068BA.dat" />
+    <case test-id="AD068BA" command="ledger --payee=code -P reg ^Assets --file AD068BA.dat" filename="AD068BA.dat" />
+    <case test-id="E30B2FC" command="ledger --payee=code -P reg ^Expenses and code School --file E30B2FC.dat" filename="E30B2FC.dat" />
+    <case test-id="Val-1538" command="ledger bal --file Val-1538.dat" filename="Val-1538.dat" />
+    <case test-id="Val-1550" command="ledger bal --file Val-1550.dat" filename="Val-1550.dat" />
+    <case test-id="Val-1592" command="ledger bal --file Val-1592.dat" filename="Val-1592.dat" />
+    <case test-id="Val-1636" command="ledger bal --file Val-1636.dat" filename="Val-1636.dat" />
+    <case test-id="Val-1654" command="ledger bal --file Val-1654.dat" filename="Val-1654.dat" />
+    <case test-id="Val-1669" command="ledger bal --file Val-1669.dat" filename="Val-1669.dat" />
+    <case test-id="82150D9" command="ledger -f example.dat bal" filename="example.dat" />
+    <case test-id="82150D9" command="ledger -f example.dat bal" filename="example.dat" />
+    <case test-id="Val-1768" command="ledger bal --file Val-1768.dat" filename="Val-1768.dat" />
+    <case test-id="Val-1788" command="ledger bal --file Val-1788.dat" filename="Val-1788.dat" />
+    <case test-id="Val-1798" command="ledger bal --file Val-1798.dat" filename="Val-1798.dat" />
+    <case test-id="Val-1834" command="ledger bal --file Val-1834.dat" filename="Val-1834.dat" />
+    <case test-id="Val-1848" command="ledger bal --file Val-1848.dat" filename="Val-1848.dat" />
+    <case test-id="Val-1861" command="ledger bal --file Val-1861.dat" filename="Val-1861.dat" />
+    <case test-id="Val-1922" command="ledger bal --file Val-1922.dat" filename="Val-1922.dat" />
+    <case test-id="Val-1929" command="ledger bal --file Val-1929.dat" filename="Val-1929.dat" />
+    <case test-id="Val-1937" command="ledger bal --file Val-1937.dat" filename="Val-1937.dat" />
+    <case test-id="Val-1944" command="ledger bal --file Val-1944.dat" filename="Val-1944.dat" />
+    <case test-id="Val-1952" command="ledger bal --file Val-1952.dat" filename="Val-1952.dat" />
+    <case test-id="Val-1960" command="ledger bal --file Val-1960.dat" filename="Val-1960.dat" />
+    <case test-id="814A366" command="ledger reg -V food --file 814A366.dat" filename="814A366.dat" />
+    <case test-id="814A366" command="ledger reg -V food --file 814A366.dat" filename="814A366.dat" />
+    <case test-id="Val-2043" command="ledger bal --file Val-2043.dat" filename="Val-2043.dat" />
+    <case test-id="Val-2061" command="ledger accounts &gt;&gt; Accounts.dat --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-2193" command="ledger bal --file Val-2193.dat" filename="Val-2193.dat" />
+    <case test-id="Val-2217" command="ledger bal --file Val-2217.dat" filename="Val-2217.dat" />
+    <case test-id="Val-2247" command="ledger bal --file Val-2247.dat" filename="Val-2247.dat" />
+    <case test-id="94A99E8" command="ledger bal --no-total ^Exp --file 94A99E8.dat" filename="94A99E8.dat" />
+    <case test-id="94A99E8" command="ledger bal --no-total ^Exp --file 94A99E8.dat" filename="94A99E8.dat" />
+    <case test-id="83E1FB3" command="ledger balance --no-total --recursive-aliases ^Exp --file 83E1FB3.dat" filename="83E1FB3.dat" />
+    <case test-id="83E1FB3" command="ledger balance --no-total --recursive-aliases ^Exp --file 83E1FB3.dat" filename="83E1FB3.dat" />
+    <case test-id="Val-2337" command="ledger bal --file Val-2337.dat" filename="Val-2337.dat" />
+    <case test-id="Val-2358" command="ledger bal --file Val-2358.dat" filename="Val-2358.dat" />
+    <case test-id="Val-2391" command="ledger bal --file Val-2391.dat" filename="Val-2391.dat" />
+    <case test-id="Val-2400" command="ledger bal --file Val-2400.dat" filename="Val-2400.dat" />
+    <case test-id="Val-2426" command="ledger bal --file Val-2426.dat" filename="Val-2426.dat" />
+    <case test-id="Val-2456" command="ledger bal --file Val-2456.dat" filename="Val-2456.dat" />
+    <case test-id="Val-2470" command="ledger bal --file Val-2470.dat" filename="Val-2470.dat" />
+    <case test-id="Val-2504" command="ledger bal --file Val-2504.dat" filename="Val-2504.dat" />
+    <case test-id="Val-2513" command="ledger bal --file Val-2513.dat" filename="Val-2513.dat" />
+    <case test-id="Val-2520" command="ledger bal --file Val-2520.dat" filename="Val-2520.dat" />
+    <case test-id="Val-2534" command="ledger bal --file Val-2534.dat" filename="Val-2534.dat" />
+    <case test-id="Val-2559" command="ledger bal --file Val-2559.dat" filename="Val-2559.dat" />
+    <case test-id="Val-2592" command="ledger bal --file Val-2592.dat" filename="Val-2592.dat" />
+    <case test-id="Val-2601" command="ledger bal --file Val-2601.dat" filename="Val-2601.dat" />
+    <case test-id="Val-2656" command="ledger bal --file Val-2656.dat" filename="Val-2656.dat" />
+    <case test-id="Val-2671" command="ledger bal --file Val-2671.dat" filename="Val-2671.dat" />
+    <case test-id="Val-2681" command="ledger bal --file Val-2681.dat" filename="Val-2681.dat" />
+    <case test-id="Val-2816" command="ledger bal --file Val-2816.dat" filename="Val-2816.dat" />
+    <case test-id="Val-2828" command="ledger bal --file Val-2828.dat" filename="Val-2828.dat" />
+    <case test-id="Val-2842" command="ledger bal --file Val-2842.dat" filename="Val-2842.dat" />
+    <case test-id="Val-2854" command="ledger bal --file Val-2854.dat" filename="Val-2854.dat" />
+    <case test-id="Val-2866" command="ledger bal --file Val-2866.dat" filename="Val-2866.dat" />
+    <case test-id="Val-2884" command="ledger bal --file Val-2884.dat" filename="Val-2884.dat" />
+    <case test-id="Val-2903" command="ledger bal --file Val-2903.dat" filename="Val-2903.dat" />
+    <case test-id="Val-2919" command="ledger bal --file Val-2919.dat" filename="Val-2919.dat" />
+    <case test-id="Val-2928" command="ledger bal --file Val-2928.dat" filename="Val-2928.dat" />
+    <case test-id="Val-2919" command="ledger bal --file Val-2919.dat" filename="Val-2919.dat" />
+    <case test-id="Val-2955" command="ledger bal --file Val-2955.dat" filename="Val-2955.dat" />
+    <case test-id="Val-2965" command="ledger bal --file Val-2965.dat" filename="Val-2965.dat" />
+    <case test-id="Val-2978" command="ledger bal --file Val-2978.dat" filename="Val-2978.dat" />
+    <case test-id="Val-2988" command="ledger bal --file Val-2988.dat" filename="Val-2988.dat" />
+    <case test-id="Val-3005" command="ledger bal --file Val-3005.dat" filename="Val-3005.dat" />
+    <case test-id="Val-3043" command="ledger bal --file Val-3043.dat" filename="Val-3043.dat" />
+    <case test-id="Val-3052" command="ledger bal --file Val-3052.dat" filename="Val-3052.dat" />
+    <case test-id="9B43E57" command="ledger reg --file 9B43E57.dat" filename="9B43E57.dat" />
+    <case test-id="9B43E57" command="ledger reg --file 9B43E57.dat" filename="9B43E57.dat" />
+    <case test-id="Val-3115" command="ledger bal --file Val-3115.dat" filename="Val-3115.dat" />
+    <case test-id="Val-3129" command="ledger bal --file Val-3129.dat" filename="Val-3129.dat" />
+    <case test-id="Val-3170" command="ledger bal --file Val-3170.dat" filename="Val-3170.dat" />
+    <case test-id="Val-3181" command="ledger bal --file Val-3181.dat" filename="Val-3181.dat" />
+    <case test-id="Val-3196" command="ledger bal --file Val-3196.dat" filename="Val-3196.dat" />
+    <case test-id="Val-3257" command="ledger bal --file Val-3257.dat" filename="Val-3257.dat" />
+    <case test-id="Val-3303" command="ledger bal --file Val-3303.dat" filename="Val-3303.dat" />
+    <case test-id="Val-3319" command="ledger bal --file Val-3319.dat" filename="Val-3319.dat" />
+    <case test-id="Val-3328" command="ledger bal --file Val-3328.dat" filename="Val-3328.dat" />
+    <case test-id="Val-3394" command="ledger bal --file Val-3394.dat" filename="Val-3394.dat" />
+    <case test-id="Val-3373" command="ledger bal --file Val-3373.dat" filename="Val-3373.dat" />
+    <case test-id="Val-3386" command="ledger bal --file Val-3386.dat" filename="Val-3386.dat" />
+    <case test-id="Val-3394" command="ledger bal --file Val-3394.dat" filename="Val-3394.dat" />
+    <case test-id="Val-3409" command="ledger bal --file Val-3409.dat" filename="Val-3409.dat" />
+    <case test-id="Val-3328" command="ledger bal --file Val-3328.dat" filename="Val-3328.dat" />
+    <case test-id="Val-3442" command="ledger bal --file Val-3442.dat" filename="Val-3442.dat" />
+    <case test-id="Val-3451" command="ledger bal --file Val-3451.dat" filename="Val-3451.dat" />
+    <case test-id="Val-3487" command="ledger bal --file Val-3487.dat" filename="Val-3487.dat" />
+    <case test-id="Val-3504" command="ledger bal --file Val-3504.dat" filename="Val-3504.dat" />
+    <case test-id="Val-3657" command="ledger bal --file Val-3657.dat" filename="Val-3657.dat" />
+    <case test-id="Val-3663" command="ledger bal --file Val-3663.dat" filename="Val-3663.dat" />
+    <case test-id="Val-3718" command="ledger bal --file Val-3718.dat" filename="Val-3718.dat" />
+    <case test-id="Val-3726" command="ledger bal --file Val-3726.dat" filename="Val-3726.dat" />
+    <case test-id="Val-3735" command="ledger bal --file Val-3735.dat" filename="Val-3735.dat" />
+    <case test-id="Val-3772" command="ledger bal --file Val-3772.dat" filename="Val-3772.dat" />
+    <case test-id="Val-3784" command="ledger bal --file Val-3784.dat" filename="Val-3784.dat" />
+    <case test-id="Val-3802" command="ledger bal --file Val-3802.dat" filename="Val-3802.dat" />
+    <case test-id="Val-3813" command="ledger bal --file Val-3813.dat" filename="Val-3813.dat" />
+    <case test-id="Val-3829" command="ledger bal --file Val-3829.dat" filename="Val-3829.dat" />
+    <case test-id="Val-3840" command="ledger bal --file Val-3840.dat" filename="Val-3840.dat" />
+    <case test-id="Val-3854" command="ledger bal --file Val-3854.dat" filename="Val-3854.dat" />
+    <case test-id="Val-3866" command="ledger bal --file Val-3866.dat" filename="Val-3866.dat" />
+    <case test-id="Val-3880" command="ledger bal --file Val-3880.dat" filename="Val-3880.dat" />
+    <case test-id="Val-3892" command="ledger bal --file Val-3892.dat" filename="Val-3892.dat" />
+    <case test-id="Val-3928" command="ledger bal --file Val-3928.dat" filename="Val-3928.dat" />
+    <case test-id="Val-3936" command="ledger bal --file Val-3936.dat" filename="Val-3936.dat" />
+    <case test-id="Val-3945" command="ledger bal --file Val-3945.dat" filename="Val-3945.dat" />
+    <case test-id="Val-3953" command="ledger --begin 2008/01/01 --end 2008/01/14 bal Income --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-3960" command="ledger --effective --begin 2008/01/01 --end 2008/01/14 bal Income --file sample.dat" filename="sample.dat" />
+    <case test-id="6453542" command="ledger --effective register Groceries --file 6453542.dat" filename="6453542.dat" />
+    <case test-id="6453542" command="ledger --effective register Groceries --file 6453542.dat" filename="6453542.dat" />
+    <case test-id="C371854" command="ledger balance Liabilities:Huquq --file C371854.dat" filename="C371854.dat" />
+    <case test-id="C371854" command="ledger balance Liabilities:Huquq --file C371854.dat" filename="C371854.dat" />
+    <case test-id="Val-4059" command="ledger bal --file Val-4059.dat" filename="Val-4059.dat" />
+    <case test-id="C371854" command="ledger balance Liabilities:Huquq --file C371854.dat" filename="C371854.dat" />
+    <case test-id="Val-4102" command="ledger bal --file Val-4102.dat" filename="Val-4102.dat" />
+    <case test-id="1D00D56" command="ledger balance -f drewr3.dat" filename="drewr3.dat" />
+    <case test-id="06B2AD4" command="ledger balance -f drewr3.dat Auto MasterCard" filename="drewr3.dat" />
+    <case test-id="B0468E1" command="ledger balance -f drewr3.dat Income" filename="drewr3.dat" />
+    <case test-id="EAE389F" command="ledger balance -f drewr3.dat ^Bo" filename="drewr3.dat" />
+    <case test-id="E2AF6AD" command="ledger balance -f drewr3.dat Bo" filename="drewr3.dat" />
+    <case test-id="Val-4240" command="ledger balance Auto:Fuel and Chevron --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4244" command="ledger balance --limit 'account=~/Fuel/' and 'payee=~/Chev/' --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4258" command="ledger bal Expenses and not (Expenses:Drinks or Expenses:Candy or Expenses:Gifts) --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4275" command="ledger -b &quot;last oct&quot; -S T bal ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4298" command="ledger -M --period-sort &quot;(amount)&quot; reg ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4306" command="ledger -M --period-sort &quot;(amount)&quot; -r reg ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4316" command="ledger -M -r --display 'account=~/mastercard/' reg ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-4327" command="ledger -s -r --display &quot;account=~/mastercard/&quot; reg ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="582C8C2" command="ledger bal Allocation --current --format &quot;        %-17((depth_spacer)+(partial_account))        %10(percent(market(display_total), market(parent.total)))        %16(market(display_total))\n%/&quot; --file 582C8C2.dat" filename="582C8C2.dat" />
+    <case test-id="582C8C2" command="ledger bal Allocation --current --format &quot;        %-17((depth_spacer)+(partial_account))        %10(percent(market(display_total), market(parent.total)))        %16(market(display_total))\n%/&quot; --file 582C8C2.dat" filename="582C8C2.dat" />
+    <case test-id="Val-4767" command="ledger bal --file Val-4767.dat" filename="Val-4767.dat" />
+    <case test-id="03ACB97" command="ledger xact 2004/4/9 viva food 11 tips 2.50 --file 03ACB97.dat" filename="03ACB97.dat" />
+    <case test-id="03ACB97" command="ledger xact 2004/4/9 viva food 11 tips 2.50 --file 03ACB97.dat" filename="03ACB97.dat" />
+    <case test-id="Val-5510" command="ledger bal rent food movies payee freddie --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-5517" command="ledger bal rent food movies @freddie --file sample.dat" filename="sample.dat" />
+    <case test-id="A9349E4" command="ledger --options bal --cleared --file A9349E4.dat" filename="A9349E4.dat" />
+    <case test-id="A76BB56" command="ledger -f drewr3.dat bal --no-total --master-account HUMBUG" filename="drewr3.dat" />
+    <case test-id="Val-6242" command="ledger reg Expenses --begin Dec --bold-if &quot;amount&gt;100&quot; --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-6448" command="ledger reg Expenses --dow --collapse --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-6528" command="ledger reg Expenses --group-by &quot;payee&quot; --group-title-format &quot;------------------------ %-20(value) ---------------------\n&quot; --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-6560" command="ledger bal --file Val-6560.dat" filename="Val-6560.dat" />
+    <case test-id="Val-6682" command="ledger bal Fuel --pivot &quot;Car&quot; --period &quot;this year&quot; --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-6906" command="ledger bal --file Val-6906.dat" filename="Val-6906.dat" />
+    <case test-id="Val-6963" command="ledger -M --period-sort total reg ^Expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="94C5675" command="ledger -f 94C5675.dat -r register food" filename="94C5675.dat" />
+    <case test-id="94C5675" command="ledger -f 94C5675.dat -r register food" filename="94C5675.dat" />
+    <case test-id="Val-7209" command="ledger -d &quot;d&gt;=[last month]&quot; reg checking --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7217" command="ledger -p &quot;last month&quot; reg checking --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7373" command="ledger bal --file Val-7373.dat" filename="Val-7373.dat" />
+    <case test-id="Val-7459" command="ledger bal --file Val-7459.dat" filename="Val-7459.dat" />
+    <case test-id="Val-7473" command="ledger bal --file Val-7473.dat" filename="Val-7473.dat" />
+    <case test-id="Val-7485" command="ledger bal --file Val-7485.dat" filename="Val-7485.dat" />
+    <case test-id="Val-7497" command="ledger bal --file Val-7497.dat" filename="Val-7497.dat" />
+    <case test-id="Val-7511" command="ledger bal --file Val-7511.dat" filename="Val-7511.dat" />
+    <case test-id="Val-7533" command="ledger bal --file Val-7533.dat" filename="Val-7533.dat" />
+    <case test-id="Val-7731" command="ledger bal --file Val-7731.dat" filename="Val-7731.dat" />
+    <case test-id="Val-7752" command="ledger -p &quot;this year&quot; --monthly --average balance ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7762" command="ledger --monthly register ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7768" command="ledger --budget --monthly register ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7777" command="ledger --unbudgeted --monthly register ^expenses --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7803" command="ledger --forecast &quot;d&lt;[2010]&quot; bal ^assets ^liabilities --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7814" command="ledger bal --file Val-7814.dat" filename="Val-7814.dat" />
+    <case test-id="Val-7885" command="ledger -d &quot;d&gt;[this month]&quot; register checking --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-7894" command="ledger -b &quot;this month&quot; register checking --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-8131" command="ledger bal --file Val-8131.dat" filename="Val-8131.dat" />
+    <case test-id="Val-8115" command="ledger bal --file Val-8115.dat" filename="Val-8115.dat" />
+    <case test-id="Val-8131" command="ledger bal --file Val-8131.dat" filename="Val-8131.dat" />
+    <case test-id="Val-8137" command="ledger bal --file Val-8137.dat" filename="Val-8137.dat" />
+    <case test-id="Val-8143" command="ledger bal --file Val-8143.dat" filename="Val-8143.dat" />
+    <case test-id="3406FC1" command="ledger -f expr.dat --format &quot;%(account) %(abs(amount))\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="3406FC1" command="ledger -f expr.dat --format &quot;%(account) %(abs(amount))\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="4D836EE" command="ledger -f expr.dat --format &quot;%(ansify_if(account, blue, options.color))\n&quot; reg" filename="expr.dat" />
+    <case test-id="FF9C18C" command="ledger -f expr.dat --format &quot;%(account) %(ceiling(amount))\n&quot; reg" filename="expr.dat" />
+    <case test-id="46FCFD3" command="ledger -f expr.dat --format &quot;%(account) %(code)\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="2CD27D7" command="ledger -f expr.dat --format &quot;%(account) %(commodity)\n&quot; reg" filename="expr.dat" />
+    <case test-id="67EBA45" command="ledger -f expr.dat --format &quot;%(date) %(account)\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="4FDC7C5" command="ledger -f expr.dat --format &quot;%(account) %(floor(amount))\n&quot; reg" filename="expr.dat" />
+    <case test-id="9605B13" command="ledger -f expr.dat --format &quot;%(format_date(date, '%A, %B %d. %Y'))\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="082FB27" command="ledger -f expr.dat --format &quot;»%(justify(account, 30, 30, true))«\n&quot; reg" filename="expr.dat" />
+    <case test-id="C1FC7A7" command="ledger -f expr.dat -X $ -D --format &quot;%(options.daily) %(options.exchange)\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="04959BF" command="ledger -f expr.dat --format &quot;%(percent(amount, 200))\n&quot; reg" filename="expr.dat" />
+    <case test-id="EAD8AA7" command="ledger -f expr.dat --format &quot;%(quoted(account)) %(quoted(amount))\n&quot; reg" filename="expr.dat" />
+    <case test-id="0B0CBA1" command="ledger -f expr.dat --format &quot;%(1 + to_int('1'))\n%(2,5 + int(2,5))\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="F2FDF4B" command="ledger -f expr.dat --now 2015/01/01 --format &quot;%(today)\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="377BBAB" command="ledger -f expr.dat --format &quot;»%(trim(' 	Trimmed	 '))«\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="6F90EFC" command="ledger -f expr.dat --format &quot;%%\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="494256E" command="ledger -f expr.dat --format &quot;%12(5*O)\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="2B669C9" command="ledger -f expr.dat --format &quot;%B\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="F6E356F" command="ledger -f expr.dat --format &quot;%b\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="0E55246" command="ledger -f expr.dat --format &quot;%E\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="A26F4C0" command="ledger -f expr.dat --format &quot;%e\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="C1CAAF3" command="ledger -f expr.dat --format &quot;%C\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="F41A9BB" command="ledger -f expr.dat --format &quot;%P\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="29A70DD" command="ledger -f expr.dat --format &quot;%A\n&quot; reg" filename="expr.dat" />
+    <case test-id="E6DC93A" command="ledger -f expr.dat --format &quot;%N\n&quot; reg assets" filename="expr.dat" />
+    <case test-id="E80897D" command="ledger -f expr.dat --format &quot;%P\n%/%A\n&quot; reg" filename="expr.dat" />
+    <case test-id="Val-9174" command="ledger bal --file Val-9174.dat" filename="Val-9174.dat" />
+    <case test-id="Val-9185" command="ledger bal --file Val-9185.dat" filename="Val-9185.dat" />
+    <case test-id="Val-9193" command="ledger bal --file Val-9193.dat" filename="Val-9193.dat" />
+    <case test-id="Val-9535" command="ledger bal --file Val-9535.dat" filename="Val-9535.dat" />
+    <case test-id="Val-9559" command="ledger bal --file Val-9559.dat" filename="Val-9559.dat" />
+    <case test-id="Val-9607" command="ledger bal --file Val-9607.dat" filename="Val-9607.dat" />
+    <case test-id="Val-9714" command="ledger bal --file Val-9714.dat" filename="Val-9714.dat" />
+    <case test-id="Val-9725" command="ledger bal --file Val-9725.dat" filename="Val-9725.dat" />
+    <case test-id="Val-9736" command="ledger bal --file Val-9736.dat" filename="Val-9736.dat" />
+    <case test-id="Val-9746" command="ledger bal --file Val-9746.dat" filename="Val-9746.dat" />
+    <case test-id="Val-9769" command="ledger bal --file Val-9769.dat" filename="Val-9769.dat" />
+    <case test-id="Val-9965" command="ledger query &quot;/Book/&quot; --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-10100" command="ledger bal --file Val-10100.dat" filename="Val-10100.dat" />
+    <case test-id="Val-10206" command="ledger bal --file Val-10206.dat" filename="Val-10206.dat" />
+    <case test-id="Val-10301" command="ledger --group-by &quot;tag('trip')&quot; bal --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-10310" command="ledger cleared VWCU NFCU Tithe Misentry --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-10313" command="ledger register Joint --uncleared --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-10316" command="ledger register Checking --sort d -d &quot;d&gt;[2011/04/01]&quot; until 2011/05/25 --file sample.dat" filename="sample.dat" />
+    <case test-id="Val-10323" command="ledger bal --file Val-10323.dat" filename="Val-10323.dat" />
+  </demo-cases>
+</ledger-demo>

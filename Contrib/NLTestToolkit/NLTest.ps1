@@ -320,6 +320,8 @@ function RunTestCase {
     $env:nledgerOutputEncoding = "utf-8"
     # Disable colored Ansi Terminal emulation to pass output Ansi control codes that some tests validate
     $env:nledgerAnsiTerminalEmulation = "false"
+    # Disable custom setting profiles (if any exists on the machine)
+    $env:nledgerDisableUserSettings = "true"
     # Set custom environment variables
     $private:originalVariables = @{}
     foreach($private:name in $testCase.SetVariables.Keys) { 

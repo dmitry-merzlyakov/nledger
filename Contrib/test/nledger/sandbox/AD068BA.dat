@@ -1,0 +1,11 @@
+﻿2004/03/25 (Funds:School) Donations
+    Assets:Checking                   $100.00
+    Income:Donations
+
+2004/03/25 (Funds:Building) Donations
+    Assets:Checking                   $20.00
+    Income:Donations
+
+2004/04/25 (Funds:School) Payment for books
+    Expenses:Books                     $50.00
+    Assets:Checking

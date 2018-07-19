@@ -1,0 +1,1 @@
+﻿define myfunc_five(s, d, t) = market(5 EUR, d, t)

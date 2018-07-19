@@ -1,0 +1,4 @@
+﻿payee Aldi
+    alias ^ALDI SUED SAGT DANKE
+account Aufwand:Einkauf:Lebensmittel
+    payee ^(Aldi|Alnatura|Kaufland|REWE)$

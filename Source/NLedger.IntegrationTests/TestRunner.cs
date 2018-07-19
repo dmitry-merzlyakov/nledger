@@ -102,7 +102,7 @@ namespace NLedger.IntegrationTests
                             {
                                 var main = new Main();
                                 MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
-                                MainApplicationContext.Current.TimeZoneId = "Central Standard Time"; // Equals to TZ=America/Chicago
+                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
                                 MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
                                 MainApplicationContext.Current.SetEnvironmentVariables(envs);
 

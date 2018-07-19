@@ -1,0 +1,11 @@
+﻿2010/05/31 Sample Transaction
+    Expenses               100 secondary
+    Assets                  -50 primary
+
+2010/05/31 Sample Transaction
+    Expenses               100 secondary @ 0.5 primary
+    Assets
+
+2010/05/31 Sample Transaction
+    Expenses               100 secondary @@ 50 primary
+    Assets

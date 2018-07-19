@@ -22,7 +22,7 @@ namespace NLedger.Utility
         {
             get 
             {
-                return _NLedgerVersion ?? (_NLedgerVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+                return _NLedgerVersion ?? (_NLedgerVersion = typeof(VersionInfo).Assembly.GetName().Version.ToString());
             }
         }
 

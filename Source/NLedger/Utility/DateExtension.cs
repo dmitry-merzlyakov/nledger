@@ -43,14 +43,7 @@ namespace NLedger.Utility
 
         public static TimeZoneInfo CurrentTimeZone()
         {
-            if (MainApplicationContext.Current.TimeZone == null)
-            {
-                string id = MainApplicationContext.Current.TimeZoneId;
-                MainApplicationContext.Current.TimeZone = String.IsNullOrWhiteSpace(id)
-                    ? TimeZoneInfo.Local
-                    : TimeZoneInfo.FindSystemTimeZoneById(id);
-            }
-            return MainApplicationContext.Current.TimeZone;
+            return MainApplicationContext.Current.TimeZone ?? TimeZoneInfo.Local;
         }
 
         public static DateTime FromLocalToUtc(this DateTime dateTime)

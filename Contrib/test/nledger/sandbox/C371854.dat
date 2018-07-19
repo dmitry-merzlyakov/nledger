@@ -1,0 +1,14 @@
+﻿; This automated transaction will compute Huqúqu'lláh based on this
+; journal's postings.  Any accounts that match will affect the
+; Liabilities:Huququ'llah account by 19% of the value of that posting.
+
+= /^(?:Income:|Expenses:(?:Business|Rent$|Furnishings|Taxes|Insurance))/
+  (Liabilities:Huququ'llah)               0.19
+
+2003/01/01 (99) Salary
+  Income:Salary  -$1000
+  Assets:Checking
+
+2003/01/01 (100) Rent
+  Expenses:Rent  $500
+  Assets:Checking
