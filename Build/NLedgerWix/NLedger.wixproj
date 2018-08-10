@@ -22,6 +22,10 @@
                 <OutputPath>bin\$(Configuration)\</OutputPath>
                 <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
         </PropertyGroup>
+        <!-- Adopting to VSTS hosted agent -->
+        <PropertyGroup>
+                <SuppressValidation>true</SuppressValidation>
+        </PropertyGroup>
         <ItemGroup>
                 <Compile Include="Product.wxs" />
                 <Compile Include="Components.wxs" />
