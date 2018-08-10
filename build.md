@@ -15,6 +15,10 @@ but you might need to make a couple of corrections in the build script in case y
 It is also possible to build NLedger by means of MSBuild only with no Visual Studio installed;
 you will need to install Microsoft build and testing components on your own. 
 
+If you want to create an MSI installation package, you also need to have Wix 3.10 or higher 
+installed on your machine. It is an optional step; you can omit it if want to limit the number
+of third-parties on your environment.
+
 Therefore, the required development software components are:
 
 1. PowerShell 4.0 or higher (5.0 is recommended);
@@ -23,7 +27,9 @@ Therefore, the required development software components are:
 3. In case you do not want to have Visual Studio on your machine:
    - .Net Framework 4.0 or higher (4.6.1 is recommended);
    - MS Build v14.0 or higher;
-   - VS Test Console.
+   - VS Test Console
+4. If you want to create MSI installation package:
+   - Wix Toolset 3.10 or higher (http://wixtoolset.org/releases).
 
 ## Build NLedger from Sources
 
@@ -33,7 +39,8 @@ There is MSBuild project file that performs all build actions; they are:
 - Execute internal tests (unit and in-proc integration tests that run Ledger test files);
 - Compose NLedger release package;
 - Run all Ledger tests by means of NLedger Testing Toolkit;
-- Create zip package and put it to Bin folder.
+- Create zip package and put it to Bin folder;
+- Create msi package and put it to Bin folder;
 
 There are two ways to run the build process:
 
@@ -46,9 +53,10 @@ with name *Build-DATE-TIME*. Inside this folder you may find:
 
 - MSBuild log file (short and detail versions);
 - Unit test TRX file (a file with extension TRX);
-- NLedger Testing Toolkit report (*NLTest.LastTestResults.html*)
-- NLedger package (folder with name *package*)
-- Nledger zip package (file with name *NLedger-vN.N.zip*); this file is also copied to Bin folder.
+- NLedger Testing Toolkit report (*NLTest.LastTestResults.html*);
+- NLedger package (folder with name *package*);
+- NLedger zip package (file with name *NLedger-vN.N.zip*); this file is also copied to Bin folder;
+- NLedger msi package (file with name *NLedger-vN.N.msi*); this file is copied to Bin folder too.
 
 The last point is about administrative privileges. The build can work in two modes: with or without 
 elevated permissions. The administrative privileges are needed to generate native 

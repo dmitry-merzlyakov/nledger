@@ -29,7 +29,7 @@ $demoConfig = getDemoConfig
 Write-Console "{c:gray}The browser with demo content is opening automatically."
 Write-Console "{c:gray}You can also open demo manually by link: {c:yellow}$($demoConfig.DemoURL)content{c:gray}."
 Write-Console "{c:gray}When you close the demo page, this process shuts down."
-Write-Console "{c:gray}You can stop thsi console at any moment by pressing {c:yellow}CTRL-C{c:gray}."
+Write-Console "{c:gray}You can stop this console at any moment by pressing {c:yellow}CTRL-C{c:gray}."
 
 initDemoSandbox -files $demoConfig.Files -sandbox $demoConfig.Sandbox | Out-Null
 RunListener -actions $Script:actions -prefix $demoConfig.DemoURL -onListenerStart { openPage $demoConfig | Out-Null }

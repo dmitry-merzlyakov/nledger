@@ -252,6 +252,7 @@ function callConsole(cmd) {
     }
   };
   xhttp.open("GET", cmd, true);
+  xhttp.setRequestHeader("Pragma","no-cache");
   xhttp.send();
 }
 

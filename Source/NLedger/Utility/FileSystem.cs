@@ -27,6 +27,11 @@ namespace NLedger.Utility
             return FileSystemProvider.GetCurrentDirectory();
         }
 
+        public static string AppPath()
+        {
+            return AppDomain.CurrentDomain.BaseDirectory;
+        }
+
         public static bool FileExists(string fileName)
         {
             if (IsDevNull(fileName) || IsStdErr(fileName))

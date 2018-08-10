@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" Codepage="1252" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+   <String Id="Language">1033</String> 
+
+   <!-- Product Description -->
+
+   <String Id="Product_Name">.Net Ledger</String>
+   <String Id="Product_Manufacturer">Dmitry Merzlyakov Dmitry.Merzlyakov@gmail.com</String>
+   <String Id="Product_Description">Double entry accounting tool</String>
+   <String Id="Package_Comments">Installs .Net Ledger</String>
+
+   <!-- Features -->
+   
+   <String Id="NLedgerFeature_Title">.Net Ledger Core</String>
+   <String Id="NLedgerFeature_Desc">.Net Ledger binaries, release notes and license files</String>
+   <String Id="DocFilesFeature_Title">Documentation</String>
+   <String Id="DocFilesFeature_Desc">Ledger 3 documentation and .Net Ledger quick manual</String>
+   <String Id="SetupConsoleFeature_Title">Setup Console</String>
+   <String Id="SetupConsoleFeature_Desc">Command line console that manages .Net Legder settings (Powershell is required)</String>
+   <String Id="LiveDemoFeature_Title">Live Demo Web Console</String>
+   <String Id="LiveDemoFeature_Desc">Web Browser page that shows .Net Ledger in action (Powershell is required)</String>
+   <String Id="TestToolkitFeature_Title">Test Toolkit</String>
+   <String Id="TestToolkitFeature_Desc">Testing framework with a collection of tests (Powershell is required)</String>
+   <String Id="ManualInstallFeature_Title">Manual Install</String>
+   <String Id="ManualInstallFeature_Desc">Command line console that register .Net Ledger binaries (Powershell is required)</String>
+
+   <!-- UI Messages -->
+
+   <String Id="Condition_NetFrameworkIsNotInstalled">This application requires .NET Framework 4.5 or later. Please install the .NET Framework then run this installer again.</String>
+   <String Id="Condition_PowershellIsNotInstalled">Some of selected features require Powershell 4.0 or later. It seems like you have an older version or do not have it either. You shall install the recommended version of Powershell when .Net Ledger Setup is finished. Otherwise, some features may not work.</String>
+   <String Id="Condition_DeleteUserSettings">Would you like to delete .Net Ledger user settings and other files? If you click Yes, the following folder(s) will be deleted:</String>
+
+   <String Id="ExitDialog_WelcomeText">Thank you for installing .Net Ledger!</String>
+   <String Id="ExitDialog_LaunchText">Open .Net Ledger Readme file</String>
+
+   <!-- Installation Messages -->
+
+   <String Id="NewerInstalled">The same or a newer version of this product is already installed.</String>
+
+
+
+</WixLocalization>

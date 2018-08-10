@@ -129,6 +129,7 @@ Write-Verbose "Found product version: '$Script:ver'"
 # Create a package with build log files
 
 [string]$Script:installPackageZip = "$Script:absBuildOutputPath\NLedger-v$Script:ver.zip"
+[string]$Script:installPackageMsi = "$Script:absBuildOutputPath\NLedger-v$Script:ver.msi"
 [string]$Script:logsPackageZip = "$Script:absBuildOutputPath\NLedger-BuildLogs-v$Script:ver.zip"
 
 Write-Verbose "Create a folder for log files"
@@ -149,32 +150,42 @@ ZipFiles -zipfilename $Script:logsPackageZip -sourcedir $Script:logFilesFolder
 # Calculate MD5 for zip archives
 
 [string]$Script:installPackageMD5 = if (Test-Path $Script:installPackageZip -PathType Leaf) { (Get-FileHash $Script:installPackageZip -Algorithm MD5).Hash } else { "none" }
+[string]$Script:installMsiMD5 = if (Test-Path $Script:installPackageMsi -PathType Leaf) { (Get-FileHash $Script:installPackageMsi -Algorithm MD5).Hash } else { "none" }
 [string]$Script:logsPackageMD5 = if (Test-Path $Script:logsPackageZip -PathType Leaf) { (Get-FileHash $Script:logsPackageZip -Algorithm MD5).Hash } else { "none" }
 Write-Verbose "MD5: $Script:installPackageMD5 (file $Script:installPackageZip)"
+Write-Verbose "MD5: $Script:installMsiMD5 (file $Script:installMsiZip)"
 Write-Verbose "MD5: $Script:logsPackageMD5 (file $Script:logsPackageZip)"
 
 # Rename packages; add build ID
 
 $Script:installPackageZip = AddBuildID $Script:installPackageZip $buildID
+$Script:installPackageMsi = AddBuildID $Script:installPackageMsi $buildID
 $Script:logsPackageZip = AddBuildID $Script:logsPackageZip $buildID
+Write-Verbose "Msi installation package is renamed as $Script:installPackageMsi"
 Write-Verbose "Zip installation package is renamed as $Script:installPackageZip"
 Write-Verbose "Zip logs package is renamed as $Script:logsPackageZip"
 
 # Upload to Dropbox
 
 [string]$Script:targetInstallPackageZip = "/NLedger/$([System.IO.Path]::GetFileName($Script:installPackageZip))"
+[string]$Script:targetInstallPackageMsi = "/NLedger/$([System.IO.Path]::GetFileName($Script:installPackageMsi))"
 [string]$Script:targetlogsPackageZip = "/NLedger/$([System.IO.Path]::GetFileName($Script:logsPackageZip))"
+Write-Verbose "Msi installation package - target DropBox name is $Script:targetInstallPackageMsi"
 Write-Verbose "Zip installation package - target DropBox name is $Script:targetInstallPackageZip"
 Write-Verbose "Zip logs package - target DropBox name is $Script:targetlogsPackageZip"
+$Script:targetInstallPackageMsi = UploadToDropbox -fileName $Script:installPackageMsi -targetPath $Script:targetInstallPackageMsi -dropboxAccessToken $dropboxAccessToken
 $Script:targetInstallPackageZip = UploadToDropbox -fileName $Script:installPackageZip -targetPath $Script:targetInstallPackageZip -dropboxAccessToken $dropboxAccessToken
 $Script:targetlogsPackageZip = UploadToDropbox -fileName $Script:logsPackageZip -targetPath $Script:targetlogsPackageZip -dropboxAccessToken $dropboxAccessToken
+Write-Verbose "Msi installation package - uploaded target DropBox name is $Script:targetInstallPackageMsi"
 Write-Verbose "Zip installation package - uploaded target DropBox name is $Script:targetInstallPackageZip"
 Write-Verbose "Zip logs package - uploaded target DropBox name is $Script:targetlogsPackageZip"
 
 # Get share links for uploaded files
 
+[string]$Script:targetInstallMsiLink = GetShareLink -targetPath $Script:targetInstallPackageMsi -dropboxAccessToken $dropboxAccessToken
 [string]$Script:targetInstallPackageLink = GetShareLink -targetPath $Script:targetInstallPackageZip -dropboxAccessToken $dropboxAccessToken
 [string]$Script:targetlogsPackageLink = GetShareLink -targetPath $Script:targetlogsPackageZip -dropboxAccessToken $dropboxAccessToken
+Write-Verbose "Msi installation package link is $Script:targetInstallMsiLink"
 Write-Verbose "Zip installation package link is $Script:targetInstallPackageLink"
 Write-Verbose "Zip logs package link is $Script:targetlogsPackageLink"
 
@@ -185,6 +196,7 @@ $Script:buildDate = (get-date -f "yyyy/MM/dd HH:mm:ss")
 
 [string]$Script:buildLogLink = if (!($Script:targetlogsPackageLink)) { "Not created" } else { "[$([System.IO.Path]::GetFileName($Script:logsPackageZip))]($Script:targetlogsPackageLink) MD5: $Script:logsPackageMD5" } 
 [string]$Script:buildPackageLink = if (!($Script:targetInstallPackageLink)) { "Not created" } else { "[$([System.IO.Path]::GetFileName($Script:installPackageZip))]($Script:targetInstallPackageLink) MD5: $Script:installPackageMD5" } 
+[string]$Script:buildMsiLink = if (!($Script:targetInstallMsiLink)) { "Not created" } else { "[$([System.IO.Path]::GetFileName($Script:installPackageMsi))]($Script:targetInstallMsiLink) MD5: $Script:installMsiMD5" } 
 
 [string]$Script:logRecord = "***`r`n"
 $Script:logRecord += "#### ![$buildStatus](https://img.shields.io/badge/Build-$buildStatus-$Script:statusColor.svg) Build [$buildID] $Script:buildDate`r`n"
@@ -200,6 +212,8 @@ $Script:logRecord += "`r`n"
 $Script:logRecord += "Build logs: $Script:buildLogLink`r`n"
 $Script:logRecord += "`r`n"
 $Script:logRecord += "Install package: $Script:buildPackageLink`r`n"
+$Script:logRecord += "`r`n"
+$Script:logRecord += "MSI package: $Script:buildMsiLink`r`n"
 Write-Verbose "Prepared a build log record:==="
 Write-Verbose $Script:logRecord
 Write-Verbose "==============================="

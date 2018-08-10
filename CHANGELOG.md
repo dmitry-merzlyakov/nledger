@@ -21,6 +21,7 @@ Code and feature completion; continuous integration.
   build logs and current status are in the file _CI.BuildLog.md;
 - Added interactive Live Demo web console;
 - Added Setup console that manages application settings;
+- Added MSI installation package;
 
 ### Known Issues
 

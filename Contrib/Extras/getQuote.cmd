@@ -5,7 +5,7 @@
 @rem If you would like to convert currencies, uncomment the latter (that ends up with -convertCurrency) and comment out the next line (-getQuote)
 @rem Remember that only one line must be uncommented.
 @rem
-@PowerShell -NoLogo -NonInteractive -ExecutionPolicy RemoteSigned -File %~dp0getQuote.ps1 %1 -getQuote
+@PowerShell -NoLogo -NonInteractive -ExecutionPolicy RemoteSigned -File "%~dp0getQuote.ps1" %1 -getQuote
 @rem PowerShell -NoLogo -NonInteractive -ExecutionPolicy RemoteSigned -File %~dp0getQuote.ps1 %1 %2 -convertCurrency
 @rem
 @exit %errorlevel%

@@ -21,7 +21,7 @@ namespace NLedger.Abstracts.Impl
 
         public bool Show()
         {
-            string pathName = FileSystem.Combine(LedgerManFile, FileSystem.CurrentPath());
+            string pathName = FileSystem.Combine(LedgerManFile, FileSystem.AppPath());
             return MainApplicationContext.Current.ProcessManager.Start(pathName);
         }
     }
