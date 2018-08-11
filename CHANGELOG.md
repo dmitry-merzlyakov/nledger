@@ -1,4 +1,4 @@
-## 0.7 (In development; not released yet)
+## 0.7 (2018-08-12)
 
 ### Release Information
 
