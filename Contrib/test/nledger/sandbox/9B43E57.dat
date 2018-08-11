@@ -1,0 +1,6 @@
+﻿2010-06-17 Sample
+    Assets:Bank        $400.00
+    Income:Check1     $-100.00  ; Payee: Person One
+    Income:Check2     $-100.00  ; Payee: Person Two
+    Income:Check3     $-100.00  ; Payee: Person Three
+    Income:Check4     $-100.00  ; Payee: Person Four

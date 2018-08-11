@@ -1,14 +1,15 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
 using NLedger.Textual;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,13 @@ namespace NLedger.Expressions
                     ErrorContext.Current.AddErrorContext("While parsing value expression:");
                     int endPos = inStream.Pos;
                     int pos = endPos > 0 ? endPos - Lookahead.Length : 0;
+
+                    Logger.Current.Debug("parser.error", () => String.Format("original_string = '{0}'", originalString));
+                    Logger.Current.Debug("parser.error", () => String.Format("            pos = {0}", pos));
+                    Logger.Current.Debug("parser.error", () => String.Format("        end_pos = {0}", endPos));
+                    Logger.Current.Debug("parser.error", () => String.Format("     token kind = {0}", Lookahead.Kind));
+                    Logger.Current.Debug("parser.error", () => String.Format("   token length = {0}", Lookahead.Length));
+
                     ErrorContext.Current.AddErrorContext(ErrorContext.LineContext(originalString, pos, endPos));
                 }
                 throw;

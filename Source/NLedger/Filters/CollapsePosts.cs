@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Filters
 {
@@ -109,9 +110,9 @@ namespace NLedger.Filters
                 xact.Payee = LastXact.Payee;
                 xact.Date = earliestDate.IsValid() ? earliestDate : LastXact.Date;
 
-                Logger.Debug("filters.collapse", () => String.Format("Pseudo-xact date = {0}", xact.Date));
-                Logger.Debug("filters.collapse", () => String.Format("earliest date    = {0}", earliestDate));
-                Logger.Debug("filters.collapse", () => String.Format("latest date      = {0}", latestDate));
+                Logger.Current.Debug("filters.collapse", () => String.Format("Pseudo-xact date = {0}", xact.Date));
+                Logger.Current.Debug("filters.collapse", () => String.Format("earliest date    = {0}", earliestDate));
+                Logger.Current.Debug("filters.collapse", () => String.Format("latest date      = {0}", latestDate));
 
                 FiltersCommon.HandleValue(
                     /* value=      */ Subtotal,

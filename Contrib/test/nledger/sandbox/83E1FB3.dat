@@ -1,0 +1,7 @@
+﻿alias Entertainment=Expenses:Entertainment
+alias Dining=Entertainment:Dining
+alias Checking=Assets:Credit Union:Joint Checking Account
+
+2011/11/30 ChopChop
+  Dining          $10.00
+  Checking

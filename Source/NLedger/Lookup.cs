@@ -1,14 +1,13 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
-using NLedger.Times;
-using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
@@ -29,9 +28,9 @@ namespace NLedger
 
             string loweredIdent = ident.ToLower();
 
-            Logger.Debug(DebugLookupAccount, () => String.Format("Looking up identifier '{0}'", loweredIdent));
+            Logger.Current.Debug(DebugLookupAccount, () => String.Format("Looking up identifier '{0}'", loweredIdent));
             if (refAccount != null)
-                Logger.Debug(DebugLookupAccount, () => String.Format("  with reference account: '{0}'", refAccount.FullName));
+                Logger.Current.Debug(DebugLookupAccount, () => String.Format("  with reference account: '{0}'", refAccount.FullName));
 
             foreach(Xact xact in iter)
             {
@@ -45,7 +44,7 @@ namespace NLedger
                 // An exact match is worth a score of 100 and terminates the search
                 if (ident == xact.Payee)
                 {
-                    Logger.Debug(DebugLookup, () => "  we have an exact match, score = 100");
+                    Logger.Current.Debug(DebugLookup, () => "  we have an exact match, score = 100");
                     scores.Add(new Tuple<Xact,int>(xact, 100));
                     break;
                 }
@@ -53,7 +52,7 @@ namespace NLedger
                 string payee = xact.Payee;
                 string valueKey = payee.ToLower();
 
-                Logger.Debug(DebugLookup, () => String.Format("Considering payee: '{0}'", valueKey));
+                Logger.Current.Debug(DebugLookup, () => String.Format("Considering payee: '{0}'", valueKey));
 
                 int index = 0;
                 int lastMatchPos = -1;
@@ -92,7 +91,7 @@ namespace NLedger
 
                         if (lastMatchPos == -1 ? index == 0 && pos == 0 : pos == lastMatchPos + 1)
                         {
-                            Logger.Debug(DebugLookup, () => String.Format("  char '{0}' in-sequence match with bonus {1}", index, bonus));
+                            Logger.Current.Debug(DebugLookup, () => String.Format("  char '{0}' in-sequence match with bonus {1}", index, bonus));
 
                             addend += 10;
                             if (bonus > 2)
@@ -115,7 +114,7 @@ namespace NLedger
                         else
                         {
                             bool inOrderMatch = lastMatchPos != -1 && pos > lastMatchPos;
-                            Logger.Debug(DebugLookup, () => String.Format("  char '{0}' {1} match{2}", index,
+                            Logger.Current.Debug(DebugLookup, () => String.Format("  char '{0}' {1} match{2}", index,
                                 inOrderMatch ? "in-order" : "out-of-order",
                                 inOrderMatch && pos - index < 3 ? " with proximity bonus of 1" : ""));
 
@@ -140,7 +139,7 @@ namespace NLedger
                     {
                         lastMatchPos = -1;
 
-                        Logger.Debug(DebugLookup, () => String.Format("  char '{0}' does not match", index));
+                        Logger.Current.Debug(DebugLookup, () => String.Format("  char '{0}' does not match", index));
                         addend--;
                     }
 
@@ -153,13 +152,13 @@ namespace NLedger
 
                     if (((int)(index / 5) + 1) > 1)
                     {
-                        Logger.Debug(DebugLookup, () => String.Format("  discounting the addend by / {0}", (int)(index / 5) + 1));
+                        Logger.Current.Debug(DebugLookup, () => String.Format("  discounting the addend by / {0}", (int)(index / 5) + 1));
                         addend = (int)((double)(addend) / ((int)(index / 5) + 1));
                     }
 
-                    Logger.Debug(DebugLookup, () => String.Format("  final addend is {0}", addend));
+                    Logger.Current.Debug(DebugLookup, () => String.Format("  final addend is {0}", addend));
                     score += addend;
-                    Logger.Debug(DebugLookup, () => String.Format("  score is {0}", score));
+                    Logger.Current.Debug(DebugLookup, () => String.Format("  score is {0}", score));
 
                     if (!addedBonus)
                         bonus = 0;
@@ -185,6 +184,8 @@ namespace NLedger
 
             for (int i = 0; i < 5 && i < scores.Count; i++)
             {
+                Logger.Current.Debug("lookup.account", () => String.Format("Payee: {0,5} - {1}", scores[i].Item2, scores[i].Item1.Payee));
+
                 foreach(Post post in scores[i].Item1.Posts)
                 {
                     if (!(post.Flags.HasFlag(SupportsFlagsEnum.ITEM_TEMP) || post.Flags.HasFlag(SupportsFlagsEnum.ITEM_GENERATED)) 
@@ -198,7 +199,15 @@ namespace NLedger
             }
 
             if (accountUsage.Any())
+            {
+                if (Logger.Current.ShowDebug("lookup.account"))
+                {
+                    foreach (var value in accountUsage)
+                        Logger.Current.Debug("lookup.account", () => String.Format("Account: {0} - {1}", value.Value, value.Key.FullName));
+                }
+
                 return new Tuple<Xact, Account>(bestXact, accountUsage.OrderBy(x => x.Value).Last().Key);
+            }
             else
                 return new Tuple<Xact, Account>(bestXact, null);
         }

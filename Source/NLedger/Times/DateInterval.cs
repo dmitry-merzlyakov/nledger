@@ -1,12 +1,13 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,26 +94,35 @@ namespace NLedger.Times
         public void ResolveEnd()
         {
             if (Start.HasValue && !EndOfDuration.HasValue)
+            {
                 EndOfDuration = Duration.Add(Start.Value);
+                Logger.Current.Debug("times.interval", () => String.Format("stabilize: end_of_duration = {0}", EndOfDuration));
+            }
 
             if (Finish.HasValue && EndOfDuration > Finish)
+            {
                 EndOfDuration = Finish;
+                Logger.Current.Debug("times.interval", () => String.Format("stabilize: end_of_duration reset to end: {0}", EndOfDuration));
+            }
 
             if (Start.HasValue && !Next.HasValue)
+            {
                 Next = EndOfDuration;
+                Logger.Current.Debug("times.interval", () => String.Format("stabilize: next set to: {0}", Next));
+            }
         }
 
         public void Stabilize(Date? date = null)
         {
             if (date.HasValue)
-                Logger.Debug("times.interval", () => String.Format("stabilize: with date = {0}", date));
+                Logger.Current.Debug("times.interval", () => String.Format("stabilize: with date = {0}", date));
 
             if (date.HasValue & !Aligned)
             {
-                Logger.Debug("times.interval", () => "stabilize: date passed, but not aligned");
+                Logger.Current.Debug("times.interval", () => "stabilize: date passed, but not aligned");
                 if (Duration != null)
                 {
-                    Logger.Debug("times.interval", () => String.Format("stabilize: aligning with a duration: {0}", Duration));
+                    Logger.Current.Debug("times.interval", () => String.Format("stabilize: aligning with a duration: {0}", Duration));
 
                     // The interval object has not been seeded with a start date yet, so
                     // find the nearest period before on on date which fits, if possible.
@@ -125,9 +135,9 @@ namespace NLedger.Times
                     Date? initialFinish = Finish ?? End;
 
                     if (initialStart.HasValue)
-                        Logger.Debug("times.interval", () => String.Format("stabilize: initial_start  = {0}", initialStart));
+                        Logger.Current.Debug("times.interval", () => String.Format("stabilize: initial_start  = {0}", initialStart));
                     if (initialFinish.HasValue)
-                        Logger.Debug("times.interval", () => String.Format("stabilize: initial_finish = {0}", initialFinish));
+                        Logger.Current.Debug("times.interval", () => String.Format("stabilize: initial_finish = {0}", initialFinish));
 
                     Date when = Start ?? date.Value;
 
@@ -136,7 +146,7 @@ namespace NLedger.Times
                         case SkipQuantumEnum.MONTHS:
                         case SkipQuantumEnum.QUARTERS:
                         case SkipQuantumEnum.YEARS:
-                            Logger.Debug("times.interval", () => "stabilize: monthly, quarterly or yearly duration");
+                            Logger.Current.Debug("times.interval", () => "stabilize: monthly, quarterly or yearly duration");
                             // These start on most recent period start quantum before when
                             // DEBUG("times.interval", "stabilize: monthly, quarterly or yearly duration");
                             Start = DateDuration.FindNearest(when, Duration.Quantum);
@@ -147,18 +157,18 @@ namespace NLedger.Times
                             // Either the first quanta of the period or the last quanta of the period seems more sensible
                             // implies period is never less than 400 days not too unreasonable
                             // DEBUG("times.interval", "stabilize: weekly duration");
-                            Logger.Debug("times.interval", () => "stabilize: weekly duration");
+                            Logger.Current.Debug("times.interval", () => "stabilize: weekly duration");
                             int period = Duration.Length * 7;
                             Start = DateDuration.FindNearest(when.AddDays(-(period + 400 % period)), Duration.Quantum);
                             break;
 
                         default:
                             // multiples of days have a quanta of 1 day so should not have the start date adjusted to a quanta
-                            Logger.Debug("times.interval", () => "stabilize: daily duration - stable by definition");
+                            Logger.Current.Debug("times.interval", () => "stabilize: daily duration - stable by definition");
                             Start = when;
                             break;
                     }
-                    Logger.Debug("times.interval", () => String.Format("stabilize: beginning start date = {0}", Start));
+                    Logger.Current.Debug("times.interval", () => String.Format("stabilize: beginning start date = {0}", Start));
 
                     while (Start < date)
                     {
@@ -177,25 +187,25 @@ namespace NLedger.Times
                         }
                     }
 
-                    Logger.Debug("times.interval", () => String.Format("stabilize: proposed start date = {0}", Start));
+                    Logger.Current.Debug("times.interval", () => String.Format("stabilize: proposed start date = {0}", Start));
 
                     if (initialStart.HasValue && (!Start.HasValue || Start < initialStart))
                     {
                         // Using the discovered start, find the end of the period
                         ResolveEnd();
                         Start = initialStart;
-                        Logger.Debug("times.interval", () => "stabilize: start reset to initial start");
+                        Logger.Current.Debug("times.interval", () => "stabilize: start reset to initial start");
                     }
                     if (initialFinish.HasValue && (!Finish.HasValue || Finish > initialFinish))
                     {
                         Finish = initialFinish;
-                        Logger.Debug("times.interval", () => "stabilize: finish reset to initial finish");
+                        Logger.Current.Debug("times.interval", () => "stabilize: finish reset to initial finish");
                     }
 
                     if (Start.HasValue)
-                        Logger.Debug("times.interval", () => String.Format("stabilize: final start  = {0}", Start));
+                        Logger.Current.Debug("times.interval", () => String.Format("stabilize: final start  = {0}", Start));
                     if (Finish.HasValue)
-                        Logger.Debug("times.interval", () => String.Format("stabilize: final finish = {0}", Finish));
+                        Logger.Current.Debug("times.interval", () => String.Format("stabilize: final finish = {0}", Finish));
 
                 }
                 else if (Range != null)
@@ -210,7 +220,7 @@ namespace NLedger.Times
             // between start and finish.
             if (Duration == null)
             {
-                Logger.Debug("times.interval", () => "stabilize: there was no duration given");
+                Logger.Current.Debug("times.interval", () => "stabilize: there was no duration given");
                 if (!Start.HasValue && !Finish.HasValue)
                     throw new DateError(DateError.ErrorMessageInvalidDateIntervalNeitherStartNorFinishNorDuration);
             }
@@ -228,21 +238,31 @@ namespace NLedger.Times
             Stabilize(date);
 
             if (Finish.HasValue && date > Finish)
+            {
+                Logger.Current.Debug("times.interval", () => String.Format("false: date [{0}] > finish [{1}]", date, Finish));
                 return false;
+            }
 
             if (!Start.HasValue)
                 throw new RuntimeError(RuntimeError.ErrorMessageDateIntervalIsImproperlyInitialized);
 
             if (date < Start)
+            {
+                Logger.Current.Debug("times.interval", () => String.Format("false: date [{0}] < start [{1}]", date, Start));
                 return false;
+            }
 
             if (EndOfDuration.HasValue)
             {
                 if (date < EndOfDuration)
+                {
+                    Logger.Current.Debug("times.interval", () => String.Format("true: date [{0}] < end_of_duration [{1}]", date, EndOfDuration));
                     return true;
+                }
             }
             else
             {
+                Logger.Current.Debug("times.interval", () => "false: there is no end_of_duration");
                 return false;
             }
 
@@ -254,6 +274,14 @@ namespace NLedger.Times
             Date scan = Start.Value;
             Date endOfScan = EndOfDuration.Value;
 
+            Logger.Current.Debug("times.interval", () => String.Format("date        = {0}", date));
+            Logger.Current.Debug("times.interval", () => String.Format("scan        = {0}", scan));
+            Logger.Current.Debug("times.interval", () => String.Format("end_of_scan = {0}", endOfScan));
+            if (Finish.HasValue)
+                Logger.Current.Debug("times.interval", () => String.Format("finish      = {0}", Finish));
+            else
+                Logger.Current.Debug("times.interval", () => "finish is not set");
+
             while (date >= scan && (!Finish.HasValue || scan < Finish))
             { 
                 if (date < endOfScan)
@@ -261,6 +289,9 @@ namespace NLedger.Times
                     Start = scan;
                     EndOfDuration = endOfScan;
                     Next = null;
+
+                    Logger.Current.Debug("times.interval", () => String.Format("true: start           = {0}", Start));
+                    Logger.Current.Debug("times.interval", () => String.Format("true: end_of_duration = {0}", EndOfDuration));
 
                     ResolveEnd();
                     return true;
@@ -272,7 +303,12 @@ namespace NLedger.Times
 
                 scan = Duration.Add(scan);
                 endOfScan = Duration.Add(scan);
+
+                Logger.Current.Debug("times.interval", () => String.Format("scan        = {0}", scan));
+                Logger.Current.Debug("times.interval", () => String.Format("end_of_scan = {0}", endOfScan));
             }
+
+            Logger.Current.Debug("times.interval", () => "false: failed scan");
 
             return false;
         }

@@ -1,13 +1,14 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Commodities;
+using NLedger.Utility.BigValues;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,12 @@ using System.Threading.Tasks;
 
 namespace NLedger.Tests
 {
+    // By default, this test uses BigRational arithmetic to validate BigInt.
+    // In case you want to validate BigInt with Decimal arithmetic, uncomment the next alias.
+    // See Amount.cs for further information about Qunatity Arithmetics in NLedger
+    using BigInt = BigInt<BigRational>;
+    //using BigInt = BigInt<BigDecimal>;
+
     [TestClass]
     public class BigIntTests : TestFixture
     {
@@ -65,7 +72,10 @@ namespace NLedger.Tests
             BigInt value20 = BigInt.FromInt(20);
             BigInt value1 = BigInt.FromInt(1);
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsTrue(value10 == value10);
+            #pragma warning restore
             Assert.IsTrue(value10 == value10_);
             Assert.IsFalse(value10 == value20);
             Assert.IsTrue(value1 == BigInt.One);
@@ -79,7 +89,10 @@ namespace NLedger.Tests
             BigInt value20 = BigInt.FromInt(20);
             BigInt value1 = BigInt.FromInt(1);
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsFalse(value10 != value10);
+            #pragma warning restore
             Assert.IsFalse(value10 != value10_);
             Assert.IsTrue(value10 != value20);
             Assert.IsFalse(value1 != BigInt.One);
@@ -134,7 +147,7 @@ namespace NLedger.Tests
         }
 
         [TestMethod]
-        public void BigInt_Valid_CheckdWhetherPrecisonLessThan2014()
+        public void BigInt_Valid_CheckdWhetherPrecisonLessThan1024()
         {
             BigInt value1 = BigInt.FromInt(10);
             Assert.IsTrue(value1.Valid());

@@ -1,15 +1,16 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
 using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -76,14 +77,22 @@ namespace NLedger.Formatting
                         // First, chop up the Unicode string into individual segments.
                         IList<string> parts = ustr.Split(':').ToList();
 
+                        Logger.Current.Debug("format.abbrev", () => String.Format("Account name: {0}", ustr));
+                        Logger.Current.Debug("format.abbrev", () => String.Format("Must fit a {0} char string in {1} chars", len, width));
+
                         // Figure out the lengths of all the parts.  The last part is
                         // always displayed in full, while the former parts are
                         // distributed, with the latter parts being longer than the
                         // former, but with none shorter than account_abbrev_length.
                         IList<int> lens = parts.Select(s => s.Length).ToList();
 
+                        if (Logger.Current.ShowDebug("format.abbrev"))
+                            for (int i = 0; i < lens.Count(); i++)
+                                Logger.Current.Debug("format.abbrev", () => String.Format("Segment {0} is {1} chars wide", i, lens[i]));
+
                         // Determine the "overflow", or how many chars in excess we are.
                         int overflow = len - width;
+                        Logger.Current.Debug("format.abbrev", () => String.Format("There are {0} chars of overflow", overflow));
 
                         // Walk through the first n-1 segments, and start subtracting
                         // letters to decrease the overflow.  This is done in multiple
@@ -123,6 +132,8 @@ namespace NLedger.Formatting
                         while (overflow > 0)
                         {
                             int overflowAtStart = overflow;
+                            Logger.Current.Debug("format.abbrev", () => String.Format("Overflow starting at {0} chars", overflow));
+
                             int counter = lens.Count;
                             int x = 0; // parts iterator
 
@@ -130,6 +141,7 @@ namespace NLedger.Formatting
                             {
                                 if (--counter == 0 || overflow == 0)
                                     break;
+                                Logger.Current.Debug("format.abbrev", () => String.Format("Overflow is {0} chars", overflow));
 
                                 int adjust;
 
@@ -138,11 +150,15 @@ namespace NLedger.Formatting
                                 else
                                     adjust = (int)Math.Ceiling((double)overflow * 
                                         ((double)(lens[i] + counter * 3) * (double)iteration) / ((double)lenMinusLast - (double)counter));
-                                
+
+                                Logger.Current.Debug("format.abbrev", () => String.Format("Weight calc: ({0} * ((({1} + {2}) * {3}) / ({4} - {2})))", overflow, lens[i], counter, iteration, lenMinusLast));
+
                                 if (adjust == 0)
                                     adjust = 1;
                                 else if (adjust > overflow)
                                     adjust = overflow;
+
+                                Logger.Current.Debug("format.abbrev", () => String.Format("The weighted part is {0} chars", adjust));
 
                                 int slack = lens[i] - Math.Min(lens[i], accountAbbrevLength);
 
@@ -151,19 +167,26 @@ namespace NLedger.Formatting
 
                                 if (adjust > 0)
                                 {
+                                    Logger.Current.Debug("format.abbrev", () => String.Format("Reducing segment {0} by {1} chars", i, adjust));
                                     string xs = parts[x];
-                                    while(Char.IsWhiteSpace(xs[lens[i] - adjust - 1]) && adjust < lens[i])
+                                    while (Char.IsWhiteSpace(xs[lens[i] - adjust - 1]) && adjust < lens[i])
+                                    {
+                                        Logger.Current.Debug("format.abbrev", () => "Segment ends in whitespace, adjusting down");
                                         ++adjust;
+                                    }
                                     
                                     lens[i] -= adjust;
+                                    Logger.Current.Debug("format.abbrev", () => String.Format("Segment {0} is now {1} chars wide", i, lens[i]));
 
                                     if (adjust > overflow)
                                         overflow = 0;
                                     else
                                         overflow -= adjust;
+                                    Logger.Current.Debug("format.abbrev", () => String.Format("Overflow is now {0} chars", overflow));
                                 }
                                 ++x;
                             }
+                            Logger.Current.Debug("format.abbrev", () => String.Format("Overflow ending this time at {0} chars", overflow));
 
                             if (overflow == overflowAtStart)
                               break;
@@ -319,6 +342,7 @@ namespace NLedger.Formatting
                             {
                                 value = expr.Calc(scope);
                             }
+                            Logger.Current.Debug("format.expr", () => String.Format("value = ({0})", value));
 
                             if (elem.MinWidth > 0)
                                 s = value.Print(elem.MinWidth, -1, elem.IsElementAlignLeft ? AmountPrintEnum.AMOUNT_PRINT_NO_FLAGS : AmountPrintEnum.AMOUNT_PRINT_RIGHT_JUSTIFY);
@@ -369,6 +393,9 @@ namespace NLedger.Formatting
             return outStr.ToString();
         }
 
+        /// <summary>
+        /// Ported from format_t::element_t * format_t::parse_elements
+        /// </summary>
         private FormatElement ParseElements(string fmt, Format tmpl = null)
         {
             FormatElement result = null;
@@ -601,6 +628,9 @@ namespace NLedger.Formatting
             return result;
         }
 
+        /// <summary>
+        /// Ported from parse_single_expression
+        /// </summary>
         private Expr ParseSingleExpression(InputTextStream inStream, bool singleExpr = true)
         {
             string p = inStream.RemainSource;
@@ -617,7 +647,7 @@ namespace NLedger.Formatting
             {
                 expr.Text = p.Substring(0, inStream.Pos - pIndex);
 
-                inStream.Pos--; // [DM] - fox inSTrem.Get issue... TBD
+                inStream.Pos--;
                 // Don't gobble up any whitespace
                 while (char.IsWhiteSpace(inStream.Peek)) inStream.Pos--;
             }

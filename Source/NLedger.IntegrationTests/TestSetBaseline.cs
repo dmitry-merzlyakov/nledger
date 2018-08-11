@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +12,7 @@ namespace NLedger.IntegrationTests
     [TestClass]
     [DeploymentItem(@"test\baseline", @"test\baseline")]
     [DeploymentItem(@"test\input", @"test\input")]
+    [DeploymentItem(@"cat.cmd")]
     public class TestSet1_test_baseline
     {
 		
@@ -1051,7 +1052,6 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
-        [Ignore]  // Reason: Windows environment does not have 'cat' application. Disabled for further decision.
         public void IntegrationTest_test_baseline_opt_pager()
         {
             new TestRunner(@"test\baseline\opt-pager.test").Run();

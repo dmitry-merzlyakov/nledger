@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -23,11 +23,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger
 {
     public class Post : Item
     {
+        public const string GeneratedPostingKey = "generated posting";
+
         public static void ExtendPost(Post post, Journal journal)
         {
             Commodity comm = post.Amount.Commodity;
@@ -130,7 +133,7 @@ namespace NLedger
 
         public override string Description
         {
-            get { return "TODO!"; }
+            get { return HasPos ? String.Format("posting at line {0}", Pos.BegLine) : GeneratedPostingKey; }
         }
 
         public Account ReportedAccount
@@ -295,27 +298,49 @@ namespace NLedger
                 _XData = new PostXData(post.XData);            
         }
 
-        public bool Valid()
+        /// <summary>
+        /// Ported from bool post_t::valid()
+        /// </summary>
+        /// <returns></returns>
+        public override bool Valid()
         {
             if (Xact == null)
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! xact");
                 return false;
+            }
 
             if (!Xact.Posts.Contains(this))
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! found");
                 return false;
+            }
 
             if (Account == null)
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! account");
                 return false;
+            }
 
             if (!Amount.Valid())
+            {
+                Logger.Current.Debug("ledger.validate", () => "post_t: ! amount.valid()");
                 return false;
+            }
 
             if (Cost != null)
             {
                 if (!Cost.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "post_t: cost && ! cost->valid()");
                     return false;
+                }
 
                 if (!Cost.KeepPrecision)
+                {
+                    Logger.Current.Debug("ledger.validate", () => "post_t: ! cost->keep_precision()");
                     return false;
+                }
             }
 
             return true;

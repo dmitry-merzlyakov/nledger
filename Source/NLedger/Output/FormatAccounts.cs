@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -11,6 +11,7 @@ using NLedger.Chain;
 using NLedger.Formatting;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -70,13 +71,13 @@ namespace NLedger.Output
                 toDisplay += i.Item2;
             }
 
-            if (Logger.IsDebugOn)
+            if (Logger.Current.ShowDebug(DebugAccountDisplay))
             {
-                Logger.Debug(DebugAccountDisplay, () => "Considering account: " + account.FullName);
+                Logger.Current.Debug(DebugAccountDisplay, () => "Considering account: " + account.FullName);
                 if (account.HasXFlags(d => d.Visited))
-                    Logger.Debug(DebugAccountDisplay, () => "  it was visited itself");
-                Logger.Debug(DebugAccountDisplay, () => "  it has " + visited + " visited children");
-                Logger.Debug(DebugAccountDisplay, () => "  it has " + toDisplay + " children to display");
+                    Logger.Current.Debug(DebugAccountDisplay, () => "  it was visited itself");
+                Logger.Current.Debug(DebugAccountDisplay, () => "  it has " + visited + " visited children");
+                Logger.Current.Debug(DebugAccountDisplay, () => "  it has " + toDisplay + " children to display");
             }
 
             if (account.Parent != null && (account.HasXFlags(d => d.Visited) || (!flat && visited > 0)))
@@ -89,7 +90,7 @@ namespace NLedger.Output
                     !Value.IsNullOrEmptyOrFalse(DispPred.Calc(boundScope))))
                 {
                     account.XData.ToDisplay = true;
-                    Logger.Debug(DebugAccountDisplay, () => "Marking account as TO_DISPLAY");
+                    Logger.Current.Debug(DebugAccountDisplay, () => "Marking account as TO_DISPLAY");
                     toDisplay = 1;
                 }
                 visited = 1;
@@ -112,6 +113,7 @@ namespace NLedger.Output
             {
                 StringBuilder sb = new StringBuilder();
 
+                Logger.Current.Debug("account.display", () => String.Format("Displaying account: {0}", account.FullName));
                 account.XData.Displayed = true;
 
                 BindScope boundScope = new BindScope(Report, account);
@@ -150,7 +152,10 @@ namespace NLedger.Output
             StringBuilder sb = new StringBuilder();
 
             if (Report.DisplayHandler.Handled)
+            {
+                Logger.Current.Debug("account.display", () => String.Format("Account display predicate: {0}", Report.DisplayHandler.Str()));
                 DispPred.Parse(Report.DisplayHandler.Str());
+            }
 
             MarkAccounts(Report.Session.Journal.Master, Report.FlatHandler.Handled);
 
@@ -172,8 +177,12 @@ namespace NLedger.Output
             Report.OutputStream.Write(sb.ToString());
         }
 
+        /// <summary>
+        /// Ported from void format_accounts::operator()(account_t& account)
+        /// </summary>
         public override void Handle(Account account)
         {
+            Logger.Current.Debug("account.display", () => String.Format("Posting account: {0}", account.FullName));
             PostedAccounts.Add(account);
         }
 

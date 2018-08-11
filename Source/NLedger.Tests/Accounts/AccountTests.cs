@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -479,5 +479,53 @@ namespace NLedger.Tests.Accounts
             account.XData.Visited = false;
             Assert.IsFalse(account.HasXFlags(d => d.Visited));
         }
+
+        [TestMethod]
+        public void Account_Valid_DetectsToBigDepth()
+        {
+            Account account = new Account();
+            for(var i=0;i<256;i++)
+                account = new Account(account, "acc");
+
+            Assert.AreEqual(256, account.Depth);
+            Assert.IsTrue(account.Valid());
+
+            account = new Account(account, "acc");
+
+            Assert.AreEqual(257, account.Depth);
+            Assert.IsFalse(account.Valid());
+        }
+
+        [TestMethod]
+        public void Account_Valid_DetectsSelfLoops()
+        {
+            Account account = new Account();
+            Assert.IsTrue(account.Valid());
+
+            account.Accounts.Add("wrong-self-loop", account);
+            Assert.IsFalse(account.Valid());
+        }
+
+        [TestMethod]
+        public void Account_Valid_DetectsInvalidChidren()
+        {
+            Account account = new Account();
+            Assert.IsTrue(account.Valid());
+
+            Account childAcc = account;
+            for (var i = 0; i < 256; i++)
+            {
+                childAcc = new Account(childAcc, "acc");
+                childAcc.Parent.Accounts.Add("child", childAcc);
+            }
+            Assert.IsTrue(account.Valid());
+
+            childAcc = new Account(childAcc, "acc");
+            childAcc.Parent.Accounts.Add("child", childAcc);
+
+            Assert.IsFalse(account.Valid());
+            Assert.IsFalse(childAcc.Valid());
+        }
+
     }
 }

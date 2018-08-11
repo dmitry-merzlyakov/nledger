@@ -1,0 +1,19 @@
+﻿2004/09/29  Circuit City
+    Assets:Reimbursements:Company XYZ     $100.00
+    Liabilities:MasterCard               $-100.00
+
+2004/10/15  Company XYZ
+    Assets:Checking                       $100.00
+    Assets:Reimbursements:Company XYZ    $-100.00
+
+apply account Company XYZ
+
+2004/09/29  Circuit City
+    Expenses:Computer:Software            $100.00
+    Accounts Payable:Your Name           $-100.00
+
+2004/10/15  Company XYZ
+    Accounts Payable:Your Name            $100.00
+    Assets:Checking                      $-100.00
+
+end apply account

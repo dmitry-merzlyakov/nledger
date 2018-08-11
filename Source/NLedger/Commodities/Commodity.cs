@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -12,6 +12,7 @@ using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -73,6 +74,9 @@ namespace NLedger.Commodities
         private static CommodityDefaults _Defaults;
         #endregion
 
+        /// <summary>
+        /// Ported from bool commodity_t::compare_by_commodity::operator()
+        /// </summary>
         public static bool CompareByCommodity(Amount left, Amount right)
         {
             if (left == null)
@@ -82,6 +86,9 @@ namespace NLedger.Commodities
 
             Commodity leftComm = left.Commodity;
             Commodity rightComm = right.Commodity;
+
+            Logger.Current.Debug("commodity.compare", () => String.Format(" left symbol ({0})", leftComm));
+            Logger.Current.Debug("commodity.compare", () => String.Format("right symbol ({0})", rightComm));
 
             if (leftComm.BaseSymbol != rightComm.BaseSymbol)
                 return String.Compare(leftComm.BaseSymbol, rightComm.BaseSymbol, StringComparison.Ordinal) < 0;
@@ -338,16 +345,16 @@ namespace NLedger.Commodities
         {
             if (reflexive)
             {
-                Logger.Debug("history.find", () => String.Format("Marking {0} as a primary commodity", price.Commodity.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("Marking {0} as a primary commodity", price.Commodity.Symbol));
                 price.Commodity.Flags = price.Commodity.Flags | CommodityFlagsEnum.COMMODITY_PRIMARY;
             }
             else
             {
-                Logger.Debug("history.find", () => String.Format("Marking {0} as a primary commodity", Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("Marking {0} as a primary commodity", Symbol));
                 Flags = Flags | CommodityFlagsEnum.COMMODITY_PRIMARY;
             }
 
-            Logger.Debug("history.find", () => String.Format("Adding price: {0} for {1} on {2}", Symbol, price, date));
+            Logger.Current.Debug("history.find", () => String.Format("Adding price: {0} for {1} on {2}", Symbol, price, date));
 
             Pool.CommodityPriceHistory.AddPrice(Referent, date, price);
 
@@ -356,7 +363,7 @@ namespace NLedger.Commodities
 
         public PricePoint? FindPriceFromExpr(Expr expr, Commodity commodity, DateTime moment)
         {
-            Logger.Debug("commodity.price.find", () =>String.Format("valuation expr: {0}", expr.Dump()));
+            Logger.Current.Debug("commodity.price.find", () =>String.Format("valuation expr: {0}", expr.Dump()));
 
             Value result = expr.Calc(Scope.DefaultScope);
 
@@ -380,7 +387,7 @@ namespace NLedger.Commodities
         /// </summary>
         public virtual PricePoint? FindPrice(Commodity commodity = null, DateTime moment = default(DateTime), DateTime oldest = default(DateTime))
         {
-            Logger.Debug("commodity.price.find", () => String.Format("commodity_t::find_price({0})", Symbol));
+            Logger.Current.Debug("commodity.price.find", () => String.Format("commodity_t::find_price({0})", Symbol));
 
             Commodity target = null;
             if ((bool)commodity)
@@ -393,7 +400,7 @@ namespace NLedger.Commodities
 
             MemoizedPriceEntry entry = new MemoizedPriceEntry() { Start = moment, End = oldest, Commodity = commodity };
 
-            Logger.Debug("commodity.price.find", () => String.Format("looking for memoized args: {0},{1},{2}", 
+            Logger.Current.Debug("commodity.price.find", () => String.Format("looking for memoized args: {0},{1},{2}", 
                 !moment.IsNotADateTime() ? TimesCommon.Current.FormatDateTime(moment) : "NONE",
                 !oldest.IsNotADateTime() ? TimesCommon.Current.FormatDateTime(oldest) : "NONE",
                 commodity != null ? commodity.Symbol : "NONE"));
@@ -401,7 +408,7 @@ namespace NLedger.Commodities
             PricePoint? memoizedPricePoint;
             if (Base.PriceMap.TryGetValue(entry, out memoizedPricePoint))
             {
-                Logger.Debug("commodity.price.find", () => String.Format("found! returning: {0}",
+                Logger.Current.Debug("commodity.price.find", () => String.Format("found! returning: {0}",
                     memoizedPricePoint.HasValue ? memoizedPricePoint.Value.Price : (Amount)0));
                 return memoizedPricePoint;
             }
@@ -424,12 +431,12 @@ namespace NLedger.Commodities
             // Record this price point in the memoization map
             if (Base.PriceMap.Count > CommodityBase.MaxPriceMapSize)
             {
-                Logger.Debug("history.find", () => "price map has grown too large, clearing it by half");
+                Logger.Current.Debug("history.find", () => "price map has grown too large, clearing it by half");
                 for (int i = 0; i < CommodityBase.MaxPriceMapSize / 2; i++)
                     Base.PriceMap.Remove(Base.PriceMap.First());
             }
 
-            Logger.Debug("history.find", () => String.Format("remembered: {0}", point.HasValue ? point.Value.Price : (Amount)0));
+            Logger.Current.Debug("history.find", () => String.Format("remembered: {0}", point.HasValue ? point.Value.Price : (Amount)0));
             Base.PriceMap.Add(entry, point);
 
             return point;
@@ -447,18 +454,23 @@ namespace NLedger.Commodities
                     if (moment != default(DateTime))
                     {
                         secondsDiff = (long)(moment - point.Value.When).TotalSeconds;
+                        Logger.Current.Debug("commodity.download", () => string.Format("moment = {0}", moment));
+                        Logger.Current.Debug("commodity.download", () => string.Format("slip.moment = {0}", secondsDiff));
                     }
                     else
                     {
                         secondsDiff = (long)(TimesCommon.Current.CurrentTime - point.Value.When).TotalSeconds;
+                        Logger.Current.Debug("commodity.download", () => string.Format("slip.now = {0}", secondsDiff));
                     }
 
+                    Logger.Current.Debug("commodity.download", () => string.Format("leeway = {0}", Pool.QuoteLeeway));
                     if (secondsDiff < Pool.QuoteLeeway)
                         exceedsLeeway = false;
                 }
 
                 if (exceedsLeeway)
                 {
+                    Logger.Current.Debug("commodity.download", () => "attempting to download a more current quote...");
                     PricePoint? quote = Pool.GetCommodityQuote(Referent, inTermsOf);
                     if (quote.HasValue)
                     {
@@ -530,6 +542,33 @@ namespace NLedger.Commodities
         public int CompareTo(object obj)
         {
             return this.CompareTo(obj as Commodity);
+        }
+
+        /// <summary>
+        /// Ported from bool commodity_t::valid()
+        /// </summary>
+        /// <returns></returns>
+        public bool Valid()
+        {
+            if (String.IsNullOrEmpty(Symbol) && this != Pool.NullCommodity)
+            {
+                Logger.Current.Debug("ledger.validate", () => "commodity_t: symbol().empty() && this != null_commodity");
+                return false;
+            }
+
+            if (IsAnnotated && Base == null)
+            {
+                Logger.Current.Debug("ledger.validate", () => "commodity_t: annotated && ! base");
+                return false;
+            }
+
+            if (Precision > 16)
+            {
+                Logger.Current.Debug("ledger.validate", () => "commodity_t: precision() > 16");
+                return false;
+            }
+
+            return true;
         }
 
         private static string QuoteCharString = "\"";

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -97,8 +97,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("comm2"));
 
-            Amount amount1 = new Amount(BigInt.FromLong(0), commodity1);
-            Amount amount2 = new Amount(BigInt.FromLong(0), commodity2);
+            Amount amount1 = new Amount(0, commodity1);
+            Amount amount2 = new Amount(0, commodity2);
 
             Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
             Assert.IsFalse(Commodity.CompareByCommodity(amount2, amount1));
@@ -111,9 +111,9 @@ namespace NLedger.Tests.Commodities
             AnnotatedCommodity annComm1 = new AnnotatedCommodity(commodity1, new Annotation());
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
 
-            Amount amount1 = new Amount(BigInt.FromLong(0), commodity1);
-            Amount amount2 = new Amount(BigInt.FromLong(0), annComm1);
-            Amount amount3 = new Amount(BigInt.FromLong(0), commodity2);
+            Amount amount1 = new Amount(0, commodity1);
+            Amount amount2 = new Amount(0, annComm1);
+            Amount amount3 = new Amount(0, commodity2);
 
             Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
             Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount3));
@@ -129,8 +129,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
             AnnotatedCommodity annComm2 = new AnnotatedCommodity(commodity2, new Annotation());
 
-            Amount amount1 = new Amount(BigInt.FromLong(0), annComm1);
-            Amount amount2 = new Amount(BigInt.FromLong(0), annComm2);
+            Amount amount1 = new Amount(0, annComm1);
+            Amount amount2 = new Amount(0, annComm2);
 
             annComm1.Details.Price = new Amount(10);
             Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
@@ -150,8 +150,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
             AnnotatedCommodity annComm2 = new AnnotatedCommodity(commodity2, new Annotation());
 
-            Amount amount1 = new Amount(BigInt.FromLong(0), annComm1);
-            Amount amount2 = new Amount(BigInt.FromLong(0), annComm2);
+            Amount amount1 = new Amount(0, annComm1);
+            Amount amount2 = new Amount(0, annComm2);
 
             annComm1.Details.Date = (Date)DateTime.UtcNow.Date;
             Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
@@ -171,8 +171,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
             AnnotatedCommodity annComm2 = new AnnotatedCommodity(commodity2, new Annotation());
 
-            Amount amount1 = new Amount(BigInt.FromLong(0), annComm1);
-            Amount amount2 = new Amount(BigInt.FromLong(0), annComm2);
+            Amount amount1 = new Amount(0, annComm1);
+            Amount amount2 = new Amount(0, annComm2);
 
             annComm1.Details.Tag = "tag-1";
             Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
@@ -190,8 +190,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("€"));
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("EUR"));
 
-            Amount amount1 = new Amount(BigInt.FromLong(0), commodity1);
-            Amount amount2 = new Amount(BigInt.FromLong(0), commodity2);
+            Amount amount1 = new Amount(0, commodity1);
+            Amount amount2 = new Amount(0, commodity2);
 
             Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
             Assert.IsTrue(Commodity.CompareByCommodity(amount2, amount1));
@@ -217,7 +217,10 @@ namespace NLedger.Tests.Commodities
             Assert.IsTrue(commodity11.Equals(commodity12));
             Assert.IsFalse(commodity11.Equals(commodity21));
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsTrue(commodity11 == commodity11);
+            #pragma warning restore
             Assert.IsTrue(commodity11 == commodity12);
             Assert.IsTrue(commodity11 != commodity21);
 
@@ -235,7 +238,10 @@ namespace NLedger.Tests.Commodities
             Assert.IsTrue(commodity11.Equals(commodity12));
             Assert.IsFalse(commodity11.Equals(annCommodity));
 
+            // [DM] Hide warning "Comparison made to the same variable"
+            #pragma warning disable 1718
             Assert.IsTrue(commodity11 == commodity11);
+            #pragma warning restore
             Assert.IsTrue(commodity11 == commodity12);
             Assert.IsTrue(commodity11 != annCommodity);
         }
@@ -289,9 +295,9 @@ namespace NLedger.Tests.Commodities
             Commodity commodity1 = new Commodity(CommodityPool.Current, commBase1);
             Commodity commodity2 = new Commodity(CommodityPool.Current, commBase2);
 
-            Amount amt1  = new Amount(BigInt.FromLong(10), commodity1);
-            Amount amt1a = new Amount(BigInt.FromLong(10), commodity1);
-            Amount amt2  = new Amount(BigInt.FromLong(10), commodity2);
+            Amount amt1  = new Amount(10, commodity1);
+            Amount amt1a = new Amount(10, commodity1);
+            Amount amt2  = new Amount(10, commodity2);
 
             Assert.AreEqual( 0, Commodity.CompareByCommodityComparison(amt1, amt1a));
             Assert.AreEqual(-1, Commodity.CompareByCommodityComparison(amt1, amt2));
@@ -326,5 +332,22 @@ namespace NLedger.Tests.Commodities
             Assert.IsTrue(commodity2 == result);
         }
 
+        [TestMethod]
+        public void Commodity_Valid_ReturnsFalseIfEmptySymbol()
+        {
+            Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase(null));
+            Assert.IsTrue(String.IsNullOrEmpty(commodity.Symbol));
+            Assert.IsFalse(commodity == CommodityPool.Current.NullCommodity);
+            Assert.IsFalse(commodity.Valid());
+        }
+
+        [TestMethod]
+        public void Commodity_Valid_ReturnsFalseIfPrecisionIsToBig()
+        {
+            Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("cmdtestvalidprec"));
+            Assert.IsTrue(commodity.Valid());
+            commodity.Precision = 17;
+            Assert.IsFalse(commodity.Valid());
+        }
     }
 }

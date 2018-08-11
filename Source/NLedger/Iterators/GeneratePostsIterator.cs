@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Scopus;
@@ -11,6 +11,7 @@ using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
 using NLedger.Utility.Rnd;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,9 @@ namespace NLedger.Iterators
         public Date NextDate { get; private set; }
         public Date NextAuxDate { get; private set; }
 
+        /// <summary>
+        /// Ported from void generate_posts_iterator::increment
+        /// </summary>
         public IEnumerable<Post> Get()
         {
             IList<Post> posts = new List<Post>();
@@ -77,6 +81,8 @@ namespace NLedger.Iterators
             while (i < Quantity)
             {
                 string buf = GenerateXact();
+
+                Logger.Current.Debug("generate.post", () => String.Format("The post we intend to parse:\r\n{0}", buf));
 
                 try
                 {
@@ -87,7 +93,7 @@ namespace NLedger.Iterators
 
                     if (Session.Journal.Read(parsingContext) != 0)
                     {
-                        Validator.Verify(Session.Journal.Xacts.Last().Valid());
+                        Validator.Verify(() => Session.Journal.Xacts.Last().Valid());
                         XactPostsIterator iterPosts = new XactPostsIterator(Session.Journal.Xacts.Last());
                         foreach (Post post in iterPosts.Get())
                         {
@@ -109,8 +115,13 @@ namespace NLedger.Iterators
             return posts;
         }
 
+        /// <summary>
+        /// Ported from void generate_posts_iterator::generate_string
+        /// </summary>
         public string GenerateString(int len, bool onlyAlpha = false)
         {
+            Logger.Current.Debug("generate.post.string", () => String.Format("Generating string of length {0}, only alpha {1}", len, onlyAlpha));
+
             StringBuilder sb = new StringBuilder();
 
             int last = -1;

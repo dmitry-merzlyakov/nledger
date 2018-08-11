@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NLedger.Utility;
 using System.Globalization;
+using NLedger.Utils;
 
 namespace NLedger.Times
 {
@@ -40,6 +41,8 @@ namespace NLedger.Times
                 if (Date.TryParseExact(s, fmt, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
                     return parsedDate;
             }
+
+            Logger.Current.Debug("times.parse", () => String.Format("Failed to parse date '{0}' using pattern '{1}'", str, FmtStr));
 
             return default(Date);
         }

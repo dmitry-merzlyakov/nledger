@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -14,6 +14,7 @@ using NLedger.Journals;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -144,7 +145,7 @@ namespace NLedger.Scopus
             else
             {
                 priceDbPath = FileSystem.HomePath(DefaultPriceDbFileName);
-                // TODO - ./.ledgerrc - ?
+                // DM - Home path always exists; "./.ledgerrc" is never assigned.
             }
 
             if (DayBreakHandler.Handled)
@@ -189,7 +190,7 @@ namespace NLedger.Scopus
 
             foreach(string pathName in FileHandler.DataFiles)
             {
-                if (pathName == "-" || pathName == "/dev/stdin")  // TODO - verify
+                if (pathName == "-" || FileSystem.IsStdIn(pathName)) // (pathname == "-" || pathname == "/dev/stdin")
                 {
                     // To avoid problems with stdin and pipes, etc., we read the entire
                     // file in beforehand into a memory buffer, and then parcel it out
@@ -216,18 +217,24 @@ namespace NLedger.Scopus
                 ParsingContext.Pop();
             }
 
+            Logger.Current.Debug("ledger.read", () => String.Format("xact_count [{0}] == journal->xacts.size() [{1}]", xactCount, Journal.Xacts.Count));
             if (xactCount != Journal.Xacts.Count)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("assert(xact_count == journal->xacts.size())");
 
             if (populatedDataFiles)
                 FileHandler.DataFiles.Clear();
 
+            Validator.Verify(() => Journal.Valid());
+
             return Journal.Xacts.Count();
         }
 
+        /// <summary>
+        /// Ported from journal_t * session_t::read_journal_files
+        /// </summary>
         public Journal ReadJournalFiles()
         {
-            Logger.Info("Read journal file");
+            var info = Logger.Current.InfoContext(TimerName.Journal)?.Message("Read journal file").Start();  // INFO_START
 
             string masterAccount = null;
             if (MasterAccountHandler.Handled)
@@ -235,7 +242,9 @@ namespace NLedger.Scopus
 
             int count = ReadData(masterAccount);
 
-            Logger.Info("Finished, found {0} transactions", count);
+            info?.Finish(); // INFO_FINISH
+
+            Logger.Current.Info(() => String.Format("Found {0} transactions", count));
 
             return Journal;
         }
@@ -422,10 +431,10 @@ namespace NLedger.Scopus
     {
         public FileOption() : base (Session.OptionFile)
         {
-            DataFiles = new List<string>();
+            DataFiles = new HashSet<string>(FileNameComparer.Instance);
         }
 
-        public IList<string> DataFiles { get; private set; }
+        public ISet<string> DataFiles { get; private set; }
 
         public new Session Parent
         {

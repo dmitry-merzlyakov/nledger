@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -139,6 +139,26 @@ namespace NLedger.Tests.Expressions
             ReadAndCheckTokenProps(act, ref token, inStream, 0, ExprTokenKind.IDENT, 8, Value.Get("my_ident"), "m");
             ReadAndCheckTokenProps(act, ref token, inStream, 0, ExprTokenKind.COMMA, 1, Value.Empty, ",");  // divider
             ReadAndCheckTokenProps(act, ref token, inStream, 0, ExprTokenKind.VALUE, 2, Value.Get(new Amount("23")), "2");
+        }
+
+        [TestMethod]
+        public void ExprToken_ParseIdent_ReturnsEmptyStringValueForEmptyIdent()
+        {
+            var source = "";
+            ExprToken token = new ExprToken();
+            token.ParseIdent(new InputTextStream(source));
+            Assert.AreEqual(ValueTypeEnum.String, token.Value.Type);
+            Assert.AreEqual(String.Empty, token.Value.AsString);
+        }
+
+        [TestMethod]
+        public void ExprToken_Next_ReturnsEmptyStringValueForEmptyInput()
+        {
+            var source = "\"\"";
+            ExprToken token = new ExprToken();
+            token.Next(new InputTextStream(source), AmountParseFlagsEnum.PARSE_DEFAULT);
+            Assert.AreEqual(ValueTypeEnum.String, token.Value.Type);
+            Assert.AreEqual(String.Empty, token.Value.AsString);
         }
 
         private void ReadAndCheckTokenProps(Func<int> act, ref ExprToken token, InputTextStream inStream, int expectedResult, ExprTokenKind expectedKind, int expectedLength, Value expectedValue, string expectedSymbol)

@@ -87,7 +87,7 @@ trap
 [string]$Script:absIgnoreListPath = if (![System.IO.Path]::IsPathRooted($ignoreListPath)) { Resolve-Path (Join-Path $Script:ScriptPath $ignoreListPath) -ErrorAction Stop } else { $ignoreListPath }
 
 if (!(Test-Path $Script:absNLedgerExePath -PathType Leaf)) { throw "Cannot find NLedger executable file: $Script:absNLedgerExePath" }
-if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot find a foldetr with NLedger test: $Script:absNLedgerTestPath" }
+if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot find a folder with NLedger test: $Script:absNLedgerTestPath" }
 if (!(Test-Path $Script:absIgnoreListPath -PathType Leaf)) { throw "Cannot find Ignore List file: $Script:absIgnoreListPath" }
 
 [string]$Script:absTestRootPath = $Script:absNLedgerTestPath
@@ -147,46 +147,58 @@ function ParseTestFile {
     [string]$Private:output = ""
     [string]$Private:err = ""
     [bool]$Private:directToErr = $False
+    $Private:setVariables = @{}
 
     [int]$Private:lineNum = -1;
 
     foreach($Private:line in Get-Content $absTestFile -Encoding UTF8) {
         $Private:lineNum++
-        if ($Private:line.StartsWith("test ")) {
-            $Private:startTestLine = $Private:lineNum
-            $Private:commandLine = $Private:line.Substring("test".Length).Trim()
-            $Private:output = ""
-            $Private:err = ""
-            $Private:directToErr = $False
-            $Private:testCaseIndex++
+        if ($Private:line.StartsWith("#>") -and ($Private:line.Length -gt 2)) {
+          $Private:line = $Private:line.Substring(2).Trim()
+          if (!($Private:line.StartsWith("setvar "))) { throw "Only 'setvar' command is allowed" }
+          $Private:line = $Private:line.Substring("setvar ".Length).Trim()
+          $Private:pos = $Private:line.IndexOf('=')
+          if ($Private:pos -le 0) { throw "Cannot find a variable name" }
+          $Private:setVariables.Add($Private:line.Substring(0, $Private:pos).TrimEnd(), $Private:line.Substring($Private:pos + 1).Trim())
         } else {
-            if ($Private:line.StartsWith("__ERROR__")) { $Private:directToErr = $True }
-            else {
-                if ($Private:line.StartsWith("end test")) {
-                    $Private:testCase = [PsCustomObject]@{
-                        TestIndex = $testIndex 
-                        TestCaseIndex = $Private:testCaseIndex
-                        FileName=$absTestFile
-                        ShortFileName=$absTestFile.Substring($Script:absNLedgerTestPath.Length + 1)
-                        StartTestLine=$Private:startTestLine
-                        LineNum=$Private:lineNum
-                        CommandLine=$Private:commandLine
-                        Output=$Private:output
-                        Err=$Private:err
+            if ($Private:line.StartsWith("test ")) {
+                $Private:startTestLine = $Private:lineNum
+                $Private:commandLine = $Private:line.Substring("test".Length).Trim()
+                $Private:output = ""
+                $Private:err = ""
+                $Private:directToErr = $False
+                $Private:testCaseIndex++
+            } else {
+                if ($Private:line.StartsWith("__ERROR__")) { $Private:directToErr = $True }
+                else {
+                    if ($Private:line.StartsWith("end test")) {
+                        $Private:testCase = [PsCustomObject]@{
+                            TestIndex = $testIndex 
+                            TestCaseIndex = $Private:testCaseIndex
+                            FileName=$absTestFile
+                            ShortFileName=$absTestFile.Substring($Script:absNLedgerTestPath.Length + 1)
+                            StartTestLine=$Private:startTestLine
+                            LineNum=$Private:lineNum
+                            CommandLine=$Private:commandLine
+                            Output=$Private:output
+                            Err=$Private:err
+                            SetVariables = $Private:setVariables
+                        }
+                        $Private:testCases += $Private:testCase
+                        $Private:setVariables = @{}
+                    } else {
+                        # If current line contains a template "$sourcepath" - adopt it to current folder
+                        if ($Private:line -match '\"\$sourcepath/([^\"]*)\"') { $Private:line = $Private:line -replace '\"\$sourcepath/([^\"]*)\"',"""$Script:absTestRootPath\$($Matches[1].Replace('/','\'))""" }
+                        # The same but w/o quites
+                        if ($Private:line -match '\$sourcepath/(.*)') { $Private:line = $Private:line -replace '\$sourcepath/(.*)',"$Script:absTestRootPath\$($Matches[1].Replace('/','\'))" }
+                        # If the line contains $FILE template - replace it with current file name
+                        $Private:line = $Private:line -replace '\$FILE', $absTestFile
+                        # Special case: if error message contains a relative path in a file name, expand it
+                        $Private:errFileName = "(Error: File to include was not found: "")(?<path>\.\/)"
+                        $Private:line = $Private:line -replace $Private:errFileName, "Error: File to include was not found: ""$Script:absTestRootPath\"
+                        # Add the line either to the output or stderr
+                        if ($Private:directToErr) { $Private:err += $Private:line+"`r`n" } else { $Private:output += $Private:line+"`r`n" }
                     }
-                    $Private:testCases += $Private:testCase
-                } else {
-                    # If current line contains a template "$sourcepath" - adopt it to current folder
-                    if ($Private:line -match '\"\$sourcepath/([^\"]*)\"') { $Private:line = $Private:line -replace '\"\$sourcepath/([^\"]*)\"',"""$Script:absTestRootPath\$($Matches[1].Replace('/','\'))""" }
-                    # The same but w/o quites
-                    if ($Private:line -match '\$sourcepath/(.*)') { $Private:line = $Private:line -replace '\$sourcepath/(.*)',"$Script:absTestRootPath\$($Matches[1].Replace('/','\'))" }
-                    # If the line contains $FILE template - replace it with current file name
-                    $Private:line = $Private:line -replace '\$FILE', $absTestFile
-                    # Special case: if error message contains a relative path in a file name, expand it
-                    $Private:errFileName = "(Error: File to include was not found: "")(?<path>\.\/)"
-                    $Private:line = $Private:line -replace $Private:errFileName, "Error: File to include was not found: ""$Script:absTestRootPath\"
-                    # Add the line either to the output or stderr
-                    if ($Private:directToErr) { $Private:err += $Private:line+"`r`n" } else { $Private:output += $Private:line+"`r`n" }
                 }
             }
         }
@@ -281,6 +293,11 @@ function RunTestCase {
     }
     # Check whether -f option is already presented; add it otherwise
     if ($Private:testCaseResult.arguments -cnotmatch "(^|\s)-f\s") { $Private:testCaseResult.arguments += " -f '$($testCase.FileName)'" }
+    # Check whether "--pager" option is presented to add extra options for paging test
+    if ($Private:testCaseResult.arguments.Contains("--pager")) {
+        $Private:testCaseResult.arguments += "  --force-pager" # Pager test requires this option to override IsAtty=false that is default for other tests
+        $env:PATH += ";$(Resolve-Path (Join-Path $Script:ScriptPath '..\Extras'))"
+    }
     # Check whether output is redirected to null; remove it if so
     if ($Private:testCaseResult.arguments.Contains("2>/dev/null")) { 
         $Private:testCaseResult.arguments = $Private:testCaseResult.arguments.Replace("2>/dev/null", "")
@@ -303,6 +320,14 @@ function RunTestCase {
     $env:nledgerOutputEncoding = "utf-8"
     # Disable colored Ansi Terminal emulation to pass output Ansi control codes that some tests validate
     $env:nledgerAnsiTerminalEmulation = "false"
+    # Disable custom setting profiles (if any exists on the machine)
+    $env:nledgerDisableUserSettings = "true"
+    # Set custom environment variables
+    $private:originalVariables = @{}
+    foreach($private:name in $testCase.SetVariables.Keys) { 
+        $private:originalVariables.Add($private:name, [Environment]::GetEnvironmentVariable($private:name))
+        [Environment]::SetEnvironmentVariable($private:name, $testCase.SetVariables[$private:name])
+    }
 
     try {        
         $Private:testCaseResult.runResult = RunExecutable $Script:absNLedgerExePath $Private:testCaseResult.arguments $Private:testCaseResult.stdin
@@ -321,6 +346,9 @@ function RunTestCase {
     catch {
         $Private:testCaseResult.ExceptionMessage = $_
         $Private:testCaseResult.HasException = $true
+    }
+    finally {
+        foreach($private:name in $private:originalVariables.Keys) { [Environment]::SetEnvironmentVariable($private:name, $private:originalVariables[$private:name]) }
     }
     $Private:testCaseResult.IsFailed = $Private:testCaseResult.DiffOut -or $Private:testCaseResult.DiffErr -or $Private:testCaseResult.DiffCode -or $Private:testCaseResult.HasException
 

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -15,6 +15,7 @@ using NLedger.Utility;
 using NLedger.Amounts;
 using NLedger.Annotate;
 using NLedger.Commodities;
+using NLedger.Utils;
 
 namespace NLedger
 {
@@ -119,7 +120,6 @@ namespace NLedger
 
         public Balance(Amount amount) : this()
         {
-            /// TODO - VERIFY
             Add(amount);
         }
 
@@ -183,7 +183,15 @@ namespace NLedger
         /// </summary>
         public bool Valid()
         {
-            return Amounts.All(amt => amt.Value.Valid());
+            foreach(var amount in Amounts.Values)
+            {
+                if (!amount.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "balance_t: ! pair.second.valid()");
+                    return false;
+                }
+            }
+            return true;
         }
 
         public IDictionary<Commodity, Amount> Amounts { get; private set; }

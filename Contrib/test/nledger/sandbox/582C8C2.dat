@@ -1,0 +1,22 @@
+﻿= expr ( commodity == 'VIFSX' )
+    (Allocation:Equities:Domestic)             1.000
+
+= expr ( commodity == 'VTHRX' )
+    (Allocation:Equities:Global)               0.240
+    (Allocation:Equities:Domestic)             0.563
+    (Allocation:Bonds/Cash)                    0.197
+
+= expr ( commodity == 'VBMFX')
+    (Allocation:Bonds/Cash)                    1.000
+
+2015-01-01 Buy VIFSX
+    Assets:Broker                                100 VIFSX
+    Assets:Cash                              $-10000
+
+2015-01-01 Buy VTHRX
+    Assets:Broker                                 10 VTHRX
+    Assets:Cash                              $-10000
+
+2015-01-01 Buy VBMFX
+    Assets:Broker                                  1 VBMFX
+    Assets:Cash                              $-10000

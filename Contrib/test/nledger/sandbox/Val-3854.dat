@@ -1,0 +1,7 @@
+﻿= food
+    ; Foo: Bar
+    (Budget:$account)                10
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash

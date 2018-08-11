@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -174,6 +174,20 @@ namespace NLedger.IntegrationTests
         public void IntegrationTest_test_regress_1159()
         {
             new TestRunner(@"test\regress\1159.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1182_1()
+        {
+            new TestRunner(@"test\regress\1182_1.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1182_2()
+        {
+            new TestRunner(@"test\regress\1182_2.test").Run();
         }
 		
         [TestMethod]
@@ -1068,6 +1082,41 @@ namespace NLedger.IntegrationTests
         public void IntegrationTest_test_regress_FDFBA165()
         {
             new TestRunner(@"test\regress\FDFBA165.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_fix_missing_trans_in_last_budget_period()
+        {
+            new TestRunner(@"test\regress\fix-missing-trans-in-last-budget-period.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_GH520()
+        {
+            new TestRunner(@"test\regress\GH520.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_market_group_by()
+        {
+            new TestRunner(@"test\regress\market-group-by.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_total_1()
+        {
+            new TestRunner(@"test\regress\total-1.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_total_2()
+        {
+            new TestRunner(@"test\regress\total-2.test").Run();
         }
 		
         [TestMethod]

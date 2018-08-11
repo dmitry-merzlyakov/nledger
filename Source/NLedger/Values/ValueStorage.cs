@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -13,6 +13,7 @@ using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -212,7 +213,7 @@ namespace NLedger.Values
 
         public T1 AsAny<T1>()
         {
-            // TODO: consider removing boxing
+            // #remove-boxing - Consider removing excess boxing in this method.
             object val = (object)Val;
             if (val == null)
                 return (T1)val;
@@ -301,14 +302,25 @@ namespace NLedger.Values
             return this;
         }
 
+        /// <summary>
+        /// Not exactly copied but very close to void value_t::in_place_simplify()
+        /// </summary>
         public IValueStorage Simplify()
         {
             if (IsRealZero())
+            {
+                Logger.Current.Debug("value.simplify", () => String.Format("Zeroing type {0}", Type));
                 return new IntegerValueStorage(0);
+            }
 
             IValueStorage value = this;
             if (Type == ValueTypeEnum.Balance && AsBalance.IsSingleAmount)
+            {
+                Logger.Current.Debug("value.simplify", () => "Reducing balance to amount");
+                Logger.Current.Debug("value.simplify", () => String.Format("as a balance it looks like: {0}", Dump(false)));
                 value = new AmountValueStorage(AsAmount);
+                Logger.Current.Debug("value.simplify", () => String.Format("as an amount it looks like: {0}", value.ToString()));
+            }
 
             // [DM] - commented out according to the source code - #if REDUCE_TO_INTEGER        // this is off by default
             //if (value.Type == ValueTypeEnum.Amount && !value.AsAmount.HasCommodity && value.AsAmount.FitsInLong)
@@ -369,7 +381,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount 
         {
-            get { return new Amount(BigInt.FromLong(AsLong), null); }
+            get { return new Amount(AsLong); }
         }
 
         public override Balance AsBalance
@@ -465,7 +477,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount
         {
-            get { return new Amount(BigInt.FromLong(AsLong), null); }
+            get { return new Amount(AsLong); }
         }
 
         public override Balance AsBalance
@@ -572,7 +584,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount
         {
-            get { return new Amount(BigInt.FromLong(AsLong), null); }
+            get { return new Amount(AsLong); }
         }
 
         public override Balance AsBalance
@@ -674,7 +686,7 @@ namespace NLedger.Values
 
         public override Amount AsAmount
         {
-            get { return new Amount(BigInt.FromLong(Val), null); }
+            get { return new Amount(Val); }
         }
 
         public override Balance AsBalance
@@ -834,7 +846,9 @@ namespace NLedger.Values
     {
         public AmountValueStorage(Amount val)
             : base(ValueTypeEnum.Amount, val)
-        { }
+        {
+            Validator.Verify(() => val.Valid());
+        }
 
         public override bool Bool
         {
@@ -1081,7 +1095,9 @@ namespace NLedger.Values
     {
         public BalanceValueStorage(Balance val)
             : base(ValueTypeEnum.Balance, val)
-        { }
+        {
+            Validator.Verify(() => val.Valid());
+        }
 
         public override bool Bool
         {
@@ -1115,7 +1131,7 @@ namespace NLedger.Values
                 if (Val.IsSingleAmount)
                     return Val.SingleAmount;
                 else if (Val.IsEmpty)
-                    return new Amount(BigInt.Zero, null);
+                    return new Amount(0);
                 else
                     throw new ValueError(ValueError.CannotConvertBalanceWithMultipleCommoditiesToAmount);
             }

@@ -1,19 +1,19 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -120,7 +120,6 @@ namespace NLedger.Items
 
         /// <summary>
         /// Ported from item.cc - parse_tags()
-        /// TODO - move from this assembly??
         /// </summary>
         public virtual void ParseTags(string note, Scope scope, bool overwriteExisting = true)
         {
@@ -232,7 +231,17 @@ namespace NLedger.Items
 
         public virtual bool HasTag(string tag, bool inherit = true)
         {
-            return Metadata != null && Metadata.ContainsKey(tag);
+            Logger.Current.Debug("item.meta", () => String.Format("Checking if item has tag: {0}", tag));
+            if (Metadata == null)
+            {
+                Logger.Current.Debug("item.meta", () => "Item has no metadata at all");
+                return false;
+            }
+
+            var hasTag = Metadata.ContainsKey(tag);
+            Logger.Current.Debug("item.meta", () => hasTag ? "Item has the tag!" : "Item does not have this tag");
+
+            return hasTag;
         }
 
         public virtual bool HasTag(Mask tagMask, Mask valueMask = null, bool inherit = true)
@@ -257,11 +266,16 @@ namespace NLedger.Items
 
         public virtual Value GetTag(string tag, bool inherit = true)
         {
+            Logger.Current.Debug("item.meta", () => String.Format("Getting item tag: {0}", tag));
             if (Metadata != null)
             {
+                Logger.Current.Debug("item.meta", () => "Item has metadata");
                 ItemTag itemTag;
                 if (Metadata.TryGetValue(tag, out itemTag))
+                {
+                    Logger.Current.Debug("item.meta", () => "Found the item!");
                     return itemTag.Value;
+                }
             }
 
             return Value.Empty;
@@ -320,6 +334,20 @@ namespace NLedger.Items
         public override ExprOp Lookup(SymbolKindEnum kind, string name)
         {
             return LookupItems.Lookup(kind, name, this);
+        }
+
+        /// <summary>
+        /// Ported from bool item_t::valid()
+        /// </summary>
+        public virtual bool Valid()
+        {
+            if (State != ItemStateEnum.Uncleared && State != ItemStateEnum.Cleared && State != ItemStateEnum.Pending)
+            {
+                Logger.Current.Debug("ledger.validate", () => "item_t: state is bad");
+                return false;
+            }
+
+            return true;
         }
 
         #region Lookup Functions
@@ -411,7 +439,7 @@ namespace NLedger.Items
         private static Value GetFileBase(Item item)
         {
             if (item.Pos != null)
-                return Value.StringValue(Path.GetFileName(item.Pos.PathName));
+                return Value.StringValue(FileSystem.GetFileName(item.Pos.PathName));
             else
                 return Value.Empty;
         }
@@ -419,7 +447,7 @@ namespace NLedger.Items
         private static Value GetFilePath(Item item)
         {
             if (item.Pos != null)
-                return Value.StringValue(Path.GetDirectoryName(item.Pos.PathName));
+                return Value.StringValue(FileSystem.GetDirectoryName(item.Pos.PathName));
             else
                 return Value.Empty;
         }
@@ -580,6 +608,8 @@ namespace NLedger.Items
 
             if (Metadata == null)
                 Metadata = new SortedDictionary<string,ItemTag>(StringComparer.InvariantCultureIgnoreCase);
+
+            Logger.Current.Debug("item.meta", () => String.Format("Setting tag '{0}' to value '{1}'", tag, Value.IsNullOrEmpty(value) ? "<none>" : value.ToString()));
 
             ItemTag itemTag = new ItemTag(value, isParsed);
 

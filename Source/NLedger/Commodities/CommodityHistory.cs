@@ -1,14 +1,15 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
 using NLedger.Utility;
 using NLedger.Utility.Graph;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,6 @@ namespace NLedger.Commodities
         {
             if (!PriceGraph.HasVertex(commodity))
             {
-                // commodity.GraphIndex.. no needs.. TODO - remove property
                 PriceGraph.AddVertex(commodity);
             }
         }
@@ -64,7 +64,7 @@ namespace NLedger.Commodities
 
         public void MapPrices(Action<DateTime, Amount> fn, Commodity source, DateTime moment, DateTime oldest = default(DateTime), bool bidirectionally = false)
         {
-            Logger.Debug("history.map", () => String.Format("Mapping prices for source commodity: {0}", source));
+            Logger.Current.Debug("history.map", () => String.Format("Mapping prices for source commodity: {0}", source));
 
             RecentEdgeWeight recentEdgeWeight = new RecentEdgeWeight(moment, oldest);
             IGraph<Commodity, PriceGraphEdge> filtered = PriceGraph.Filter((comm1, comm2, edge) => recentEdgeWeight.Filter(comm1, comm2, edge));
@@ -76,7 +76,7 @@ namespace NLedger.Commodities
                     DateTime when = pricePair.Key;
                     Amount price = pricePair.Value;
 
-                    Logger.Debug("history.map", () => String.Format("Price {0} on {1}", price, when));
+                    Logger.Current.Debug("history.map", () => String.Format("Price {0} on {1}", price, when));
 
                     if ((oldest.IsNotADateTime() || when >= oldest) && when <= moment)
                     {
@@ -85,14 +85,14 @@ namespace NLedger.Commodities
                             if (bidirectionally)
                             {
                                 price = new Amount(price.GetInvertedQuantity(), edgeDescriptor.GetInvertedVertex(source));
-                                Logger.Debug("history.map", () => String.Format("Inverted price is {0}", price));
-                                Logger.Debug("history.map", () => String.Format("fn({0}, {1})", when, price));
+                                Logger.Current.Debug("history.map", () => String.Format("Inverted price is {0}", price));
+                                Logger.Current.Debug("history.map", () => String.Format("fn({0}, {1})", when, price));
                                 fn(when, price);
                             }
                         }
                         else
                         {
-                            Logger.Debug("history.map", () => String.Format("fn({0}, {1})", when, price));
+                            Logger.Current.Debug("history.map", () => String.Format("fn({0}, {1})", when, price));
                             fn(when, price);
                         }
                     }
@@ -108,18 +108,18 @@ namespace NLedger.Commodities
             RecentEdgeWeight recentEdgeWeight = new RecentEdgeWeight(moment, oldest);
             IGraph<Commodity, PriceGraphEdge> filtered = PriceGraph.Filter((comm1, comm2, edge) => recentEdgeWeight.Filter(comm1, comm2, edge));
 
-            Logger.Debug("history.find", () => String.Format("sv commodity = {0}", source.Symbol));
+            Logger.Current.Debug("history.find", () => String.Format("sv commodity = {0}", source.Symbol));
             if (source.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_PRIMARY))
-                Logger.Debug("history.find", () => "sv commodity is primary");
-            Logger.Debug("history.find", () => "tv commodity = none ");
+                Logger.Current.Debug("history.find", () => "sv commodity is primary");
+            Logger.Current.Debug("history.find", () => "tv commodity = none ");
 
             DateTime mostRecent = moment;
             Amount price = null;
 
             foreach (EdgeDescriptor<Commodity, PriceGraphEdge> edgeDescriptor in filtered.AdjacentVertices(source))
             {
-                Logger.Debug("history.find", () => String.Format("u commodity = {0}", edgeDescriptor.Vertex1.Symbol));
-                Logger.Debug("history.find", () => String.Format("v commodity = {0}", edgeDescriptor.Vertex2.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("u commodity = {0}", edgeDescriptor.Vertex1.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("v commodity = {0}", edgeDescriptor.Vertex2.Symbol));
 
                 PricePoint point = edgeDescriptor.Edge.PricePoint;
                 if (price == null || point.When > mostRecent)
@@ -128,22 +128,22 @@ namespace NLedger.Commodities
                     price = point.Price;
                 }
 
-                Logger.Debug("history.find", () => String.Format("price was = {0}", price.Unrounded()));
+                Logger.Current.Debug("history.find", () => String.Format("price was = {0}", price.Unrounded()));
 
                 if (price.Commodity == source)
                     price = new Amount(price.GetInvertedQuantity(), edgeDescriptor.GetInvertedVertex(source));
 
-                Logger.Debug("history.find", () => String.Format("price is  = {0}", price.Unrounded()));
+                Logger.Current.Debug("history.find", () => String.Format("price is  = {0}", price.Unrounded()));
             }
 
             if (Amount.IsNullOrEmpty(price))
             {
-                Logger.Debug("history.find", () => "there is no final price");
+                Logger.Current.Debug("history.find", () => "there is no final price");
                 return null;
             }
             else
             {
-                Logger.Debug("history.find", () => String.Format("final price is = {0}", price.Unrounded()));
+                Logger.Current.Debug("history.find", () => String.Format("final price is = {0}", price.Unrounded()));
                 return new PricePoint(mostRecent, price);
             }
         }
@@ -159,8 +159,8 @@ namespace NLedger.Commodities
             RecentEdgeWeight recentEdgeWeight = new RecentEdgeWeight(moment, oldest);
             IGraph<Commodity, PriceGraphEdge> filtered = PriceGraph.Filter((comm1, comm2, edge) => recentEdgeWeight.Filter(comm1, comm2, edge));
 
-            Logger.Debug("history.find", () => String.Format("u commodity = {0}", source.Symbol));
-            Logger.Debug("history.find", () => String.Format("v commodity = {0}", target.Symbol));
+            Logger.Current.Debug("history.find", () => String.Format("u commodity = {0}", source.Symbol));
+            Logger.Current.Debug("history.find", () => String.Format("v commodity = {0}", target.Symbol));
 
             IEnumerable<EdgeDescriptor<Commodity, PriceGraphEdge>> shortestPath = filtered.FindShortestPath(source, target, (edge) => edge.Weight.Ticks);
 
@@ -188,17 +188,17 @@ namespace NLedger.Commodities
                     leastRecent = point.When;
                 }
 
-                Logger.Debug("history.find", () => String.Format("u commodity = {0}", uComm.Symbol));
-                Logger.Debug("history.find", () => String.Format("v commodity = {0}", vComm.Symbol));
-                Logger.Debug("history.find", () => String.Format("last target = {0}", lastTarget.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("u commodity = {0}", uComm.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("v commodity = {0}", vComm.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("last target = {0}", lastTarget.Symbol));
 
                 // Determine which direction we are converting in
                 Amount pprice = new Amount(point.Price);
-                Logger.Debug("history.find", () => String.Format("pprice    = {0}", pprice.Unrounded()));
+                Logger.Current.Debug("history.find", () => String.Format("pprice    = {0}", pprice.Unrounded()));
 
                 if (!firstRun)
                 {
-                    Logger.Debug("history.find", () => String.Format("price was = {0}", price.Unrounded()));
+                    Logger.Current.Debug("history.find", () => String.Format("price was = {0}", price.Unrounded()));
                     if (pprice.Commodity != lastTarget)
                         price *= pprice.Inverted();
                     else
@@ -212,25 +212,25 @@ namespace NLedger.Commodities
                 {
                     price = pprice;
                 }
-                Logger.Debug("history.find", () => String.Format("price is  = {0}", price.Unrounded()));
+                Logger.Current.Debug("history.find", () => String.Format("price is  = {0}", price.Unrounded()));
 
                 if (lastTarget == vComm)
                     lastTarget = uComm;
                 else
                     lastTarget = vComm;
 
-                Logger.Debug("history.find", () => String.Format("last target now = {0}", lastTarget.Symbol));
+                Logger.Current.Debug("history.find", () => String.Format("last target now = {0}", lastTarget.Symbol));
             }
 
             if (Amount.IsNullOrEmpty(price))
             {
-                Logger.Debug("history.find", () => "there is no final price");
+                Logger.Current.Debug("history.find", () => "there is no final price");
                 return null;
             }
             else
             {
                 price = new Amount(price.Quantity, target);
-                Logger.Debug("history.find", () => String.Format("final price is = {0}", price.Unrounded()));
+                Logger.Current.Debug("history.find", () => String.Format("final price is = {0}", price.Unrounded()));
                 return new PricePoint(leastRecent, price);
             }
         }
@@ -285,20 +285,20 @@ namespace NLedger.Commodities
         /// </summary>
         public bool Filter(Commodity comm1, Commodity comm2, PriceGraphEdge edge)
         {
-            Logger.Debug("history.find", () => String.Format("  reftime      = {0}", RefTime));
+            Logger.Current.Debug("history.find", () => String.Format("  reftime      = {0}", RefTime));
             if (!Oldest.IsNotADateTime())
-                Logger.Debug("history.find", () => String.Format("  oldest       = {0}", Oldest));
+                Logger.Current.Debug("history.find", () => String.Format("  oldest       = {0}", Oldest));
 
             if (edge.Prices.Count == 0)
             {
-                Logger.Debug("history.find", () => "  prices map is empty for this edge");
+                Logger.Current.Debug("history.find", () => "  prices map is empty for this edge");
                 return false;
             }
 
             IEnumerable<DateTime> priceDates = edge.Prices.Keys; // [DM] The collection is ordered.
             if (priceDates.First() > RefTime)
             {
-                Logger.Debug("history.find", () => "  don't use this edge");
+                Logger.Current.Debug("history.find", () => "  don't use this edge");
                 return false;
             }
             else
@@ -309,7 +309,7 @@ namespace NLedger.Commodities
 
                 if (!Oldest.IsNotADateTime() && low < Oldest)
                 {
-                    Logger.Debug("history.find", () => "  edge is out of range");
+                    Logger.Current.Debug("history.find", () => "  edge is out of range");
                     return false;
                 }
 
@@ -320,7 +320,7 @@ namespace NLedger.Commodities
                 edge.Weight = RefTime - low;
                 edge.PricePoint = new PricePoint(low, edge.Prices[low]);
 
-                Logger.Debug("history.find", () => String.Format("  using edge at price point {0} {1}", low, edge.Prices[low]));
+                Logger.Current.Debug("history.find", () => String.Format("  using edge at price point {0} {1}", low, edge.Prices[low]));
                 return true;
             }
         }

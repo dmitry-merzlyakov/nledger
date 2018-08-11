@@ -1,13 +1,14 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -200,6 +201,23 @@ namespace NLedger.Accounts
                 XData.SelfDetails.Calculated = false;
                 XData.FamilyDetails.Gathered = false;
                 XData.FamilyDetails.Calculated = false;
+
+                if (!Value.IsNullOrEmpty(XData.FamilyDetails.Total))
+                    XData.FamilyDetails.Total = null; // [DM] - decided to replace 'new Value();' with 'null' for performance reasons
+
+                Account ancestor = this;
+
+                while(ancestor.Parent != null)
+                {
+                    ancestor = ancestor.Parent;
+                    if (ancestor.HasXData)
+                    {
+                        AccountXData xdata = ancestor.XData;
+                        xdata.FamilyDetails.Gathered = false;
+                        xdata.FamilyDetails.Calculated = false;
+                        xdata.FamilyDetails.Total = null; // [DM] - decided to replace 'new Value();' with 'null' for performance reasons
+                    }
+                }
             }
         }
 
@@ -368,6 +386,36 @@ namespace NLedger.Accounts
             return FullName;
         }
 
+        /// <summary>
+        /// Ported from bool account_t::valid()
+        /// </summary>
+        /// <returns></returns>
+        public bool Valid()
+        {
+            if (Depth > 256)
+            {
+                Logger.Current.Debug("ledger.validate", () => "account_t: depth > 256");
+                return false;
+            }
+
+            foreach(var account in Accounts.Values)
+            {
+                if (this == account)
+                {
+                    Logger.Current.Debug("ledger.validate", () => "account_t: parent refers to itself!");
+                    return false;
+                }
+
+                if (!account.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "account_t: child not valid");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private static bool HasXFlags(AccountXData xdata, bool toDisplay, bool visited)
         {
             if (toDisplay && !xdata.ToDisplay)
@@ -459,6 +507,21 @@ namespace NLedger.Accounts
             return Value.Get(account.Depth);
         }
 
+        private static Value GetDepthParent(Account account)
+        {
+            int depth = 0;
+            for (Account acct = account.Parent; acct != null && acct.Parent != null; acct = acct.Parent)
+            {
+                int count = acct.ChildrenWithFlags(true, false);
+                if (count == 0)
+                    throw new InvalidOperationException("assert(count > 0)");
+                if (count > 1 || (acct.HasXData && acct.XData.ToDisplay))
+                    depth++;
+            }
+
+            return Value.Get((long)depth);
+        }
+
         private static Value GetDepthSpacer(Account account)
         {
             int depth = 0;
@@ -531,7 +594,7 @@ namespace NLedger.Accounts
             LookupItems.MakeFunctor("amount", scope => GetWrapper((CallScope)scope, a => GetAmount(a)), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("account", scope => GetAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("account_base", scope => GetWrapper((CallScope)scope, a => Value.StringValue(a.Name)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, a => Value.Get(a) /* TODO not allowed in .Net */ ), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, a => Value.Get(a) /* [DM] Address is not allowed in .Net; return a whole entity */ ), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("any", scope => FnAny((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("all", scope => FnAll((CallScope)scope), SymbolKindEnum.FUNCTION);
 
@@ -541,6 +604,7 @@ namespace NLedger.Accounts
 
             // d
             LookupItems.MakeFunctor("depth", scope => GetWrapper((CallScope)scope, a => GetDepth(a)), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("depth_parent", scope => GetWrapper((CallScope)scope, a => GetDepthParent(a)), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("depth_spacer", scope => GetWrapper((CallScope)scope, a => GetDepthSpacer(a)), SymbolKindEnum.FUNCTION);
 
             // e

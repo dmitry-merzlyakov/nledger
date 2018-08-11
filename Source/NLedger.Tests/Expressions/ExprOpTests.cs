@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -212,6 +212,20 @@ namespace NLedger.Tests.Expressions
             ExprOp exprOp1 = new ExprOp(OpKindEnum.VALUE) { AsValue = val };
             Value result = exprOp1.AsValue;
             Assert.IsTrue(Object.ReferenceEquals(val, result));
+        }
+
+        [TestMethod]
+        public void ExprOp_Dump_ReturnsContentOfExprOp()
+        {
+            Value val = Value.StringValue("some-left-string-value");
+            ExprOp exprOp1 = new ExprOp(OpKindEnum.VALUE) { AsValue = val };
+            Assert.AreEqual("VALUE: \"some-left-string-value\" (0)", exprOp1.Dump().TrimEnd());
+
+            ExprOp exprOp2 = new ExprOp(OpKindEnum.O_OR);
+            exprOp2.Left = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(10) };
+            exprOp2.Right = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.False };
+            Assert.AreEqual("O_OR (0)\r\n VALUE: 10 (0)\r\n VALUE: false (0)", exprOp2.Dump().TrimEnd());
+
         }
 
     }

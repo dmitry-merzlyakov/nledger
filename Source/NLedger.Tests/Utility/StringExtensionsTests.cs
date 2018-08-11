@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -277,6 +277,30 @@ namespace NLedger.Tests.Utility
         public void StringExtensions_SafeSubstring_ReturnsEmptyStringForWrongIndex()
         {
             Assert.AreEqual(String.Empty, "12345".SafeSubstring(21));
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetFirstLine_ReturnsOriginalEmptyString()
+        {
+            Assert.AreEqual(null, StringExtensions.GetFirstLine(null));
+            Assert.AreEqual(String.Empty, String.Empty.GetFirstLine());
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetFirstLine_ReturnsEntireStringIfThereIsNotCrLf()
+        {
+            Assert.AreEqual("abcdef", "abcdef".GetFirstLine());
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetFirstLine_HonoursBothCrLf()
+        {
+            Assert.AreEqual("abc", "abc\rdef".GetFirstLine());
+            Assert.AreEqual("abc", "abc\ndef".GetFirstLine());
+            Assert.AreEqual("abc", "abc\r\ndef".GetFirstLine());
+            Assert.AreEqual("abc", "abc\ndef\rasd\nczxczx\r\nssfdsd".GetFirstLine());
+            Assert.AreEqual("", "\ndef".GetFirstLine());
+            Assert.AreEqual("", "\rdef".GetFirstLine());
         }
 
         private Func<char, bool> TestIsDigit = (c) => Char.IsDigit(c);

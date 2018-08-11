@@ -1,0 +1,7 @@
+﻿= @XACT and Food
+    ; Value:: 8 EUR
+    (Equity)                     $1
+
+= @POST and Dining
+    (Expenses:Food9)             $1
+        ; Value:: 9 EUR

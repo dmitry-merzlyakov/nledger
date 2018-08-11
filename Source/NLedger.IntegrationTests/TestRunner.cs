@@ -1,12 +1,13 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLedger.Abstracts;
 using NLedger.Utility;
 using System;
 using System.Collections.Generic;
@@ -34,12 +35,17 @@ namespace NLedger.IntegrationTests
 
         public void Run()
         {
-            // Tests are configured for 80 symbols in row
-            Environment.SetEnvironmentVariable("COLUMNS", "80");
 
             foreach (var testCase in TestCases)
             {
                 Console.WriteLine($"Test case: file {Path.GetFileName(testCase.FileName)}; arguments: {testCase.CommandLine}");
+
+                // Environment variables
+                var envs = new Dictionary<string, string>();
+
+                // Tests are configured for 80 symbols in row
+                envs["COLUMNS"] = "80";
+
                 try
                 {
                     var expectedExitCode = 0;
@@ -59,6 +65,13 @@ namespace NLedger.IntegrationTests
                     if (!regexHasFileOption.Success)
                         args += $" -f '{FileName}'";
 
+                    // Check whether "--pager" option is presented to add extra options for paging test
+                    if (args.Contains("--pager"))
+                    {
+                        args += " --force-pager";   // Pager test requires this option to override IsAtty=false that is default for other tests
+                        envs["nledgerPagerForceOutput"] = "true";   // Pager test needs to force writing to output to test text that is ate by the pager process
+                    }
+
                     // Check whether output is redirected to null; remove it if so
                     var ignoreStdErr = false;
                     var stdErrRedirectToNull = "2>/dev/null";
@@ -77,7 +90,9 @@ namespace NLedger.IntegrationTests
                     // Check whether arguments have escaped dollar sign; remove it if so
                     args = args.Replace(@" \$ ", " $ ");
 
-                    var envs = new Dictionary<string, string>();
+                    // Set custom environment variables
+                    foreach (var name in testCase.SetVariables.Keys)
+                        envs[name] = testCase.SetVariables[name];
 
                     using (var inReader = new StringReader(stdInContent))
                     {
@@ -87,9 +102,11 @@ namespace NLedger.IntegrationTests
                             {
                                 var main = new Main();
                                 MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
-                                MainApplicationContext.Current.TimeZoneId = "Central Standard Time"; // Equals to TZ=America/Chicago
+                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
+                                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
+                                MainApplicationContext.Current.SetEnvironmentVariables(envs);
 
-                                var exitCode = main.Execute(args, envs, inReader, outWriter, errWriter);
+                                var exitCode = main.Execute(args);
 
                                 outWriter.Flush();
                                 var output = outWriter.ToString();
@@ -131,66 +148,82 @@ namespace NLedger.IntegrationTests
             var output = new StringBuilder();
             var err = new StringBuilder();
             var directToErr = false;
+            var setVariables = new Dictionary<string,string>();
 
             for (int lineNum=0; lineNum<lines.Length; lineNum++)
             {
-                var line = lines[lineNum];
+                var line = lines[lineNum];                
 
-                if (line.StartsWith("test "))
+                if (line.StartsWith("#>") && line.Length > 2)
                 {
-                    startTestLine = lineNum;
-                    commandLine = line.Substring("test".Length).Trim();
-                    output.Clear();
-                    err.Clear();
+                    line = line.Substring(2).Trim();
+                    if (!line.StartsWith("setvar "))
+                        throw new InvalidOperationException("Only 'setvar' command is allowed");
+                    line = line.Substring("setvar ".Length).Trim();
+                    var pos = line.IndexOf('=');
+                    if (pos <= 0)
+                        throw new InvalidOperationException("Cannot find a variable name");
+                    setVariables.Add(line.Substring(0, pos).TrimEnd(), line.Substring(pos + 1).Trim());
                 }
                 else
                 {
-                    if (line.StartsWith("__ERROR__"))
+                    if (line.StartsWith("test "))
                     {
-                        directToErr = true;
+                        startTestLine = lineNum;
+                        commandLine = line.Substring("test".Length).Trim();
+                        output.Clear();
+                        err.Clear();
                     }
                     else
                     {
-                        if (line.StartsWith("end test"))
+                        if (line.StartsWith("__ERROR__"))
                         {
-                            testCases.Add(new TestCase(FileName, startTestLine, lineNum, commandLine, output.ToString(), err.ToString()));
-                            directToErr = false;
+                            directToErr = true;
                         }
                         else
                         {
-                            // If current line contains a template "$sourcepath" - adopt it to current folder
-                            var regexFileName = Regex.Match(line, @"\""\$sourcepath/([^\""]*)\""");
-                            if (regexFileName.Success)
+                            if (line.StartsWith("end test"))
                             {
-                                string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
-                                line = line.Remove(regexFileName.Index, regexFileName.Length);
-                                line = line.Insert(regexFileName.Index, "\"" + fileName + "\"");
+                                testCases.Add(new TestCase(FileName, startTestLine, lineNum, commandLine, output.ToString(), err.ToString(), setVariables));
+                                directToErr = false;
+                                setVariables.Clear();
                             }
-                            // The same but w/o quites
-                            regexFileName = Regex.Match(line, @"\$sourcepath/(.*)");
-                            if (regexFileName.Success)
-                            {
-                                string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
-                                line = line.Remove(regexFileName.Index, regexFileName.Length);
-                                line = line.Insert(regexFileName.Index, fileName);
-                            }
-
-                            // If the line contains $FILE template - replace it with current file name
-                            line = line.Replace("$FILE", FileName);
-
-                            // Special case: if error message contains a relative path in a file name, expand it
-                            var match = ErrFileName.Match(line);
-                            if (match.Success)
-                            {
-                                var idx = match.Groups["path"].Index;
-                                var len = match.Groups["path"].Length;
-                                line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + "\\");
-                            }
-
-                            if (directToErr)
-                                err.AppendLine(line);
                             else
-                                output.AppendLine(line);
+                            {
+                                // If current line contains a template "$sourcepath" - adopt it to current folder
+                                var regexFileName = Regex.Match(line, @"\""\$sourcepath/([^\""]*)\""");
+                                if (regexFileName.Success)
+                                {
+                                    string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
+                                    line = line.Remove(regexFileName.Index, regexFileName.Length);
+                                    line = line.Insert(regexFileName.Index, "\"" + fileName + "\"");
+                                }
+                                // The same but w/o quites
+                                regexFileName = Regex.Match(line, @"\$sourcepath/(.*)");
+                                if (regexFileName.Success)
+                                {
+                                    string fileName = Path.GetFullPath(regexFileName.Groups[1].Value);
+                                    line = line.Remove(regexFileName.Index, regexFileName.Length);
+                                    line = line.Insert(regexFileName.Index, fileName);
+                                }
+
+                                // If the line contains $FILE template - replace it with current file name
+                                line = line.Replace("$FILE", FileName);
+
+                                // Special case: if error message contains a relative path in a file name, expand it
+                                var match = ErrFileName.Match(line);
+                                if (match.Success)
+                                {
+                                    var idx = match.Groups["path"].Index;
+                                    var len = match.Groups["path"].Length;
+                                    line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + "\\");
+                                }
+
+                                if (directToErr)
+                                    err.AppendLine(line);
+                                else
+                                    output.AppendLine(line);
+                            }
                         }
                     }
                 }
@@ -203,7 +236,6 @@ namespace NLedger.IntegrationTests
 
         private string NormalizeOutput(string s)
         {
-            // TODO - should we consider tailing \n as a problem for .Net code? 
             return s.Replace("\r\n", "\n").Trim();
         }
 
@@ -239,5 +271,28 @@ namespace NLedger.IntegrationTests
             return s.Substring(pos, len);
         }
 
+        private class TestConsoleProvider : IVirtualConsoleProvider
+        {
+            public TestConsoleProvider(TextReader consoleInput, TextWriter consoleOutput, TextWriter consoleError)
+            {
+                ConsoleInput = consoleInput;
+                ConsoleOutput = consoleOutput;
+                ConsoleError = consoleError;
+            }
+
+            public TextWriter ConsoleError { get; private set; }
+            public TextReader ConsoleInput { get; private set; }
+            public TextWriter ConsoleOutput { get; private set; }
+            public int WindowWidth 
+            {
+                get { return 0; }
+            }
+            public void AddHistory(string readLineName, string str)
+            { }
+            public int HistoryExpand(string readLineName, string str, ref string output)
+            {
+                return 0;
+            }
+        }
     }
 }

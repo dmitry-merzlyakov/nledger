@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -12,6 +12,7 @@ using NLedger.Commodities;
 using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,7 +109,7 @@ namespace NLedger.Values
             if (value == null)
                 return new Value();
 
-            if (Object.Equals(value, default(T)) && !typeof(T).IsValueType)  // DM - TODO - concerns!!
+            if (Object.Equals(value, default(T)) && !typeof(T).IsValueType)
                 return new Value();
 
             if (typeof(T) == typeof(String) && String.IsNullOrEmpty((string)(object)value))
@@ -487,7 +488,7 @@ namespace NLedger.Values
                 Commodity commodity = CommodityPool.Current.ParsePriceExpression(isForce ? name.Remove(nameLen - 1) : name, addPrices, moment);
                 if (commodity != null)
                 {
-                    Logger.Debug("commodity.exchange", () => String.Format("Pricing for commodity: {0}", commodity.Symbol));
+                    Logger.Current.Debug("commodity.exchange", () => String.Format("Pricing for commodity: {0}", commodity.Symbol));
                     comms.Add(commodity.Referent);
                     force.Add(isForce);
                 }
@@ -499,43 +500,43 @@ namespace NLedger.Values
                 switch(Type)
                 {
                     case ValueTypeEnum.Amount:
-                        Logger.Debug("commodity.exchange", () => String.Format("We have an amount: {0}", AsAmount));
+                        Logger.Current.Debug("commodity.exchange", () => String.Format("We have an amount: {0}", AsAmount));
                         if (!force[index] && comms.Contains(AsAmount.Commodity.Referent))
                             break;
 
-                        Logger.Debug("commodity.exchange", () => "Referent doesn't match, pricing...");
+                        Logger.Current.Debug("commodity.exchange", () => "Referent doesn't match, pricing...");
                         Amount val = AsAmount.Value(moment, comm);
                         if (val != null)
                             return Value.Get(val);
 
-                        Logger.Debug("commodity.exchange", () => "Was unable to find a price");
+                        Logger.Current.Debug("commodity.exchange", () => "Was unable to find a price");
                         break;
 
                     case ValueTypeEnum.Balance:
                         Balance temp = new Balance();
                         bool rePriced = false;
 
-                        Logger.Debug("commodity.exchange", () => String.Format("We have a balance: {0}", AsBalance));
+                        Logger.Current.Debug("commodity.exchange", () => String.Format("We have a balance: {0}", AsBalance));
                         foreach (KeyValuePair<Commodity,Amount> pair in AsBalance.Amounts)
                         {
-                            Logger.Debug("commodity.exchange", () => String.Format("We have a balance amount of commodity: {0} == {1}", pair.Key.Symbol, pair.Value.Commodity.Symbol));
+                            Logger.Current.Debug("commodity.exchange", () => String.Format("We have a balance amount of commodity: {0} == {1}", pair.Key.Symbol, pair.Value.Commodity.Symbol));
                             if (!force[index] && comms.Contains(pair.Key.Referent))
                             {
                                 temp = temp.Add(pair.Value);
                             }
                             else
                             {
-                                Logger.Debug("commodity.exchange", () => "Referent doesn't match, pricing...");
+                                Logger.Current.Debug("commodity.exchange", () => "Referent doesn't match, pricing...");
                                 Amount val1 = pair.Value.Value(moment, comm);
                                 if (val1 != null)
                                 {
-                                    Logger.Debug("commodity.exchange", () => String.Format("Re-priced member amount is: {0}", val1));
+                                    Logger.Current.Debug("commodity.exchange", () => String.Format("Re-priced member amount is: {0}", val1));
                                     temp = temp.Add(val1);
                                     rePriced = true;
                                 }
                                 else
                                 {
-                                    Logger.Debug("commodity.exchange", () => "Was unable to find price");
+                                    Logger.Current.Debug("commodity.exchange", () => "Was unable to find price");
                                     temp = temp.Add(pair.Value);
                                 }
                             }
@@ -543,7 +544,7 @@ namespace NLedger.Values
 
                         if (rePriced)
                         {
-                            Logger.Debug("commodity.exchange", () => String.Format("Re-priced balance is: {0}", temp));
+                            Logger.Current.Debug("commodity.exchange", () => String.Format("Re-priced balance is: {0}", temp));
                             return Value.Get(temp);
                         }
 
@@ -622,7 +623,7 @@ namespace NLedger.Values
 
         public void PopBack()
         {
-            Validator.Verify(!IsNullOrEmpty(this));
+            Validator.Verify(() => !IsNullOrEmpty(this));
             
             if (Type != ValueTypeEnum.Sequence)
             {
@@ -644,7 +645,7 @@ namespace NLedger.Values
         {
             get
             {
-                Validator.Verify(!IsNullOrEmpty(this));
+                Validator.Verify(() => !IsNullOrEmpty(this));
                 if (Type == ValueTypeEnum.Sequence)
                     return AsSequence[index];
                 else if (index == 0)
@@ -717,7 +718,6 @@ namespace NLedger.Values
                 }
             }
 
-            // TODO - verify this approach
             switch(type)
             {
                 case ValueTypeEnum.Integer:
@@ -899,6 +899,7 @@ namespace NLedger.Values
 
         public void InPlaceRoundTo(int places)
         {
+            Logger.Current.Debug("amount.roundto", () => String.Format("=====> roundto places {0}", places));
             switch (Type)
             {
                 case ValueTypeEnum.Integer:

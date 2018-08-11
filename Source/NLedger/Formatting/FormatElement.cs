@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -55,7 +55,7 @@ namespace NLedger.Formatting
             {
                 case FormatElementEnum.STRING: sb.Append(" STRING"); break;
                 case FormatElementEnum.EXPR: sb.Append("   EXPR"); break;
-                default: throw new NotImplementedException();
+                default: throw new InvalidOperationException();
             }
 
             sb.AppendFormat("  flags: 0x{0}", IsElementAlignLeft ? 1 : 0);
@@ -66,7 +66,7 @@ namespace NLedger.Formatting
             {
                 case FormatElementEnum.STRING: sb.AppendFormat("   str: '{0}'", Data.GetValue<string>()); break;
                 case FormatElementEnum.EXPR: sb.AppendFormat("  expr: {0}", Data.Value); break;
-                default: throw new NotImplementedException();
+                default: throw new InvalidOperationException();
             }
 
             sb.AppendLine();

@@ -1,0 +1,2 @@
+﻿= expr commodity == "DM"
+    ; VALUE:: date < [Jun 2008] ? market(amount, date, exchange) : 1.44 EUR

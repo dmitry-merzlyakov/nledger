@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace NLedger.Scopus
 {
+    using Utils;
     using NValue = NLedger.Values.Value;
 
     // Ported from #define DO() - virtual void handler_thunk(const optional<string>& whence)
@@ -87,6 +88,9 @@ namespace NLedger.Scopus
             return false;
         }
 
+        /// <summary>
+        /// Ported from void process_option(const string& whence, const expr_t::func_t& opt,
+        /// </summary>
         public static void ProcessOption(string whence, ExprFunc opt, Scope scope, string arg, string name)
         {
             try
@@ -99,7 +103,11 @@ namespace NLedger.Scopus
 
                 opt(args);
             }
-            catch
+            catch (CountError)
+            {
+                throw; // DM - error_count is not std::exception and may pass by "catch" block
+            }
+            catch (Exception)
             {
                 if (!String.IsNullOrEmpty(name) && name.StartsWith("-"))
                     throw new Exception(String.Format("While parsing option '{0}'", name));
@@ -108,6 +116,9 @@ namespace NLedger.Scopus
             }
         }
 
+        /// <summary>
+        /// Ported from strings_list process_arguments
+        /// </summary>
         public static IEnumerable<string> ProcessArguments(IEnumerable<string> args, Scope scope)
         {
             bool anywhere = true;
@@ -117,9 +128,11 @@ namespace NLedger.Scopus
             while (argsEnum.MoveNext())
             {
                 string arg = argsEnum.Current;
+                Logger.Current.Debug("option.args", () => String.Format("Examining argument '{0}'", arg));
 
                 if (!anywhere || !arg.StartsWith("-"))
                 {
+                    Logger.Current.Debug("option.args", () => "  adding to list of real args");
                     remaining.Add(arg);
                     continue;
                 }
@@ -129,9 +142,12 @@ namespace NLedger.Scopus
                 {
                     if (arg.Length == 2)
                     {
+                        Logger.Current.Debug("option.args", () => "  it's a --, ending options processing");
                         anywhere = false;
                         continue;
                     }
+
+                    Logger.Current.Debug("option.args", () => "  it's an option string");
 
                     string optName;
                     string name = arg.Substring(2);
@@ -142,6 +158,7 @@ namespace NLedger.Scopus
                     {
                         optName = name.Substring(0, pos);
                         value = name.Substring(pos + 1);
+                        Logger.Current.Debug("option.args", () => String.Format("  read option value from option: {0}", value));
                     }
                     else
                     {
@@ -155,6 +172,7 @@ namespace NLedger.Scopus
                     if (opt.Item2 && value == null && argsEnum.MoveNext())
                     {
                         value = argsEnum.Current;
+                        Logger.Current.Debug("option.args", () => String.Format("  read option value from arg: {0}", value));
                         if (String.IsNullOrWhiteSpace(value))
                             throw new OptionError(String.Format(OptionError.ErrorMessage_MissingOptionArgumentFor, name));
                     }
@@ -166,6 +184,8 @@ namespace NLedger.Scopus
                 }
                 else
                 {
+                    Logger.Current.Debug("option.args", () => "  single-char option");
+
                     List<Tuple<ExprOp, bool, char>> optionQueue = new List<Tuple<ExprOp, bool, char>>(); ;
 
                     int x = 1;
@@ -186,6 +206,7 @@ namespace NLedger.Scopus
                         if (o.Item2 && argsEnum.MoveNext())
                         {
                             value = argsEnum.Current;
+                            Logger.Current.Debug("option.args", () => String.Format("  read option value from arg: {0}", value));
                             if (String.IsNullOrWhiteSpace(value))
                                 throw new OptionError(String.Format(OptionError.ErrorMessage_MissingOptionArgumentFor, o.Item3));
                         }
@@ -202,6 +223,8 @@ namespace NLedger.Scopus
             Ch = ch;
 
             WantsArg = !String.IsNullOrEmpty(Name) && Name.EndsWith("_");
+
+            Logger.Current.Debug("option.names", () => String.Format("Option: {0}", name));
         }
 
         public Option(string name, HandlerThunkDelegate onHandlerThunk, char ch = default(char))

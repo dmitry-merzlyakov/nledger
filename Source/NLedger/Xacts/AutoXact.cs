@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -14,6 +14,7 @@ using NLedger.Items;
 using NLedger.Scopus;
 using NLedger.Textual;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -140,7 +141,7 @@ namespace NLedger.Xacts
                         }
                         catch
                         {
-                            Logger.Debug("xact.extend.fail", () => "The quick matcher failed, going back to regular eval");
+                            Logger.Current.Debug("xact.extend.fail", () => "The quick matcher failed, going back to regular eval");
                             TryQuickMatch = false;
                             matchesPredicate = Predicate.Calc(boundScope).AsBoolean;
                         }
@@ -216,6 +217,26 @@ namespace NLedger.Xacts
                             if (String.IsNullOrEmpty(fullName))
                                 throw new InvalidOperationException("fullName");
 
+                            if (Logger.Current.ShowDebug("xact.extend"))
+                            {
+                                Logger.Current.Debug("xact.extend", () => String.Format("Initial post on line {0}: amount {1} (precision {2})", 
+                                    initialPost.Pos.BegLine, initialPost.Amount, initialPost.Amount.DisplayPrecision));
+
+                                if (initialPost.Amount.KeepPrecision)
+                                    Logger.Current.Debug("xact.extend", () => "  precision is kept");
+
+                                Logger.Current.Debug("xact.extend", () => String.Format("Posting on line {0}: amount {1}, amt {2} (precision {3} != {4})", 
+                                    post.Pos.BegLine, postAmount, amt, postAmount.DisplayPrecision, amt.DisplayPrecision));
+
+                                if (postAmount.KeepPrecision)
+                                    Logger.Current.Debug("xact.extend", () => "  precision is kept");
+                                if (amt.KeepPrecision)
+                                    Logger.Current.Debug("xact.extend", () => "  amt precision is kept");
+                            }
+
+                            if (String.IsNullOrEmpty(post.Account.FullName))
+                                throw new AssertionFailedError("assert(! fullname.empty());");
+
                             if (fullName.Contains("$account"))
                             {
                                 fullName = AccountRegex.Replace(fullName, initialPost.Account.FullName);
@@ -239,7 +260,10 @@ namespace NLedger.Xacts
                             // A Cleared transaction implies all of its automatic posting are cleared
                             // CPR 2012/10/23
                             if (xact.State == ItemStateEnum.Cleared)
+                            {
+                                Logger.Current.Debug("xact.extend.cleared", () => "CLEARED");
                                 newPost.State = ItemStateEnum.Cleared;
+                            }
 
                             newPost.Flags = newPost.Flags | SupportsFlagsEnum.ITEM_GENERATED;
                             newPost.Account = Journal.RegisterAccount(account.FullName, newPost, Journal.Master);
@@ -257,7 +281,10 @@ namespace NLedger.Xacts
 
                             xact.AddPost(newPost);
                             newPost.Account.AddPost(newPost);
-                                
+
+                            // Add flag so this post updates the account balance
+                            newPost.XData.Visited = true; // POST_EXT_VISITED
+
                             if (newPost.MustBalance)
                                 needsFurtherVerification = true;
 

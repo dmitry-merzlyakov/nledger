@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -151,11 +151,12 @@ namespace NLedger.Expressions
             char c;
             Length = inStream.ReadInto(out buf, out c, ch => char.IsLetterOrDigit(ch) || ch == '_');
 
-            Value = Value.Get(buf);
+            Value = Value.Get(buf, true); // [DM] It equals to 'value.set_string(buf);'
         }
 
-        // TODO - AmountParseFlagsEnum to ParseFlagsEnum
-        // Ported from void expr_t::token_t::next(std::istream& in, const parse_flags_t& pflags)
+        /// <summary>
+        /// Ported from void expr_t::token_t::next(std::istream& in, const parse_flags_t& pflags)
+        /// </summary>
         public void Next(InputTextStream inStream, AmountParseFlagsEnum pflags)
         {
             if (inStream.Eof)
@@ -240,7 +241,7 @@ namespace NLedger.Expressions
                         c = inStream.Get();
                         Length++;
                         Kind = ExprTokenKind.VALUE;
-                        Value = Value.Get(buf);
+                        Value = Value.Get(buf, true);  // [DM] It equals to 'value.set_string(buf);'
                         break;
                     }
 
@@ -413,8 +414,6 @@ namespace NLedger.Expressions
                         int result = ParseReservedWord(inStream);
                         if (char.IsLetter(c) && result == 1)
                             break;
-
-                        // TODO - insteam - stack of positions (push\pop); ParseReservedWord - return enum
 
                         // If not, rewind back to the beginning of the word to scan it
                         // again.  If the result was -1, it means no identifier was scanned

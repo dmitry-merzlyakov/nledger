@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -18,7 +18,10 @@ namespace NLedger.Utility
 {
     public class ErrorContext
     {
-        public static readonly ErrorContext Current = new ErrorContext();
+        public static ErrorContext Current
+        {
+            get { return MainApplicationContext.Current.ErrorContext; }
+        }
 
         public static string FileContext(string path, long line)
         {
@@ -110,7 +113,7 @@ namespace NLedger.Utility
         public void WriteError(string msg)
         {
             if (!String.IsNullOrEmpty(msg))
-                FileSystem.ConsoleError.WriteLine("{0}", msg);
+                VirtualConsole.Error.WriteLine("{0}", msg);
         }
 
         /// <summary>
@@ -119,7 +122,7 @@ namespace NLedger.Utility
         public void WriteWarning(string msg)
         {
             if (!String.IsNullOrEmpty(msg))
-                FileSystem.ConsoleError.WriteLine("Warning: {0}", msg);
+                VirtualConsole.Error.WriteLine("Warning: {0}", msg);
         }
 
         public void WriteError(Exception ex)

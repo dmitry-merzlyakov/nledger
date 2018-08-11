@@ -1,0 +1,5 @@
+﻿2004/09/29  Circuit City
+    Assets:Reimbursements:Company XYZ         $100.00
+    Liabilities:MasterCard                   $-100.00
+    Company XYZ:Expenses:Computer:Software    $100.00
+    Company XYZ:Accounts Payable:Your Name   $-100.00

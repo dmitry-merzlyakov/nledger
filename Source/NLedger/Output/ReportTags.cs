@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Chain;
@@ -42,20 +42,20 @@ namespace NLedger.Output
 
         public virtual void GatherMetadata(Item item)
         {
-            if (item.GetMetadata() != null)
-            {
-                foreach (KeyValuePair<string, ItemTag> data in item.GetMetadata())
-                {
-                    string tag = data.Key;
-                    if (Report.ValuesHandler.Handled && !Value.IsNullOrEmptyOrFalse(data.Value.Value))
-                        tag += ": " + data.Value.Value.ToString();
+            if (item.GetMetadata() == null)
+                return;
 
-                    int count;
-                    if (Tags.TryGetValue(tag, out count))
-                        Tags[tag] = count + 1;
-                    else
-                        Tags[tag] = 1;
-                }
+            foreach (KeyValuePair<string, ItemTag> data in item.GetMetadata())
+            {
+                string tag = data.Key;
+                if (Report.ValuesHandler.Handled && !Value.IsNullOrEmptyOrFalse(data.Value.Value))
+                    tag += ": " + data.Value.Value.ToString();
+
+                int count;
+                if (Tags.TryGetValue(tag, out count))
+                    Tags[tag] = count + 1;
+                else
+                    Tags[tag] = 1;
             }
         }
 

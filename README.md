@@ -20,6 +20,20 @@ or any platform-specific features. It lets NLedger properly work on any
 Windows (or .Net compatible) system and be easily portable 
 to any .Net platform.
 
+## Quick Start
+
+If you have just installed NLedger and want to know what to do next, you can try:
+
+- Run NLedger in a command line:
+  - Click *.Net Ledger Folder* icon in the main menu;
+  - Type *cmd* in the address bar of Windows Explorer window;
+  - In the command line window, type *ledger --version* - NLedger should show its version;
+  - Type *ledger bal -f test/input/drewr3.dat* - you will get a balance for one of example files that are in *test\input* folder;
+- Run NLedger Live Demo:
+  - Click *.Net Ledger Live Demo* icon in the main menu;
+  - Observe the documentation and try all examples in action;
+- Read this file to the end, *Ledger 3 Documentation*, *.Net Ledger Guide* and try to find the use of this tool.
+
 ## Features
 
 NLedger thoroughly derives all valuable Ledger capabilities. Basically,
@@ -73,7 +87,7 @@ and keep yourself in loop with [Ledger Community](https://www.ledger-cli.org/con
 *So, if Ledger is so nice, why NLedger?* Here is the answer or, in other words, the project mission :)
 
 The first use of NLedger is enabling Ledger features in Windows world.
-Even as a developer, I found it not easy to run Ledger 3.1.1 on Windows 10 and,
+Even as a developer, I found it was not easy to run Ledger 3.1.1 on Windows 10 and,
 I believe, it would be unsolvable problem for regular people.
 
 I would like to let everyone install NLedger by one click and use it exactly
@@ -93,18 +107,15 @@ library that gives seamless access to the same functions for external .Net
 applications.
 
 - Current **Project Status** is:
-  - Ported from [Ledger 3.1.1](https://github.com/ledger/ledger), branch Next, commit b414544; 2017/02/17
+  - Ported from [Ledger 3.1.1](https://github.com/ledger/ledger), branch Next, commit fd486a59; 2018/4/9
   - Core functionality is ported; command line utility is available;
   - Ledger testing framework is ported; 
   - Ledger tests are passed to some extend:
-    - 98% (659) test cases passed;
-    - 13 test cases are ignored because of known limitations;
+    - 98% (650 out of 662) test cases passed;
+    - 12 test cases are ignored because of known limitations;
     - 0 failed.
 - **Current limitations** (technical restrictions that will be addressed by next releases) are:
   - No Python integration. Ledger tests that require Python are disabled;
-  - NLedger uses Decimal for arithmetic calculations. It limits the quantity of digits in a number
-      with about 30 positions. Ported Amount unit tests are adopted to less number of digits;
-  - No "*cat*" pager on Windows. Corresponded Ledger test is disabled till further decision;
   - DateTime parser on .Net has less specific error messages and does not allow
       to detect the same mistakes as Ledger does. Corresponded Ledger test is disabled till further decision;
   - It was found that in some conditions the original Ledger produced incorrect 
@@ -119,15 +130,23 @@ applications.
 ## Installation
 
 Because of .Net nature, NLedger can run on any system that supports .Net Framework.
-However, its testing framework and installation scripts use PowerShell, so
+However, its testing framework and helper tools use PowerShell, so
 you can run Ledger tests only if your system supports PowerShell as well.
 
 ### System Requirements
 
 - .Net Framework 4.0 or higher (4.6.1 is recommended). It is required component to run the command line application;
-- PowerShell 4.0 or higher (5.0 is recommended). It is needed to run testing framework and installation scripts.
+- PowerShell 4.0 or higher (5.0 is recommended). It is needed to run testing framework and other tools.
 
 Therefore, PowerShell is not required component, you can still use NLedger, but ability to run PowerShell scripts makes your life easier.
+
+### Install from NLedger Installation Package
+
+- Download the latest NLedger installation package (MSI file) from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases);
+- Run the installer and follow instructions on the screen;
+- Review *nledger.html* when installation finishes.
+
+*Note: the installer will request elevated permissions to call NGen.*
 
 ### Install from Binary Package
 
@@ -192,4 +211,4 @@ in the smallest detail. Thought it was quite big challenge for me
 
 The code is licensed under 3-clause [FreeBSD license](https://github.com/dmitry-merzlyakov/nledger/blob/master/LICENSE).
 
-(c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

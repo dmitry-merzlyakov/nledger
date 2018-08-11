@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -16,7 +16,7 @@ namespace NLedger.IntegrationTests
 {
     public sealed class TestCase
     {
-        public TestCase (string fileName, int startLine, int endLine, string commandLine, string expectedOutput, string expectedError)
+        public TestCase (string fileName, int startLine, int endLine, string commandLine, string expectedOutput, string expectedError, IDictionary<string,string> setVariables)
         {
             if (String.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException("fileName");
@@ -37,6 +37,7 @@ namespace NLedger.IntegrationTests
             CommandLine = commandLine;
             ExpectedOutput = expectedOutput;
             ExpectedError = expectedError;
+            SetVariables = (setVariables ?? EmptyDictionary).ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
         public string FileName { get; private set; }
@@ -47,5 +48,8 @@ namespace NLedger.IntegrationTests
         public string CommandLine { get; private set; }
         public string ExpectedOutput { get; private set; }
         public string ExpectedError { get; private set; }
+        public IDictionary<string,string> SetVariables { get; private set; }
+
+        private static IDictionary<string, string> EmptyDictionary = new Dictionary<string, string>();
     }
 }

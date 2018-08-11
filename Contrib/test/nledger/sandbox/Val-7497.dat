@@ -1,0 +1,2 @@
+﻿= expr commodity == "miles" and date >= [2007] and date < [2008]
+    ; VALUE:: market($1.05, date, exchange)

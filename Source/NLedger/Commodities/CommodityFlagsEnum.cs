@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -30,6 +30,7 @@ namespace NLedger.Commodities
         COMMODITY_SAW_ANNOTATED          = 0x200,
         COMMODITY_SAW_ANN_PRICE_FLOAT    = 0x400,
         COMMODITY_SAW_ANN_PRICE_FIXATED  = 0x800,
-        COMMODITY_STYLE_TIME_COLON       = 0x1000
+        COMMODITY_STYLE_TIME_COLON       = 0x1000,
+        COMMODITY_STYLE_NO_MIGRATE       = 0x2000
     }
 }

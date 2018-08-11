@@ -1,3 +1,43 @@
+## 0.7 (2018-08-12)
+
+### Release Information
+
+Code and feature completion; continuous integration.
+
+### Features
+
+- Completed all TRACE, DEBUG and INFO messages;
+- Completed all VERIFY assertions;
+- Added arbitrary precision arithmetic to deal with Amount
+  quantities; original Ledger tests that validate big numbers are passed;
+  performance degradation is not detected. Decimal arithmetic is still 
+  available as a compilation option;
+- Completed "download" and "price-db" features; added corresponded 
+  tests (test/nledger/opt-download) and example scripts (Extras/getQuote);
+- Added support of "--help" option; it shows Ledger Man Pages in a default browser;
+- Added support of external pagers ("--pager" option);
+- Code is synced with latest changed in Ledger code base (up to 4/9/2018);
+- Added continuous integration for a development repository ("next-dev");
+  build logs and current status are in the file _CI.BuildLog.md;
+- Added interactive Live Demo web console;
+- Added Setup console that manages application settings;
+- Added MSI installation package;
+
+### Known Issues
+
+Listed in ProductInfo.xml
+
+### Bug Fixing
+
+*None* public bug fixing requests at the memoment.
+
+- Fixed handling a category name for "debug" option;
+- Fixed showing prompt in interactive mode;
+
+### Breaking Changes
+
+*None*
+
 ## 0.6 (2017-12-29)
 
 ### Release Information
@@ -37,7 +77,7 @@ that will be addressed by further releases:
   (see the test *regress\BF3C1F82.test*)
 - Some file error messages might be differ (NLedger always writes absolute paths in messages).
 
-### Big Fixing
+### Bug Fixing
 
 *None* at the moment of the first public release.
 
@@ -45,4 +85,4 @@ that will be addressed by further releases:
 
 *None* at the moment of the first public release.
 
-(c) 2017 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

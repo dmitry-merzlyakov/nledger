@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -16,6 +16,7 @@ using System.IO;
 using NLedger.Amounts;
 using NLedger.Values;
 using NLedger.Scopus;
+using NLedger.Utils;
 
 namespace NLedger.Expressions
 {
@@ -88,15 +89,19 @@ namespace NLedger.Expressions
             else
             {
                 pathname = "<stdin>";
-                reader = FileSystem.ConsoleInput;
+                reader = VirtualConsole.Input;
             }
 
             SymbolScope filelocals = new SymbolScope(args);
             int lineNum = 0;
             string line;
+            int pos = 0;
+            int endpos = 0;
 
             while ((line = reader.ReadLine()) != null)
             {
+                pos = endpos;
+                endpos = line.Length + Environment.NewLine.Length;
                 lineNum++;
 
                 line = line.TrimStart();
@@ -109,7 +114,7 @@ namespace NLedger.Expressions
                     catch
                     {
                         ErrorContext.Current.AddErrorContext(String.Format("While parsing value expression on line {0}:", lineNum));
-                        ErrorContext.Current.AddErrorContext(ErrorContext.SourceContext(pathname, /*TODO*/0, /*TODO*/0, "> "));
+                        ErrorContext.Current.AddErrorContext(ErrorContext.SourceContext(pathname, pos, endpos, "> "));
                     }
                 }
             }
@@ -249,7 +254,7 @@ namespace NLedger.Expressions
                         ErrorContext.Current.AddErrorContext("While evaluating value expression:");
                         ErrorContext.Current.AddErrorContext(ErrorContext.OpContext(Op, locus));
 
-                        if (Logger.Current.LogLevel >= LogLevelEnum.LOG_INFO)
+                        if (Logger.Current.ShowInfo())
                         {
                             ErrorContext.Current.AddErrorContext("The value expression tree was:");
                             ErrorContext.Current.AddErrorContext(Op.Dump());

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -13,6 +13,7 @@ using NLedger.Items;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -123,6 +124,7 @@ namespace NLedger.Csv
                             bool found = false;
                             foreach (Tuple<Mask,string> value in Context.Journal.PayeeAliasMappings)
                             {
+                                Logger.Current.Debug("csv.mappings", () => String.Format("Looking for payee mapping: {0}", value.Item1));
                                 if (value.Item1.Match(field))
                                 {
                                     xact.Payee = value.Item2;
@@ -314,6 +316,8 @@ namespace NLedger.Csv
                     Index.Add(CsvHeadersEnum.FIELD_NOTE);
                 else
                     Index.Add(CsvHeadersEnum.FIELD_UNKNOWN);
+
+                Logger.Current.Debug("csv.parse", () => String.Format("Header field: {0}", field));
             }
         }
 

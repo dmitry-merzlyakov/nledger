@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -23,6 +23,7 @@ using NLedger.Print;
 using NLedger.Querying;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -184,7 +185,9 @@ namespace NLedger.Scopus
         public Report(Report report) : this()
         {
             Session = report.Session;
+            OutputStream = report.OutputStream;
             Terminus = report.Terminus;
+            BudgetFlags = report.BudgetFlags;
         }
 
         public override string Description
@@ -346,7 +349,7 @@ namespace NLedger.Scopus
         public void QuickClose()
         {
             if (OutputStream != null)
-                OutputStream.Close();
+                OutputStream = FileSystem.OutputStreamClose(OutputStream);
         }
 
         public string ReportOptions()
@@ -362,9 +365,9 @@ namespace NLedger.Scopus
             // #if HAVE_ISATTY
             if (!ForceColorHandler.Handled)
             {
-                if (!NoColorHandler.Handled && FileSystem.IsAtty())
+                if (!NoColorHandler.Handled && VirtualConsole.IsAtty())
                     ColorHandler.On("?normalize");
-                if (ColorHandler.Handled && !FileSystem.IsAtty())
+                if (ColorHandler.Handled && !VirtualConsole.IsAtty())
                     ColorHandler.Off();
             }
             else
@@ -374,7 +377,7 @@ namespace NLedger.Scopus
 
             if (!ForcePagerHandler.Handled)
             {
-                if (PagerHandler.Handled && !FileSystem.IsAtty())
+                if (PagerHandler.Handled && !VirtualConsole.IsAtty())
                     PagerHandler.Off();
             }
             // #endif
@@ -490,7 +493,7 @@ namespace NLedger.Scopus
                 cols = long.Parse(ColumnsHandler.Value);
             else
             {
-                string columns = Environment.GetEnvironmentVariable("COLUMNS");
+                string columns = VirtualEnvironment.GetEnvironmentVariable("COLUMNS");
                 if (!string.IsNullOrEmpty(columns))
                     cols = long.Parse(columns);
                 else
@@ -502,11 +505,19 @@ namespace NLedger.Scopus
 
             if (cols > 0)
             {
+                Logger.Current.Debug("auto.columns", () => String.Format("cols = {0}", cols));
+
                 long dateWidth = DateWidthHandler.Handled ? long.Parse(DateWidthHandler.Str()) : TimesCommon.Current.FormatDate(TimesCommon.Current.CurrentDate, FormatTypeEnum.FMT_PRINTED).Length;
                 long payeeWidth = PayeeWidthHandler.Handled ? long.Parse(PayeeWidthHandler.Str()) : (long)(((double)cols) * 0.263157);
                 long accountWidth = AccountWidthHandler.Handled ? long.Parse(AccountWidthHandler.Str()) : (long)(((double)cols) * 0.302631);
                 long amountWidth = AmountWidthHandler.Handled ? long.Parse(AmountWidthHandler.Str()) : (long)(((double)cols) * 0.157894);
                 long totalWidth = TotalWidthHandler.Handled ? long.Parse(TotalWidthHandler.Str()) : amountWidth;
+
+                Logger.Current.Debug("auto.columns", () => String.Format("date_width    = {0}", dateWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("payee_width   = {0}", payeeWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("account_width = {0}", accountWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("amount_width  = {0}", amountWidth));
+                Logger.Current.Debug("auto.columns", () => String.Format("total_width   = {0}", totalWidth));
 
                 if (!DateWidthHandler.Handled && !PayeeWidthHandler.Handled && !AccountWidthHandler.Handled && !AmountWidthHandler.Handled && !TotalWidthHandler.Handled)
                 {
@@ -516,6 +527,7 @@ namespace NLedger.Scopus
 
                     while (total > cols && accountWidth > 5 && payeeWidth > 5)
                     {
+                        Logger.Current.Debug("auto.columns", () => "adjusting account down");
                         if (total > cols)
                         {
                             --accountWidth;
@@ -531,6 +543,7 @@ namespace NLedger.Scopus
                             --payeeWidth;
                             --total;
                         }
+                        Logger.Current.Debug("auto.columns", () => String.Format("account_width now = {0}", accountWidth));
                     }
                 }
 
@@ -580,20 +593,34 @@ namespace NLedger.Scopus
             Query query = new Query(args, WhatToKeep());
 
             if (query.HasQuery(QueryKindEnum.QUERY_LIMIT))
+            {
                 LimitHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_LIMIT));
+                Logger.Current.Debug("report.predicate", () => String.Format("Limit predicate   = {0}", LimitHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_ONLY))
+            {
                 OnlyHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_ONLY));
+                Logger.Current.Debug("report.predicate", () => String.Format("Only predicate    = {0}", OnlyHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_SHOW))
+            {
                 DisplayHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_SHOW));
+                Logger.Current.Debug("report.predicate", () => String.Format("Display predicate = {0}", DisplayHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_BOLD))
+            {
                 BoldIfHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_BOLD));
+                Logger.Current.Debug("report.predicate", () => String.Format("Bolding predicate = {0}", BoldIfHandler.Str()));
+            }
 
             if (query.HasQuery(QueryKindEnum.QUERY_FOR))
             {
                 PeriodHandler.On(whence, query.GetQuery(QueryKindEnum.QUERY_FOR));
+                Logger.Current.Debug("report.predicate", () => String.Format("Report period     = {0}", PeriodHandler.Str()));
+
                 NormalizePeriod();   // it needs normalization
             }
         }
@@ -704,6 +731,7 @@ namespace NLedger.Scopus
 
                 if (Report.DisplayHandler.Handled)
                 {
+                    Logger.Current.Debug("report.predicate", () => String.Format("Display predicate = {0}", Report.DisplayHandler.Str()));
                     if (!Report.SortHandler.Handled)
                     {
                         BasicAccountsIterator iter = new BasicAccountsIterator(Report.Session.Journal.Master);
@@ -811,7 +839,7 @@ namespace NLedger.Scopus
 
             if (arg0.Type == ValueTypeEnum.String)
             {
-                Amount tmp = new Amount(BigInt.One, CommodityPool.Current.FindOrCreate(arg0.AsString));
+                Amount tmp = new Amount(1, CommodityPool.Current.FindOrCreate(arg0.AsString));
                 arg0 = Value.Get(tmp);
             }
 
@@ -1027,6 +1055,13 @@ namespace NLedger.Scopus
         public Value FnCommodity(CallScope args)
         {
             return Value.Get(args.Get<Amount>(0).Commodity.Symbol);
+        }
+
+        public Value FnClearCommodity(CallScope args)
+        {
+            Amount amt = args.Get<Amount>(0);
+            amt.ClearCommodity();
+            return Value.Get(amt);
         }
 
         /// <summary>
@@ -1426,12 +1461,12 @@ namespace NLedger.Scopus
 
             BudgedFormatHandler = Options.Add(new Option(OptionBudgetFormat));
             BudgedFormatHandler.On(null,
-               "%(justify(scrub(get_at(display_total, 0)), 12, -1, true, color))" +
-               " %(justify(-scrub(get_at(display_total, 1)), 12, " +
-               "           12 + 1 + 12, true, color))" +
-               " %(justify(scrub(get_at(display_total, 1) + " +
-               "                 get_at(display_total, 0)), 12, " +
-               "           12 + 1 + 12 + 1 + 12, true, color))" +
+               "%(justify(scrub(get_at(display_total, 0)), int(amount_width), -1, true, color))" +
+               " %(justify(-scrub(get_at(display_total, 1)), int(amount_width), " +
+               "           int(amount_width) + 1 + int(amount_width), true, color))" +
+               " %(justify(scrub((get_at(display_total, 1) || 0) + " +
+               "                 (get_at(display_total, 0) || 0)), int(amount_width), " +
+               "           int(amount_width) + 1 + int(amount_width) + 1 + int(amount_width), true, color))" +
                " %(ansify_if(" +
                "   justify((get_at(display_total, 1) ? " +
                "            (100% * quantity(scrub(get_at(display_total, 0)))) / " +
@@ -1736,8 +1771,10 @@ namespace NLedger.Scopus
             OutputHandler = Options.Add(new Option(OptionOutput));
 
             // setenv() is not available on WIN32
-            // DM - TODO - point to add an onw implementation of LESS
             PagerHandler = Options.Add(new Option(OptionPager));
+            var defaultPagerPath = VirtualPager.GetDefaultPagerPath();
+            if (!String.IsNullOrEmpty(defaultPagerPath) && VirtualConsole.IsAtty())
+                PagerHandler.On(null, defaultPagerPath);
 
             NoPagerHandler = Options.Add(new Option(OptionNoPager, (o, w) =>
             {
@@ -2185,6 +2222,7 @@ namespace NLedger.Scopus
             LookupItems.MakeFunctor("cyan", scope => FnCyan((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("commodity", scope => FnCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("ceiling", scope => FnCeiling((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("clear_commodity", scope => FnClearCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             LookupItems.MakeFunctor("display_amount", scope => FnDisplayAmount((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("display_total", scope => FnDisplayTotal((CallScope)scope), SymbolKindEnum.FUNCTION);

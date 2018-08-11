@@ -1,0 +1,13 @@
+﻿2004/03/20 Contributions
+    Assets:Checking                    $500.00
+    Income:Donations
+
+2004/03/25 Distribution of donations
+    [Funds:School]                     $300.00
+    [Funds:Building]                   $200.00
+    [Assets:Checking]                 $-500.00
+
+2004/03/25 Payment for books (paid from Checking)
+    Expenses:Books                    $100.00
+    Assets:Checking                  $-100.00
+    (Funds:School)                   $-100.00

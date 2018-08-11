@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Chain;
@@ -11,6 +11,7 @@ using NLedger.Expressions;
 using NLedger.Formatting;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using NLedger.Xacts;
 using System;
@@ -46,6 +47,9 @@ namespace NLedger.Org
             Report.OutputStream.Flush();
         }
 
+        /// <summary>
+        /// Ported from void posts_to_org_table::operator()(post_t& post)
+        /// </summary>
         public override void Handle(Post post)
         {
             if (!post.HasXData || !post.XData.Displayed)
@@ -125,7 +129,7 @@ namespace NLedger.Org
                             {
                                 if (i.Current.Value != null)
                                 {
-                                    Logger.Debug(DebugOrgNextAmount, () => String.Format("next_amount = {0}", i.Current.Value));
+                                    Logger.Current.Debug(DebugOrgNextAmount, () => String.Format("next_amount = {0}", i.Current.Value));
                                     callScope.Define(SymbolKindEnum.FUNCTION, "next_amount", ExprOp.WrapValue(Value.Get(i.Current.Value)));
                                     i.MoveNext();
                                     assigned = true;
@@ -145,10 +149,10 @@ namespace NLedger.Org
                             {
                                 if (j.Current.Value != null)
                                 {
-                                    Logger.Debug(DebugOrgNextTotal, () => String.Format("next_total = {0}", j.Current.Value));
+                                    Logger.Current.Debug(DebugOrgNextTotal, () => String.Format("next_total = {0}", j.Current.Value));
                                     callScope.Define(SymbolKindEnum.FUNCTION, "next_total", ExprOp.WrapValue(Value.Get(j.Current.Value)));
                                     j.MoveNext();
-                                    Logger.Debug(DebugOrgNextTotal, () => String.Format("2.next_total = {0}", callScope.Lookup(SymbolKindEnum.FUNCTION, "next_total").AsValue));
+                                    Logger.Current.Debug(DebugOrgNextTotal, () => String.Format("2.next_total = {0}", callScope.Lookup(SymbolKindEnum.FUNCTION, "next_total").AsValue));
                                     assigned = true;
                                 }
                                 else

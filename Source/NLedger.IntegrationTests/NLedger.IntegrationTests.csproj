@@ -67,6 +67,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TestSetManual.tt</DependentUpon>
     </Compile>
+    <Compile Include="TestSetNLedger.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestSetNLedger.tt</DependentUpon>
+    </Compile>
     <Compile Include="TestSetRegress.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -86,6 +91,10 @@
     <Compile Include="unit\TestValue.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestSetNLedger.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TestSetNLedger.cs</LastGenOutput>
+    </Content>
     <Content Include="TestSetRegress.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TestSetRegress.cs</LastGenOutput>
@@ -114,6 +123,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="..\..\Contrib\Extras\cat.cmd">
+      <Link>cat.cmd</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\baseline\cmd-accounts.test">
       <Link>test\baseline\cmd-accounts.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1066,6 +1079,18 @@
       <Link>test\manual\transaction-status-4.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\nledger\getquote.cmd">
+      <Link>test\nledger\getquote.cmd</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\nledger\opt-download.test">
+      <Link>test\nledger\opt-download.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\nledger\pricedb.dat">
+      <Link>test\nledger\pricedb.dat</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\012ADB60.test">
       <Link>test\regress\012ADB60.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1160,6 +1185,14 @@
     </None>
     <None Include="..\..\Contrib\test\regress\1159.test">
       <Link>test\regress\1159.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1182_1.test">
+      <Link>test\regress\1182_1.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1182_2.test">
+      <Link>test\regress\1182_2.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\regress\1187_1.test">
@@ -1724,6 +1757,26 @@
     </None>
     <None Include="..\..\Contrib\test\regress\FDFBA165.test">
       <Link>test\regress\FDFBA165.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\fix-missing-trans-in-last-budget-period.test">
+      <Link>test\regress\fix-missing-trans-in-last-budget-period.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\GH520.test">
+      <Link>test\regress\GH520.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\market-group-by.test">
+      <Link>test\regress\market-group-by.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\total-1.test">
+      <Link>test\regress\total-1.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\total-2.test">
+      <Link>test\regress\total-2.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\regress\xact_code.dat">

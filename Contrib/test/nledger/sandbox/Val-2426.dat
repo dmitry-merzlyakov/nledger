@@ -1,0 +1,5 @@
+﻿define var_name=$100
+
+2011/12/01 Test
+    Expenses  (var_name*4)
+    Assets

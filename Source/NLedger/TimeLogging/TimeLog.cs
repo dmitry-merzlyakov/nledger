@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -12,6 +12,7 @@ using NLedger.Items;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace NLedger.TimeLogging
 
             Amount amt = new Amount();
             amt.Parse(ref buf);
-            Validator.Verify(amt.Valid());
+            Validator.Verify(() => amt.Valid());
 
             Post post = new Post(inEvent.Account, amt);
             post.Flags |= SupportsFlagsEnum.POST_VIRTUAL;
@@ -57,6 +58,9 @@ namespace NLedger.TimeLogging
                 throw new ParseError(ParseError.ParseError_FailedToRecordOutTimelogTransaction);
         }
 
+        /// <summary>
+        /// Ported from std::size_t clock_out_from_timelog
+        /// </summary>
         public static int ClockOutFromTimeLog(IList<TimeXact> timeXacts, TimeXact outEvent, ParseContext context)
         {
             TimeXact evnt;
@@ -111,9 +115,9 @@ namespace NLedger.TimeLogging
 
                 while(begin.Checkin < outEvent.Checkin)
                 {
-                    Logger.Debug(DebugTimeLog, () => String.Format("begin.checkin: {0}", begin.Checkin));
+                    Logger.Current.Debug(DebugTimeLog, () => String.Format("begin.checkin: {0}", begin.Checkin));
                     DateTime daysEnd = begin.Checkin.Date.AddDays(1);
-                    Logger.Debug(DebugTimeLog, () => String.Format("days_end: {0}", daysEnd));
+                    Logger.Current.Debug(DebugTimeLog, () => String.Format("days_end: {0}", daysEnd));
 
                     if (outEvent.Checkin <= daysEnd)
                     {
@@ -125,7 +129,7 @@ namespace NLedger.TimeLogging
                     {
                         TimeXact end = new TimeXact(outEvent);
                         end.Checkin = daysEnd;
-                        Logger.Debug(DebugTimeLog, () => String.Format("end.checkin: {0}", end.Checkin));
+                        Logger.Current.Debug(DebugTimeLog, () => String.Format("end.checkin: {0}", end.Checkin));
                         CreateTimelogXact(begin, end, context);
                         ++xactCount;
 
@@ -171,7 +175,7 @@ namespace NLedger.TimeLogging
 
                 foreach(Account account in accounts)
                 {
-                    Logger.Debug(DebugTimeLog, () => String.Format("Clocking out from account {0}", account.FullName));
+                    Logger.Current.Debug(DebugTimeLog, () => String.Format("Clocking out from account {0}", account.FullName));
                     Context.Count += ClockOutFromTimeLog(TimeXacts, new TimeXact(null, TimesCommon.Current.CurrentTime, account), Context);
                 }
                 if (TimeXacts.Any())

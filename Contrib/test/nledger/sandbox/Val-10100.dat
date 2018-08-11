@@ -1,0 +1,12 @@
+﻿; This is the journal data
+year 2014
+12/24 (C0d3) Santa Claus
+  Assets:Bank         ¤ -150,00
+  Expenses:Presents
+
+; The following line specifies the ledger command-line options for this test and
+; everything between the next line and `end test` specifies the expected output
+test reg --payee=code
+14-Dec-24 C0d3                  Assets:Bank               ¤ -150,00    ¤ -150,00
+14-Dec-24 C0d3                  Expenses:Presents          ¤ 150,00            0
+end test

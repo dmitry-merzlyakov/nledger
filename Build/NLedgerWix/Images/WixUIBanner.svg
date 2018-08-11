@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg1985"
+   width="1252.0635"
+   height="147.30159"
+   viewBox="0 0 1252.0635 147.30159"
+   sodipodi:docname="WixUIBanner.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:export-filename="D:\DEV\DMVS1\NLedger\Build\NLedgerWix\Images\WixUIBanner.png"
+   inkscape:export-xdpi="37.84"
+   inkscape:export-ydpi="37.84">
+  <metadata
+     id="metadata1991">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs1989">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2105">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop2101" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop2103" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2105"
+       id="linearGradient2109"
+       x1="1104.6248"
+       y1="73.395065"
+       x2="1237.7773"
+       y2="73.395065"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview1987"
+     showgrid="false"
+     inkscape:zoom="0.57505072"
+     inkscape:cx="568.93813"
+     inkscape:cy="82.380972"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1985" />
+  <ellipse
+     style="display:inline;fill:#000000;stroke:url(#linearGradient2109);stroke-width:15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path4624"
+     cx="1171.201"
+     cy="73.395065"
+     rx="59.076244"
+     ry="58.768833" />
+  <g
+     id="g1582"
+     transform="matrix(0.31790025,0,0,0.32591087,1105.6284,32.352512)"
+     style="display:inline;stroke:#f9f9f9;stroke-width:2.85619402">
+    <circle
+       style="fill:#f9f9f9;stroke:#f9f9f9;stroke-width:10.79506493;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;paint-order:fill markers stroke"
+       id="circle951"
+       cx="206.14735"
+       cy="126.36642"
+       r="177.30565" />
+    <circle
+       r="170.23459"
+       cy="126.36642"
+       cx="206.14735"
+       id="path828-2"
+       style="fill:#f9f9f9;stroke:#f9f9f9;stroke-width:10.79506493;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;paint-order:fill markers stroke" />
+    <path
+       sodipodi:nodetypes="csssc"
+       inkscape:connector-curvature="0"
+       id="path828-7-6"
+       d="m 206.14346,-43.737987 c 113.15777,25.758886 107.38197,157.865777 0.10961,171.118427 -130.794049,16.15858 -94.03329,169.09073 -0.10961,169.09073 93.92349,0 170.10825,-76.17739 170.10825,-170.10089 0,-93.92349 -76.18476,-170.108267 -170.10825,-170.108267 z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#f9f9f9;stroke-width:10.79506493;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <text
+       id="text907"
+       y="101.24107"
+       x="82.575539"
+       style="font-style:normal;font-weight:normal;font-size:105.47742462px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#f9f9f9;stroke-width:2.85619378"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke:#f9f9f9;stroke-width:2.85619378"
+         y="101.24107"
+         x="82.575539"
+         id="tspan905"
+         sodipodi:role="line">DR</tspan></text>
+    <text
+       id="text907-5"
+       y="237.44131"
+       x="156.7693"
+       style="font-style:normal;font-weight:normal;font-size:105.47742462px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#f9f9f9;stroke-width:2.85619378"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke:#f9f9f9;stroke-width:2.85619378"
+         y="237.44131"
+         x="156.7693"
+         id="tspan905-1"
+         sodipodi:role="line">CR</tspan></text>
+  </g>
+  <rect
+     style="opacity:0.98000004;fill:none;stroke:none;stroke-width:0.14201215;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect2111"
+     width="1250.8136"
+     height="147.21017"
+     x="0.3848874"
+     y="0.095899098" />
+</svg>

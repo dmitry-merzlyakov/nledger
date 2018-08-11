@@ -1,12 +1,13 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLedger.Abstracts.Impl;
 using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Annotate;
@@ -30,16 +31,6 @@ namespace NLedger.Tests.Scopus
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class SessionTests : TestFixture
     {
-        public override void CustomTestInitialize()
-        {
-            SavedConsoleInput = FileSystem.ConsoleInput;
-        }
-
-        public override void CustomTestCleanup()
-        {
-            FileSystem.SetConsoleInput(SavedConsoleInput);
-        }
-
         [TestMethod]
         public void Session_Constructor_SetsDefaultProperties()
         {
@@ -88,8 +79,10 @@ namespace NLedger.Tests.Scopus
         [TestMethod]
         public void Session_ReadData_UsesInputStreamIfFileNameIsMinus()
         {
+            var input = new System.IO.StringReader(Session_ReadJournalFromString_Example);
+            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(input));
+
             Scope.DefaultScope = new EmptyScope();
-            FileSystem.SetConsoleInput(new System.IO.StringReader(Session_ReadJournalFromString_Example));
             Session session = new Session();
             session.FileHandler.DataFiles.Add("-");
             int xacts = session.ReadData(null);
@@ -211,7 +204,7 @@ namespace NLedger.Tests.Scopus
 
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushBack(val);
-            Assert.AreEqual(23, session.FnStr(scope1).AsAmount.Quantity.ToLong());  // TODO - validate this case
+            Assert.AreEqual(23, session.FnStr(scope1).AsAmount.Quantity.ToLong());
         }
 
         [TestMethod]
@@ -229,7 +222,7 @@ namespace NLedger.Tests.Scopus
             Amount price = new Amount(5);
             Annotation annotation = new Annotation(price);
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, annotation);
-            Amount amount2 = new Amount(BigInt.FromInt(10), annotatedCommodity);  // With price
+            Amount amount2 = new Amount(10, annotatedCommodity);  // With price
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
@@ -251,7 +244,7 @@ namespace NLedger.Tests.Scopus
             Date date = (Date)DateTime.Now.Date;
             Annotation annotation = new Annotation() { Date = date };
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, annotation);
-            Amount amount2 = new Amount(BigInt.FromInt(10), annotatedCommodity);  // With date
+            Amount amount2 = new Amount(10, annotatedCommodity);  // With date
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
@@ -273,7 +266,7 @@ namespace NLedger.Tests.Scopus
             string tag = "my-tag";
             Annotation annotation = new Annotation() { Tag = tag };
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, annotation);
-            Amount amount2 = new Amount(BigInt.FromInt(10), annotatedCommodity);  // With date
+            Amount amount2 = new Amount(10, annotatedCommodity);  // With date
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
@@ -349,8 +342,6 @@ namespace NLedger.Tests.Scopus
             reportOptions = session.ReportOptions();
             Assert.AreEqual(Session_ReportOptions_Example, reportOptions.TrimEnd());
         }
-
-        private System.IO.TextReader SavedConsoleInput;
 
         private const string Session_ReportOptions_Example = "            check-payees                                             whence";
         private const string Session_ReadJournalFromString_Example = @"2009/10/30 (DEP) Pay day!

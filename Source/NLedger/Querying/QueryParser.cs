@@ -1,14 +1,15 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Annotate;
 using NLedger.Expressions;
 using NLedger.Textual;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -145,7 +146,9 @@ namespace NLedger.Querying
                                 }
 
                                 ExprOp mask = new ExprOp(OpKindEnum.VALUE);
+                                Logger.Current.Debug("query.mask", () => String.Format("Mask from string: {0}", tok.Value));
                                 mask.AsValue = Value.Get(new Mask(tok.Value));
+                                Logger.Current.Debug("query.mask", () => String.Format("Mask is: {0}", mask.AsValue.AsMask.Str()));
 
                                 node.Left = ident;
                                 node.Right = mask;

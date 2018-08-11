@@ -1,0 +1,1 @@
+﻿define ten_dollars(s, date, t) = market($10, date, t)

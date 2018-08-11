@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -160,7 +160,7 @@ namespace NLedger.Tests.Values
             Commodity commodity = CommodityPool.Current.Find(commodityName) ?? CommodityPool.Current.Create(commodityName);
 
             IntegerValueStorage storage1 = new IntegerValueStorage(100);
-            AmountValueStorage storage2 = new AmountValueStorage(new Amount(BigInt.FromLong(200), commodity));
+            AmountValueStorage storage2 = new AmountValueStorage(new Amount(200, commodity));
 
             IValueStorage result = storage1.Add(storage2);
             Assert.AreEqual(ValueTypeEnum.Balance, result.Type);

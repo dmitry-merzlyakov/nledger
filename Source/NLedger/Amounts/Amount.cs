@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -11,12 +11,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 using NLedger.Utility;
 using NLedger.Annotate;
 using NLedger.Commodities;
+using NLedger.Utility.BigValues;
 
 namespace NLedger.Amounts
 {
+    // This alias specifies the implementation of NLedger Quantity Arithmetic.
+    // By default, it uses arbitrary precision arithmetic provided by BigRational.
+    // If you need to use Decimal arithmetic for some reason, uncomment the next alias
+    // and recompile the application.
+    using BigInt = BigInt<BigRational>;
+    //using BigInt = BigInt<BigDecimal>;
+
+    /// <summary>
+    /// Helper class that provides generalized factory methods for BigInt
+    /// but hides implementation of NLedger Quantity Arithmetic
+    /// </summary>
+    /// <remarks>
+    /// Located here (instead of BigInt.cs) because Quantity Arithmetic implementation is specified in this file.
+    /// </remarks>
+    public static class Quantity
+    {
+        public static readonly BigInt Empty = new BigInt();
+
+        public static BigInt Parse(string s, int precision = 0, bool keepPrecsion = false)
+        {
+            return BigInt.Parse(s, precision, keepPrecsion);
+        }
+
+        public static BigInt FromLong(long value, int precision = 0)
+        {
+            return BigInt.FromLong(value, precision);
+        }
+    }
+
     /// <summary>
     /// Basic type for handling commoditized math: amount_t
     /// 
@@ -198,12 +229,23 @@ namespace NLedger.Amounts
             Commodity = commodity ?? CommodityPool.Current.NullCommodity;
         }
 
+        public Amount(long value, Commodity commodity)
+        {
+            Quantity = BigInt.FromLong(value);
+            Commodity = commodity ?? CommodityPool.Current.NullCommodity;
+        }
 
         /// <summary>
         /// Convert a long to an amount.  It's precision is zero, and the sign
         /// is preserved.
         /// </summary>
         public Amount(long value) : this(BigInt.FromLong(value), null)
+        { }
+
+        /// <summary>
+        /// Convert a long to an amount.  It's precision is zero, and the sign is preserved.
+        /// </summary>
+        public Amount(ulong value) : this(BigInt.FromLong((long)value), null)
         { }
 
         /// <summary>
@@ -350,9 +392,13 @@ namespace NLedger.Amounts
             if (thisBase == null)
                 throw new InvalidOperationException("Cannot find the base commodity");
 
+            Logger.Current.Debug("amount.commodities", () => String.Format("Annotating commodity for amount {0}\r\n{1}", this, details));
+
             Commodity annotatedCommodity = CommodityPool.Current.FindOrCreate(thisBase, details);
             if (annotatedCommodity != null)
                 SetCommodity(annotatedCommodity);
+
+            Logger.Current.Debug("amount.commodities", () => String.Format("Annotated amount is {0}", this));
         }
 
         /// <summary>
@@ -456,7 +502,7 @@ namespace NLedger.Amounts
             // precision if something greater was used for the quantity.
 
             if (String.IsNullOrEmpty(symbol))
-                ClearCommodity(); //Commodity = null;  TODO - validate approach
+                ClearCommodity();
             else
             {
                 Commodity = CommodityPool.Current.Find(symbol);
@@ -472,6 +518,7 @@ namespace NLedger.Amounts
 
             bool noMoreCommas = false;
             bool noMorePeriods = false;
+            bool noMigrateStyle = Commodity.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_STYLE_NO_MIGRATE);
             bool decimalCommaStyle = Commodity.Defaults.DecimalCommaByDefault || 
                 (Commodity != null && Commodity.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_STYLE_DECIMAL_COMMA));
 
@@ -563,7 +610,7 @@ namespace NLedger.Amounts
             }
             else
             {
-                if (HasCommodity)
+                if (HasCommodity && !noMigrateStyle)
                 {
                     Commodity.Flags |= commodityFlags;
 
@@ -578,6 +625,9 @@ namespace NLedger.Amounts
             {
                 Quantity = BigInt.Parse(quant.Replace(".", "").Replace(",", ""), newQuantityPrecision, keepPrecision);
                 Quantity = Quantity.SetScale(newQuantityPrecision);
+
+                if (Logger.Current.ShowDebug("amount.parse"))
+                    Logger.Current.Debug("amount.parse", () => String.Format("Rational parsed = {0}", Quantity));
             }
             else
             {
@@ -598,12 +648,10 @@ namespace NLedger.Amounts
                         throw new InvalidOperationException("Details do not have a price");
                     details.Price /= Abs();
                 }
-                // TODO - I cannot find any use of set_commodity
-                //set_commodity(*commodity_pool_t::current_pool->find_or_create(*commodity_, details));
                 Commodity = CommodityPool.Current.FindOrCreate(Commodity, details);
             }
 
-            Validator.Verify(Valid());
+            Validator.Verify(() => Valid());
 
             return true;
         }
@@ -613,7 +661,6 @@ namespace NLedger.Amounts
             return Parse(ref line, parseFlags);
         }
 
-        // TODO - temp decision; migrate the original Parse to the stream
         public bool Parse(InputTextStream inStream, AmountParseFlagsEnum parseFlags = AmountParseFlagsEnum.PARSE_DEFAULT)
         {
             using(InputTextStreamWrapper wrapper = new InputTextStreamWrapper(inStream))
@@ -694,8 +741,9 @@ namespace NLedger.Amounts
         public Amount InPlaceDivide(Amount amount)
         {
             if (amount == null)
-                throw new AmountError(AmountError.ErrorMessageDivideByZero);
-            Validator.Verify(Valid());
+                throw new ArgumentNullException("amount");
+
+            Validator.Verify(() => Valid());
 
             if (!Quantity.HasValue || !amount.Quantity.HasValue)
             {
@@ -706,6 +754,9 @@ namespace NLedger.Amounts
                 else
                     throw new AmountError(AmountError.ErrorMessageCannotDivideTwoUninitializedAmounts);
             }
+
+            if (!(bool)amount)
+                throw new AmountError(AmountError.ErrorMessageDivideByZero);
 
             // Increase the value's precision, to capture fractional parts after
             // the divide.  Round up in the last position.
@@ -738,8 +789,9 @@ namespace NLedger.Amounts
         public Amount Multiply(Amount amount, bool ignoreCommodity = false)
         {
             if (amount == null)
-                throw new AmountError(AmountError.ErrorMessageDivideByZero);
-            Validator.Verify(Valid());
+                throw new ArgumentException("amount");
+
+            Validator.Verify(() => Valid());
 
             if (!Quantity.HasValue || !amount.Quantity.HasValue)
             {
@@ -778,8 +830,10 @@ namespace NLedger.Amounts
         /// </summary>
         public Amount InPlaceAdd(Amount amount)
         {
-            if (amount == null || !amount.Valid())
+            if (amount == null)
                 throw new ArgumentException("amount");
+
+            Validator.Verify(() => amount.Valid());
 
             if (!Quantity.HasValue || !amount.Quantity.HasValue)
             {
@@ -813,8 +867,10 @@ namespace NLedger.Amounts
         /// </summary>
         public Amount InPlaceSubtract(Amount amount)
         {
-            if (amount == null || !amount.Valid())
+            if (amount == null)
                 throw new ArgumentException("amount");
+
+            Validator.Verify(() => amount.Valid());
 
             if (!Quantity.HasValue || !amount.Quantity.HasValue)
             {
@@ -832,7 +888,7 @@ namespace NLedger.Amounts
             BigInt quantity = Quantity - amount.Quantity;
 
             if (HasCommodity == amount.HasCommodity && quantity.Precision < amount.Quantity.Precision)
-                quantity.SetPrecision(amount.Quantity.Precision);
+                quantity = quantity.SetPrecision(amount.Quantity.Precision);
 
             Quantity = quantity;
             return this;
@@ -911,10 +967,14 @@ namespace NLedger.Amounts
             if (Quantity.HasValue)
             {
                 if (!Quantity.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "amount_t: ! quantity->valid()");
                     return false;
+                }
             }
             else if (HasCommodity)
             {
+                Logger.Current.Debug("ledger.validate", () => "amount_t: commodity_ != NULL");
                 return false;
             }
             return true;
@@ -959,8 +1019,10 @@ namespace NLedger.Amounts
 
         public int Compare(Amount amount)
         {
-            if (amount == null || !amount.Valid())
+            if (amount == null)
                 throw new ArgumentException("amount");
+
+            Validator.Verify(() => amount.Valid());
 
             if (!Quantity.HasValue || !amount.Quantity.HasValue)
             {
@@ -1031,7 +1093,9 @@ namespace NLedger.Amounts
             else if (KeepPrecision)
                 return;
 
+            Logger.Current.Debug("amount.unround", () => String.Format("Unrounding {0}", this));
             Quantity = Quantity.SetKeepPrecision(true);
+            Logger.Current.Debug("amount.unround", () => String.Format("Unrounded = {0}", this));
         }
 
         /// <summary>
@@ -1106,7 +1170,9 @@ namespace NLedger.Amounts
             if (!Quantity.HasValue)
                 throw new AmountError(AmountError.ErrorMessageCannotTruncateAnUninitializedAmount);
 
+            Logger.Current.Debug("amount.truncate", () => String.Format("Truncating {0} to precision {1}", this, DisplayPrecision));
             Quantity = Quantity.RoundTo(DisplayPrecision);
+            Logger.Current.Debug("amount.truncate", () => String.Format("Truncated = {0}", this));
         }
 
         /// <summary>
@@ -1262,7 +1328,7 @@ namespace NLedger.Amounts
         /// </summary>
         public void ClearCommodity()
         {
-            Commodity = CommodityPool.Current.NullCommodity; // Commodity = null; TODO - validate approach
+            Commodity = CommodityPool.Current.NullCommodity;
         }
 
         public int DisplayPrecision
@@ -1292,11 +1358,11 @@ namespace NLedger.Amounts
         {
             if (Quantity.HasValue)
             {
-                Logger.Debug("commodity.price.find", () => String.Format("amount_t::value of {0}", Commodity.Symbol));
+                Logger.Current.Debug("commodity.price.find", () => String.Format("amount_t::value of {0}", Commodity.Symbol));
                 if (!moment.IsNotADateTime())
-                    Logger.Debug("commodity.price.find", () => String.Format("amount_t::value: moment = {0}", moment));
+                    Logger.Current.Debug("commodity.price.find", () => String.Format("amount_t::value: moment = {0}", moment));
                 if (inTermsOf != null)
-                    Logger.Debug("commodity.price.find", () => String.Format("amount_t::value: in_terms_of = {0}", inTermsOf.Symbol));
+                    Logger.Current.Debug("commodity.price.find", () => String.Format("amount_t::value: in_terms_of = {0}", inTermsOf.Symbol));
 
                 if (HasCommodity && (inTermsOf != null || !Commodity.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_PRIMARY)))
                 {
@@ -1308,7 +1374,7 @@ namespace NLedger.Amounts
                         if (Annotation.IsPriceFixated)
                         {
                             point = new PricePoint(default(DateTime), Annotation.Price);
-                            Logger.Debug("commodity.prices.find", () => String.Format("amount_t::value: fixated price =  {0}", point.Value.Price));
+                            Logger.Current.Debug("commodity.prices.find", () => String.Format("amount_t::value: fixated price =  {0}", point.Value.Price));
                         }
                         else if (comm == null)
                             comm = Annotation.Price.Commodity;
@@ -1356,7 +1422,7 @@ namespace NLedger.Amounts
                 {
                     Amount tmp = new Amount(Annotation.Price);
                     tmp = tmp.Multiply(this);
-                    Logger.Debug("amount.price", () => String.Format("Returning price of {0} = {1}", this, tmp));
+                    Logger.Current.Debug("amount.price", () => String.Format("Returning price of {0} = {1}", this, tmp));
                     return tmp;
                 }
                 return null;
@@ -1379,7 +1445,7 @@ namespace NLedger.Amounts
         /// </summary>
         public string Print(AmountPrintEnum flags = AmountPrintEnum.AMOUNT_PRINT_NO_FLAGS)
         {
-            Validator.Verify(Valid());
+            Validator.Verify(() => Valid());
 
             if (!Quantity.HasValue)
                 return "<null>";

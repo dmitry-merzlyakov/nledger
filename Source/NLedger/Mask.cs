@@ -1,11 +1,12 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +75,9 @@ namespace NLedger
 
         public bool Match(string text)
         {
-            return IsEmpty ? false : Expr.IsMatch(text);
+            var match = IsEmpty ? false : Expr.IsMatch(text);
+            Logger.Current.Debug("mask.match", () => String.Format("Matching: \"{0}\" =~ /{1}/ = {2}", text, Str(), match));
+            return match;
         }
 
         public IEnumerable<Match> Matches(string text)

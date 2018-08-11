@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -11,7 +11,7 @@ using NLedger.Amounts;
 using NLedger.Chain;
 using NLedger.Expressions;
 using NLedger.Times;
-using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
@@ -82,15 +82,15 @@ namespace NLedger.Filters
             {
                 Post post = AllPosts[i];
 
-                Logger.Debug("filters.interval", () => String.Format("Considering post {0} = {1}", post.GetDate(), post.Amount));
-                Logger.Debug("filters.interval", () => String.Format("interval is:{0}", DebugInterval(Interval)));
+                Logger.Current.Debug("filters.interval", () => String.Format("Considering post {0} = {1}", post.GetDate(), post.Amount));
+                Logger.Current.Debug("filters.interval", () => String.Format("interval is:{0}", DebugInterval(Interval)));
 
                 if (Interval.Finish.HasValue && post.GetDate() >= Interval.Finish.Value)
                     throw new InvalidOperationException("assert(! interval.finish || post->date() < *interval.finish)");
 
                 if (Interval.WithinPeriod(post.GetDate()))
                 {
-                    Logger.Debug("filters.interval", () => "Calling subtotal_posts::operator()");
+                    Logger.Current.Debug("filters.interval", () => "Calling subtotal_posts::operator()");
                     base.Handle(post);
                     ++i;
                     sawPosts = true;
@@ -99,7 +99,7 @@ namespace NLedger.Filters
                 {
                     if (sawPosts)
                     {
-                        Logger.Debug("filters.interval", () => "Calling subtotal_posts::report_subtotal()");
+                        Logger.Current.Debug("filters.interval", () => "Calling subtotal_posts::report_subtotal()");
                         ReportSubtotal(Interval);
                         sawPosts = false;
                     }
@@ -119,7 +119,7 @@ namespace NLedger.Filters
                         ReportSubtotal(Interval);
                     }
 
-                    Logger.Debug("filters.interval", () => "Advancing interval");
+                    Logger.Current.Debug("filters.interval", () => "Advancing interval");
                     ++Interval;
                 }
             }
@@ -127,7 +127,7 @@ namespace NLedger.Filters
             // If the last postings weren't reported, do so now.
             if (sawPosts)
             {
-                Logger.Debug("filters.interval", () => "Calling subtotal_posts::report_subtotal() at end");
+                Logger.Current.Debug("filters.interval", () => "Calling subtotal_posts::report_subtotal() at end");
                 ReportSubtotal(Interval);
             }
 

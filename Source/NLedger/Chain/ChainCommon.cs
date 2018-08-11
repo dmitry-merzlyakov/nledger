@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -11,6 +11,7 @@ using NLedger.Filters;
 using NLedger.Scopus;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,10 @@ namespace NLedger.Chain
 
             // This filter_posts will only pass through posts matching the `predicate'.
             if (report.LimitHandler.Handled)
+            {
+                Logger.Current.Debug("report.predicate", () => String.Format("Report predicate expression = {0}", report.LimitHandler.Str()));
                 handler = new FilterPosts(handler, new Predicate(report.LimitHandler.Str(), report.WhatToKeep()), report);
+            }
 
             // budget_posts takes a set of posts from a data file and uses them to
             // generate "budget posts" which balance against the reported posts.

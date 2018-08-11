@@ -1,0 +1,42 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        <PropertyGroup>
+                <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+                <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+                <ProductVersion>3.0</ProductVersion>
+                <ProjectGuid>{c523055d-a9d0-4318-ae85-ec934d33204b}</ProjectGuid>
+                <SchemaVersion>2.0</SchemaVersion>
+                <ShortProductVersion>0.0</ShortProductVersion>
+                <OutputName>NLedger</OutputName>
+                <OutputType>Package</OutputType>
+                <PackageFolder>expected-to-be-set</PackageFolder>
+                <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+                <DefineSolutionProperties>False</DefineSolutionProperties>
+                <DefineConstants>$(DefineConstants);PackageFolder=$(PackageFolder)</DefineConstants>
+        </PropertyGroup>
+        <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+                <OutputPath>bin\$(Configuration)\</OutputPath>
+                <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+                <DefineConstants>Debug</DefineConstants>
+        </PropertyGroup>
+        <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+                <OutputPath>bin\$(Configuration)\</OutputPath>
+                <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+        </PropertyGroup>
+        <!-- Adopting to VSTS hosted agent -->
+        <PropertyGroup>
+                <SuppressValidation>true</SuppressValidation>
+        </PropertyGroup>
+        <ItemGroup>
+                <Compile Include="Product.wxs" />
+                <Compile Include="Components.wxs" />
+                <EmbeddedResource Include="Product_en-us.wxl" />
+                <Content Include="InstallerScripts.vbs" />
+                <Content Include="Images\WixUIDialog.png" />
+                <Content Include="Images\WixUIBanner.png" />
+                <Content Include="Images\WixUIIcon.ico" />
+                <WixExtension Include="WixUIExtension" />
+                <WixExtension Include="WixNetFxExtension" />
+                <WixExtension Include="WixUtilExtension" />
+        </ItemGroup>
+        <Import Project="$(WixTargetsPath)" />
+</Project>

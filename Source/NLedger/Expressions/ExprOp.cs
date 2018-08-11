@@ -1,14 +1,15 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Commodities;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -105,6 +106,9 @@ namespace NLedger.Expressions
             return op;
         }
 
+        /// <summary>
+        /// Ported from expr_t::ptr_op_t lookup_ident
+        /// </summary>
         public static ExprOp LookupIdent(ExprOp op, Scope scope)
         {
             ExprOp def = op.Left;
@@ -112,7 +116,10 @@ namespace NLedger.Expressions
             // If no definition was pre-compiled for this identifier, look it up
             // in the current scope.
             if (def == null || def.Kind == OpKindEnum.PLUG)
+            {
+                Logger.Current.Debug("scope.symbols", () => String.Format("Looking for IDENT '{0}'", op.AsIdent));
                 def = scope.Lookup(SymbolKindEnum.FUNCTION, op.AsIdent);
+            }
 
             if (def == null)
                 throw new CalcError(String.Format(CalcError.ErrorMessageUnknownIdentifier, op.AsIdent));
@@ -220,12 +227,12 @@ namespace NLedger.Expressions
                 if (!IsValue)
                     throw new InvalidOperationException("Not a Value");
                 Value value = Data.GetValue<Value>();
-                Validator.Verify(value.IsValid);
+                Validator.Verify(() => value.IsValid);
                 return value;
             }
             set
             {
-                Validator.Verify(value.IsValid);
+                Validator.Verify(() => value.IsValid);
                 Data.SetValue(value);
             }
         }
@@ -364,16 +371,22 @@ namespace NLedger.Expressions
             }
         }
 
+        /// <summary>
+        /// Ported from expr_t::ptr_op_t expr_t::op_t::compile
+        /// </summary>
         public ExprOp Compile(Scope scope, int depth = 0, Scope paramScope = null)
         {
             ExprOp result = null;
             Scope boundScope;
+
+            Logger.Current.Debug("expr.compile", () => new String('.', depth));
 
             if (Kind >= OpKindEnum.LAST)
                 throw new InvalidOperationException();
 
             if (IsIdent)
             {
+                Logger.Current.Debug("expr.compile", () => String.Format("Lookup: {0} in {1}", AsIdent, scope));
                 ExprOp def = null;
                 if (paramScope != null)
                     def = paramScope.Lookup(SymbolKindEnum.FUNCTION, AsIdent);
@@ -386,6 +399,7 @@ namespace NLedger.Expressions
                     // Identifier references are first looked up at the point of
                     // definition, and then at the point of every use if they could
                     // not be found there.
+                    Logger.Current.Debug("expr.compile", () => String.Format("Found definition:{0}", def.Dump()));
                     result = Copy(def); 
                 }
                 else if (Left != null)
@@ -414,8 +428,9 @@ namespace NLedger.Expressions
                 {
                     case OpKindEnum.IDENT:
                         {
-                        ExprOp node = Right.Compile(scope, depth + 1, paramScope);
-                        scope.Define(SymbolKindEnum.FUNCTION, Left.AsIdent, node);
+                            ExprOp node = Right.Compile(scope, depth + 1, paramScope);
+                            Logger.Current.Debug("expr.compile", () => String.Format("Defining {0} in {1}", Left.AsIdent, scope));
+                            scope.Define(SymbolKindEnum.FUNCTION, Left.AsIdent, node);
                         }
                         break;
 
@@ -427,6 +442,7 @@ namespace NLedger.Expressions
                             node.Right = Right;
 
                             node.Compile(scope, depth + 1, paramScope);
+                            Logger.Current.Debug("expr.compile", () => String.Format("Defining {0} in {1}", Left.Left.AsIdent, scope));
                             scope.Define(SymbolKindEnum.FUNCTION, Left.Left.AsIdent, node);
                             break;
                         }
@@ -452,6 +468,7 @@ namespace NLedger.Expressions
                     }
                     else
                     {
+                        Logger.Current.Debug("expr.compile", () => String.Format("Defining function parameter {0}", varName.AsIdent));
                         parms.Define(SymbolKindEnum.FUNCTION, varName.AsIdent, new ExprOp(OpKindEnum.PLUG));
                     }
 
@@ -494,14 +511,21 @@ namespace NLedger.Expressions
                 }
             }
 
+            Logger.Current.Debug("expr.compile", () => new String('.', depth));
+
             return result;
         }
 
+        /// <summary>
+        /// Ported from value_t expr_t::op_t::calc
+        /// </summary>
         public Value Calc(Scope scope, ExprOp locus = null, int depth = 0)
         {
             try
             {
                 Value result = Value.Empty;
+
+                Logger.Current.Debug("expr.calc", () => String.Format("{0}{1} => ...", new String('.', depth), ErrorContext.OpContext(this)));
 
                 switch (Kind)
                 {
@@ -662,6 +686,8 @@ namespace NLedger.Expressions
                         throw new CalcError(String.Format(CalcError.ErrorMessageUnexpectedExprNode, this));
                 }
 
+                Logger.Current.Debug("expr.calc", () => String.Format("{0}{1} => {2}", new String('.', depth), ErrorContext.OpContext(this), result.Dump(true)));
+
                 return result;
             }
             catch
@@ -685,9 +711,53 @@ namespace NLedger.Expressions
                 return FindDefinition(this, scope, locus, depth).Calc(callArgs, locus, depth);
         }
 
-        public string Dump()
+        /// <summary>
+        /// Ported from expr_t::op_t::dump
+        /// </summary>
+        public string Dump(int depth = 0)
         {
-            return String.Empty; // TODO
+            StringBuilder sb = new StringBuilder(new string(' ', depth));
+            
+            switch(Kind)
+            {
+                case OpKindEnum.VALUE:
+                    sb.AppendFormat("VALUE: {0}", AsValue.Dump());
+                    break;
+                case OpKindEnum.IDENT:
+                    sb.AppendFormat("IDENT: {0}", AsIdent);
+                    break;
+                case OpKindEnum.SCOPE:
+                    sb.AppendFormat("SCOPE: {0}", IsScopeUnset ? "null" : AsScope.Description);
+                    break;
+
+                case OpKindEnum.LAST:
+                    throw new InvalidOperationException("assert(false)");
+
+                default:
+                    sb.Append(Kind.ToString());
+                    break;
+            }
+
+            sb.AppendLine(String.Format(" ({0})", 0 /* DM - no refc */));
+
+            // An identifier is a special non-terminal, in that its left() can
+            // hold the compiled definition of the identifier.
+            if (Kind > OpKindEnum.TERMINALS || IsScope || IsIdent)
+            {
+                if (Left != null)
+                {
+                    sb.Append(Left.Dump(depth + 1));
+                    if (Kind > OpKindEnum.UNARY_OPERATORS && HasRight)
+                        sb.Append(Right.Dump(depth + 1));
+                }
+                else if (Kind > OpKindEnum.UNARY_OPERATORS)
+                {
+                    if (HasRight)
+                        throw new InvalidOperationException("assert(! has_right())");
+                }
+            }
+
+            return sb.ToString();
         }
 
         public bool PrintCons(ref string str, ExprOp op, ExprOpContext context)
@@ -1084,9 +1154,15 @@ namespace NLedger.Expressions
                     throw new CalcError(CalcError.ErrorMessageInvalidFunctionDefinition);
 
                 if (argsIndex == argsCount)
+                {
+                    Logger.Current.Debug("expr.calc", () => String.Format("Defining function argument as null: {0}", varName.AsIdent));
                     argsScope.Define(SymbolKindEnum.FUNCTION, varName.AsIdent, WrapValue(Value.Empty));
+                }
                 else
+                {
+                    Logger.Current.Debug("expr.calc", () => String.Format("Defining function argument from call_args: {0}", varName.AsIdent));
                     argsScope.Define(SymbolKindEnum.FUNCTION, varName.AsIdent, WrapValue(callArgs[argsIndex++]));
+                }
             }
 
             if (argsIndex < argsCount)

@@ -1,11 +1,12 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,15 @@ namespace NLedger.Scopus
 {
     public static class ScopeExtensions
     {
+        /// <summary>
+        /// Ported from T * search_scope(scope_t * ptr, bool prefer_direct_parents = false)
+        /// </summary>
         public static T SearchScope<T>(this Scope scope, bool preferDirectParent = false) where T : Scope
         {
             if (scope == null)
                 throw new ArgumentNullException("scope");
+
+            Logger.Current.Debug("scope.search", () => String.Format("Searching scope {0}", scope.Description));
 
             T sought = scope as T;
             if (sought != null)

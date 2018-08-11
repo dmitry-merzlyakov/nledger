@@ -1,0 +1,33 @@
+﻿2012-03-02 KFC
+    Expenses:Food2               $1 ((2 EUR))
+    Assets:Cash2
+
+2012-03-03 KFC
+    Expenses:Food3               $1
+        ; Value:: 3 EUR
+    Assets:Cash3
+
+2012-03-04 KFC
+    ; Value:: 4 EUR
+    Expenses:Food4               $1
+    Assets:Cash4
+
+2012-03-05 KFC
+    Expenses:Food5               $1
+    Assets:Cash5
+
+2012-03-06 KFC
+    Expenses:Food6               $1
+    Assets:Cash6
+
+2012-03-07 KFC
+    Expenses:Food7                1 CAD
+    Assets:Cash7
+
+2012-03-08 XACT
+    Expenses:Food8               $1
+    Assets:Cash8
+
+2012-03-09 POST
+    Expenses:Dining9             $1
+    Assets:Cash9

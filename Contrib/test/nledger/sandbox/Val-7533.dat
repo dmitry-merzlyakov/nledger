@@ -1,0 +1,4 @@
+﻿= /^Assets:Brokerage:CAD$/
+    ; Always report the value of commodities in this account in
+    ; terms of present day dollars, despite what was asked for
+    ; on the command-line VALUE:: market(amount, date, @samp{$})

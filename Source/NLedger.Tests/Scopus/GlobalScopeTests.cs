@@ -1,16 +1,19 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLedger.Abstracts.Impl;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,15 +21,13 @@ using System.Threading.Tasks;
 namespace NLedger.Tests.Scopus
 {
     [TestClass]
+    [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class GlobalScopeTests : TestFixture
     {
         public override void CustomTestInitialize()
         {
             GlobalScopeArgsOnly = GlobalScope.ArgsOnly;
             ValidatorIsVerifyEnabled = Validator.IsVerifyEnabled;
-            LoggerLogLevel = Logger.Current.LogLevel;
-            LoggerLogCategory = Logger.Current.LogCategory;
-            LoggerTraceLevel = Logger.Current.TraceLevel;
             GlobalScopeInitFile = GlobalScope.InitFile;
         }
 
@@ -34,9 +35,6 @@ namespace NLedger.Tests.Scopus
         {
             GlobalScope.ArgsOnly = GlobalScopeArgsOnly;
             Validator.IsVerifyEnabled = ValidatorIsVerifyEnabled;
-            Logger.Current.LogLevel = LoggerLogLevel;
-            Logger.Current.LogCategory = LoggerLogCategory;
-            Logger.Current.TraceLevel = LoggerTraceLevel;
             GlobalScope.InitFile = GlobalScopeInitFile;
         }
 
@@ -119,11 +117,73 @@ namespace NLedger.Tests.Scopus
             Assert.AreEqual(expected, globalScope.ShowVersionInfo());
         }
 
+        [TestMethod]
+        public void GlobalScope_ReportError_WritesErrorIfNoCancellationReques()
+        {
+            var globalScope = new GlobalScope();
+            var ex = new Exception("some exception");
+
+            using (var textWriter = new StringWriter())
+            {
+                MainApplicationContext.Current.SetVirtualConsoleProvider(() =>
+                    new VirtualConsoleProvider(consoleError: textWriter));
+
+                globalScope.ReportError(ex);
+
+                textWriter.Flush();
+                Assert.AreEqual("Error: some exception", textWriter.ToString().TrimEnd());
+            }
+        }
+
+        [TestMethod]
+        public void GlobalScope_ReportError_DiscardsCancellationRequestAndDoesNothing()
+        {
+            var globalScope = new GlobalScope();
+            var ex = new Exception("some exception");
+
+            using (var textWriter = new StringWriter())
+            {
+                MainApplicationContext.Current.SetVirtualConsoleProvider(() =>
+                    new VirtualConsoleProvider(consoleError: textWriter));
+
+                MainApplicationContext.Current.CancellationSignal = CaughtSignalEnum.INTERRUPTED;
+                globalScope.ReportError(ex);
+
+                textWriter.Flush();
+                Assert.AreEqual("", textWriter.ToString().TrimEnd());
+                Assert.AreEqual(CaughtSignalEnum.NONE_CAUGHT, MainApplicationContext.Current.CancellationSignal);
+            }
+        }
+
+        private class StubTextWriter : TextWriter
+        {
+            public override Encoding Encoding { get; }
+            public bool IsClosed { get; private set; }
+
+            public override void Close()
+            {
+                IsClosed = true;
+            }
+        }
+
+        [TestMethod]
+        public void GlobalScope_PopReport_ClosesOutputStream()
+        {
+            var globalScope = new GlobalScope();
+            using (var textWriter = new StubTextWriter())  // Note that this textwriter neither StdOut nor StdErr
+            {
+                var report = new Report() { OutputStream = textWriter };
+                globalScope.ReportStack.Push(report);
+                globalScope.ReportStack.Push(report);
+
+                Assert.IsFalse(textWriter.IsClosed);
+                globalScope.PopReport();
+                Assert.IsTrue(textWriter.IsClosed);
+            }
+        }
+
         private bool GlobalScopeArgsOnly;
         private bool ValidatorIsVerifyEnabled;
-        private LogLevelEnum LoggerLogLevel;
-        private string LoggerLogCategory;
-        private int LoggerTraceLevel;
         private string GlobalScopeInitFile;
     }
 }

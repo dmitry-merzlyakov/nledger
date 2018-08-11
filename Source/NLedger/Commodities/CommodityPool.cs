@@ -1,15 +1,16 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
 using NLedger.Annotate;
 using NLedger.Times;
 using NLedger.Utility;
+using NLedger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,10 +72,48 @@ namespace NLedger.Commodities
             GetCommodityQuote = CommodityQuoteFromScript;
         }
 
+        /// <summary>
+        /// Ported from commodity_quote_from_script
+        /// </summary>
         public static PricePoint? CommodityQuoteFromScript(Commodity commodity, Commodity exchange_commodity)
         {
-            // All original code is not intended to work on WIN32 platform...
-            // TODO - future enhancements...
+            Logger.Current.Debug("commodity.download", () => String.Format("downloading quote for symbol {0}", commodity.Symbol));
+            if ((bool)exchange_commodity)
+                Logger.Current.Debug("commodity.download", () => String.Format("  in terms of commodity {0}", exchange_commodity.Symbol));
+
+            string getquote_cmd = String.Format("getquote \"{0}\" \"{1}\"", commodity.Symbol, exchange_commodity?.Symbol);
+
+            Logger.Current.Debug("commodity.download", () => String.Format("invoking command: {0}", getquote_cmd));
+
+            string buf;
+            bool success = MainApplicationContext.Current.QuoteProvider.Get(getquote_cmd, out buf);
+            if (success && buf != null)
+            {
+                buf = buf.GetFirstLine();
+                Logger.Current.Debug("commodity.download", () => String.Format("downloaded quote: {0}", buf));
+
+                Tuple<Commodity, PricePoint> point = Current.ParsePriceDirective(buf);
+                if (point != null)
+                {
+                    if (!String.IsNullOrEmpty(Current.PriceDb))
+                    {
+                        string database = String.Format("P {0} {1} {2}{3}",
+                            TimesCommon.Current.FormatDateTime(point.Item2.When, FormatTypeEnum.FMT_WRITTEN),
+                            commodity.Symbol, point.Item2.Price, Environment.NewLine);
+                        FileSystem.PutStringToFile(Current.PriceDb, database);
+                    }
+                    return point.Item2;
+                }
+            }
+            else
+            {
+                Logger.Current.Debug("commodity.download", () => String.Format("Failed to download price for '{0}' (command: \"getquote {0} {1}\")", 
+                    commodity.Symbol, exchange_commodity != null ? exchange_commodity.Symbol : "''"));
+
+                // Don't try to download this commodity again.
+                commodity.Flags |= CommodityFlagsEnum.COMMODITY_NOMARKET;
+            }
+
             return null;
         }
 
@@ -95,13 +134,13 @@ namespace NLedger.Commodities
             CommodityBase commodityBase = new CommodityBase(symbol);
             Commodity commodity = new Commodity(this, commodityBase);
 
-            Logger.Debug("pool.commodities", () => String.Format("Creating base commodity {0}", symbol));
+            Logger.Current.Debug("pool.commodities", () => String.Format("Creating base commodity {0}", symbol));
 
             // Create the "qualified symbol" version of this commodity's symbol
             if (Commodity.SymbolNeedsQuotes(symbol))
                 commodity.QualifiedSymbol = String.Format("\"{0}\"", symbol);
 
-            Logger.Debug("pool.commodities", () => String.Format("Creating commodity '{0}'", symbol));
+            Logger.Current.Debug("pool.commodities", () => String.Format("Creating commodity '{0}'", symbol));
 
             Commodities.Add(symbol, commodity);
             CommodityPriceHistory.AddCommodity(commodity);
@@ -118,7 +157,7 @@ namespace NLedger.Commodities
             if (details == null)
                 throw new ArgumentNullException("details");
 
-            Logger.Debug("pool.commodities", () => String.Format("commodity_pool_t::create[ann:comm] symbol {0}\r\n{1}", commodity.BaseSymbol, details));
+            Logger.Current.Debug("pool.commodities", () => String.Format("commodity_pool_t::create[ann:comm] symbol {0}\r\n{1}", commodity.BaseSymbol, details));
 
             AnnotatedCommodity annotatedCommodity = new AnnotatedCommodity(commodity, details);
 
@@ -131,7 +170,7 @@ namespace NLedger.Commodities
                     commodity.Flags |= CommodityFlagsEnum.COMMODITY_SAW_ANN_PRICE_FLOAT;
             }
 
-            Logger.Debug("pool.commodities", () => String.Format("Creating annotated commodity symbol {0}\r\n{1}", commodity.BaseSymbol, details));
+            Logger.Current.Debug("pool.commodities", () => String.Format("Creating annotated commodity symbol {0}\r\n{1}", commodity.BaseSymbol, details));
 
             AnnotatedCommodities.Add(new Tuple<string, Annotation>(commodity.BaseSymbol, details), annotatedCommodity);
 
@@ -140,7 +179,7 @@ namespace NLedger.Commodities
 
         public Commodity Create(string symbol, Annotation details)
         {
-            Logger.Debug("pool.commodities", () => String.Format("commodity_pool_t::create[ann] symbol {0}\r\n{1}", symbol, details));
+            Logger.Current.Debug("pool.commodities", () => String.Format("commodity_pool_t::create[ann] symbol {0}\r\n{1}", symbol, details));
 
             if (details != null)
                 return Create(FindOrCreate(symbol), details);
@@ -150,7 +189,7 @@ namespace NLedger.Commodities
 
         public Commodity Find(string symbol)
         {
-            Logger.Debug("pool.commodities", () => String.Format("Find commodity {0}", symbol));
+            Logger.Current.Debug("pool.commodities", () => String.Format("Find commodity {0}", symbol));
 
             Commodity commodity;
             Commodities.TryGetValue(symbol, out commodity);
@@ -159,27 +198,27 @@ namespace NLedger.Commodities
 
         public Commodity Find(string symbol, Annotation details)
         {
-            Logger.Debug("pool.commodities", () => String.Format("commodity_pool_t::find[ann] symbol {0}\r\n{1}", symbol, details));
+            Logger.Current.Debug("pool.commodities", () => String.Format("commodity_pool_t::find[ann] symbol {0}\r\n{1}", symbol, details));
 
             Commodity commodity;
             var key = new Tuple<string, Annotation>(symbol, details);
             AnnotatedCommodities.TryGetValue(key, out commodity);
 
             if (commodity != null)
-                Logger.Debug("pool.commodities", () => String.Format("commodity_pool_t::find[ann] found symbol {0}\r\n{1}", commodity.BaseSymbol, ((AnnotatedCommodity)commodity).Details));
+                Logger.Current.Debug("pool.commodities", () => String.Format("commodity_pool_t::find[ann] found symbol {0}\r\n{1}", commodity.BaseSymbol, ((AnnotatedCommodity)commodity).Details));
 
             return commodity;
         }
 
         public Commodity FindOrCreate(string symbol)
         {
-            Logger.Debug("pool.commodities", () => String.Format("Find-or-create commodity {0}", symbol));
+            Logger.Current.Debug("pool.commodities", () => String.Format("Find-or-create commodity {0}", symbol));
             return Find(symbol) ?? Create(symbol);
         }
 
         public Commodity FindOrCreate(Commodity commodity, Annotation details)
         {
-            Logger.Debug("pool.commodities", () => String.Format("commodity_pool_t::find_or_create[ann:comm] symbol {0}\r\n{1}", commodity.BaseSymbol, details));
+            Logger.Current.Debug("pool.commodities", () => String.Format("commodity_pool_t::find_or_create[ann:comm] symbol {0}\r\n{1}", commodity.BaseSymbol, details));
 
             if (details != null)
             {
@@ -204,7 +243,7 @@ namespace NLedger.Commodities
         
         public Commodity FindOrCreate(string symbol, Annotation details)
         {
-            Logger.Debug("pool.commodities", () => String.Format("commodity_pool_t::find_or_create[ann] symbol {0}\r\n{1}", symbol, details));
+            Logger.Current.Debug("pool.commodities", () => String.Format("commodity_pool_t::find_or_create[ann] symbol {0}\r\n{1}", symbol, details));
 
             if (details != null)
             {
@@ -230,19 +269,19 @@ namespace NLedger.Commodities
         /// </summary>
         public void Exchange(Commodity commodity, Amount perUnitCost, DateTime moment)
         {
-            Logger.Debug("commodity.prices.add", () => String.Format("exchanging commodity {0} at per unit cost {1} on {2}", commodity, perUnitCost, moment));
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchanging commodity {0} at per unit cost {1} on {2}", commodity, perUnitCost, moment));
             Commodity baseCommodity = commodity.IsAnnotated ? ((AnnotatedCommodity)commodity).Referent : commodity;
             baseCommodity.AddPrice(moment, perUnitCost);
         }
 
         public CostBreakdown Exchange(Amount amount, Amount cost, bool isPerUnit = false, bool addPrice = true, DateTime? moment = null, string tag = null)
         {
-            Logger.Debug("commodity.prices.add", () => String.Format("exchange: {0} for {1}", amount, cost));
-            Logger.Debug("commodity.prices.add", () => String.Format("exchange: is-per-unit   = {0}", isPerUnit));
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: {0} for {1}", amount, cost));
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: is-per-unit   = {0}", isPerUnit));
             if (moment.HasValue)
-                Logger.Debug("commodity.prices.add", () => String.Format("exchange: moment        = {0}", moment.Value));
+                Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: moment        = {0}", moment.Value));
             if (tag != null)
-                Logger.Debug("commodity.prices.add", () => String.Format("exchange: tag           = {0}", tag));
+                Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: tag           = {0}", tag));
 
             Commodity commodity = amount.Commodity;
             Annotation currentAnnotation = null;
@@ -255,7 +294,10 @@ namespace NLedger.Commodities
             if (!cost.HasCommodity)
                 perUnitCost.ClearCommodity();
 
-            Logger.Debug("commodity.prices.add", () => String.Format("exchange: per-unit-cost = {0}", perUnitCost));
+            if (cost.HasAnnotation)
+                perUnitCost = perUnitCost.StripAnnotations(new AnnotationKeepDetails());
+
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: per-unit-cost = {0}", perUnitCost));
 
             // Do not record commodity exchanges where amount's commodity has a
             // fixated price, since this does not establish a market value for the
@@ -269,14 +311,14 @@ namespace NLedger.Commodities
             CostBreakdown breakdown = new CostBreakdown();
             breakdown.FinalCost = !isPerUnit ? cost : cost * amount.Abs();
 
-            Logger.Debug("commodity.prices.add", () => String.Format("exchange: final-cost    = {0}", breakdown.FinalCost));
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: final-cost    = {0}", breakdown.FinalCost));
 
             if (currentAnnotation != null && currentAnnotation.Price != null)
                 breakdown.BasisCost = (currentAnnotation.Price * amount).Unrounded();
             else
                 breakdown.BasisCost = breakdown.FinalCost;
 
-            Logger.Debug("commodity.prices.add", () => String.Format("exchange: basis-cost    = {0}", breakdown.BasisCost));
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: basis-cost    = {0}", breakdown.BasisCost));
 
             Annotation annotation = new Annotation(perUnitCost, moment.HasValue ? (Date)moment.Value.Date : default(Date), tag);
             annotation.IsPriceCalculated = true;
@@ -289,7 +331,7 @@ namespace NLedger.Commodities
 
             breakdown.Amount = new Amount(amount, annotation);
 
-            Logger.Debug("commodity.prices.add", () => String.Format("exchange: amount        = {0}", breakdown.Amount));
+            Logger.Current.Debug("commodity.prices.add", () => String.Format("exchange: amount        = {0}", breakdown.Amount));
 
             return breakdown;
         }
@@ -337,13 +379,13 @@ namespace NLedger.Commodities
 
             PricePoint point = new PricePoint(dateTime, new Amount());
             point.Price.Parse(ref symbolAndPrice, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
-            Validator.Verify(point.Price.Valid());
+            Validator.Verify(() => point.Price.Valid());
 
-            Logger.Debug(DebugCommodityDownload, () => "Looking up symbol: " + symbol);
+            Logger.Current.Debug(DebugCommodityDownload, () => "Looking up symbol: " + symbol);
             Commodity commodity = FindOrCreate(symbol);
             if (commodity != null)
             {
-                Logger.Debug(DebugCommodityDownload, () => String.Format("Adding price for {0}: {1} {2}", symbol, point.When, point.Price));
+                Logger.Current.Debug(DebugCommodityDownload, () => String.Format("Adding price for {0}: {1} {2}", symbol, point.When, point.Price));
                 if (!doNotAddPrice)
                     commodity.AddPrice(point.When, point.Price, true);
                 commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;

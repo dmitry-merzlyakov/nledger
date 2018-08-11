@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -12,6 +12,8 @@ using NLedger.Expressions;
 using NLedger.Output;
 using NLedger.Print;
 using NLedger.Scopus;
+using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -34,13 +36,13 @@ namespace NLedger
                 if (name == "date" || name == "aux_date" || name == "payee")
                 {
                     if (!String.IsNullOrEmpty(ident) &&
-                        !(name == "date" || name == "aux_date" || name == "payee"))  // TODO - should it be "ident"?
+                        !(name == "date" || name == "aux_date" || name == "payee"))
                         result = false;
                     ident = name;
                 }
                 else if (name == "account")
                 {
-                    if (!String.IsNullOrEmpty(ident) && !(name == "account"))  // TODO - the same
+                    if (!String.IsNullOrEmpty(ident) && !(name == "account"))
                         result = false;
                     ident = name;
                     if (doTransforms)
@@ -48,7 +50,7 @@ namespace NLedger
                 }
                 else if (name == "amount")
                 {
-                    if (!String.IsNullOrEmpty(ident) && !(name == "amount"))    // TODO - the same
+                    if (!String.IsNullOrEmpty(ident) && !(name == "amount"))
                         result = false;
                     ident = name;
                     if (doTransforms)
@@ -56,7 +58,7 @@ namespace NLedger
                 }
                 else if (name == "total")
                 {
-                    if (!String.IsNullOrEmpty(ident) && !(name == "total"))    // TODO - the same
+                    if (!String.IsNullOrEmpty(ident) && !(name == "total"))
                         result = false;
                     ident = name;
                     if (doTransforms)
@@ -81,6 +83,9 @@ namespace NLedger
             return result;
         }
 
+        /// <summary>
+        /// Ported from value_t select_command(call_scope_t& args)
+        /// </summary>
         public static Value SelectCommand(CallScope args)
         {
             string text = "select " + CallScope.JoinArgs(args);
@@ -113,6 +118,9 @@ namespace NLedger
                 string keyword = match.Groups[1].Value;
                 string arg = match.Groups[2].Value;
 
+                Logger.Current.Debug("select.parse", () => String.Format("keyword: {0}", keyword));
+                Logger.Current.Debug("select.parse", () => String.Format("arg: {0}", arg));
+
                 if (keyword == "select")
                 {
                     Expr argsExpr = new Expr(arg);
@@ -126,10 +134,10 @@ namespace NLedger
                         cols = Int32.Parse(report.ColumnsHandler.Value);
                     else
                     {
-                        string columnsEnv = Environment.GetEnvironmentVariable("COLUMNS");  // TODO - use list of variables
+                        string columnsEnv = VirtualEnvironment.GetEnvironmentVariable("COLUMNS");
                         if (!Int32.TryParse(columnsEnv, out cols))
                         {
-                            try { cols = Console.WindowWidth; } catch { cols = 0; }   // TODO - virtualize getter.
+                            cols = VirtualConsole.WindowWidth;
                             if (cols == 0)
                                 cols = 80;
                         }
@@ -208,6 +216,7 @@ namespace NLedger
                     while ((sawAccount || sawPayee) && colsNeeded > cols &&
                            accountWidth > 5 && payeeWidth > 5)
                     {
+                        Logger.Current.Debug("auto.columns", () => "adjusting account down");
                         if (sawAccount && colsNeeded > cols)
                         {
                             --accountWidth;
@@ -223,6 +232,7 @@ namespace NLedger
                             --payeeWidth;
                             --colsNeeded;
                         }
+                        Logger.Current.Debug("auto.columns", () => String.Format("account_width now = {0}", accountWidth));
                     }
 
                     if (!report.DateWidthHandler.Handled)
@@ -353,6 +363,7 @@ namespace NLedger
                         formatter.Append(")");
                     }
                     formatter.AppendLine();
+                    Logger.Current.Debug("select.parse", () => String.Format("formatter: {0}", formatter.ToString()));
                 }
                 else if (keyword == "from")
                 {
@@ -395,7 +406,6 @@ namespace NLedger
                 }
                 else if (keyword == "style")
                 {
-                    // TODO - something has not been done in the original code...
                     if (arg == "csv")
                     {
                     }

@@ -9,7 +9,7 @@
     <SourceRoot>$(ProjectRoot)Source\</SourceRoot>
     <BuildDir>$(ProjectRoot)Build\</BuildDir>
     <TestResultsDir>$(BuildDir)TestResults\</TestResultsDir>
-    <MarkdownDir>$(BuildDir)MarkdownSharp\</MarkdownDir>
+    <CommonMarkDir>$(BuildDir)CommonMark.NET\</CommonMarkDir>
     <!-- Path to ProductInfo file -->
     <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
     <!-- Paths to test project assemblies separated by spaces -->
@@ -41,6 +41,7 @@
     <CallTarget Targets="Release" />
     <CallTarget Targets="IntegrationTests" />
     <CallTarget Targets="Package" />
+    <CallTarget Targets="MSI" />
   </Target>
 
   <Target Name="Build" DependsOnTargets="CheckLicensing">
@@ -76,11 +77,12 @@
     <Copy SourceFiles="@(ContribFiles)" DestinationFiles="@(ContribFiles->'$(PackageDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <!-- Add licenses -->
     <Copy SourceFiles="$(ProjectRoot)LICENSE" DestinationFiles="$(PackageDir)\LICENSE"  />
+    <Copy SourceFiles="$(ProjectRoot)LICENSE.RTF" DestinationFiles="$(PackageDir)\LICENSE.RTF"  />
     <Copy SourceFiles="$(ProjectRoot)LICENSE.LEDGER" DestinationFiles="$(PackageDir)\LICENSE.LEDGER"  />
     <!-- Add NLedger readme, documentation and release notes -->
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\README.md&quot; -outputFileName &quot;$(PackageDir)\README.html&quot;" />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\CHANGELOG.md&quot; -outputFileName &quot;$(PackageDir)\CHANGELOG.html&quot;" />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(MarkdownDir)MarkdownSharp.ps1&quot; -inputFileName &quot;..\..\nledger.md&quot; -outputFileName &quot;$(PackageDir)\nledger.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(CommonMarkDir)CommonMark.ps1&quot; -inputFileName &quot;..\..\README.md&quot; -outputFileName &quot;$(PackageDir)\README.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(CommonMarkDir)CommonMark.ps1&quot; -inputFileName &quot;..\..\CHANGELOG.md&quot; -outputFileName &quot;$(PackageDir)\CHANGELOG.html&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(CommonMarkDir)CommonMark.ps1&quot; -inputFileName &quot;..\..\nledger.md&quot; -outputFileName &quot;$(PackageDir)\nledger.html&quot;" />
   </Target>
 
   <Target Name="IntegrationTests" DependsOnTargets="Release">
@@ -99,6 +101,14 @@
     <ZipDir ZipFileName="$(OutputDir)NLedger-v$(ProductVersion).zip" DirectoryName="$(PackageDir).." />
   </Target>
 
+  <Target Name="MSI" DependsOnTargets="Package;CheckWix">
+    <Message Text="Target : MSI (creating a wix installer)"/>
+    <RemoveDir Directories="$(BuildDir)NLedgerWix\bin;$(BuildDir)NLedgerWix\obj" />  
+    <Delete Files="$(BuildDir)NLedgerWix\" />
+    <MSBuild Projects="$(BuildDir)NLedgerWix\NLedger.wixproj" Properties="Configuration=Release;PackageFolder=$(PackageDir)..\" />    
+    <Copy SourceFiles="$(BuildDir)NLedgerWix\bin\Release\en-us\NLedger.msi" DestinationFiles="$(OutputDir)NLedger-v$(ProductVersion).msi"  />
+  </Target>
+
   <!-- Technical task - check output folder -->
   <Target Name="CheckOutputDir">
     <Message Text="Create output folder if it does not exist" />
@@ -110,6 +120,13 @@
     <Message Text="Checking version and licensing info in all source code files" />
     <Message Text="NOTE: if this task fails, execute ProductInfoUpdate.cmd to actualize data and observe modifications in a source control system." />
     <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(BuildDir)ProductInfoUpdate.ps1&quot; -verify" />
+  </Target>
+
+  <!-- Technical task - checking the content of Wix configuration files -->
+  <Target Name="CheckWix">
+    <Message Text="Checking the content of Wix configuration files" />
+    <Message Text="NOTE: if this task fails, verify the content of Wix configuration files. Refer to NLedgerWix\WixHelpers.ps1 (ValidateDirectoryContent) for details." />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)NLedgerWix\WixHelpers.ps1&quot; -verify -packageFolder &quot;$(PackageDir)\..\\&quot;" />
   </Target>
   
   <!-- Technical task: getting a product version from Product Info file -->

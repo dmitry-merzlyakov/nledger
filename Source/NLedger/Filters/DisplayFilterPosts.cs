@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLedger.Utils;
 
 namespace NLedger.Filters
 {
@@ -59,7 +60,7 @@ namespace NLedger.Filters
             if (ShowRounding)
             {
                 newDisplayTotal = DisplayTotalExpr.Calc(boundScope).StripAnnotations(Report.WhatToKeep());
-                Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.new_display_total     = {0}", newDisplayTotal));
+                Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.new_display_total     = {0}", newDisplayTotal));
             }
 
             // Allow the posting to be displayed if:
@@ -81,17 +82,17 @@ namespace NLedger.Filters
             {
                 if (!Value.IsNullOrEmpty(LastDisplayTotal))
                 {
-                    Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.repriced_amount       = {0}", repricedAmount));
+                    Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.repriced_amount       = {0}", repricedAmount));
 
                     Value preciseDisplayTotal = newDisplayTotal.Truncated() - repricedAmount.Truncated();
 
-                    Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.precise_display_total = {0}", preciseDisplayTotal));
-                    Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.last_display_total    = {0}", LastDisplayTotal));
+                    Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.precise_display_total = {0}", preciseDisplayTotal));
+                    Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.last_display_total    = {0}", LastDisplayTotal));
 
                     Value diff = preciseDisplayTotal - LastDisplayTotal;
                     if (!Value.IsNullOrEmptyOrFalse(diff))
                     {
-                        Logger.Debug("filters.changed_value.rounding", () => String.Format("rounding.diff                  = {0}", diff));
+                        Logger.Current.Debug("filters.changed_value.rounding", () => String.Format("rounding.diff                  = {0}", diff));
 
                         FiltersCommon.HandleValue(
                             /* value=         */ diff,
@@ -131,9 +132,10 @@ namespace NLedger.Filters
             LastDisplayTotal = new Value();
 
             Temps.Clear();
+            base.Clear();
+
             CreateAccounts();
 
-            base.Clear();
         }
     }
 }

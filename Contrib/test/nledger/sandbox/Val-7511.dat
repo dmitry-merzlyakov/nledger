@@ -1,0 +1,6 @@
+﻿2010-12-26 Example
+    Expenses:Food                $20
+    ; Just to be silly, always valuate *these* $20 as 30 DM, no matter what
+    ; the user asks for with -V or -X
+    ; VALUE:: 30 DM
+    Assets:Cash

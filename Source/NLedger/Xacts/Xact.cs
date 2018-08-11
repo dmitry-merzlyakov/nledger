@@ -1,13 +1,14 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -58,19 +59,23 @@ namespace NLedger.Xacts
 
         public override bool Valid()
         {
-            if (Date == default(DateTime))
+            if (!Date.HasValue)
+            {
+                Logger.Current.Debug("ledger.validate", () => "xact_t: ! _date");
                 return false;
+            }
 
             foreach(Post post in Posts)
             {
                 if (post.Xact != this || !post.Valid())
+                {
+                    Logger.Current.Debug("ledger.validate", () => "xact_t: post not valid");
                     return false;
+                }
             }
 
             return true;
         }
-
-        // IN PROGRESS
 
         #region Lookup Functions
 

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -17,11 +17,12 @@ using System.Text.RegularExpressions;
 using NLedger.Scopus;
 using NLedger.Expressions;
 using NLedger.Commodities;
+using NLedger.Utils;
 
 namespace NLedger.Tests.Values
 {
     [TestClass]
-    [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
+    [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon )]
     public class ValueTests : TestFixture
     {
         [TestMethod]
@@ -65,11 +66,11 @@ namespace NLedger.Tests.Values
         public void Value_Get_Returns_Amount_WhenLiteralIsFalse()
         {
             Value val1 = Value.Get("123", false);
-            //Value val2 = Value.Get("1234");  TODO - consider how to fix the second case (default parameter)
+            Value val2 = Value.Get("1234");
             Assert.AreEqual(ValueTypeEnum.Amount, val1.Type);
-            //Assert.AreEqual(ValueTypeEnum.Amount, val2.Type);
+            Assert.AreEqual(ValueTypeEnum.String, val2.Type);
             Assert.AreEqual("123", val1.ToString());
-            //Assert.AreEqual("1234", val2.ToString());
+            Assert.AreEqual("1234", val2.ToString());
         }
 
         [TestMethod]
@@ -471,8 +472,8 @@ namespace NLedger.Tests.Values
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("ValAmtBool1"));
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("ValAmtBool2")) { Precision = 5 };
 
-            Amount amt1 = new Amount(BigInt.Parse("0.05"), commodity1);
-            Amount amt2 = new Amount(BigInt.Parse("0.05"), commodity2);
+            Amount amt1 = new Amount(Quantity.Parse("0.05"), commodity1);
+            Amount amt2 = new Amount(Quantity.Parse("0.05"), commodity2);
 
             Value val1 = Value.Get(amt1);
             Value val2 = Value.Get(amt2);
@@ -504,8 +505,8 @@ namespace NLedger.Tests.Values
             Commodity commodityB = new Commodity(CommodityPool.Current, new CommodityBase("valNZeroB"));
 
             // Commodity precision is "0"; add values that are less than commodity precision
-            Amount amountA = new Amount(BigInt.Parse("0.1"), commodityA);
-            Amount amountB = new Amount(BigInt.Parse("0.1"), commodityB);
+            Amount amountA = new Amount(Quantity.Parse("0.1"), commodityA);
+            Amount amountB = new Amount(Quantity.Parse("0.1"), commodityB);
 
             Balance balance = new Balance();
             balance.Add(amountA);
@@ -515,6 +516,38 @@ namespace NLedger.Tests.Values
 
             Assert.IsFalse((bool)balance);
             Assert.IsFalse(val.Bool);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionFailedError))]
+        public void Value_Get_AmountMustBeValid()
+        {
+            Validator.IsVerifyEnabled = true;
+
+            Amount amount = new Amount(10);
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+
+            Assert.IsFalse(amount.Valid());
+            Value.Get(amount);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionFailedError))]
+        public void Value_Get_BalanceMustBeValid()
+        {
+            Validator.IsVerifyEnabled = true;
+
+            Balance balance = new Balance();
+
+            Amount amount = new Amount(10);
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+            balance.Add(amount);
+
+            Assert.IsFalse(amount.Valid());
+            Assert.IsFalse(balance.Valid());
+            Value.Get(balance);
         }
 
     }

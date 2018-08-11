@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,7 +42,7 @@ namespace NLedger.Tests.Commodities
             commodityHistory.AddCommodity(commodity1);
             commodityHistory.AddCommodity(commodity2);
             DateTime when = DateTime.Now;
-            Amount price = new Amount(BigInt.FromInt(10), commodity2);
+            Amount price = new Amount(10, commodity2);
 
             commodityHistory.AddPrice(commodity1, when, price);
 
@@ -63,7 +63,7 @@ namespace NLedger.Tests.Commodities
             commodityHistory.AddCommodity(commodity1);
             commodityHistory.AddCommodity(commodity2);
             DateTime when = DateTime.Now;
-            Amount price = new Amount(BigInt.FromInt(10), commodity2);
+            Amount price = new Amount(10, commodity2);
 
             commodityHistory.AddPrice(commodity1, when, price);
             commodityHistory.RemovePrice(commodity1, commodity2, when);
@@ -82,7 +82,7 @@ namespace NLedger.Tests.Commodities
             commodityHistory.AddCommodity(commodity1);
             commodityHistory.AddCommodity(commodity2);
             DateTime when = DateTime.Now;
-            Amount price = new Amount(BigInt.FromInt(10), commodity2);
+            Amount price = new Amount(10, commodity2);
             commodityHistory.AddPrice(commodity1, when, price);
 
             IList<PricePoint> pricePoints = new List<PricePoint>();
@@ -103,7 +103,7 @@ namespace NLedger.Tests.Commodities
             commodityHistory.AddCommodity(commodity1);
             commodityHistory.AddCommodity(commodity2);
             DateTime when = DateTime.Now;
-            Amount price = new Amount(BigInt.FromInt(10), commodity2);
+            Amount price = new Amount(10, commodity2);
             commodityHistory.AddPrice(commodity1, when, price);
 
             PricePoint? pricePoint = commodityHistory.FindPrice(commodity1, when.AddDays(1));
@@ -122,7 +122,7 @@ namespace NLedger.Tests.Commodities
             commodityHistory.AddCommodity(commodity1);
             commodityHistory.AddCommodity(commodity2);
             DateTime when = DateTime.Now;
-            Amount price = new Amount(BigInt.FromInt(10), commodity2);
+            Amount price = new Amount(10, commodity2);
             commodityHistory.AddPrice(commodity1, when, price);
 
             PricePoint? pricePoint = commodityHistory.FindPrice(commodity1, commodity2, when.AddDays(1));

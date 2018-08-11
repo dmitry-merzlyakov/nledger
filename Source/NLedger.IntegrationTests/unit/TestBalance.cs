@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -461,7 +461,6 @@ namespace NLedger.IntegrationTests.unit
 
         [TestMethod]
         [TestCategory("BoostAutoTest")]
-        [Ignore]  // TODO - DM - remove ignorance and correct Balance.Add code (not newAmount())
         public void AutoTestCase_Balance_TestRound()
         {
             Amount a1 = new Amount("0.00");
@@ -487,6 +486,17 @@ namespace NLedger.IntegrationTests.unit
             a1.InPlaceRoundTo(2);
             a2.InPlaceRoundTo(2);
             a3.InPlaceRoundTo(2);
+
+            // [DM] The code above does not have the same effect in .Net because of another managing of BigInt instances.
+            // In opposite to the original code, quantities in NLedger are struct values and they are not shared 
+            // among amounts. Therefore, xx.InPlaceRoundTo() does not have effect on the balance instance; 
+            // the balance still keeps the original quantity but not rounded one. 
+            // It was decided not to rework BigInt implementation in NLedger because it makes the application 
+            // performance worse with none functional benefits (the only place that is essential to it is this code).
+            // Instead, a corrective code was added below to simulate the original behavior.
+            foreach (var amount in b1.Amounts)
+                amount.Value.InPlaceRoundTo(2);
+
             a4.InPlaceRoundTo(2);
             a5.InPlaceRoundTo(2);
             a6.InPlaceRoundTo(2);

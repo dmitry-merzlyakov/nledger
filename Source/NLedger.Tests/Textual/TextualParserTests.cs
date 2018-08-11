@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -49,7 +49,7 @@ namespace NLedger.Tests.Textual
             Assert.IsNotNull(post);
             Assert.AreEqual("Expenses:Food:Groceries", post.Account.FullName);
             Assert.AreEqual("$", post.Amount.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("37.50", 2), post.Amount.Quantity);
+            Assert.AreEqual(Quantity.Parse("37.50", 2), post.Amount.Quantity);
             Assert.AreEqual(new Date(2011, 03, 01), post.DateAux);
         }
 
@@ -66,9 +66,9 @@ namespace NLedger.Tests.Textual
             Assert.IsNotNull(post);
             Assert.AreEqual("Assets:Brokerage", post.Account.FullName);
             Assert.AreEqual("AAPL", post.Amount.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("50"), post.Amount.Quantity);
+            Assert.AreEqual(Quantity.Parse("50"), post.Amount.Quantity);
             Assert.AreEqual("$", post.Cost.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("1500", 2), post.Cost.Quantity);
+            Assert.AreEqual(Quantity.Parse("1500", 2), post.Cost.Quantity);
             Assert.AreEqual(post.Cost, post.GivenCost);
         }
 
@@ -85,9 +85,9 @@ namespace NLedger.Tests.Textual
             Assert.IsNotNull(post);
             Assert.AreEqual("Assets:Wyshona:Items", post.Account.FullName);
             Assert.AreEqual("\"Plans: Wildthorn Mail\"", post.Amount.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("1"), post.Amount.Quantity);
+            Assert.AreEqual(Quantity.Parse("1"), post.Amount.Quantity);
             Assert.AreEqual("G", ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("1.25", 2), ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Quantity);
+            Assert.AreEqual(Quantity.Parse("1.25", 2), ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Quantity);
         }
 
         [TestMethod]
@@ -114,7 +114,7 @@ namespace NLedger.Tests.Textual
             Post post1 = xact.Posts.First();
             Assert.AreEqual("Assets:Checking", post1.Account.FullName);
             Assert.AreEqual("$", post1.Amount.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("1000", 2), post1.Amount.Quantity);
+            Assert.AreEqual(Quantity.Parse("1000", 2), post1.Amount.Quantity);
 
             Post post2 = xact.Posts.Last();
             Assert.AreEqual("Equity:Opening Balances", post2.Account.FullName);
@@ -149,7 +149,7 @@ namespace NLedger.Tests.Textual
             Post post1 = xact.Posts.First();
             Assert.AreEqual("Assets:Checking", post1.Account.FullName);
             Assert.AreEqual("$", post1.Amount.Commodity.Symbol);
-            Assert.AreEqual(BigInt.Parse("5500", 2), post1.Amount.Quantity);
+            Assert.AreEqual(Quantity.Parse("5500", 2), post1.Amount.Quantity);
 
             Post post2 = xact.Posts.Last();
             Assert.AreEqual("Assets:Savings", post2.Account.FullName);

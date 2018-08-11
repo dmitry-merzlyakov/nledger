@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -40,7 +40,7 @@ namespace NLedger.Tests
             Assert.IsTrue(balance.IsSingleAmount);
 
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
-            balance.Add(new Amount(BigInt.FromLong(1), comm));
+            balance.Add(new Amount(1, comm));
             Assert.IsFalse(balance.IsSingleAmount);
         }
 
@@ -97,8 +97,8 @@ namespace NLedger.Tests
             Commodity comm1 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
             Commodity comm2 = new Commodity(CommodityPool.Current, new CommodityBase("comm2"));
 
-            Amount amount1 = new Amount(BigInt.FromInt(1), comm1);
-            Amount amount2 = new Amount(BigInt.FromInt(2), comm2);
+            Amount amount1 = new Amount(1, comm1);
+            Amount amount2 = new Amount(2, comm2);
 
             Balance balance = new Balance();
             balance.Add(amount1);
@@ -162,7 +162,7 @@ namespace NLedger.Tests
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromLong(5), comm));
+            balance.Add(new Amount(5, comm));
 
             Amount amount = balance.CommodityAmount(comm);
             Assert.AreEqual(5, amount.Quantity.ToLong());
@@ -173,7 +173,7 @@ namespace NLedger.Tests
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromLong(5), comm));
+            balance.Add(new Amount(5, comm));
 
             Amount amount = balance.CommodityAmount();
             Assert.AreEqual(5, amount.Quantity.ToLong());
@@ -212,8 +212,8 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity2));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity2));
 
             Balance result = balance.Multiply(new Amount(5));
 
@@ -229,9 +229,9 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
+            balance.Add(new Amount(10, commodity1));
 
-            Balance result = balance.Multiply(new Amount(BigInt.FromInt(10), commodity2));
+            Balance result = balance.Multiply(new Amount(10, commodity2));
         }
 
         [TestMethod]
@@ -242,10 +242,10 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(10), commodity2));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(10, commodity2));
 
-            Balance result = balance.Multiply(new Amount(BigInt.FromInt(10), commodity2));
+            Balance result = balance.Multiply(new Amount(10, commodity2));
         }
 
         [TestMethod]
@@ -254,10 +254,10 @@ namespace NLedger.Tests
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity1));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity1));
 
-            Balance result = balance.Multiply(new Amount(BigInt.FromInt(10), commodity1));
+            Balance result = balance.Multiply(new Amount(10, commodity1));
 
             Assert.AreEqual(300, balance.Amounts.First().Value.Quantity.ToLong());
         }
@@ -294,8 +294,8 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity2));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity2));
 
             Balance result = balance.Divide(new Amount(5));
 
@@ -311,9 +311,9 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
+            balance.Add(new Amount(10, commodity1));
 
-            Balance result = balance.Divide(new Amount(BigInt.FromInt(10), commodity2));
+            Balance result = balance.Divide(new Amount(10, commodity2));
         }
 
         [TestMethod]
@@ -324,10 +324,10 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(10), commodity2));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(10, commodity2));
 
-            Balance result = balance.Divide(new Amount(BigInt.FromInt(10), commodity2));
+            Balance result = balance.Divide(new Amount(10, commodity2));
         }
 
         [TestMethod]
@@ -336,10 +336,10 @@ namespace NLedger.Tests
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity1));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity1));
 
-            Balance result = balance.Divide(new Amount(BigInt.FromInt(10), commodity1));
+            Balance result = balance.Divide(new Amount(10, commodity1));
 
             Assert.AreEqual(3, balance.Amounts.First().Value.Quantity.ToLong());
         }
@@ -363,8 +363,8 @@ namespace NLedger.Tests
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity1));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity1));
 
             Assert.IsFalse(balance.Equals(new Amount(10)));
         }
@@ -375,10 +375,10 @@ namespace NLedger.Tests
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity1));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity1));
 
-            Assert.IsTrue(balance.Equals(new Amount(BigInt.FromLong(30), commodity1)));
+            Assert.IsTrue(balance.Equals(new Amount(30, commodity1)));
         }
 
         [TestMethod]
@@ -387,12 +387,12 @@ namespace NLedger.Tests
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
 
             Balance balance1 = new Balance();
-            balance1.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance1.Add(new Amount(BigInt.FromInt(20), commodity1));
+            balance1.Add(new Amount(10, commodity1));
+            balance1.Add(new Amount(20, commodity1));
 
             Balance balance2 = new Balance();
-            balance2.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance2.Add(new Amount(BigInt.FromInt(20), commodity1));
+            balance2.Add(new Amount(10, commodity1));
+            balance2.Add(new Amount(20, commodity1));
 
             Assert.IsTrue(balance1.Equals(balance2));
         }
@@ -404,8 +404,8 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity2));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity2));
 
             Assert.IsTrue(balance.IsLessThan(new Amount(30)));
             Assert.IsFalse(balance.IsLessThan(new Amount(10)));
@@ -418,8 +418,8 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.FromInt(10), commodity1));
-            balance.Add(new Amount(BigInt.FromInt(20), commodity2));
+            balance.Add(new Amount(10, commodity1));
+            balance.Add(new Amount(20, commodity2));
 
             Assert.IsFalse(balance.IsGreaterThan(new Amount(30)));
             Assert.IsTrue(balance.IsGreaterThan(new Amount(10)));
@@ -431,8 +431,8 @@ namespace NLedger.Tests
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
 
-            Amount amount1 = new Amount(BigInt.FromInt(200), commodity1);
-            Amount amount2 = new Amount(BigInt.FromInt(300), commodity2);
+            Amount amount1 = new Amount(200, commodity1);
+            Amount amount2 = new Amount(300, commodity2);
 
             Balance balance = new Balance();
             balance.Add(amount1);
@@ -459,8 +459,8 @@ namespace NLedger.Tests
 
             // First balance
 
-            Amount amount1 = new Amount(BigInt.FromInt(200), commodity1);
-            Amount amount2 = new Amount(BigInt.FromInt(300), commodity2);
+            Amount amount1 = new Amount(200, commodity1);
+            Amount amount2 = new Amount(300, commodity2);
 
             Balance balance1 = new Balance();
             balance1.Add(amount1);
@@ -468,8 +468,8 @@ namespace NLedger.Tests
 
             // Second balance
 
-            Amount amount3 = new Amount(BigInt.FromInt(400), commodity1);
-            Amount amount4 = new Amount(BigInt.FromInt(500), commodity2);
+            Amount amount3 = new Amount(400, commodity1);
+            Amount amount4 = new Amount(500, commodity2);
 
             Balance balance2 = new Balance();
             balance2.Add(amount3);
@@ -494,8 +494,8 @@ namespace NLedger.Tests
 
             // First balance
 
-            Amount amount1 = new Amount(BigInt.FromInt(200), commodity1);
-            Amount amount2 = new Amount(BigInt.FromInt(300), commodity2);
+            Amount amount1 = new Amount(200, commodity1);
+            Amount amount2 = new Amount(300, commodity2);
 
             Balance balance1 = new Balance();
             balance1.Add(amount1);
@@ -503,8 +503,8 @@ namespace NLedger.Tests
 
             // Second balance
 
-            Amount amount3 = new Amount(BigInt.FromInt(50), commodity1);
-            Amount amount4 = new Amount(BigInt.FromInt(70), commodity2);
+            Amount amount3 = new Amount(50, commodity1);
+            Amount amount4 = new Amount(70, commodity2);
 
             Balance balance2 = new Balance();
             balance2.Add(amount3);
@@ -546,8 +546,8 @@ namespace NLedger.Tests
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("balToStrB"));
 
             Balance balance = new Balance();
-            balance.Add(new Amount(BigInt.Parse("1.22"), commodity1));
-            balance.Add(new Amount(BigInt.Parse("2.44"), commodity2));
+            balance.Add(new Amount(Quantity.Parse("1.22"), commodity1));
+            balance.Add(new Amount(Quantity.Parse("2.44"), commodity2));
 
             Assert.AreEqual("balToStrA1  \r\nbalToStrB2", balance.ToString());
         }
@@ -567,8 +567,8 @@ namespace NLedger.Tests
             Commodity commodityB = new Commodity(CommodityPool.Current, new CommodityBase("balNZeroB"));
 
             // Commodity precision is "0"; add values that are less than commodity precision
-            Amount amountA = new Amount(BigInt.Parse("0.1"), commodityA);
-            Amount amountB = new Amount(BigInt.Parse("0.1"), commodityB);
+            Amount amountA = new Amount(Quantity.Parse("0.1"), commodityA);
+            Amount amountB = new Amount(Quantity.Parse("0.1"), commodityB);
 
             Balance balance = new Balance();
             balance.Add(amountA);
@@ -588,8 +588,8 @@ namespace NLedger.Tests
             Commodity commodityB = new Commodity(CommodityPool.Current, new CommodityBase("balNZeroB"));
 
             // Commodity precision is "0"; add values that are less than commodity precision
-            Amount amountA = new Amount(BigInt.Parse("0.1"), commodityA);
-            Amount amountB = new Amount(BigInt.Parse("1.0"), commodityB);
+            Amount amountA = new Amount(Quantity.Parse("0.1"), commodityA);
+            Amount amountB = new Amount(Quantity.Parse("1.0"), commodityB);
 
             Balance balance = new Balance();
             balance.Add(amountA);
@@ -602,5 +602,19 @@ namespace NLedger.Tests
             Assert.IsTrue(balance.IsNonZero);  // Results in True
         }
 
+        [TestMethod]
+        public void Balance_Valid_ReturnsFalseIfAmountIsNotValid()
+        {
+            Balance balance = new Balance();
+            Assert.IsTrue(balance.Valid());
+
+            Amount amount = new Amount(10);
+            var quantity = amount.Quantity.SetPrecision(2048);
+            amount = new Amount(quantity, null);
+            balance.Add(amount);
+
+            Assert.IsFalse(amount.Valid());
+            Assert.IsFalse(balance.Valid());
+        }
     }
 }

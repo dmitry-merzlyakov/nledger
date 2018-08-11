@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -238,6 +238,36 @@ namespace NLedger.Tests.Journals
 
             journal.AddXact(xact1);
             journal.AddXact(xact2);
+        }
+
+        [TestMethod]
+        public void Journal_Valid_ReturnsFalseIfMasterNotValid()
+        {
+            Journal journal = new Journal();
+            Assert.IsTrue(journal.Valid());
+
+            var master = new Account();
+            master.Accounts.Add("wrong-self-loop", master);
+            journal.Master = master;
+
+            Assert.IsFalse(journal.Master.Valid());
+            Assert.IsFalse(journal.Valid());
+        }
+
+        [TestMethod]
+        public void Journal_Valid_ReturnsFalseIfXactNotValid()
+        {
+            Journal journal = new Journal();
+            journal.Master = new Account();
+            Assert.IsTrue(journal.Valid());
+
+            Xact xact = new Xact();
+            xact.AddPost(new Post(journal.Master, new Amount(10)));
+            xact.AddPost(new Post(journal.Master, new Amount(-10)));
+            journal.AddXact(xact);
+
+            Assert.IsFalse(xact.Valid()); // [DM] - Xact is not valid (but finalizable to add to the journal) because of no date.
+            Assert.IsFalse(journal.Valid());
         }
 
     }

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -107,7 +107,7 @@ namespace NLedger.Scopus
         public T Get<T>(int index, bool convert = true)
         {
             // DM - this method was completely rewritten to handle conversion to the expected type
-            // TODO - reconsider to get rid of boxing
+            // #remove-boxing - Consider removing excess boxing in this method.
 
             if (typeof(T) == typeof(int))
                 convert = true; // see - inline int call_scope_t::get<int>(std::size_t index, bool) {

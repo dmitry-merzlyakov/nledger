@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2017, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -20,9 +20,8 @@ namespace NLedger
         ITEM_NORMAL = 0x00,             // no flags at all, a basic posting
         ITEM_GENERATED = 0x01,          // posting was not found in a journal
         ITEM_TEMP = 0x02,               // posting is a managed temporary
-        ITEM_NOTE_ON_NEXT_LINE = 0x04,   // did we see a note on the next line?
+        ITEM_NOTE_ON_NEXT_LINE = 0x04,  // did we see a note on the next line?
 
-        // TODO - REFACTOR!!!
         POST_VIRTUAL =         0x0010, // the account was specified with (parens)
         POST_MUST_BALANCE =    0x0020, // posting must balance in the transaction
         POST_CALCULATED =      0x0040, // posting's amount was calculated
