@@ -24,7 +24,6 @@ namespace NLedger.Times
         TOK_DASH,
         TOK_DOT,
 
-        TOK_A_YEAR,
         TOK_A_MONTH,
         TOK_A_WDAY,
 

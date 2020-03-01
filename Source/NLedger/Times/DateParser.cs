@@ -48,7 +48,6 @@ namespace NLedger.Times
                 {
                     case LexerTokenKindEnum.TOK_DATE:
                     case LexerTokenKindEnum.TOK_INT:
-                    case LexerTokenKindEnum.TOK_A_YEAR:
                     case LexerTokenKindEnum.TOK_A_MONTH:
                     case LexerTokenKindEnum.TOK_A_WDAY:
                         DetermineWhen(ref tok, ref inclusionSpecifier);
@@ -420,7 +419,7 @@ namespace NLedger.Times
 
                             case LexerTokenKindEnum.TOK_QUARTER:
                             case LexerTokenKindEnum.TOK_QUARTERS:
-                                when = when.AddYears(amount * 3 * adjust);
+                                when = when.AddMonths(amount * 3 * adjust);
                                 break;
 
                             case LexerTokenKindEnum.TOK_MONTH:
@@ -439,7 +438,10 @@ namespace NLedger.Times
                                 break;
 
                             default:
-                                specifier.Day = amount;
+                                if (amount > 31)
+                                    specifier.Year = amount;
+                                else
+                                    specifier.Day = amount;
                                 break;
                         }
 
@@ -549,16 +551,12 @@ namespace NLedger.Times
                         break;
                     }
 
-                case LexerTokenKindEnum.TOK_A_YEAR:
-                    specifier.Year = tok.Value.GetValue<int>();
-                    break;
-
                 case LexerTokenKindEnum.TOK_A_MONTH:
                     specifier.Month = tok.Value.GetValue<MonthEnum>();
                     tok = Lexer.PeekToken();
                     switch (tok.Kind)
                     {
-                        case LexerTokenKindEnum.TOK_A_YEAR:
+                        case LexerTokenKindEnum.TOK_INT:
                             specifier.Year = tok.Value.GetValue<int>();
                             break;
                         case LexerTokenKindEnum.END_REACHED:

@@ -85,7 +85,6 @@ namespace NLedger.Times
                 case LexerTokenKindEnum.UNKNOWN:
                 case LexerTokenKindEnum.TOK_DATE:
                 case LexerTokenKindEnum.TOK_INT:
-                case LexerTokenKindEnum.TOK_A_YEAR:
                 case LexerTokenKindEnum.TOK_A_MONTH:
                 case LexerTokenKindEnum.TOK_A_WDAY:
                     return Value.ToString();

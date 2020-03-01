@@ -140,10 +140,7 @@ namespace NLedger.Times
             {
                 if (Char.IsDigit(term[0]))
                 {
-                    if (term.Length == 4)
-                        return new LexerToken(LexerTokenKindEnum.TOK_A_YEAR, new BoostVariant(Int32.Parse(term)));
-                    else
-                        return new LexerToken(LexerTokenKindEnum.TOK_INT, new BoostVariant(Int32.Parse(term)));
+                    return new LexerToken(LexerTokenKindEnum.TOK_INT, new BoostVariant(Int32.Parse(term)));
                 }
                 else if (Char.IsLetter(term[0]))
                 {
