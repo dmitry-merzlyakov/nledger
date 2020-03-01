@@ -431,10 +431,10 @@ namespace NLedger.Scopus
     {
         public FileOption() : base (Session.OptionFile)
         {
-            DataFiles = new HashSet<string>(FileNameComparer.Instance);
+            DataFiles = new List<string>();
         }
 
-        public ISet<string> DataFiles { get; private set; }
+        public IList<string> DataFiles { get; private set; }
 
         public new Session Parent
         {
