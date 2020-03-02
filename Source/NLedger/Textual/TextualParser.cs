@@ -697,26 +697,25 @@ namespace NLedger.Textual
                                 throw new ParseError(ParseError.ParseError_BalanceAssertionMustEvaluateToConstant);
                         }
 
-                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: parsed amt = {1}", Context.LineNum, post.AssignedAmount));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: parsed balance amount = {1}", Context.LineNum, post.AssignedAmount));
 
                         Amount amt = post.AssignedAmount;
                         Value accountTotal = post.Account.Amount().StripAnnotations(new AnnotationKeepDetails());
 
                         Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: account balance = {1}", Context.LineNum, accountTotal));
-                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1}", Context.LineNum, amt));
+                        Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1} (is_zero = {2})", Context.LineNum, amt, amt.IsZero));
 
-                        Amount diff = new Amount(amt);
+                        Balance diff = new Balance(amt);
 
                         if (accountTotal.Type == ValueTypeEnum.Amount)
                         {
-                            if (accountTotal.AsAmount.Commodity == diff.Commodity)
-                                diff.InPlaceSubtract(accountTotal.AsAmount);
+                            diff -= accountTotal.AsAmount;
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Subtracting amount {1} from diff, yielding {2}", Context.LineNum, accountTotal.AsAmount, diff));
                         }
                         else if (accountTotal.Type == ValueTypeEnum.Balance)
                         {
-                            Amount commBal = accountTotal.AsBalance.CommodityAmount(amt.Commodity);
-                            if (commBal != null)
-                                diff.InPlaceSubtract(commBal);
+                            diff -= accountTotal.AsBalance;
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Subtracting balance {1} from diff, yielding {2}", Context.LineNum, accountTotal.AsBalance, diff));
                         }
 
                         Logger.Current.Debug("post.assign", () => String.Format("line {0}: diff = {1}", Context.LineNum, diff));
@@ -725,11 +724,24 @@ namespace NLedger.Textual
                         // Subtract amounts from previous posts to this account in the xact.
                         foreach (var p in xact.Posts)
                         {
-                            if (p.Account == post.Account && p.Amount.Commodity == diff.Commodity)
+                            if (p.Account == post.Account)
                             {
-                                diff.InPlaceSubtract(p.Amount);
-                                Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Subtract {1}, diff = {2}", Context.LineNum, p.Amount, diff));
+                                diff -= p.Amount;
+                                Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Subtracting {1}, diff = {2}", Context.LineNum, p.Amount, diff));
                             }
+                        }
+
+                        // If amt has a commodity, restrict balancing to that. Otherwise, it's the blanket '0' and
+                        // check that all of them are zero.
+                        if (amt.HasCommodity)
+                        {
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Finding commodity {1} ({2}) in balance {3}", Context.LineNum, amt.Commodity, amt, diff));
+                            Amount wantedCommodity = diff.CommodityAmount(amt.Commodity);
+                            if (Amount.IsNullOrEmpty(wantedCommodity))
+                                diff = new Balance(amt - amt); // this is '0' with the correct commodity.
+                            else
+                                diff = new Balance(wantedCommodity);
+                            Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Diff is now {1}", Context.LineNum, diff));
                         }
 
                         if (Amount.IsNullOrEmpty(post.Amount))
@@ -737,18 +749,22 @@ namespace NLedger.Textual
                             // balance assignment
                             if (!diff.IsZero)
                             {
-                                post.Amount = diff;
+                                // This will fail if there are more than 1 commodity in diff, which is wanted,
+                                // as amount cannot store more than 1 commodity.
+                                post.Amount = diff.ToAmount();
                                 Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Overwrite null posting", Context.LineNum));
                             }
                         }
                         else
                         {
                             // balance assertion
-                            diff.InPlaceSubtract(post.Amount);
+                            diff -= post.Amount;
+
                             if (!NoAssertions && !diff.IsZero)
                             {
-                                Amount tot = amt - diff;
-                                throw new ParseError(String.Format(ParseError.ParseError_BalanceAssertionOffBySmthExpectedToSeeSmth, diff, tot));
+                                Balance tot = -diff + amt;
+                                Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Balance assertion: off by {1} (expected to see {2})", Context.LineNum, diff, tot));
+                                throw new ParseError(String.Format(ParseError.ParseError_BalanceAssertionOffBySmthExpectedToSeeSmth, diff.AsString(), tot.AsString()));
                             }
                         }
 

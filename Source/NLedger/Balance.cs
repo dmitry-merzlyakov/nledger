@@ -208,6 +208,19 @@ namespace NLedger
         }
 
         /// <summary>
+        /// Ported from: amount_t to_amount()
+        /// </summary>
+        public Amount ToAmount()
+        {
+            if (IsEmpty)
+                throw new BalanceError(BalanceError.ErrorMessageCannotConvertAnEmptyBalanceToAnAmount);
+            else if (Amounts.Count == 1)
+                return Amounts.Values.First();
+            else
+                throw new BalanceError(BalanceError.ErrorMessageCannotConvertABalanceWithMultipleCommoditiesToAnAmount);
+        }
+
+        /// <summary>
         /// Ported from: balance_t& balance_t::operator+=(const amount_t& amt)
         /// </summary>
         public Balance Add(Amount amount)
@@ -623,6 +636,15 @@ namespace NLedger
         public override string ToString()
         {
             return Print(12);
+        }
+
+        /// <summary>
+        /// Ported from operator string() / string to_string()
+        /// </summary>
+        /// <returns></returns>
+        public string AsString()
+        {
+            return Print();
         }
 
         private class PrintAmountFromBalance

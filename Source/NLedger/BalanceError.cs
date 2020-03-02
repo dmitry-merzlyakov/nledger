@@ -29,6 +29,8 @@ namespace NLedger
         public const string ErrorMessageTransactionDoesNotBalance = "Transaction does not balance";
         public const string ErrorMessageAPostingsCostMustBeOfADifferentCommodityThanItsAmount = "A posting's cost must be of a different commodity than its amount";
         public const string ErrorMessageThereCannotBeNullAmountsAfterBalancingATransaction = "There cannot be null amounts after balancing a transaction";
+        public const string ErrorMessageCannotConvertAnEmptyBalanceToAnAmount = "Cannot convert an empty balance to an amount";
+        public const string ErrorMessageCannotConvertABalanceWithMultipleCommoditiesToAnAmount = "Cannot convert a balance with multiple commodities to an amount";
 
         public BalanceError(string message)
             : base(message)
