@@ -32,8 +32,9 @@ namespace NLedger.Output
             StringBuilder sb = new StringBuilder();
             Format prependFormat = null;
             int prependWidth = 0;
+            bool doPrependFormat;
 
-            if (Report.PrependFormatHandler.Handled)
+            if (doPrependFormat = Report.PrependFormatHandler.Handled)
             {
                 prependFormat = new Format(Report.PrependFormatHandler.Str());
                 if (Report.PrependWidthHandler.Handled)
@@ -42,7 +43,7 @@ namespace NLedger.Output
 
             foreach(KeyValuePair<Account,int> pair in Accounts.OrderBy(p => p.Key.FullName, StringComparer.Ordinal))
             {
-                if (prependFormat != null)
+                if (doPrependFormat)
                 {
                     BindScope boundScope = new BindScope(Report, pair.Key);
                     sb.AppendFormat(StringExtensions.GetWidthAlignFormatString(prependWidth), 
