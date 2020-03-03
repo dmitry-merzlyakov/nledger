@@ -343,7 +343,7 @@ namespace NLedger.Journals
             Logger.Current.TraceContext(TimerName.ParsingTotal, 1)?.Finish();
 
             if (contextStack.GetCurrent().Errors > 0)
-                throw new CountError(contextStack.GetCurrent().Errors);
+                throw new CountError(contextStack.GetCurrent().Errors, contextStack.GetCurrent().Last);
 
             return contextStack.GetCurrent().Count;
         }

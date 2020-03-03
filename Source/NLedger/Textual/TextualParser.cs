@@ -137,6 +137,11 @@ namespace NLedger.Textual
                     ErrorContext.Current.WriteError(ex);
 
                     Context.Errors++;
+
+                    if (!String.IsNullOrEmpty(currentContext))
+                        Context.Last = currentContext + "\n" + ex.Message;
+                    else
+                        Context.Last = ex.Message;
                 }
             }
 

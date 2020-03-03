@@ -19,7 +19,7 @@ namespace NLedger
     /// </summary>
     public class CountError : Exception
     {
-        public CountError(int count) : base()
+        public CountError(int count, string message) : base(message)
         {
             Count = count;
         }

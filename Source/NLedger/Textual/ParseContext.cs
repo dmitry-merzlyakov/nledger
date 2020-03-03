@@ -67,6 +67,7 @@ namespace NLedger.Textual
         public int Errors { get; set; }
         public int Sequence { get; set; }
         public string LineBuf { get; set; }
+        public string Last { get; set; }
 
         public string Location
         {

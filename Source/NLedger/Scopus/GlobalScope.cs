@@ -537,7 +537,7 @@ namespace NLedger.Scopus
             VersionHandler = Options.Add(new Option(OptionVersion, (o, w) =>
             {
                 VirtualConsole.Output.WriteLine(ShowVersionInfo());
-                throw new CountError(0); // exit immediately
+                throw new CountError(0, String.Empty); // exit immediately
             }));
 
             Options.AddLookupOpt(OptionArgsOnly);

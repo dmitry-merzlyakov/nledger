@@ -99,7 +99,7 @@ namespace NLedger.Tests.Scopus
         [ExpectedException(typeof(CountError))]
         public void Option_ProcessOption_PassesThroughCountError()
         {
-            ExprFunc func = s => { throw new CountError(1); };
+            ExprFunc func = s => { throw new CountError(1, String.Empty); };
             MockScope mockScope = new MockScope();
 
             Option.ProcessOption("whence", func, mockScope, "arg", "name");
