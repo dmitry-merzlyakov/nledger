@@ -703,12 +703,13 @@ namespace NLedger.Amounts
             if (!Quantity.HasValue)
                 throw new AmountError(AmountError.ErrorMessageCannotInvertUninitializedAmount);
 
-            Quantity = BigInt.One / Quantity;
+            if (Sign != 0)
+                Quantity = BigInt.One / Quantity;
         }
 
         public BigInt GetInvertedQuantity()
         {
-            if (Quantity.HasValue)
+            if (Quantity.HasValue && Sign != 0)
                 return BigInt.One / Quantity;
             else
                 return BigInt.Zero;
