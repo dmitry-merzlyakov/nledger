@@ -395,7 +395,10 @@ namespace NLedger.Xacts
                     }
 
                     if (post.Flags.HasFlag(SupportsFlagsEnum.POST_DEFERRED))
-                        post.Account.AddDeferredPosts(Id, post);
+                    {
+                        if(!Amount.IsNullOrEmpty(post.Amount))
+                            post.Account.AddDeferredPosts(Id, post);
+                    }
                     else
                         post.Account.AddPost(post);
 
