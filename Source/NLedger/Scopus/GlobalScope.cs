@@ -578,7 +578,7 @@ namespace NLedger.Scopus
 @"NLedger {0}, the command-line accounting tool.
 Ported to .Net platform from Ledger {1}.{2}.{3}
 
-Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+Copyright (c) 2003-2019, John Wiegley.  All rights reserved.
 
 This program is made available under the terms of the BSD Public License.
 See LICENSE file included with the distribution for details and disclaimer.";
