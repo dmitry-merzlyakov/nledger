@@ -1003,10 +1003,6 @@
       <Link>test\baseline\opt-yearly.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\Contrib\test\garbage-input.dat">
-      <Link>test\garbage-input.dat</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\Contrib\test\input\demo.ledger">
       <Link>test\input\demo.ledger</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1273,6 +1269,10 @@
     </None>
     <None Include="..\..\Contrib\test\regress\1E192DF6.test">
       <Link>test\regress\1E192DF6.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\25A099C9.dat">
+      <Link>test\regress\25A099C9.dat</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\regress\25A099C9.test">
