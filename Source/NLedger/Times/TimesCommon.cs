@@ -128,7 +128,8 @@ namespace NLedger.Times
         /// </summary>
         public Date ParseDateMaskRoutine(string dateStr, DateIO io, out DateTraits traits)
         {
-            Validator.Verify(() => dateStr.Length < 127);
+            if (dateStr != null && dateStr.Length > 127)
+                throw new DateError(String.Format(DateError.ErrorMessageInvalidDate, dateStr));
 
             string buf = dateStr;
             if (ConvertSeparatorsToSlashes)
