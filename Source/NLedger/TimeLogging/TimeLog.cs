@@ -176,7 +176,7 @@ namespace NLedger.TimeLogging
                 foreach(Account account in accounts)
                 {
                     Logger.Current.Debug(DebugTimeLog, () => String.Format("Clocking out from account {0}", account.FullName));
-                    Context.Count += ClockOutFromTimeLog(TimeXacts, new TimeXact(null, TimesCommon.Current.CurrentTime, account), Context);
+                    Context.Count += ClockOutFromTimeLog(TimeXacts, new TimeXact(null, TimesCommon.Current.CurrentTime, false, account), Context);
                 }
                 if (TimeXacts.Any())
                     throw new InvalidOperationException("assert(time_xacts.empty());");
