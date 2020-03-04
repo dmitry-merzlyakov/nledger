@@ -517,12 +517,27 @@ namespace NLedger
             return null;
         }
 
-      /**
-       * Iteration primitives.  `map_sorted_amounts' allows one to visit
-       * each amount in balance in the proper order for displaying to the
-       * user.  Mostly used by `print' and other routinse where the sort
-       * order of the amounts' commodities is significant.
-       */
+        /**
+         * Given a balance, insert a commodity-wise sort of the amounts into the
+         * given amounts_array.
+         */
+        /// <summary>
+        /// Ported from void balance_t::sorted_amounts(amounts_array& sorted) const
+        /// </summary>
+        public List<Amount> SortedAmounts()
+        {
+            return Amounts.Values.
+                // [DM] Enumerable.OrderBy is a stable sort that preserve original positions for equal items
+                OrderBy(amt => amt, new BalanceCompareByCommodityComparison()).
+                ToList();
+        }
+
+        /**
+         * Iteration primitives.  `map_sorted_amounts' allows one to visit
+         * each amount in balance in the proper order for displaying to the
+         * user.  Mostly used by `print' and other routinse where the sort
+         * order of the amounts' commodities is significant.
+         */
         public void MapSortedAmounts(Action<Amount> fn)
         {
             if (Amounts.Any())
@@ -535,11 +550,7 @@ namespace NLedger
                 }
                 else
                 {
-                    List<Amount> sorted = Amounts.Values.
-                        Where(amt => (bool)amt).
-                        // [DM] Enumerable.OrderBy is a stable sort that preserve original positions for equal items
-                        OrderBy(amt => amt, new BalanceCompareByCommodityComparison()).
-                        ToList();
+                    List<Amount> sorted = SortedAmounts();
                     sorted.ForEach(amt => fn(amt));
                 }
             }
