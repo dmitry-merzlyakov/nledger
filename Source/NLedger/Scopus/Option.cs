@@ -43,6 +43,9 @@ namespace NLedger.Scopus
         /// </summary>
         public static Tuple<ExprOp,bool> FindOption(Scope scope, string name)
         {
+            if (name != null && name.Length > 127)
+                throw new OptionError(String.Format(OptionError.ErrorMessage_IllegalOption, name));
+
             name = name.Replace('-', '_') + '_';
             ExprOp exprOp = scope.Lookup(SymbolKindEnum.OPTION, name);
             if (exprOp != null)
