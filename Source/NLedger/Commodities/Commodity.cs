@@ -131,7 +131,7 @@ namespace NLedger.Commodities
 
                     if (leftPrice.Commodity == rightPrice.Commodity)
                     {
-                        Logger.Current.Debug(DebugCommodityCompare, () => "lot commodities match, comparing on sign");
+                        Logger.Current.Debug(DebugCommodityCompare, () => "both have price, commodities match, comparing amount");
                         return leftPrice.IsLessThan(rightPrice);
                     }
                     else
@@ -141,8 +141,8 @@ namespace NLedger.Commodities
                         // on the numerical values.
                         leftPrice = new Amount(leftPrice.Quantity, null);
                         rightPrice = new Amount(rightPrice.Quantity, null);
-                        Logger.Current.Debug(DebugCommodityCompare, () => "lot commodities don't match, comparing on sign");
-                        return leftPrice.IsLessThan(rightPrice);
+                        Logger.Current.Debug(DebugCommodityCompare, () => "both have price, commodities don't match, recursing");
+                        return CompareByCommodity(leftPrice, rightPrice);
                     }
                 }
 
