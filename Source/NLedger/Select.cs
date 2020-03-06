@@ -418,9 +418,6 @@ namespace NLedger
                     else if (arg == "emacs")
                     {
                     }
-                    else if (arg == "org")
-                    {
-                    }
                 }
             }
 

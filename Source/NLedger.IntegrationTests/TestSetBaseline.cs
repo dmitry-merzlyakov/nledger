@@ -88,13 +88,6 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
-        public void IntegrationTest_test_baseline_cmd_org()
-        {
-            new TestRunner(@"test\baseline\cmd-org.test").Run();
-        }
-		
-        [TestMethod]
-        [TestCategory("Integration")]
         public void IntegrationTest_test_baseline_cmd_payees()
         {
             new TestRunner(@"test\baseline\cmd-payees.test").Run();

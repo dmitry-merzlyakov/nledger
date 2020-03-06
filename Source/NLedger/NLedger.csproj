@@ -186,7 +186,6 @@
     <Compile Include="Journals\JournalFileInfo.cs" />
     <Compile Include="Lookup.cs" />
     <Compile Include="Expressions\MergedExpr.cs" />
-    <Compile Include="Org\PostsToOrgTable.cs" />
     <Compile Include="Output\FormatAccounts.cs" />
     <Compile Include="Output\FormatPosts.cs" />
     <Compile Include="Output\ReportAccounts.cs" />

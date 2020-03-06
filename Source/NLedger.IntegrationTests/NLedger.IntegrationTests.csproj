@@ -183,10 +183,6 @@
       <Link>test\baseline\cmd-equity.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\Contrib\test\baseline\cmd-org.test">
-      <Link>test\baseline\cmd-org.test</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\Contrib\test\baseline\cmd-payees.test">
       <Link>test\baseline\cmd-payees.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

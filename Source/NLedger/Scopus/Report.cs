@@ -17,7 +17,6 @@ using NLedger.Filters;
 using NLedger.Formatting;
 using NLedger.Items;
 using NLedger.Iterators;
-using NLedger.Org;
 using NLedger.Output;
 using NLedger.Print;
 using NLedger.Querying;
@@ -2344,11 +2343,6 @@ namespace NLedger.Scopus
 
             // l
             LookupItems.MakeFunctor("lisp", scope => PostsReporter(new FormatEmacsPosts(this.OutputStream), "#lisp").Handle((CallScope)scope), SymbolKindEnum.COMMAND);
-
-            // o
-
-            var orgReporter = PostsReporter(new PostsToOrgTable(this, MaybeFormat(PrependFormatHandler)), "#org");
-            LookupItems.MakeFunctor("org", scope => orgReporter.Handle((CallScope)scope), SymbolKindEnum.COMMAND);
 
             // p
 
