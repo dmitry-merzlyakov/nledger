@@ -940,7 +940,7 @@ namespace NLedger.Values
                     if (AsAmount.Commodity == storage.AsAmount.Commodity || !AsAmount.HasCommodity || !storage.AsAmount.HasCommodity)
                         return AsAmount.IsLessThan(storage.AsAmount);
                     else
-                        return Commodity.CompareByCommodity(AsAmount, storage.AsAmount);
+                        return Commodity.CompareByCommodity(AsAmount, storage.AsAmount) < 0;
 
                 case ValueTypeEnum.Balance:
                     return AsAmount.IsLessThan(storage.AsAmount);

@@ -100,8 +100,8 @@ namespace NLedger.Tests.Commodities
             Amount amount1 = new Amount(0, commodity1);
             Amount amount2 = new Amount(0, commodity2);
 
-            Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsFalse(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount2, amount1));
         }
 
         [TestMethod]
@@ -115,10 +115,10 @@ namespace NLedger.Tests.Commodities
             Amount amount2 = new Amount(0, annComm1);
             Amount amount3 = new Amount(0, commodity2);
 
-            Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount3));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(0, Commodity.CompareByCommodity(amount1, amount3));
 
-            Assert.IsFalse(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount2, amount1));
         }
 
         [TestMethod]
@@ -133,13 +133,13 @@ namespace NLedger.Tests.Commodities
             Amount amount2 = new Amount(0, annComm2);
 
             annComm1.Details.Price = new Amount(10);
-            Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsTrue(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount2, amount1));
 
             annComm1.Details.Price = new Amount(5);
             annComm2.Details.Price = new Amount(10);
-            Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsFalse(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount2, amount1));
         }
 
         [TestMethod]
@@ -154,13 +154,13 @@ namespace NLedger.Tests.Commodities
             Amount amount2 = new Amount(0, annComm2);
 
             annComm1.Details.Date = (Date)DateTime.UtcNow.Date;
-            Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsTrue(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount2, amount1));
 
             annComm1.Details.Date = (Date)DateTime.UtcNow.Date;
             annComm2.Details.Date = (Date)DateTime.UtcNow.Date.AddDays(1);
-            Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsFalse(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount2, amount1));
         }
 
         [TestMethod]
@@ -175,13 +175,13 @@ namespace NLedger.Tests.Commodities
             Amount amount2 = new Amount(0, annComm2);
 
             annComm1.Details.Tag = "tag-1";
-            Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsTrue(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount2, amount1));
 
             annComm1.Details.Tag = "tag-1";
             annComm2.Details.Tag = "tag-2";
-            Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsFalse(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.AreEqual(-1, Commodity.CompareByCommodity(amount1, amount2));
+            Assert.AreEqual(1, Commodity.CompareByCommodity(amount2, amount1));
         }
 
         [TestMethod]
@@ -193,8 +193,37 @@ namespace NLedger.Tests.Commodities
             Amount amount1 = new Amount(0, commodity1);
             Amount amount2 = new Amount(0, commodity2);
 
-            Assert.IsFalse(Commodity.CompareByCommodity(amount1, amount2));
-            Assert.IsTrue(Commodity.CompareByCommodity(amount2, amount1));
+            Assert.IsTrue(Commodity.CompareByCommodity(amount1, amount2) > 0);
+            Assert.IsTrue(Commodity.CompareByCommodity(amount2, amount1) < 0);
+        }
+
+        [TestMethod]
+        public void Commodity_CompareByCommodity_ReturnsZeroForEqualAnnotatedCommodities()
+        {
+            Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
+            AnnotatedCommodity annComm1 = new AnnotatedCommodity(commodity1, new Annotation());
+            Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
+            AnnotatedCommodity annComm2 = new AnnotatedCommodity(commodity2, new Annotation());
+
+            Amount amount1 = new Amount(0, annComm1);
+            Amount amount2 = new Amount(0, annComm2);
+
+            Assert.AreEqual(0, Commodity.CompareByCommodity(amount1, amount2));
+
+            annComm1.Details.Price = new Amount(5);
+            annComm2.Details.Price = new Amount(5);
+
+            Assert.AreEqual(0, Commodity.CompareByCommodity(amount1, amount2));
+
+            annComm1.Details.Tag = "tag-1";
+            annComm2.Details.Tag = "tag-1";
+
+            Assert.AreEqual(0, Commodity.CompareByCommodity(amount1, amount2));
+
+            annComm1.Details.Date = (Date)DateTime.UtcNow.Date;
+            annComm2.Details.Date = annComm1.Details.Date;
+
+            Assert.AreEqual(0, Commodity.CompareByCommodity(amount1, amount2));
         }
 
         [TestMethod]
