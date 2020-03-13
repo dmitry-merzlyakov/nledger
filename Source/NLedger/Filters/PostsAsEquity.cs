@@ -71,11 +71,11 @@ namespace NLedger.Filters
                 {
                     if (value.Type == ValueTypeEnum.Balance)
                     {
-                        foreach(KeyValuePair<Commodity, Amount> amountPair in value.AsBalance.Amounts)
+                        foreach(Amount amt in value.AsBalance.SortedAmounts())
                         {
-                            if (!amountPair.Value.IsZero)
+                            if (!amt.IsZero)
                                 FiltersCommon.HandleValue(
-                                    /* value=      */ Value.Get(amountPair.Value),
+                                    /* value=      */ Value.Get(amt),
                                     /* account=    */ pair.Value.Account,
                                     /* xact=       */ xact,
                                     /* temps=      */ Temps,

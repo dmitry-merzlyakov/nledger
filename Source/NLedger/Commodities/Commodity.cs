@@ -28,7 +28,11 @@ namespace NLedger.Commodities
     public class Commodity : IComparable<Commodity>, IEquatable<Commodity>, IComparable
     {
         #region DefaultCommodityComparer
-        /* DM: migrated test "cmd-org.test" revealed an issue with class balance_t.
+        /* DM: update 2020/3/13 after upgrade to ledger/next/1d8f8833 (Switch amounts_map to std::unordered_map).
+         * Though the original commit switches balnace amounts to unordered map, .Net code still need special control
+         * for default ordering of commodities. The previous considerations still make sence: changing SortedDictionary to Dictionary
+         * leads to failed tests (cmd-pricemap.test, regress\7C44010B.test) because of differences in hashing between .Net Dictionary and the unordered_map.
+         * DM: migrated test "cmd-org.test" revealed an issue with class balance_t.
          * In partucular, its member "amounts" (typedef std::map<commodity_t *, amount_t> amounts_map)
          * does not specify any comparison rules (there is no third generic type in the template), 
          * so std::map uses a default comparer (std:less<K>). It compares commodity instances by means of operator "<" - __x < __y.
@@ -39,7 +43,7 @@ namespace NLedger.Commodities
         */
         private static long GlobalCommodityAllocationCounter = 0;
         private long CommodityAllocationNumber = ++GlobalCommodityAllocationCounter;
-        public static readonly DefaultCommodityComparer DefaultComparer = new DefaultCommodityComparer();
+        public static readonly IComparer<Commodity> DefaultComparer = new DefaultCommodityComparer();
         public class DefaultCommodityComparer : IComparer<Commodity>
         {
             public int Compare(Commodity x, Commodity y)
