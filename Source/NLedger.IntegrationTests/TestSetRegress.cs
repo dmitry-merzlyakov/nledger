@@ -290,6 +290,13 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1702()
+        {
+            new TestRunner(@"test\regress\1702.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_1703()
         {
             new TestRunner(@"test\regress\1703.test").Run();

@@ -216,6 +216,27 @@ namespace NLedger.Utility
             return String.IsNullOrEmpty(s) ? s : s.Split(new[] { '\r', '\n' }).FirstOrDefault();
         }
 
+        public static string GetWord(ref string s)
+        {
+            s = s?.TrimStart();
+            if (String.IsNullOrEmpty(s))
+                return String.Empty;
+
+            var pos = s.IndexOfAny(CharExtensions.WhitespaceChars);
+            if (pos >= 0)
+            {
+                var word = s.Substring(0, pos);
+                s = s.Substring(pos).TrimStart();
+                return word;
+            }
+            else
+            {
+                var word = s;
+                s = String.Empty;
+                return word;
+            }
+        }
+
         private static readonly IDictionary<int, string> WidthAlignFormatStrings = new Dictionary<int, string>();
     }
 }

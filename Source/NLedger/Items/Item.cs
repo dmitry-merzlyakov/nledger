@@ -152,7 +152,9 @@ namespace NLedger.Items
 
             bool isFirst = true;
             bool byValue = false;
-            foreach (string substr in note.Split(CharExtensions.WhitespaceChars))
+
+            string substr = null;
+            while (!String.IsNullOrEmpty(substr = StringExtensions.GetWord(ref note)))
             {
                 if (substr.Length < 2)
                     continue;
@@ -172,7 +174,7 @@ namespace NLedger.Items
                     }
 
                     string tag = substr.Remove(substr.Length - index);
-                    string field = note.TrimStart().Substring(substr.Length).Trim();
+                    string field = note;
 
                     if (byValue)
                     {

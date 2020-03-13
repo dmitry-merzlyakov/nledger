@@ -303,6 +303,54 @@ namespace NLedger.Tests.Utility
             Assert.AreEqual("", "\rdef".GetFirstLine());
         }
 
+        [TestMethod]
+        public void StringExtensions_GetWord_ManagesEmptyString()
+        {
+            string inp = null;
+            Assert.AreEqual(String.Empty, StringExtensions.GetWord(ref inp));
+            Assert.IsNull(inp);
+
+            inp = String.Empty;
+            Assert.AreEqual(String.Empty, StringExtensions.GetWord(ref inp));
+            Assert.AreEqual(String.Empty, inp);
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_IgnoresInitialWhiteSpaces()
+        {
+            string inp = " text";
+            Assert.AreEqual("text", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual(String.Empty, inp);
+
+            inp = "\ttext";
+            Assert.AreEqual("text", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual(String.Empty, inp);
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_IgnoresWhiteSpacesBetweenWords()
+        {
+            string inp = "text1 text2";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2", inp);
+
+            inp = "text1\ttext2";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2", inp);
+
+            inp = "text1 \t text2";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2", inp);
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_ReturnsFirstWord()
+        {
+            string inp = " text1  text2   text3";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2   text3", inp);
+        }
+
         private Func<char, bool> TestIsDigit = (c) => Char.IsDigit(c);
     }
 }
