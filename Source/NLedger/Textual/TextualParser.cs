@@ -511,7 +511,7 @@ namespace NLedger.Textual
 
                 // Parse the account name
 
-                if (String.IsNullOrEmpty(line))
+                if (String.IsNullOrEmpty(line) || line.StartsWith(";"))
                     throw new ParseError("Posting has no account");
 
                 string next = StringExtensions.NextElement(ref line, true);
