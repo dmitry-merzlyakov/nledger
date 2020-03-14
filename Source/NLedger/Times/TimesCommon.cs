@@ -64,7 +64,6 @@ namespace NLedger.Times
             get { return DateTime.UtcNow; }
         }
 
-        public DateIO InputDateIO { get; private set; }
         public DateTimeIO InputDateTimeIO { get; private set; }
         public DateTimeIO TimelogDateTimeIO { get; private set; }
         public IList<DateIO> Readers { get; private set; }
@@ -177,13 +176,6 @@ namespace NLedger.Times
         /// </summary>
         public Date ParseDateMask(string dateStr, out DateTraits traits)
         {
-            if (InputDateIO != null)
-            {
-                Date when = ParseDateMaskRoutine(dateStr, InputDateIO, out traits);
-                if (!when.IsNotADate())
-                    return when;
-            }
-
             foreach(DateIO reader in Readers)
             {
                 Date when = ParseDateMaskRoutine(dateStr, reader, out traits);
