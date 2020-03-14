@@ -28,7 +28,9 @@ namespace NLedger.Times
         public void SetFormat(string fmt)
         {
             FmtStr = fmt;
-            Traits = new DateTraits(fmt.Contains("%y") || fmt.Contains("%Y"), fmt.Contains("%m") || fmt.Contains("%b"), fmt.Contains("%d"));
+            Traits = new DateTraits(fmt.Contains("%F") || fmt.Contains("%y") || fmt.Contains("%Y"),
+                                    fmt.Contains("%F") || fmt.Contains("%m") || fmt.Contains("%b"),
+                                    fmt.Contains("%F") || fmt.Contains("%d"));
             ParseDotNetFmtStr = CTimeToNetFormatConverter.ConvertCTimeToNet(FmtStr, NetDateTimeFormat.ParseFormat);
             PrintDotNetFmtStr = CTimeToNetFormatConverter.ConvertCTimeToNet(FmtStr, NetDateTimeFormat.PrintFormat);
         }
