@@ -269,11 +269,13 @@ namespace NLedger.Times
 
         public void SetDateFormat(string format)
         {
+            WrittenDateIO.SetFormat(format);
             PrintedDateIO.SetFormat(format);
         }
 
         public void SetDateTimeFormat(string format)
         {
+            WrittenDateTimeIO.SetFormat(format);
             PrintedDateTimeIO.SetFormat(format);
         }
 

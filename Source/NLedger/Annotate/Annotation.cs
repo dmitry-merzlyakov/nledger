@@ -204,7 +204,7 @@ namespace NLedger.Annotate
                 sb.AppendFormat(" {{{0}{1}}}", IsPriceFixated ? "=" : "", keepBase ? Price : Price.Unreduced());
 
             if (Date.HasValue && (!noComputedAnnotations || !IsDateCalculated))
-                sb.AppendFormat(" [{0}]", TimesCommon.Current.FormatDate(Date.Value, FormatTypeEnum.FMT_PRINTED));
+                sb.AppendFormat(" [{0}]", TimesCommon.Current.FormatDate(Date.Value, FormatTypeEnum.FMT_WRITTEN));
 
             if (!String.IsNullOrEmpty(Tag) && (!noComputedAnnotations || !IsTagCalculated))
                 sb.AppendFormat(" ({0})", Tag);
