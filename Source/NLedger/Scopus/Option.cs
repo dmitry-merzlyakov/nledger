@@ -115,7 +115,7 @@ namespace NLedger.Scopus
                 if (!String.IsNullOrEmpty(name) && name.StartsWith("-"))
                     throw new Exception(String.Format("While parsing option '{0}'", name));
                 else
-                    throw new Exception(String.Format("While parsing environent variable '{0}'", name));
+                    throw new Exception(String.Format("While parsing environment variable '{0}'", name));
             }
         }
 
