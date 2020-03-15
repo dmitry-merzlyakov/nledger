@@ -41,6 +41,22 @@ namespace NLedger.Querying
         public bool ConsumeNextArg { get; set; }
         public bool MultipleArgs { get; private set; }
 
+        /// <summary>
+        /// Ported from bool query_t::lexer_t::advance()
+        /// </summary>
+        public bool Advance()
+        {
+            if (!BeginEnumerator.MoveNext())
+                return false;
+            else
+                SetArg();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Ported from query_t::lexer_t::next_token(query_t::lexer_t::token_t::kind_t tok_context)
+        /// </summary>
         public QueryLexerToken NextToken(QueryLexerTokenKind tokContext = QueryLexerTokenKind.UNKNOWN)
         {
             if (TokenCache.Kind != QueryLexerTokenKind.UNKNOWN)
@@ -52,10 +68,8 @@ namespace NLedger.Querying
 
             if (ArgI == ArgEnd)
             {
-                if (!BeginEnumerator.MoveNext())
+                if (!Advance())
                     return new QueryLexerToken(QueryLexerTokenKind.END_REACHED);
-                else
-                    SetArg();
             }
 
             resume:
@@ -168,11 +182,6 @@ namespace NLedger.Querying
                                     break;
 
                                 case ')':
-                                    if (!consumeNext)  // DM - the second part of condition "... && tok_context == token_t::TOK_EXPR)" is redundant since it meets an opposite condition after falling through. See query.cc:166
-                                        goto test_ident;
-                                    ident += Arg[ArgI];
-                                    break;
-
                                 case '(':
                                 case '&':
                                 case '|':
@@ -238,6 +247,19 @@ namespace NLedger.Querying
         private int ArgI { get; set; }
         private int ArgEnd { get; set; }
         private int PrevArgI { get; set; }
+
+        /// <summary>
+        /// [DM] Helper function that is equal to:
+        /// some_variable = string(lexer.arg_i, lexer.arg_end);
+        /// lexer.arg_i = lexer.arg_end;
+        /// </summary>
+        /// <returns></returns>
+        public string PeekArg()
+        {
+            var arg = Arg.Substring(ArgI);
+            ArgI = ArgEnd;
+            return arg;
+        }
 
         private void SetArg()
         {
