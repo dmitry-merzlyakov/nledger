@@ -101,10 +101,6 @@ namespace NLedger.Journals
                             FixedPayees = true;
                         KnownPayees.Add(name);
                     }
-                    else if (!FixedPayees && xact.State != ItemStateEnum.Uncleared)
-                    {
-                        KnownPayees.Add(name);
-                    }
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
                     {
                         CurrentContext.Warning(String.Format("Unknown payee '{0}'", name));
@@ -128,6 +124,9 @@ namespace NLedger.Journals
             return payee ?? name;
         }
 
+        /// <summary>
+        /// Ported from account_t * journal_t::register_account(const string& name,
+        /// </summary>
         public Account RegisterAccount(string name, Post post, Account masterAccount = null)
         {
             // If there are any account aliases, substitute before creating an account object.
@@ -158,10 +157,6 @@ namespace NLedger.Journals
                             FixedAccounts = true;
                         result.IsKnownAccount = true;
                     } 
-                    else if (!FixedAccounts && post.State != ItemStateEnum.Uncleared)
-                    {
-                        result.IsKnownAccount = true;
-                    } 
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
                     {
                         CurrentContext.Warning(String.Format("Unknown account '{0}'", result.FullName));
@@ -176,6 +171,9 @@ namespace NLedger.Journals
             return result;
         }
 
+        /// <summary>
+        /// Ported from void journal_t::register_commodity(commodity_t& comm,
+        /// </summary>
         public void RegisterCommodity(Commodity commodity, Post post = null)
         {
             if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING || CheckingStyle == JournalCheckingStyleEnum.CHECK_ERROR)
@@ -186,11 +184,6 @@ namespace NLedger.Journals
                     {
                         if (ForceChecking)
                             FixedCommodities = true;
-                        commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;
-                    }
-                    else if (!FixedCommodities &&
-                        (post != null && post.State != ItemStateEnum.Uncleared)) // Porting note: it is equal "context.which() == 2" assuming that we never deal with xact
-                    {
                         commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;
                     }
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
@@ -457,6 +450,9 @@ namespace NLedger.Journals
             }
         }
 
+        /// <summary>
+        /// Porte from void journal_t::register_metadata(const string& key
+        /// </summary>
         public void RegisterMetadata(string key, Value value, Item context)
         {
             if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING || CheckingStyle == JournalCheckingStyleEnum.CHECK_ERROR)
@@ -467,10 +463,6 @@ namespace NLedger.Journals
                     {
                         if (ForceChecking)
                             FixedMetadata = true;
-                        KnownTags.Add(key);
-                    }
-                    else if (!FixedMetadata && context != null && context.State != ItemStateEnum.Uncleared)
-                    {
                         KnownTags.Add(key);
                     }
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
