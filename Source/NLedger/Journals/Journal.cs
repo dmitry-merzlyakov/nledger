@@ -138,7 +138,7 @@ namespace NLedger.Journals
 
             // If the account name being registered is "Unknown", check whether
             // the payee indicates an account that should be used.
-            if (result.Name == Account.UnknownName && post != null)
+            if (result.Name == Account.UnknownName && post != null && post.Xact != null)
             {
                 Tuple<Mask, Account> tuple = PayeesForUnknownAccounts.FirstOrDefault(t => t.Item1.Match(post.Xact.Payee));
                 if (tuple != null)
