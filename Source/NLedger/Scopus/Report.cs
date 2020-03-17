@@ -165,6 +165,7 @@ namespace NLedger.Scopus
         public const string OptionPayeeWidth = "payee_width_";
         public const string OptionAccountWidth = "account_width_";
         public const string OptionAmountWidth = "amount_width_";
+        public const string OptionAverageLotPrices = "average_lot_prices";
         public const string OptionTotalWidth = "total_width_";
         public const string OptionValues = "values";
         #endregion
@@ -327,6 +328,7 @@ namespace NLedger.Scopus
         public Option PayeeWidthHandler { get; private set; }
         public Option AccountWidthHandler { get; private set; }
         public Option AmountWidthHandler { get; private set; }
+        public Option AverageLotPricesHandler { get; private set; }
         public Option TotalWidthHandler { get; private set; }
         public Option ValuesHandler { get; private set; }
         #endregion
@@ -825,6 +827,14 @@ namespace NLedger.Scopus
                 return BoldIfHandler.Expr.Calc(scope);
             else
                 return Value.False;
+        }
+
+        public Value FnAveragedLots(CallScope args)
+        {
+            if (args.Has<Balance>(0))
+                return Value.Get(Balance.AverageLotPrices(args.Get<Balance>(0)));
+            else
+                return args[0];
         }
 
         public Value FnMarket(CallScope args)
@@ -1719,6 +1729,12 @@ namespace NLedger.Scopus
 
             LotDatesHandler = Options.Add(new Option(OptionLotDates));
             LotPricesHandler = Options.Add(new Option(OptionLotPrices));
+            AverageLotPricesHandler = Options.Add(new Option(OptionAverageLotPrices, (o, w) =>
+            {
+                LotPricesHandler.On(w);
+                DisplayAmountHandler.On(w, "averaged_lots(display_amount)");
+                DisplayTotalHandler.On(w, "averaged_lots(display_total)");
+            }));
             LotNotesHandler = Options.Add(new Option(OptionLotNotes));
             LotsHandler = Options.Add(new Option(OptionLots));
             LotsActualHandler = Options.Add(new Option(OptionLotsActual));
@@ -2037,6 +2053,7 @@ namespace NLedger.Scopus
             Options.AddLookupOpt(OptionAuxDate);
             Options.AddLookupOpt(OptionAverage);
             Options.AddLookupOpt(OptionAccountWidth);
+            Options.AddLookupOpt(OptionAverageLotPrices);
             Options.AddLookupOpt(OptionAmountWidth);
 
             Options.AddLookupOpt(OptionBalanceFormat);
@@ -2213,6 +2230,7 @@ namespace NLedger.Scopus
             LookupItems.MakeFunctor("amount_expr", scope => FnAmountExpr((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("ansify_if", scope => FnAnsifyIf((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("abs", scope => FnAbs((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("averaged_lots", scope => FnAveragedLots((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             LookupItems.MakeFunctor("black", scope => FnBlack((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("blink", scope => FnBlink((CallScope)scope), SymbolKindEnum.FUNCTION);

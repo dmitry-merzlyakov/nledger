@@ -415,6 +415,13 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_baseline_opt_average_lot_prices()
+        {
+            new TestRunner(@"test\baseline\opt-average-lot-prices.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_baseline_opt_average()
         {
             new TestRunner(@"test\baseline\opt-average.test").Run();

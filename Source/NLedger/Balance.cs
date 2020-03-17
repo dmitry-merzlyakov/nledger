@@ -21,6 +21,67 @@ namespace NLedger
 {
     public class Balance : IEquatable<Balance>
     {
+        public static Balance AverageLotPrices(Balance bal)
+        {
+            // First, we split the balance into multiple balances by underlying
+            // commodity.
+            IDictionary<string, Tuple<Amount, Annotation>> bycomm = new Dictionary<string, Tuple<Amount, Annotation>>();
+
+            foreach (var pair in bal.Amounts)
+            {
+                string sym = pair.Key.Symbol;
+                Amount quant = new Amount(pair.Value).StripAnnotations(new AnnotationKeepDetails());
+
+                Tuple<Amount,Annotation> bycommItem;
+                if (!bycomm.TryGetValue(sym, out bycommItem))
+                {
+                    bycommItem = new Tuple<Amount, Annotation>(quant, new Annotation());
+                    bycomm.Add(sym, bycommItem);
+                }
+                else
+                {
+                    bycommItem.Item1.InPlaceAdd(quant);
+                }
+
+                if (pair.Key.IsAnnotated)
+                {
+                    AnnotatedCommodity acomm = (AnnotatedCommodity)pair.Key;
+                    Annotation ann = bycommItem.Item2;
+
+                    if ((bool)acomm.Details.Price)
+                    {
+                        if ((bool)ann.Price)
+                            ann.Price = ann.Price + (acomm.Details.Price * quant);
+                        else
+                            ann.Price = acomm.Details.Price * quant;
+                    }
+
+                    if (acomm.Details.Date.HasValue)
+                        if (!ann.Date.HasValue || acomm.Details.Date < ann.Date)
+                            ann.Date = acomm.Details.Date;
+                }
+            }
+
+            Balance result = new Balance();
+
+            foreach(var pair in bycomm)
+            {
+                Amount amt = pair.Value.Item1;
+                if (!amt.IsRealZero)
+                {
+                    if ((bool)pair.Value.Item2.Price)
+                        pair.Value.Item2.Price = pair.Value.Item2.Price / amt;
+
+                    Commodity acomm = CommodityPool.Current.FindOrCreate(amt.Commodity, pair.Value.Item2);
+                    amt.SetCommodity(acomm);
+
+                    result += amt;
+                }
+            }
+
+            return result;
+        }
+
         public static explicit operator bool(Balance balance)
         {
             return !IsNull(balance) && balance.IsNonZero;

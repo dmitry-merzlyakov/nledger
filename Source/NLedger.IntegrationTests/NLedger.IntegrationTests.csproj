@@ -387,6 +387,10 @@
       <Link>test\baseline\opt-aux-date.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\baseline\opt-average-lot-prices.test">
+      <Link>test\baseline\opt-average-lot-prices.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\baseline\opt-average.test">
       <Link>test\baseline\opt-average.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

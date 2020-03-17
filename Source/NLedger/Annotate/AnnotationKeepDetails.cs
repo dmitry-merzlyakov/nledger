@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace NLedger.Annotate
 {
+    /// <summary>
+    /// Ported from struct keep_details_t
+    /// </summary>
     public struct AnnotationKeepDetails
     {
         public AnnotationKeepDetails(bool keepPrice = false, bool keepDate = false, bool keepTag = false, bool onlyActuals = false)
