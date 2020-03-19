@@ -338,9 +338,17 @@ namespace NLedger.IntegrationTests
         [TestMethod]
         [TestCategory("Integration")]
         [Ignore]  // Reason: Requires Python integration
-        public void IntegrationTest_test_baseline_feat_value_py()
+        public void IntegrationTest_test_baseline_feat_value_py2()
         {
-            new TestRunner(@"test\baseline\feat-value_py.test").Run();
+            new TestRunner(@"test\baseline\feat-value_py2.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        [Ignore]  // Reason: Requires Python integration
+        public void IntegrationTest_test_baseline_feat_value_py3()
+        {
+            new TestRunner(@"test\baseline\feat-value_py3.test").Run();
         }
 		
         [TestMethod]

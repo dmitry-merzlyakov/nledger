@@ -331,8 +331,12 @@
       <Link>test\baseline\feat-value-expr.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\Contrib\test\baseline\feat-value_py.test">
-      <Link>test\baseline\feat-value_py.test</Link>
+    <None Include="..\..\Contrib\test\baseline\feat-value_py2.test">
+      <Link>test\baseline\feat-value_py2.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\baseline\feat-value_py3.test">
+      <Link>test\baseline\feat-value_py3.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\baseline\featimport.py">
