@@ -112,7 +112,7 @@ namespace NLedger.Tests.Scopus
         [TestMethod]
         public void GlobalScope_ShowVersionInfo_PopulatesOriginalLedgerVersion()
         {
-            string expected =  String.Format(GlobalScope.ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH);
+            string expected =  String.Format(GlobalScope.ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH, VersionInfo.Ledger_VERSION_DATE);
             GlobalScope globalScope = new GlobalScope();
             Assert.AreEqual(expected, globalScope.ShowVersionInfo());
         }

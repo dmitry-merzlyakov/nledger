@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProductInfo>
   <General>
-	<Version>0.7</Version>
+	<Version>0.8</Version>
 	<Stage>Public Beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
     <!-- This is a reference to a snapshot of the original source code that has been ported. -->
     <OriginalSource>
         <Repository>https://github.com/ledger/ledger</Repository>
-        <Branch>NEXT</Branch>
-        <Commit>fd486a59</Commit>  <!-- The date of the latest commit was 4/9/2018 10:09:04 AM -->
+        <Branch>MASTER</Branch>
+        <Commit>7c45da22</Commit>  <!-- The date of the latest commit was 3/19/2020 5:57:49 AM -->
     </OriginalSource>
   </General>
   <AssemblyInfo>

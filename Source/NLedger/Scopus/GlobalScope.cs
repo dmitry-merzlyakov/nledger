@@ -174,7 +174,7 @@ namespace NLedger.Scopus
 
         public string ShowVersionInfo()
         {
-            return String.Format(ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH);
+            return String.Format(ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH, VersionInfo.Ledger_VERSION_DATE);
         }
 
         public static void HandleDebugOptions(IEnumerable<string> args)
@@ -576,7 +576,7 @@ namespace NLedger.Scopus
 
         public const string ShowVersionInfoTemplate = 
 @"NLedger {0}, the command-line accounting tool.
-Ported to .Net platform from Ledger {1}.{2}.{3}
+Ported to .Net platform from Ledger {1}.{2}.{3}-{4}
 
 Copyright (c) 2003-2019, John Wiegley.  All rights reserved.
 
