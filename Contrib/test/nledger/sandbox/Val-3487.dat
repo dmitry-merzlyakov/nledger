@@ -1,4 +1,3 @@
 ﻿2012-04-10 My Broker
-    Assets:Brokerage:Cash       $750.00
-    Assets:Brokerage            -10 AAPL {{$500.00}} @@ $750.00
-    Income:Capital Gains       $-250.00
+    Assets:Brokerage:Cash
+    Assets:Brokerage            -10 AAPL @ $75.00
