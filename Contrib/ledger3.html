@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <!-- 
-Copyright (C) 2003-2018, John Wiegley.  All rights reserved.
+Copyright (C) 2003-2019, John Wiegley.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -32,8 +32,9 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  -->
-<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 6.5, http://www.gnu.org/software/texinfo/ -->
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Ledger: Command-Line Accounting</title>
 
 <meta name="description" content="Ledger: Command-Line Accounting">
@@ -41,7 +42,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="makeinfo">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link href="#Top" rel="start" title="Top">
 <link href="#Concepts-Index" rel="index" title="Concepts Index">
 <link href="#SEC_Contents" rel="contents" title="Table of Contents">
@@ -49,16 +49,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <style type="text/css">
 <!--
 a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+blockquote.smallindentedblock {margin-right: 0em; font-size: smaller}
 blockquote.smallquotation {font-size: smaller}
 div.display {margin-left: 3.2em}
 div.example {margin-left: 3.2em}
-div.indentedblock {margin-left: 3.2em}
 div.lisp {margin-left: 3.2em}
 div.smalldisplay {margin-left: 3.2em}
 div.smallexample {margin-left: 3.2em}
-div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
 div.smalllisp {margin-left: 3.2em}
-kbd {font-style:oblique}
+kbd {font-style: oblique}
 pre.display {font-family: inherit}
 pre.format {font-family: inherit}
 pre.menu-comment {font-family: serif}
@@ -67,10 +67,9 @@ pre.smalldisplay {font-family: inherit; font-size: smaller}
 pre.smallexample {font-size: smaller}
 pre.smallformat {font-family: inherit; font-size: smaller}
 pre.smalllisp {font-size: smaller}
-span.nocodebreak {white-space:nowrap}
-span.nolinebreak {white-space:nowrap}
-span.roman {font-family:serif; font-weight:normal}
-span.sansserif {font-family:sans-serif; font-weight:normal}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
 ul.no-bullet {list-style: none}
 -->
 </style>
@@ -78,7 +77,7 @@ ul.no-bullet {list-style: none}
 
 </head>
 
-<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<body lang="en">
 <h1 class="settitle" align="center">Ledger: Command-Line Accounting</h1>
 
 
@@ -178,7 +177,10 @@ ul.no-bullet {list-style: none}
     <li><a name="toc-Expression-amounts-1" href="#Expression-amounts">5.9 Expression amounts</a></li>
     <li><a name="toc-Balance-verification-1" href="#Balance-verification">5.10 Balance verification</a>
     <ul class="no-bullet">
-      <li><a name="toc-Balance-assertions-1" href="#Balance-assertions">5.10.1 Balance assertions</a></li>
+      <li><a name="toc-Balance-assertions-1" href="#Balance-assertions">5.10.1 Balance assertions</a>
+      <ul class="no-bullet">
+        <li><a name="toc-Special-assertion-value-0" href="#Special-assertion-value-0">5.10.1.1 Special assertion value 0</a></li>
+      </ul></li>
       <li><a name="toc-Balance-assignments-1" href="#Balance-assignments">5.10.2 Balance assignments</a></li>
       <li><a name="toc-Resetting-a-balance-1" href="#Resetting-a-balance">5.10.3 Resetting a balance</a></li>
       <li><a name="toc-Balancing-transactions-1" href="#Balancing-transactions">5.10.4 Balancing transactions</a></li>
@@ -671,14 +673,14 @@ acprep script, that does a lot of the footwork:
 
 <p>See the &lsquo;help&lsquo; subcommand to &lsquo;acprep&lsquo;, which explains some of its many
 options.  You can run &lsquo;make check&lsquo; to confirm the result, and &lsquo;make
-install&lsquo; to install.  If these intructions do not work for you can check the
-&lsquo;INSTALL.md&lsquo; in the source directory for more up do date build instructions.
+install&lsquo; to install.  If these instructions do not work for you, you can check the
+&lsquo;INSTALL.md&lsquo; in the source directory for more up to date build instructions.
 </p>
 <hr>
 <a name="Getting-help"></a>
 <div class="header">
 <p>
-Previous: <a href="#Building-the-program" accesskey="p" rel="prev">Building the program</a>, Up: <a href="#Introduction-to-Ledger" accesskey="u" rel="up">Introduction to Ledger</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concepts-Index" title="Index" rel="index">Index</a>]</p>
+Next: <a href="#Third_002dParty-Ledger-Tutorials" accesskey="n" rel="next">Third-Party Ledger Tutorials</a>, Previous: <a href="#Building-the-program" accesskey="p" rel="prev">Building the program</a>, Up: <a href="#Introduction-to-Ledger" accesskey="u" rel="up">Introduction to Ledger</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concepts-Index" title="Index" rel="index">Index</a>]</p>
 </div>
 <a name="Getting-help-1"></a>
 <h3 class="section">1.3 Getting help</h3>
@@ -710,14 +712,14 @@ Previous: <a href="#Getting-help" accesskey="p" rel="prev">Getting help</a>, Up:
 Some have documented how they use Ledger&rsquo;s features to solve their
 accounting problems.
 </p>
-<p>Once such tutorial, specifically designed for non-profit charities that seek
+<p>One such tutorial, specifically designed for non-profit charities that seek
 to use Ledger, can be found at
-<a href="https://k.sfconservancy.org/npo-ledger-cli">https://k.sfconservancy.org/npo-ledger-cli</a> (with a copy on GitHub also
+<a href="https://k.sfconservancy.org/NPO-Accounting/npo-ledger-cli">https://k.sfconservancy.org/NPO-Accounting/npo-ledger-cli</a> (with a copy on GitHub also
 available at <a href="https://github.com/conservancy/npo-ledger-cli/">https://github.com/conservancy/npo-ledger-cli/</a>).  If
 you&rsquo;re looking for information about how to use Ledger&rsquo;s tagging system to
 handle invoicing, track expenses by program targets, and other such concepts,
 you might find the tutorial useful.  (Some of the auditor reporting scripts
-that relate to the aformentioned Ledger setup can be found
+that relate to the aforementioned Ledger setup can be found
 <var>contrib/non-profit-audit-reports/</var> in Ledger&rsquo;s own source repository.)
 </p>
 <hr>
@@ -1794,10 +1796,11 @@ account:
     (Funds:School)                   $-100.00
 </pre></div>
 
-<p>When reports are generated, by default they&rsquo;ll appear in terms of the
-funds.  In this case, you will likely want to mask out your
-&lsquo;<samp>Assets</samp>&rsquo; account, because otherwise the balance won&rsquo;t make much
-sense:
+<p>The use of round brackets creates a virtual posting without ensuring
+a balance to zero. When reports are generated, by default they&rsquo;ll
+appear in terms of the funds. In this case, you will likely want to
+mask out your &lsquo;<samp>Assets</samp>&rsquo; account, because otherwise the balance
+won&rsquo;t make much sense:
 </p>
 <div class="smallexample">
 <pre class="smallexample">$ ledger --no-total bal not ^Assets
@@ -2761,6 +2764,40 @@ the account directive.  For example:
 until an &lsquo;<samp>end apply account</samp>&rsquo; directive was found.
 </p>
 </dd>
+<dt><code>apply fixed</code></dt>
+<dd><a name="index-fixed"></a>
+<a name="index-fixated-prices"></a>
+
+<p>A fixed block is used to set fixated prices (see <a href="#Fixated-prices-and-costs">Fixated prices and costs</a>) for a series of transactions.  It&rsquo;s purely a typing saver, for
+use when entering many transactions with fixated prices.
+</p>
+<p>Thus, the following:
+</p>
+<div class="smallexample">
+<pre class="smallexample">apply fixed CAD $0.90
+2012-04-10 Lunch in Canada
+    Assets:Wallet            -15.50 CAD
+    Expenses:Food            15.50 CAD
+
+2012-04-11 Second day Dinner in Canada
+    Assets:Wallet            -25.75 CAD
+    Expenses:Food            25.75 CAD
+end apply fixed
+</pre></div>
+
+<p>is equivalent to this:
+</p>
+<div class="smallexample">
+<pre class="smallexample">2012-04-10 Lunch in Canada
+    Assets:Wallet            -15.50 CAD {=$0.90}
+    Expenses:Food            15.50 CAD  {=$0.90}
+
+2012-04-11 Second day Dinner in Canada
+    Assets:Wallet            -25.75 CAD  {=$0.90}
+    Expenses:Food            25.75 CAD   {=$0.90}
+</pre></div>
+
+</dd>
 <dt><code>alias</code></dt>
 <dd><a name="index-alias"></a>
 <a name="index-account_002c-alias"></a>
@@ -2907,6 +2944,7 @@ and&mdash;if they are on successive lines&mdash;begin with whitespace:
    note American Dollars
    format $1,000.00
    nomarket
+   alias USD
    default
 </pre></div>
 
@@ -2920,6 +2958,9 @@ provide the &ldquo;canonical&rdquo; representation.
 </p>
 <p>The <code>nomarket</code> sub-directive states that the commodity&rsquo;s price
 should never be auto-downloaded.
+</p>
+<p>The <code>alias</code> sub-directive states that any commodity matching this
+symbol is to use the commodity declared in this block.
 </p>
 <p>The <code>default</code> sub-directive marks this as the &ldquo;default&rdquo; commodity.
 </p>
@@ -2948,51 +2989,11 @@ should never be auto-downloaded.
 <dd><a name="index-expr"></a>
 
 </dd>
-<dt><code>fixed</code></dt>
-<dd><a name="index-fixed"></a>
-<a name="index-fixated-prices"></a>
-
-<p>A fixed block is used to set fixated prices (see <a href="#Fixated-prices-and-costs">Fixated prices and costs</a>) for a series of transactions.  It&rsquo;s purely a typing saver, for
-use when entering many transactions with fixated prices.
-</p>
-<p>Thus, the following:
-</p>
-<div class="smallexample">
-<pre class="smallexample">fixed CAD $0.90
-2012-04-10 Lunch in Canada
-    Assets:Wallet            -15.50 CAD
-    Expenses:Food            15.50 CAD
-
-2012-04-11 Second day Dinner in Canada
-    Assets:Wallet            -25.75 CAD
-    Expenses:Food            25.75 CAD
-endfixed CAD
-</pre></div>
-
-<p>is equivalent to this:
-</p>
-<div class="smallexample">
-<pre class="smallexample">2012-04-10 Lunch in Canada
-    Assets:Wallet            -15.50 CAD {=$0.90}
-    Expenses:Food            15.50 CAD  {=$0.90}
-
-2012-04-11 Second day Dinner in Canada
-    Assets:Wallet            -25.75 CAD  {=$0.90}
-    Expenses:Food            25.75 CAD   {=$0.90}
-</pre></div>
-
-<p>Note that ending a <code>fixed</code> is done differently than other
-directives, as <code>fixed</code> is closed with an <code>endfixed</code> (i.e.,
-there is <em>no space</em> between <code>end</code> and <code>fixed</code>).
-</p>
-<p>For the moment, users may wish to study
-<a href="http://bugs.ledger-cli.org/show_bug.cgi?id=789">Bug Report 789</a>
-before using the <code>fixed</code> directive in production.
-</p>
-</dd>
 <dt><code>include</code></dt>
 <dd><a name="index-include"></a>
-<p>Include the stated file as if it were part of the current file.
+<p>Include the stated file as if it were part of the current file.  The file
+name can contain a wildcard (&lsquo;<samp>*</samp>&rsquo;) to refer to multiple files (e.g.
+&lsquo;<samp>bank/*.ledger</samp>&rsquo;).
 </p>
 </dd>
 <dt><code>payee</code></dt>
@@ -3484,7 +3485,7 @@ Next: <a href="#Transaction-notes" accesskey="n" rel="next">Transaction notes</a
 
 <p>A transaction can have a &ldquo;state&rdquo;: cleared, pending, or uncleared.  The
 default is uncleared.  To mark a transaction cleared, put an asterisk
-&lsquo;<samp>*</samp>&rsquo; before the payee, after the date or code:
+&lsquo;<samp>*</samp>&rsquo; after the date, before the code or payee:
 </p>
 <div class="smallexample">
 <pre class="smallexample">2012-03-10 * KFC
@@ -3690,6 +3691,13 @@ below:
 <p>This shows that they are all in the same transaction (which is why the
 date is not repeated), but they have different payees now.
 </p>
+<p>If using the <samp>--strict</samp> or <samp>--pedantic</samp> options, you must
+declare this tag to avoid warnings and errors.
+</p>
+<p>The payee name used with the tag is not enforced by the
+<samp>--check-payees</samp> option, due to a bug:
+<a href="https://github.com/ledger/ledger/issues/556">https://github.com/ledger/ledger/issues/556</a>.
+</p>
 <hr>
 <a name="Metadata-values"></a>
 <div class="header">
@@ -3796,9 +3804,9 @@ Next: <a href="#Balance-verification" accesskey="n" rel="next">Balance verificat
 <a name="Expression-amounts-1"></a>
 <h3 class="section">5.9 Expression amounts</h3>
 
-<p>An amount is usually a numerical figure with an (optional) commodity,
-but it can also be any value expression.  To indicate this, surround
-the amount expression with parentheses:
+<p>An amount is a numerical figure with a commodity, but it can also be
+any value expression.  To indicate this, surround the amount
+expression with parentheses:
 </p>
 <div class="smallexample">
 <pre class="smallexample">2012-03-10 * KFC
@@ -3854,6 +3862,46 @@ Next: <a href="#Balance-assignments" accesskey="n" rel="next">Balance assignment
 
 <p>This simply asserts that after subtracting $20.00 from Assets:Cash,
 that the resulting total matches $500.00.  If not, it is an error.
+</p>
+<p>The assertion has an effect only on the specified commodity. If an account has
+multiple commodities, then only the one asserted is verified:
+</p>
+<div class="smallexample">
+<pre class="smallexample">2012-03-10 KFC New York
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00 = $500.00
+
+2012-03-11 KFC Montreal
+    Expenses:Food                 15.00 CAD
+    Assets:Cash                  -15.00 CAD = $500.00
+</pre></div>
+
+<p>In this case, the amount in USD of cash (which has not changed) is validated.
+Nothing is asserted about the current amount of Canadian dollars in &lsquo;<samp>Asset:Cash</samp>&rsquo;.
+</p>
+<a name="Special-assertion-value-0"></a>
+<h4 class="subsubsection">5.10.1.1 Special assertion value 0</h4>
+
+<p>The only value that can be asserted without a commodity is &lsquo;<samp>0</samp>&rsquo;.
+This results in a cross-commodities assertion, which makes it possible to
+assert that an account is totally empty.
+</p>
+<div class="smallexample">
+<pre class="smallexample">2012-03-09 Fill Wallet
+    Revenue                      $20.00
+    Revenue                       15.00 CAD
+    Assets:Cash
+
+2012-03-10 KFC New York
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00
+
+2012-03-11 KFC Montreal
+    Expenses:Food                 15.00 CAD
+    Assets:Cash                  -15.00 CAD = 0
+</pre></div>
+
+<p>The last transaction will assert that we are out of cash of any sort.
 </p>
 <hr>
 <a name="Balance-assignments"></a>
@@ -4199,12 +4247,12 @@ double braces price form is a shorthand only.
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} @@ $375.00
     Income:Capital Gains       $-125.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4217,12 +4265,12 @@ double braces price form is a shorthand only.
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {{$500.00}} @ $375.00
+    Assets:Brokerage            -5 AAPL {{$500.00}} @@ $375.00
     Income:Capital Gains       $-125.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {{$500.00}} @ $375.00
+    Assets:Brokerage            -5 AAPL {{$500.00}} @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4316,7 +4364,7 @@ expressions):
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4339,7 +4387,7 @@ indicate a virtual cost:
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] (Oh my!) @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] (Oh my!) @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4594,6 +4642,12 @@ account part of the automated posting:
     Expenses:Food                $20.00
     (Budget:Expenses:Food)      $200.00
     Assets:Cash                 $-20.00
+</pre></div>
+
+<p>Keep in mind that if you are using <samp>--strict</samp> or <samp>--pedantic</samp> you will have to explicitly define an account &lsquo;<samp>$account</samp>&rsquo; to avoid errors.
+</p>
+<div class="smallexample">
+<pre class="smallexample">account $account
 </pre></div>
 
 <hr>
@@ -5075,9 +5129,10 @@ Previous: <a href="#Controlling-the-Accounts-and-Payees" accesskey="p" rel="prev
 <a name="Controlling-Formatting-1"></a>
 <h4 class="subsection">6.2.2 Controlling Formatting</h4>
 
-<p>These examples all use the default formatting for the balance
-report.  Customizing the formatting can easily allowing to see only what
-you want, or interface Ledger with other programs.
+<p>These examples all use the default formatting for the balance report.
+Customizing the formatting allows you to see only what you want, or
+interface Ledger with other programs.  For examples and details,
+see <a href="#Format-Strings">Format Strings</a> and <a href="#Asset-Allocation">Asset Allocation</a>.
 </p>
 <hr>
 <a name="Typical-queries"></a>
@@ -5731,10 +5786,6 @@ Next: <a href="#Org-mode-with-Babel" accesskey="n" rel="next">Org mode with Babe
 <h4 class="subsection">7.2.3 Emacs <code>org</code> Mode</h4>
 <a name="index-org"></a>
 
-<p>The <code>org</code> command produces a journal file suitable for use in
-the Emacs Org mode.  More details on using Org mode can be found at
-<a href="http://www.orgmode.org">http://www.orgmode.org</a>.
-</p>
 <p>Org mode has a sub-system known as Babel which allows for literate
 programming.  This allows you to mix text and code within the same
 document and automatically execute code which may generate results
@@ -10033,7 +10084,7 @@ as one typical yearly expense.  For help on finding out what your
 average monthly expenses are for any category, use a command like:
 </p>
 <div class="smallexample">
-<pre class="smallexample">$ ledger -p &quot;this year&quot; --monthly --average balance ^expenses
+<pre class="smallexample">$ ledger -p &quot;this year&quot; --monthly --average register ^expenses
 </pre></div>
 
 <p>The reported totals are the current year&rsquo;s average for each account.
@@ -10361,7 +10412,7 @@ Next: <a href="#Complex-expressions" accesskey="n" rel="next">Complex expression
 <a name="Operators-1"></a>
 <h3 class="section">11.3 Operators</h3>
 
-<p>The binary and ternary operators, in order of precedence, are:
+<p>The operators, in order of precedence, are:
 </p>
 <ol>
 <li> <code>* /</code>
@@ -10386,7 +10437,7 @@ Next: <a href="#Binary-Operators" accesskey="n" rel="next">Binary Operators</a>,
 <a name="Unary-Operators-1"></a>
 <h4 class="subsection">11.3.1 Unary Operators</h4>
 
-<p><code>not</code>
+<p><code>not</code> (<code>!</code>)
 <code>neg</code>
 </p>
 <hr>
@@ -10449,8 +10500,14 @@ posting.
 </p>
 </dd>
 <dt><code>%/REGEX/</code></dt>
-<dt><code>tag(REGEX)</code></dt>
-<dd><p>A regular expression that matches against a transaction&rsquo;s tags.
+<dt><code>expr has_tag(/REGEX/)</code></dt>
+<dt><code>expr has_tag('TAG')</code></dt>
+<dd><p>A regular expression (REGEX) or string (TAG) that checks for the tags of
+a transaction.
+</p>
+</dd>
+<dt><code>tag(REGEX) =~ /REGEX/</code></dt>
+<dd><p>A regular expression that matches a transaction&rsquo;s tags against its values.
 </p>
 </dd>
 <dt><code>expr date =~ /REGEX/</code></dt>
@@ -10524,6 +10581,21 @@ posting.
 <dt><code>expr code =~ /REGEX/</code></dt>
 <dd><p>A regular expression that matches against the transaction code (the
 text that occurs between parentheses before the payee).
+</p>
+</dd>
+<dt><code>expr any(KEYWORD =~ /REGEX/)</code></dt>
+<dd><p>The <code>any</code> keyword is used to specify that at least one posting of
+the transaction must match the expression in brackets.  For example,
+&lsquo;<samp>ledger -f d reg expr &quot;any(account =~ /Assets:/)&quot;</samp>&rsquo; can be used to
+display all transactions which involve at least one &lsquo;<samp>Assets:</samp>&rsquo;
+account.
+</p>
+</dd>
+<dt><code>expr all(KEYWORD =~ /REGEX/)</code></dt>
+<dd><p>The <code>all</code> keyword is used to specify that all postings of a
+transactions must match the expression in brackets.  For example,
+&lsquo;<samp>ledger -f d reg expr &quot;all(account =~ /Assets:/)&quot;</samp>&rsquo; can be used to
+display all transactions where all accounts are &lsquo;<samp>Assets:</samp>&rsquo;.
 </p>
 </dd>
 </dl>
