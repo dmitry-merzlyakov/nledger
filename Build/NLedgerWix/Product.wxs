@@ -164,7 +164,6 @@
 
          <!-- Test toolkit is disabled by default (Level=3) -->
          <Feature Id="TestToolkitFeature" Title="!(loc.TestToolkitFeature_Title)" Level="5" Description="!(loc.TestToolkitFeature_Desc)" AllowAdvertise="no" >
-           <ComponentRef Id="LedgerTestFiles_test"/>
            <ComponentRef Id="LedgerTestFiles_manual"/>
            <ComponentRef Id="LedgerTestFiles_nledger"/>
            <ComponentRef Id="LedgerTestFiles_input"/>

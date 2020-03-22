@@ -11,7 +11,6 @@ namespace NLedger.IntegrationTests
 {
     [TestClass]
     [DeploymentItem(@"test\regress", @"test\regress")]
-    [DeploymentItem(@"test\garbage-input.dat", @"test")]
     public class TestSet1_test_regress
     {
 		
