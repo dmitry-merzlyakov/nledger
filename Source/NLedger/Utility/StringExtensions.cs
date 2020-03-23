@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -214,6 +214,27 @@ namespace NLedger.Utility
         public static string GetFirstLine(this string s)
         {
             return String.IsNullOrEmpty(s) ? s : s.Split(new[] { '\r', '\n' }).FirstOrDefault();
+        }
+
+        public static string GetWord(ref string s)
+        {
+            s = s?.TrimStart();
+            if (String.IsNullOrEmpty(s))
+                return String.Empty;
+
+            var pos = s.IndexOfAny(CharExtensions.WhitespaceChars);
+            if (pos >= 0)
+            {
+                var word = s.Substring(0, pos);
+                s = s.Substring(pos).TrimStart();
+                return word;
+            }
+            else
+            {
+                var word = s;
+                s = String.Empty;
+                return word;
+            }
         }
 
         private static readonly IDictionary<int, string> WidthAlignFormatStrings = new Dictionary<int, string>();

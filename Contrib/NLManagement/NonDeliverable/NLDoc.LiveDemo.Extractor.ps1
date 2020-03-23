@@ -47,11 +47,11 @@ trap
 [string]$Script:testwithdat_token = 'with_input'
 [string]$Script:testwithfile_token = 'with_file'
 
-$Script:DisabledTests = @( 
-    "Val-7612",  # --pager /bin/cat - inappropriate path to a pager
-    "Val-5372",  # ledger payees @Nic --file sample.dat - inappropriate data file (empty output even with original Leger)
-    "Val-7792",  # $ ledger --file drewr3.dat --forecast "T>{\$-500.00}" register ^assets ^liabilities - RTE
-    "B4DFB9F")   # $ ledger -f expr.dat --format "%(account) %(roundto(amount, 1))\n" reg - RTE
+$Script:DisabledTests = @(
+  "Val-7660",  # --pager /bin/cat - inappropriate path to a pager
+  "Val-5420",  # ledger payees @Nic --file sample.dat - inappropriate data file (empty output even with original Leger)
+  "Val-7840",  # $ ledger --file drewr3.dat --forecast "T>{\$-500.00}" register ^assets ^liabilities - RTE
+  "B4DFB9F")   # $ ledger -f expr.dat --format "%(account) %(roundto(amount, 1))\n" reg - RTE
 
 function find_examples {
   [CmdletBinding()]

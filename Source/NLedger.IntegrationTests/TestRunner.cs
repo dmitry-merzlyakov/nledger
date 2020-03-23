@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -102,7 +102,12 @@ namespace NLedger.IntegrationTests
                             {
                                 var main = new Main();
                                 MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
-                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
+                                // [DM] Ledger tests were initially designed for "America/Chicago" (see Ledger_TEST_TIMEZONE in CMakeLists.txt)
+                                // It is equal to .Net "Central Standard Time" (-6).
+                                // However, master commit 139beba6 changed this rule; the setting PYTHONUNBUFFERED=1 caused ignoring Ledger_TEST_TIMEZONE.
+                                // Now, the only ledger test that depends on TZ (1057.test) behaves like the current TZ is +1 ("GMT Standard Time").
+                                // In order to keep test compatibility, current TZ for tests is changed accordingly (from "Central Standard Time" to "GMT Standard Time").
+                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
                                 MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
                                 MainApplicationContext.Current.SetEnvironmentVariables(envs);
 

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -32,8 +32,9 @@ namespace NLedger.Output
             StringBuilder sb = new StringBuilder();
             Format prependFormat = null;
             int prependWidth = 0;
+            bool doPrependFormat;
 
-            if (Report.PrependFormatHandler.Handled)
+            if (doPrependFormat = Report.PrependFormatHandler.Handled)
             {
                 prependFormat = new Format(Report.PrependFormatHandler.Str());
                 if (Report.PrependWidthHandler.Handled)
@@ -42,7 +43,7 @@ namespace NLedger.Output
 
             foreach(KeyValuePair<Account,int> pair in Accounts.OrderBy(p => p.Key.FullName, StringComparer.Ordinal))
             {
-                if (prependFormat != null)
+                if (doPrependFormat)
                 {
                     BindScope boundScope = new BindScope(Report, pair.Key);
                     sb.AppendFormat(StringExtensions.GetWidthAlignFormatString(prependWidth), 

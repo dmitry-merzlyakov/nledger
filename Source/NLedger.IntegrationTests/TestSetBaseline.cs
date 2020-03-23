@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -84,13 +84,6 @@ namespace NLedger.IntegrationTests
         public void IntegrationTest_test_baseline_cmd_equity()
         {
             new TestRunner(@"test\baseline\cmd-equity.test").Run();
-        }
-		
-        [TestMethod]
-        [TestCategory("Integration")]
-        public void IntegrationTest_test_baseline_cmd_org()
-        {
-            new TestRunner(@"test\baseline\cmd-org.test").Run();
         }
 		
         [TestMethod]
@@ -345,9 +338,17 @@ namespace NLedger.IntegrationTests
         [TestMethod]
         [TestCategory("Integration")]
         [Ignore]  // Reason: Requires Python integration
-        public void IntegrationTest_test_baseline_feat_value_py()
+        public void IntegrationTest_test_baseline_feat_value_py2()
         {
-            new TestRunner(@"test\baseline\feat-value_py.test").Run();
+            new TestRunner(@"test\baseline\feat-value_py2.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        [Ignore]  // Reason: Requires Python integration
+        public void IntegrationTest_test_baseline_feat_value_py3()
+        {
+            new TestRunner(@"test\baseline\feat-value_py3.test").Run();
         }
 		
         [TestMethod]
@@ -418,6 +419,13 @@ namespace NLedger.IntegrationTests
         public void IntegrationTest_test_baseline_opt_aux_date()
         {
             new TestRunner(@"test\baseline\opt-aux-date.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_baseline_opt_average_lot_prices()
+        {
+            new TestRunner(@"test\baseline\opt-average-lot-prices.test").Run();
         }
 		
         [TestMethod]

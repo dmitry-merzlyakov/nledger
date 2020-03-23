@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +23,7 @@ namespace NLedger.Tests.Utility.Xml
         [TestMethod]
         public void XmlExtensions_CreateLedgerDoc_CreatesEmptyXmlDocument()
         {
-            string s = "<ledger version=\"196865\" />";
+            string s = "<ledger version=\"196867\" />";
             Assert.AreEqual(s, XmlExtensions.CreateLedgerDoc().ToString());
         }
 
@@ -33,8 +33,8 @@ namespace NLedger.Tests.Utility.Xml
             XDocument xdoc = XmlExtensions.CreateLedgerDoc();
             XElement xelem = xdoc.Root.AddElement("test");
 
-            string expectedDoc = 
-@"<ledger version=""196865"">
+            string expectedDoc =
+@"<ledger version=""196867"">
   <test />
 </ledger>";
             Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
@@ -48,7 +48,7 @@ namespace NLedger.Tests.Utility.Xml
             XElement xelem = xdoc.Root.AddElement("test", "val");
 
             string expectedDoc =
-@"<ledger version=""196865"">
+@"<ledger version=""196867"">
   <test>val</test>
 </ledger>";
             Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));

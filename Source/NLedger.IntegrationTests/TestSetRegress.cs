@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +11,6 @@ namespace NLedger.IntegrationTests
 {
     [TestClass]
     [DeploymentItem(@"test\regress", @"test\regress")]
-    [DeploymentItem(@"test\garbage-input.dat", @"test")]
     public class TestSet1_test_regress
     {
 		
@@ -150,6 +149,13 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1127()
+        {
+            new TestRunner(@"test\regress\1127.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_1132()
         {
             new TestRunner(@"test\regress\1132.test").Run();
@@ -220,6 +226,27 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1187_5()
+        {
+            new TestRunner(@"test\regress\1187_5.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1222()
+        {
+            new TestRunner(@"test\regress\1222.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1224()
+        {
+            new TestRunner(@"test\regress\1224.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_1384C1D8()
         {
             new TestRunner(@"test\regress\1384C1D8.test").Run();
@@ -251,6 +278,55 @@ namespace NLedger.IntegrationTests
         public void IntegrationTest_test_regress_15A80F68()
         {
             new TestRunner(@"test\regress\15A80F68.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1626()
+        {
+            new TestRunner(@"test\regress\1626.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1702()
+        {
+            new TestRunner(@"test\regress\1702.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1703()
+        {
+            new TestRunner(@"test\regress\1703.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1722()
+        {
+            new TestRunner(@"test\regress\1722.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1723()
+        {
+            new TestRunner(@"test\regress\1723.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1753()
+        {
+            new TestRunner(@"test\regress\1753.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1775()
+        {
+            new TestRunner(@"test\regress\1775.test").Run();
         }
 		
         [TestMethod]

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -301,6 +301,54 @@ namespace NLedger.Tests.Utility
             Assert.AreEqual("abc", "abc\ndef\rasd\nczxczx\r\nssfdsd".GetFirstLine());
             Assert.AreEqual("", "\ndef".GetFirstLine());
             Assert.AreEqual("", "\rdef".GetFirstLine());
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_ManagesEmptyString()
+        {
+            string inp = null;
+            Assert.AreEqual(String.Empty, StringExtensions.GetWord(ref inp));
+            Assert.IsNull(inp);
+
+            inp = String.Empty;
+            Assert.AreEqual(String.Empty, StringExtensions.GetWord(ref inp));
+            Assert.AreEqual(String.Empty, inp);
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_IgnoresInitialWhiteSpaces()
+        {
+            string inp = " text";
+            Assert.AreEqual("text", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual(String.Empty, inp);
+
+            inp = "\ttext";
+            Assert.AreEqual("text", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual(String.Empty, inp);
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_IgnoresWhiteSpacesBetweenWords()
+        {
+            string inp = "text1 text2";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2", inp);
+
+            inp = "text1\ttext2";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2", inp);
+
+            inp = "text1 \t text2";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2", inp);
+        }
+
+        [TestMethod]
+        public void StringExtensions_GetWord_ReturnsFirstWord()
+        {
+            string inp = " text1  text2   text3";
+            Assert.AreEqual("text1", StringExtensions.GetWord(ref inp));
+            Assert.AreEqual("text2   text3", inp);
         }
 
         private Func<char, bool> TestIsDigit = (c) => Char.IsDigit(c);

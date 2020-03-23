@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -29,6 +29,8 @@ namespace NLedger
         public const string ErrorMessageTransactionDoesNotBalance = "Transaction does not balance";
         public const string ErrorMessageAPostingsCostMustBeOfADifferentCommodityThanItsAmount = "A posting's cost must be of a different commodity than its amount";
         public const string ErrorMessageThereCannotBeNullAmountsAfterBalancingATransaction = "There cannot be null amounts after balancing a transaction";
+        public const string ErrorMessageCannotConvertAnEmptyBalanceToAnAmount = "Cannot convert an empty balance to an amount";
+        public const string ErrorMessageCannotConvertABalanceWithMultipleCommoditiesToAnAmount = "Cannot convert a balance with multiple commodities to an amount";
 
         public BalanceError(string message)
             : base(message)

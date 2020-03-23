@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Annotate;
@@ -55,6 +55,9 @@ namespace NLedger.Querying
             return ParseQueryExpr(QueryLexerTokenKind.TOK_ACCOUNT, subexpression);
         }
 
+        /// <summary>
+        /// Ported from query_t::parser_t::parse_query_term(query_t::lexer_t::token_t::kind_t tok_context)
+        /// </summary>
         public ExprOp ParseQueryTerm(QueryLexerTokenKind tokContext)
         {
             ExprOp node = null;
@@ -77,10 +80,19 @@ namespace NLedger.Querying
                 case QueryLexerTokenKind.TOK_NOTE:
                 case QueryLexerTokenKind.TOK_ACCOUNT:
                 case QueryLexerTokenKind.TOK_META:
-                case QueryLexerTokenKind.TOK_EXPR:
                     node = ParseQueryTerm(tok.Kind);
                     if (node == null)
                         throw new ParseError(String.Format(ParseError.ParseError_OperatorNotFollowedByArgument, tok.Symbol()));
+                    break;
+
+                case QueryLexerTokenKind.TOK_EXPR:
+                    string arg = Lexer.PeekArg().Trim();
+                    if (String.IsNullOrEmpty(arg))
+                    {
+                        if (Lexer.Advance())
+                            arg = Lexer.PeekArg().Trim();
+                    }
+                    node = new Expr(arg).Op;
                     break;
 
                 case QueryLexerTokenKind.TERM:

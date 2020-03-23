@@ -183,10 +183,6 @@
       <Link>test\baseline\cmd-equity.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\Contrib\test\baseline\cmd-org.test">
-      <Link>test\baseline\cmd-org.test</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\Contrib\test\baseline\cmd-payees.test">
       <Link>test\baseline\cmd-payees.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -335,8 +331,12 @@
       <Link>test\baseline\feat-value-expr.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\Contrib\test\baseline\feat-value_py.test">
-      <Link>test\baseline\feat-value_py.test</Link>
+    <None Include="..\..\Contrib\test\baseline\feat-value_py2.test">
+      <Link>test\baseline\feat-value_py2.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\baseline\feat-value_py3.test">
+      <Link>test\baseline\feat-value_py3.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\baseline\featimport.py">
@@ -389,6 +389,10 @@
     </None>
     <None Include="..\..\Contrib\test\baseline\opt-aux-date.test">
       <Link>test\baseline\opt-aux-date.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\baseline\opt-average-lot-prices.test">
+      <Link>test\baseline\opt-average-lot-prices.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\baseline\opt-average.test">
@@ -1003,10 +1007,6 @@
       <Link>test\baseline\opt-yearly.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\Contrib\test\garbage-input.dat">
-      <Link>test\garbage-input.dat</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\Contrib\test\input\demo.ledger">
       <Link>test\input\demo.ledger</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1171,6 +1171,10 @@
       <Link>test\regress\1106.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\1127.test">
+      <Link>test\regress\1127.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\1132.test">
       <Link>test\regress\1132.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1211,6 +1215,18 @@
       <Link>test\regress\1187_4.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\1187_5.test">
+      <Link>test\regress\1187_5.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1222.test">
+      <Link>test\regress\1222.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1224.test">
+      <Link>test\regress\1224.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\1384C1D8.test">
       <Link>test\regress\1384C1D8.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1231,6 +1247,34 @@
       <Link>test\regress\15A80F68.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\1626.test">
+      <Link>test\regress\1626.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1702.test">
+      <Link>test\regress\1702.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1703.test">
+      <Link>test\regress\1703.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1722.test">
+      <Link>test\regress\1722.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1723.test">
+      <Link>test\regress\1723.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1753.test">
+      <Link>test\regress\1753.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1775.test">
+      <Link>test\regress\1775.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\178501DC.test">
       <Link>test\regress\178501DC.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1249,6 +1293,10 @@
     </None>
     <None Include="..\..\Contrib\test\regress\1E192DF6.test">
       <Link>test\regress\1E192DF6.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\25A099C9.dat">
+      <Link>test\regress\25A099C9.dat</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\regress\25A099C9.test">

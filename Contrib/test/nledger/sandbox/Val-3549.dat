@@ -4,10 +4,10 @@
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} @@ $375.00
     Income:Capital Gains       $-125.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} @@ $375.00
     Income:Capital Gains       $-125.00
