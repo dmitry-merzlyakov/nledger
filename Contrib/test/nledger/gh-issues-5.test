@@ -1,0 +1,12 @@
+2019/07/12 * box
+     55:assets:box -55 HUMMER @ 5372 EUR
+     55:expenses:delivery -1,700 EUR
+     55:expenses:delivery -13,818.44 EUR
+     55:assets:box 55 HUMMER @ 5,654.15345 EUR
+
+test bal -> 1
+__ERROR__
+While parsing file "$FILE", line 5:
+Error: Only one posting with null amount allowed per transaction
+end test
+
