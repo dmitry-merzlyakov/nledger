@@ -1087,6 +1087,10 @@
       <Link>test\nledger\gh-issues-5.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\nledger\gh-issues-7.test">
+      <Link>test\nledger\gh-issues-7.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\nledger\opt-download.test">
       <Link>test\nledger\opt-download.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
