@@ -102,12 +102,7 @@ namespace NLedger.IntegrationTests
                             {
                                 var main = new Main();
                                 MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
-                                // [DM] Ledger tests were initially designed for "America/Chicago" (see Ledger_TEST_TIMEZONE in CMakeLists.txt)
-                                // It is equal to .Net "Central Standard Time" (-6).
-                                // However, master commit 139beba6 changed this rule; the setting PYTHONUNBUFFERED=1 caused ignoring Ledger_TEST_TIMEZONE.
-                                // Now, the only ledger test that depends on TZ (1057.test) behaves like the current TZ is +1 ("GMT Standard Time").
-                                // In order to keep test compatibility, current TZ for tests is changed accordingly (from "Central Standard Time" to "GMT Standard Time").
-                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
                                 MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
                                 MainApplicationContext.Current.SetEnvironmentVariables(envs);
 

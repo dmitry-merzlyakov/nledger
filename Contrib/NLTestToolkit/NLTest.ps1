@@ -314,10 +314,8 @@ function RunTestCase {
     $env:COLUMNS = "80"
     # Simulating pipe redirection in original tests
     $env:nledgerIsAtty = "false"
-    # Though ledger tests are configured for TZ=America/Chicago (Central Standard Time)
-    # the setting PYTHONUNBUFFERED=1 causes ignoring Ledger_TEST_TIMEZONE.
-    # It affects 1057.test that currently expects TZ=+1 (GMT Standard Time). 
-    $env:nledgerTimeZoneId = "GMT Standard Time"
+    # Equals to TZ=America/Chicago
+    $env:nledgerTimeZoneId = "Central Standard Time"
     # Force setting output encoding to UTF8 (powershell console issue)
     $env:nledgerOutputEncoding = "utf-8"
     # Disable colored Ansi Terminal emulation to pass output Ansi control codes that some tests validate
