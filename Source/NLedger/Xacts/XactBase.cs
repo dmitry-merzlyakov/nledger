@@ -384,6 +384,9 @@ namespace NLedger.Xacts
 
                 foreach(Post post in Posts)
                 {
+                    if (post.Account == null)
+                        throw new InvalidOperationException("assert(post->account);");
+
                     if (!Amount.IsNullOrEmpty(post.Amount))
                     {
                         allNull = false;
