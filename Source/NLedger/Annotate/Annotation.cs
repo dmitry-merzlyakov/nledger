@@ -172,10 +172,13 @@ namespace NLedger.Annotate
                 Logger.Current.Debug("amount.commodities", () => String.Format("Parsed commodity annotations:\r\n{0}", this));
         }
 
+        /// <summary>
+        /// Ported from bool operator==(const annotation_t& rhs)
+        /// </summary>
         public bool Equals(Annotation other)
         {
-            return other != null &&
-                Price == other.Price && Date == other.Date && Tag == other.Tag && ValueExpr == other.ValueExpr;
+            return other != null && (Price?.ToString() == other.Price?.ToString()) &&
+                Date == other.Date && Tag == other.Tag && ValueExpr == other.ValueExpr;
         }
 
         public override int GetHashCode()
