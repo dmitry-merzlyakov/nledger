@@ -1395,6 +1395,22 @@
       <Link>test\regress\53BCED29.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\543_a.test">
+      <Link>test\regress\543_a.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\543_b.test">
+      <Link>test\regress\543_b.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\543_c.test">
+      <Link>test\regress\543_c.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\543_d.test">
+      <Link>test\regress\543_d.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\550-584.test">
       <Link>test\regress\550-584.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
