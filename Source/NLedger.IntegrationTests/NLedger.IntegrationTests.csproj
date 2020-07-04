@@ -1291,6 +1291,10 @@
       <Link>test\regress\1894_2.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\1895.test">
+      <Link>test\regress\1895.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\1A546C4D.test">
       <Link>test\regress\1A546C4D.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
