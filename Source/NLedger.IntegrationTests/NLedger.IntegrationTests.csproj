@@ -1283,6 +1283,14 @@
       <Link>test\regress\178501DC.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\1894_1.test">
+      <Link>test\regress\1894_1.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1894_2.test">
+      <Link>test\regress\1894_2.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\1A546C4D.test">
       <Link>test\regress\1A546C4D.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

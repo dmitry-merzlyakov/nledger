@@ -509,6 +509,8 @@
                         <File Id="File_1753_test" Name="1753.test" Source="$(var.PackageFolder)NLedger\test\regress\1753.test"/>
                         <File Id="File_1775_test" Name="1775.test" Source="$(var.PackageFolder)NLedger\test\regress\1775.test"/>
                         <File Id="File_178501DC_test" Name="178501DC.test" Source="$(var.PackageFolder)NLedger\test\regress\178501DC.test"/>
+                        <File Id="File_1894_1.test" Name="1894_1.test" Source="$(var.PackageFolder)NLedger\test\regress\1894_1.test"/>
+                        <File Id="File_1894_2.test" Name="1894_2.test" Source="$(var.PackageFolder)NLedger\test\regress\1894_2.test"/>
                         <File Id="File_1A546C4D_test" Name="1A546C4D.test" Source="$(var.PackageFolder)NLedger\test\regress\1A546C4D.test"/>
                         <File Id="File_1CF1EEC2_test" Name="1CF1EEC2.test" Source="$(var.PackageFolder)NLedger\test\regress\1CF1EEC2.test"/>
                         <File Id="File_1D275740_test" Name="1D275740.test" Source="$(var.PackageFolder)NLedger\test\regress\1D275740.test"/>
