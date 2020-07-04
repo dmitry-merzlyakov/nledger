@@ -1738,8 +1738,7 @@ namespace NLedger.Scopus
 
             InvertHandler = Options.Add(new Option(OptionInvert, (o, w) =>
             {
-                DisplayAmountHandler.On(w, "-display_amount");
-                DisplayTotalHandler.On(w, "-display_total");
+                AmountHandler.On(w, "-amount_expr");
             }));
 
             LimitHandler = Options.Add(new Option(OptionLimit, (o, w, s) =>
