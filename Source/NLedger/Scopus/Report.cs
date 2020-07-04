@@ -1066,6 +1066,27 @@ namespace NLedger.Scopus
             return Value.Get(args.Get<Amount>(0).Commodity.Symbol);
         }
 
+        /// <summary>
+        /// Ported from value_t report_t::fn_commodity_price(call_scope_t& args)
+        /// </summary>
+        public Value FnCommodityPrice(CallScope args)
+        {
+            PricePoint? pricePoint = CommodityPool.Current.CommodityPriceHistory.FindPrice(args.Get<Amount>(0).Commodity, args.Get<DateTime>(1));
+            if (pricePoint.HasValue)
+                return Value.Get(pricePoint.Value.Price);
+            else
+                return Value.Get(new Amount());
+        }
+
+        /// <summary>
+        /// value_t report_t::fn_set_commodity_price(call_scope_t& args)
+        /// </summary>
+        public Value SetCommodityPrice(CallScope args)
+        {
+            args.Get<Amount>(0).Commodity.AddPrice(args.Get<DateTime>(1), args.Get<Amount>(2), true);
+            return Value.Empty;
+        }
+
         public Value FnClearCommodity(CallScope args)
         {
             Amount amt = args.Get<Amount>(0);
