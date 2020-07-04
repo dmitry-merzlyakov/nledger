@@ -1081,7 +1081,7 @@ namespace NLedger.Scopus
         /// <summary>
         /// value_t report_t::fn_set_commodity_price(call_scope_t& args)
         /// </summary>
-        public Value SetCommodityPrice(CallScope args)
+        public Value FnSetCommodityPrice(CallScope args)
         {
             args.Get<Amount>(0).Commodity.AddPrice(args.Get<DateTime>(1), args.Get<Amount>(2), true);
             return Value.Empty;
@@ -2260,6 +2260,7 @@ namespace NLedger.Scopus
 
             LookupItems.MakeFunctor("cyan", scope => FnCyan((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("commodity", scope => FnCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("commodity_price", scope => FnCommodityPrice((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("ceiling", scope => FnCeiling((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("clear_commodity", scope => FnClearCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
 
@@ -2305,6 +2306,7 @@ namespace NLedger.Scopus
             LookupItems.MakeFunctor("scrub", scope => FnScrub((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("strip", scope => FnStrip((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("should_bold", scope => FnShouldBold((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("set_commodity_price", scope => FnSetCommodityPrice((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             LookupItems.MakeFunctor("truncated", scope => FnTruncated((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("total_expr", scope => FnTotalExpr((CallScope)scope), SymbolKindEnum.FUNCTION);
