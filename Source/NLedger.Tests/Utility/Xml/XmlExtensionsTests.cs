@@ -23,7 +23,7 @@ namespace NLedger.Tests.Utility.Xml
         [TestMethod]
         public void XmlExtensions_CreateLedgerDoc_CreatesEmptyXmlDocument()
         {
-            string s = "<ledger version=\"197120\" />";
+            string s = "<ledger version=\"197121\" />";
             Assert.AreEqual(s, XmlExtensions.CreateLedgerDoc().ToString());
         }
 
@@ -34,7 +34,7 @@ namespace NLedger.Tests.Utility.Xml
             XElement xelem = xdoc.Root.AddElement("test");
 
             string expectedDoc =
-@"<ledger version=""197120"">
+@"<ledger version=""197121"">
   <test />
 </ledger>";
             Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
@@ -48,7 +48,7 @@ namespace NLedger.Tests.Utility.Xml
             XElement xelem = xdoc.Root.AddElement("test", "val");
 
             string expectedDoc =
-@"<ledger version=""197120"">
+@"<ledger version=""197121"">
   <test>val</test>
 </ledger>";
             Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));

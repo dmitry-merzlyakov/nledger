@@ -28,9 +28,9 @@ namespace NLedger.Utility
 
         public const int Ledger_VERSION_MAJOR = 3;
         public const int Ledger_VERSION_MINOR = 2;
-        public const int Ledger_VERSION_PATCH = 0;
+        public const int Ledger_VERSION_PATCH = 1;
         public const string Ledger_VERSION_PRERELEASE = "";
-        public const int Ledger_VERSION_DATE = 20200501;
+        public const int Ledger_VERSION_DATE = 20200518;
 
         private static string _NLedgerVersion = null;
     }
