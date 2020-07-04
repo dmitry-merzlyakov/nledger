@@ -535,6 +535,13 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_553()
+        {
+            new TestRunner(@"test\regress\553.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_55831A79()
         {
             new TestRunner(@"test\regress\55831A79.test").Run();

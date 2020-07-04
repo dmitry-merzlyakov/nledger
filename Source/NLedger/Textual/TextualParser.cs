@@ -1190,6 +1190,8 @@ namespace NLedger.Textual
         {
             string b = StringExtensions.NextElement(ref line);
             string keyword = line;
+            if (String.IsNullOrEmpty(b))
+                throw new ParseError(String.Format(ParseError.ParseError_DirectiveApplyKeywordRequiresAnArgument, keyword));
             if (keyword == "account")
                 ReadApplyAccountDirective(b);
             else if (keyword == "tag")
