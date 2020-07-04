@@ -107,12 +107,12 @@ library that gives seamless access to the same functions for external .Net
 applications.
 
 - Current **Project Status** is:
-  - Ported from [Ledger 3.1.1](https://github.com/ledger/ledger), branch Next, commit fd486a59; 2018/4/9
+  - Ported from [Ledger 3.2.1](https://github.com/ledger/ledger), branch Master, commit 56c42e11; 2020/5/18
   - Core functionality is ported; command line utility is available;
   - Ledger testing framework is ported; 
   - Ledger tests are passed to some extend:
-    - 98% (650 out of 662) test cases passed;
-    - 12 test cases are ignored because of known limitations;
+    - 98% (691 out of 704) test cases passed;
+    - 13 test cases are ignored because of known limitations;
     - 0 failed.
 - **Current limitations** (technical restrictions that will be addressed by next releases) are:
   - No Python integration. Ledger tests that require Python are disabled;
@@ -211,4 +211,4 @@ in the smallest detail. Thought it was quite big challenge for me
 
 The code is licensed under 3-clause [FreeBSD license](https://github.com/dmitry-merzlyakov/nledger/blob/master/LICENSE).
 
-(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
