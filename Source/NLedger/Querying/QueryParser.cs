@@ -41,7 +41,7 @@ namespace NLedger.Querying
 
         public bool TokensRemaining
         {
-            get 
+            get
             {
                 QueryLexerToken tok = Lexer.PeekToken();
                 if (tok.Kind == QueryLexerTokenKind.UNKNOWN)
@@ -55,9 +55,6 @@ namespace NLedger.Querying
             return ParseQueryExpr(QueryLexerTokenKind.TOK_ACCOUNT, subexpression);
         }
 
-        /// <summary>
-        /// Ported from query_t::parser_t::parse_query_term(query_t::lexer_t::token_t::kind_t tok_context)
-        /// </summary>
         public ExprOp ParseQueryTerm(QueryLexerTokenKind tokContext)
         {
             ExprOp node = null;
@@ -80,19 +77,10 @@ namespace NLedger.Querying
                 case QueryLexerTokenKind.TOK_NOTE:
                 case QueryLexerTokenKind.TOK_ACCOUNT:
                 case QueryLexerTokenKind.TOK_META:
+                case QueryLexerTokenKind.TOK_EXPR:
                     node = ParseQueryTerm(tok.Kind);
                     if (node == null)
                         throw new ParseError(String.Format(ParseError.ParseError_OperatorNotFollowedByArgument, tok.Symbol()));
-                    break;
-
-                case QueryLexerTokenKind.TOK_EXPR:
-                    string arg = Lexer.PeekArg().Trim();
-                    if (String.IsNullOrEmpty(arg))
-                    {
-                        if (Lexer.Advance())
-                            arg = Lexer.PeekArg().Trim();
-                    }
-                    node = new Expr(arg).Op;
                     break;
 
                 case QueryLexerTokenKind.TERM:

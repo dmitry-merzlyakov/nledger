@@ -63,6 +63,7 @@ namespace NLedger.Textual
         public static string ParseError_PayeeDirectiveSmthRequiresAnArgument = "Payee directive '{0}' requires an argument";
         public static string ParseError_CommodityDirectiveSmthRequiresAnArgument = "Commodity directive '{0}' requires an argument";
         public static string ParseError_AssertionFailed = "Assertion failed: {0}";
+        public static string ParseError_DirectiveApplyKeywordRequiresAnArgument = "Directive 'apply {0}' requires an argument";
         public static string ParseError_ArgumentSmthNotAValidYear = "Argument '{0}' not a valid year";
         public static string ParseError_IllegalAliasSmthEqualsSmth  = "Illegal alias {0}={1}";
         public static string ParseError_AccountDirectiveSmthRequiresAnArgument = "Account directive '{0}' requires an argument";

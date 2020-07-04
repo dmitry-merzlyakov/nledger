@@ -7,7 +7,7 @@
     <OriginalSource>
         <Repository>https://github.com/ledger/ledger</Repository>
         <Branch>MASTER</Branch>
-        <Commit>7c45da22</Commit>  <!-- The date of the latest commit was 3/19/2020 5:57:49 AM -->
+        <Commit>56c42e11</Commit>  <!-- Release 3.2.1; 5/18/2020 8:30:10 AM -->
     </OriginalSource>
   </General>
   <AssemblyInfo>
@@ -45,5 +45,6 @@
     <Item code="localization" category="functional" description="Add functions similar to textdomain" />
     <Item code="fix-demo-Val-7840" category="known-bug" description="Demo example causes RTE - ledger --file drewr3.dat --forecast &quot;T&gt;{\$-500.00}&quot; register ^assets ^liabilities" />
     <Item code="fix-demo-B4DFB9F" category="known-bug" description="Demo example causes RTE - ledger -f expr.dat --format &quot;%(account) %(roundto(amount, 1))\n&quot;" />
+    <Item code="ledger-master-ab4198a5" category="unnecessary" description="Ledger Master commit ab4198a5 is omitted since .Net Commodity class already implements comparison rules" />
   </DeferredImprovements>
 </ProductInfo>

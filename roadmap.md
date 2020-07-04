@@ -29,7 +29,7 @@ This is a roadmap for development of next NLedger releases.
 **Address complicated issues that require big code changes but have minor effect 
 on general functionality: date parsing, pager, localization, decimal limitations.**
 
-- Update the source code and tests to the latest Ledger version (branch NEXT);
+- Update the source code and tests to the latest Ledger version (branch MASTER);
 - Bug fixing: solve issues with .Net date parser error messages; 
   consider creating an own date parser; enable corresponded Ledger unit and integration tests;
 - Bug fixing: solve issues with file names in error messages (absolute vs relative); 
@@ -71,4 +71,4 @@ on general functionality: date parsing, pager, localization, decimal limitations
 - General performance analyzing and optimization;
 - Code stabilization and bug fixing;
 
-(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

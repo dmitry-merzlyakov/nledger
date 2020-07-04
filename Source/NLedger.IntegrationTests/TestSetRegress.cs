@@ -338,6 +338,27 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1894_1()
+        {
+            new TestRunner(@"test\regress\1894_1.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1894_2()
+        {
+            new TestRunner(@"test\regress\1894_2.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_1895()
+        {
+            new TestRunner(@"test\regress\1895.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_1A546C4D()
         {
             new TestRunner(@"test\regress\1A546C4D.test").Run();
@@ -500,9 +521,44 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_543_a()
+        {
+            new TestRunner(@"test\regress\543_a.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_543_b()
+        {
+            new TestRunner(@"test\regress\543_b.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_543_c()
+        {
+            new TestRunner(@"test\regress\543_c.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_543_d()
+        {
+            new TestRunner(@"test\regress\543_d.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_regress_550_584()
         {
             new TestRunner(@"test\regress\550-584.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
+        public void IntegrationTest_test_regress_553()
+        {
+            new TestRunner(@"test\regress\553.test").Run();
         }
 		
         [TestMethod]

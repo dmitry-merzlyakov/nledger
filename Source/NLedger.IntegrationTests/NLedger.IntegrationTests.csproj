@@ -1283,6 +1283,18 @@
       <Link>test\regress\178501DC.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\1894_1.test">
+      <Link>test\regress\1894_1.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1894_2.test">
+      <Link>test\regress\1894_2.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\1895.test">
+      <Link>test\regress\1895.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\1A546C4D.test">
       <Link>test\regress\1A546C4D.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1395,8 +1407,28 @@
       <Link>test\regress\53BCED29.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Contrib\test\regress\543_a.test">
+      <Link>test\regress\543_a.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\543_b.test">
+      <Link>test\regress\543_b.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\543_c.test">
+      <Link>test\regress\543_c.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\543_d.test">
+      <Link>test\regress\543_d.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Contrib\test\regress\550-584.test">
       <Link>test\regress\550-584.test</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Contrib\test\regress\553.test">
+      <Link>test\regress\553.test</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\test\regress\55831A79.test">

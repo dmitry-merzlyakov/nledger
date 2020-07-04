@@ -200,6 +200,9 @@ namespace NLedger.Times
         /// </summary>
         public DateTime ParseDateTime(string str)
         {
+            if (str == null || str.Length > 127)
+                throw new DateError(String.Format("Invalid date: {0}", str));
+
             string buf = str;
             buf = buf.Replace('.', '/').Replace('-', '/');
 

@@ -157,7 +157,9 @@ namespace NLedger.Scopus
                 Journal.NoAliases = true;
 
             if (ExplicitHandler.Handled)
-                Journal.ForceChecking = true;
+            {
+                // No-op
+            }
             if (CheckPayeesHandler.Handled)
                 Journal.CheckPayees = true;
 

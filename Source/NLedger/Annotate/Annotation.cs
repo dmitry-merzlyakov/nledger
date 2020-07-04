@@ -172,6 +172,9 @@ namespace NLedger.Annotate
                 Logger.Current.Debug("amount.commodities", () => String.Format("Parsed commodity annotations:\r\n{0}", this));
         }
 
+        /// <summary>
+        /// Ported from bool operator==(const annotation_t& rhs)
+        /// </summary>
         public bool Equals(Annotation other)
         {
             return other != null &&
