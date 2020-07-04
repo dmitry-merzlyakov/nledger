@@ -925,7 +925,7 @@ namespace NLedger.Textual
 
                 if (keyword == "alias")
                     ReadPayeeAliasDirective(payee, b);
-                if (keyword == "uuid")
+                else if (keyword == "uuid")
                     ReadPayeeUuidDirective(payee, b);
             }
         }
