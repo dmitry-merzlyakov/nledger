@@ -177,8 +177,8 @@ namespace NLedger.Annotate
         /// </summary>
         public bool Equals(Annotation other)
         {
-            return other != null && (Price?.ToString() == other.Price?.ToString()) &&
-                Date == other.Date && Tag == other.Tag && ValueExpr == other.ValueExpr;
+            return other != null &&
+                Price == other.Price && Date == other.Date && Tag == other.Tag && ValueExpr == other.ValueExpr;
         }
 
         public override int GetHashCode()
