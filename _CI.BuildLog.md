@@ -19,6 +19,22 @@ the latest build status is:
 
 
 ***
+#### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [64] 2020/07/05 09:57:39
+
+>Build #64; Status:Succeeded
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: feb697f67e280139912b084868b35586eae1aa6c
+
+Build logs: [NLedger-BuildLogs-v0.8.Build.64.zip](https://www.dropbox.com/s/dq7qmdwaworv6sg/NLedger-BuildLogs-v0.8.Build.64.zip?dl=0) MD5: ABFC1F31083E4F39D79EC8794217A2B5
+
+Install package: [NLedger-v0.8.Build.64.zip](https://www.dropbox.com/s/qgn2lun85cf81bt/NLedger-v0.8.Build.64.zip?dl=0) MD5: 69103CBD6EA9EB432F4677873DE90E28
+
+MSI package: [NLedger-v0.8.Build.64.msi](https://www.dropbox.com/s/chh1r3xe6ims3lr/NLedger-v0.8.Build.64.msi?dl=0) MD5: 5B210BE64502D7BB1F2E6872403AC698
+***
 #### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [63] 2020/07/04 22:34:25
 
 >Build #63; Status:Failed
@@ -387,6 +403,7 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
 
 
 
