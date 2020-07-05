@@ -29,6 +29,7 @@ namespace NLedger.Accounts
         }
 
         public Value Total { get; set; }
+        public Value RealTotal { get; set; }
         public bool Calculated { get; set; }
         public bool Gathered { get; set; }
 

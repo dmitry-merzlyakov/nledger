@@ -53,12 +53,8 @@ namespace NLedger.Journals
 
         public bool NoAliases { get; set; }
         public bool RecursiveAliases { get; set; }
-        public bool ForceChecking { get; set; }
-        public bool FixedAccounts { get; set; }
-        public bool FixedCommodities { get; set; }
         public bool DayBreak { get; set; }
         public bool CheckPayees { get; set; }
-        public bool FixedPayees { get; set; }
         public JournalCheckingStyleEnum CheckingStyle { get; set; }
         public Expr ValueExpr { get; set; }
 
@@ -78,7 +74,6 @@ namespace NLedger.Journals
         public IList<JournalFileInfo> Sources { get; private set; }
         public ISet<string> KnownTags { get; private set; }
         public ISet<string> KnownPayees { get; private set; }
-        public bool FixedMetadata { get; private set; }
         public IMultiMap<string, CheckExprPair> TagCheckExprsMap { get; private set; }
 
         /// <summary>
@@ -97,8 +92,6 @@ namespace NLedger.Journals
                 {
                     if (xact == null)
                     {
-                        if (ForceChecking)
-                            FixedPayees = true;
                         KnownPayees.Add(name);
                     }
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
@@ -153,8 +146,6 @@ namespace NLedger.Journals
                 {
                     if (post == null)
                     {
-                        if (ForceChecking)
-                            FixedAccounts = true;
                         result.IsKnownAccount = true;
                     } 
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
@@ -182,8 +173,6 @@ namespace NLedger.Journals
                 {
                     if (post == null)  // Porting note: it is equal "context.which() == 0" assuming that we never deal with xact
                     {
-                        if (ForceChecking)
-                            FixedCommodities = true;
                         commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;
                     }
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)
@@ -461,8 +450,6 @@ namespace NLedger.Journals
                 {
                     if (context == null)
                     {
-                        if (ForceChecking)
-                            FixedMetadata = true;
                         KnownTags.Add(key);
                     }
                     else if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING)

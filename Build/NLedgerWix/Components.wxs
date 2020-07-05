@@ -510,6 +510,9 @@
                         <File Id="File_1753_test" Name="1753.test" Source="$(var.PackageFolder)NLedger\test\regress\1753.test"/>
                         <File Id="File_1775_test" Name="1775.test" Source="$(var.PackageFolder)NLedger\test\regress\1775.test"/>
                         <File Id="File_178501DC_test" Name="178501DC.test" Source="$(var.PackageFolder)NLedger\test\regress\178501DC.test"/>
+                        <File Id="File_1894_1.test" Name="1894_1.test" Source="$(var.PackageFolder)NLedger\test\regress\1894_1.test"/>
+                        <File Id="File_1894_2.test" Name="1894_2.test" Source="$(var.PackageFolder)NLedger\test\regress\1894_2.test"/>
+                        <File Id="File_1895.test" Name="1895.test" Source="$(var.PackageFolder)NLedger\test\regress\1895.test"/>
                         <File Id="File_1A546C4D_test" Name="1A546C4D.test" Source="$(var.PackageFolder)NLedger\test\regress\1A546C4D.test"/>
                         <File Id="File_1CF1EEC2_test" Name="1CF1EEC2.test" Source="$(var.PackageFolder)NLedger\test\regress\1CF1EEC2.test"/>
                         <File Id="File_1D275740_test" Name="1D275740.test" Source="$(var.PackageFolder)NLedger\test\regress\1D275740.test"/>
@@ -538,7 +541,12 @@
                         <File Id="File_4D9288AE_py" Name="4D9288AE.py" Source="$(var.PackageFolder)NLedger\test\regress\4D9288AE.py"/>
                         <File Id="File_4D9288AE_py_test" Name="4D9288AE_py.test" Source="$(var.PackageFolder)NLedger\test\regress\4D9288AE_py.test"/>
                         <File Id="File_53BCED29_test" Name="53BCED29.test" Source="$(var.PackageFolder)NLedger\test\regress\53BCED29.test"/>
+                        <File Id="File_543_a.test" Name="543_a.test" Source="$(var.PackageFolder)NLedger\test\regress\543_a.test"/>
+                        <File Id="File_543_b.test" Name="543_b.test" Source="$(var.PackageFolder)NLedger\test\regress\543_b.test"/>
+                        <File Id="File_543_c.test" Name="543_c.test" Source="$(var.PackageFolder)NLedger\test\regress\543_c.test"/>
+                        <File Id="File_543_d.test" Name="543_d.test" Source="$(var.PackageFolder)NLedger\test\regress\543_d.test"/>
                         <File Id="File_550_584_test" Name="550-584.test" Source="$(var.PackageFolder)NLedger\test\regress\550-584.test"/>
+                        <File Id="File_553_test" Name="553.test" Source="$(var.PackageFolder)NLedger\test\regress\553.test"/>
                         <File Id="File_55831A79_test" Name="55831A79.test" Source="$(var.PackageFolder)NLedger\test\regress\55831A79.test"/>
                         <File Id="File_56BBE69B_test" Name="56BBE69B.test" Source="$(var.PackageFolder)NLedger\test\regress\56BBE69B.test"/>
                         <File Id="File_5A03CFC3_test" Name="5A03CFC3.test" Source="$(var.PackageFolder)NLedger\test\regress\5A03CFC3.test"/>

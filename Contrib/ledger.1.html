@@ -930,6 +930,12 @@ Alias for
 <DD>
 Print average values over the number of transactions instead of
 running totals.
+<DT><B>--average-lot-prices</B>
+
+
+<DD>
+Report the average price at which each commodity was purchased in
+a balance report.
 <DT><B>--balance-format </B><I>FMT</I>
 
 
@@ -1423,17 +1429,6 @@ Display values in terms of the given
 
  
 The latest available price is used.
-<DT><B>--explicit</B>
-
-
-<DD>
-Direct
-<B></B>
-
-
-to require pre-declarations for entities (such as accounts,
-commodities and tags) rather than taking entities from cleared
-transactions as defined.
 <DT><B>--file </B><I>FILE (-</I><B>f</B>
 
 )
@@ -2679,6 +2674,7 @@ Query on the payee, rather than the account.
 
 
 <DD>
+Query on tags.
 <DT><B>note </B><I>regex (</I><B>= </B><I>regex</I>
 
 
@@ -2804,7 +2800,7 @@ Return the base account, i.e. everything after the last account delimiter ':'.
 
 <DD>
 
-Return true if the transaction is real, i.e not a automated or virtual
+Return true if the transaction is real, i.e not an automated or virtual
 transaction, false otherwise.
 <DT><B>amount</B>
 
@@ -2975,7 +2971,7 @@ from
 
  
 Used internally to construct different reports.
-<DT><B>Fn </B>has_meta
+<DT><B>Fn </B>has_meta tag
 
 
 <DD>
@@ -3061,7 +3057,7 @@ Note that
 must be surrounded by brackets in order to be parsed correctly, e.g.
 Bq 2012/03/23 .
 
-<DT><B>Fn </B>meta
+<DT><B>Fn </B>meta name
 
 
 <DD>
@@ -3169,7 +3165,7 @@ with double-quotes, compatible with rfc 4180.
 
 <DD>
 
-Return true if the transaction is real, i.e not a automated or virtual
+Return true if the transaction is real, i.e not an automated or virtual
 transaction, false otherwise.
 
 <DT><B>Fn </B>roundto value n
@@ -3520,6 +3516,18 @@ initializations.
 <A HREF="/cgi-bin/man/man2html?1+hledger">hledger</A>(1)
 
 
+<P>
+The full documentation for
+<B></B>
+
+
+is maintained as a Texinfo manual.  If the
+<B>info</B>
+
+program is installed on your system, the command
+
+<BLOCKQUOTE><TT>info ledger3</TT></BLOCKQUOTE>
+should give you access to the complete manual.
 <A NAME="lbAN">&nbsp;</A>
 <H2>AUTHORS</H2>
 
@@ -3552,6 +3560,6 @@ Aq <A HREF="mailto:johnw@newartisans.com">johnw@newartisans.com</A>
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 18:30:30 GMT, March 21, 2020
+Time: 21:44:58 GMT, July 04, 2020
 </BODY>
 </HTML>

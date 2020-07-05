@@ -705,7 +705,7 @@ namespace NLedger.Textual
                         Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: POST assign: parsed balance amount = {1}", Context.LineNum, post.AssignedAmount));
 
                         Amount amt = post.AssignedAmount;
-                        Value accountTotal = post.Account.Amount().StripAnnotations(new AnnotationKeepDetails());
+                        Value accountTotal = post.Account.Amount(!post.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL)).StripAnnotations(new AnnotationKeepDetails());
 
                         Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: account balance = {1}", Context.LineNum, accountTotal));
                         Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: post amount = {1} (is_zero = {2})", Context.LineNum, amt, amt.IsZero));
@@ -729,7 +729,7 @@ namespace NLedger.Textual
                         // Subtract amounts from previous posts to this account in the xact.
                         foreach (var p in xact.Posts)
                         {
-                            if (p.Account == post.Account)
+                            if (p.Account == post.Account && p.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL) == post.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL))
                             {
                                 diff -= p.Amount;
                                 Logger.Current.Debug(DebugTextualParse, () => String.Format("line {0}: Subtracting {1}, diff = {2}", Context.LineNum, p.Amount, diff));
@@ -925,7 +925,7 @@ namespace NLedger.Textual
 
                 if (keyword == "alias")
                     ReadPayeeAliasDirective(payee, b);
-                if (keyword == "uuid")
+                else if (keyword == "uuid")
                     ReadPayeeUuidDirective(payee, b);
             }
         }
@@ -1190,6 +1190,8 @@ namespace NLedger.Textual
         {
             string b = StringExtensions.NextElement(ref line);
             string keyword = line;
+            if (String.IsNullOrEmpty(b))
+                throw new ParseError(String.Format(ParseError.ParseError_DirectiveApplyKeywordRequiresAnArgument, keyword));
             if (keyword == "account")
                 ReadApplyAccountDirective(b);
             else if (keyword == "tag")

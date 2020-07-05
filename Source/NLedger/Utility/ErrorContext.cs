@@ -82,7 +82,7 @@ namespace NLedger.Utility
             if (len == 0 || String.IsNullOrEmpty(file))
                 return "<no source context>";
 
-            if (len < 0 || len > 8192)
+            if (len <= 0 || len >= 65536)
                 throw new InvalidOperationException("len");
 
             var buf = FileSystem.GetStringFromFile(file, pos, len).TrimEnd();

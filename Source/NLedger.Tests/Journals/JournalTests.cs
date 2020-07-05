@@ -97,12 +97,10 @@ namespace NLedger.Tests.Journals
             Journal journal = new Journal();
             journal.CheckPayees = true;
             journal.CheckingStyle = JournalCheckingStyleEnum.CHECK_WARNING;
-            journal.ForceChecking = true;
 
             var name = journal.RegisterPayee("name1", null);
 
             Assert.IsTrue(journal.KnownPayees.Contains(name));
-            Assert.IsTrue(journal.FixedPayees);
         }
 
         [TestMethod]
