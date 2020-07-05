@@ -118,7 +118,7 @@ namespace NLedger.Filters
             AcctValue acctValue;
             if (!Values.TryGetValue(acct.FullName, out acctValue))
             {
-                Values.Add(acct.FullName, new AcctValue(acct, amount, 
+                Values.Add(acct.FullName, new AcctValue(acct, Value.Clone(amount), 
                     post.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL),
                     post.Flags.HasFlag(SupportsFlagsEnum.POST_MUST_BALANCE)));
             }
