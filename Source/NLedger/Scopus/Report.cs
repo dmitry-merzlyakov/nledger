@@ -1481,7 +1481,7 @@ namespace NLedger.Scopus
                 }
                 else
                 {
-                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'"), s);
+                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'", s));
                 }
             }));
             
@@ -1795,7 +1795,7 @@ namespace NLedger.Scopus
                 if (begin.HasValue)
                     TimesCommon.Current.Epoch = Terminus = begin.Value;
                 else
-                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'"), s);
+                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'", s));
             }));
 
             OnlyHandler = Options.Add(new Option(OptionOnly, (o, w, s) =>
@@ -1986,7 +1986,7 @@ namespace NLedger.Scopus
                 else if (s == "trailing")
                     Format.DefaultStyle = FormatElisionStyleEnum.TRUNCATE_TRAILING;
                 else 
-                    throw new ArgumentException(String.Format("Unrecognized truncation style: '{0}'"), s);
+                    throw new ArgumentException(String.Format("Unrecognized truncation style: '{0}'", s));
 
                 Format.DefaultStyleChanged = true;
             }));
