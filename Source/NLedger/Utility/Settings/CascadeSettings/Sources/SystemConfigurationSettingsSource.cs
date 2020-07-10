@@ -20,6 +20,12 @@ namespace NLedger.Utility.Settings.CascadeSettings.Sources
     /// </summary>
     public sealed class SystemConfigurationSettingsSource : ISettingsSource
     {
+        public static string AppConfigFileName
+        {
+            get { return _AppConfigFileName ?? GetAppConfigFileName(); }
+            set { _AppConfigFileName = value; }
+        }
+
         public SettingScopeEnum Scope
         {
             get { return SettingScopeEnum.Application; }
@@ -27,7 +33,16 @@ namespace NLedger.Utility.Settings.CascadeSettings.Sources
 
         public string GetValue(string key)
         {
-            return ConfigurationManager.AppSettings[key];
+            return Source.Value.GetValue(key);
         }
+
+        private readonly Lazy<ConfigurationFileSettingsSource> Source = new Lazy<ConfigurationFileSettingsSource>(() => new ConfigurationFileSettingsSource(AppConfigFileName));
+
+        private static string GetAppConfigFileName()
+        {
+            return System.Reflection.Assembly.GetEntryAssembly().Location + ".config";
+        }
+
+        private static string _AppConfigFileName = null;
     }
 }

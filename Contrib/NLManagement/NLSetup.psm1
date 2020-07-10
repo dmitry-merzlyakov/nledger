@@ -265,12 +265,7 @@ function setAppConfigFile {
         [Parameter(Mandatory=$True)][string]$appConfigFile
     )
 
-    [System.AppDomain]::CurrentDomain.SetData("APP_CONFIG_FILE", $appConfigFile) | Out-Null
-
-    Add-Type -AssemblyName System.Configuration
-    [Configuration.ConfigurationManager].GetField("s_initState", "NonPublic, Static").SetValue($null, 0) | Out-Null
-    [Configuration.ConfigurationManager].GetField("s_configSystem", "NonPublic, Static").SetValue($null, $null) | Out-Null
-    ([Configuration.ConfigurationManager].Assembly.GetTypes() | where {$_.FullName -eq "System.Configuration.ClientConfigPaths"})[0].GetField("s_current", "NonPublic, Static").SetValue($null, $null) | Out-Null
+    [NLedger.Utility.Settings.CascadeSettings.Sources.SystemConfigurationSettingsSource]::AppConfigFileName = $appConfigFile
 }
 
 
