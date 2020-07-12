@@ -1,177 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BBFA464F-DDB1-441D-8138-FEFFEF7044E8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NLedger.Tests</RootNamespace>
-    <AssemblyName>NLedger.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <AssemblyTitle>NLedger</AssemblyTitle>
+    <Company>Dmitry Merzlyakov</Company>
+    <Product>NLedger, the double-entry accounting tool</Product>
+    <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
+    <Copyright>Copyright © 2015-2020, Dmitry Merzlyakov</Copyright>
+    <Deterministic>false</Deterministic>
+    <Version>0.8-beta</Version>
+    <AssemblyVersion>0.8.*</AssemblyVersion>
+    <FileVersion>0.8.*</FileVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Numerics" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
-  <ItemGroup>
-    <Compile Include="Abstracts\Impl\ProcessManagerTests.cs" />
-    <Compile Include="Accounts\AccountTests.cs" />
-    <Compile Include="Accounts\AccountXDataDetailsTests.cs" />
-    <Compile Include="Chain\ItemHandlerTests.cs" />
-    <Compile Include="Commodities\MemoizedPriceEntryTests.cs" />
-    <Compile Include="CompareItemsTests.cs" />
-    <Compile Include="Filters\ForecastPostsTests.cs" />
-    <Compile Include="Filters\GeneratePostsTests.cs" />
-    <Compile Include="Filters\SortPostsTests.cs" />
-    <Compile Include="Filters\SubtotalPostsTests.cs" />
-    <Compile Include="Output\ReportCommoditiesTests.cs" />
-    <Compile Include="TestConsoleProvider.cs" />
-    <Compile Include="TestFixture.cs" />
-    <Compile Include="TextualReaderTests.cs" />
-    <Compile Include="TimeLogging\TimeLogTests.cs" />
-    <Compile Include="Times\CTimeToNetFormatConverterTests.cs" />
-    <Compile Include="Times\DateParserLexerTests.cs" />
-    <Compile Include="Utility\BigValues\BigRationalTests.cs" />
-    <Compile Include="Utility\CommandLineTests.cs" />
-    <Compile Include="Utility\DateExtensionTests.cs" />
-    <Compile Include="Utility\DateTests.cs" />
-    <Compile Include="Utility\ErrorContextTests.cs" />
-    <Compile Include="Utility\FileNameComparerTests.cs" />
-    <Compile Include="Utility\Graph\GraphExtensionsTests.cs" />
-    <Compile Include="Utility\InputTextStreamTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\CascadeSettingsContainerTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Definitions\BaseSettingDefinitionTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Definitions\BoolSettingDefinitionTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Definitions\EncodingSettingDefinitionTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Definitions\IntegerSettingDefinitionTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Definitions\StringSettingDefinitionTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Definitions\TimeZoneSettingDefinitionTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\SettingValueTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSourceTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Sources\CustomDataSourceTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Sources\DefaultSettingsSourceTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Sources\EnvironmentVariablesSettingsSourceTests.cs" />
-    <Compile Include="Utility\Settings\CascadeSettings\Sources\SystemConfigurationSettingsSourceTests.cs" />
-    <Compile Include="Utility\SHA1Tests.cs" />
-    <Compile Include="Utils\CancellationManagerTests.cs" />
-    <Compile Include="Utils\TimerContextTests.cs" />
-    <Compile Include="Values\DefaultValueComparerTests.cs" />
-    <Compile Include="Xacts\AddBalancingPostTests.cs" />
-    <Compile Include="Amounts\AmountTests.cs" />
-    <Compile Include="Annotate\AnnotatedCommodityTests.cs" />
-    <Compile Include="Annotate\AnnotationKeepDetailsTests.cs" />
-    <Compile Include="Annotate\AnnotationTests.cs" />
-    <Compile Include="Xacts\AutoXactTests.cs" />
-    <Compile Include="BalanceTests.cs" />
-    <Compile Include="BigIntTests.cs" />
-    <Compile Include="Chain\ChainCommonTests.cs" />
-    <Compile Include="Commodities\CommodityHistoryTests.cs" />
-    <Compile Include="Commodities\CommodityPoolTests.cs" />
-    <Compile Include="Commodities\CommodityTests.cs" />
-    <Compile Include="Expressions\ExprOpTests.cs" />
-    <Compile Include="Expressions\ExprParserTests.cs" />
-    <Compile Include="Expressions\ExprTests.cs" />
-    <Compile Include="Expressions\ExprTokenTests.cs" />
-    <Compile Include="Filters\AnonymizePostsTests.cs" />
-    <Compile Include="Filters\CalcPostsTests.cs" />
-    <Compile Include="Filters\DisplayFilterPostsTests.cs" />
-    <Compile Include="Formatting\FormatTests.cs" />
-    <Compile Include="Items\ItemTests.cs" />
-    <Compile Include="Iterators\BasicAccountsIteratorTests.cs" />
-    <Compile Include="Iterators\GeneratePostsIteratorTests.cs" />
-    <Compile Include="Journals\JournalTests.cs" />
-    <Compile Include="Output\FormatAccountsTests.cs" />
-    <Compile Include="PostTests.cs" />
-    <Compile Include="PreCmdTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scopus\BindScopeTests.cs" />
-    <Compile Include="Scopus\CallScopeTests.cs" />
-    <Compile Include="Scopus\ChildScopeTests.cs" />
-    <Compile Include="Scopus\ContextScopeTests.cs" />
-    <Compile Include="Scopus\EmptyScopeTests.cs" />
-    <Compile Include="Scopus\GlobalScopeTests.cs" />
-    <Compile Include="Scopus\MockScope.cs" />
-    <Compile Include="Scopus\OptionCollectionTests.cs" />
-    <Compile Include="Scopus\OptionTests.cs" />
-    <Compile Include="Scopus\ReportTests.cs" />
-    <Compile Include="Scopus\ScopeExtensionsTests.cs" />
-    <Compile Include="Scopus\SessionTests.cs" />
-    <Compile Include="Scopus\SymbolScopeTests.cs" />
-    <Compile Include="Scopus\SymbolTests.cs" />
-    <Compile Include="SelectTests.cs" />
-    <Compile Include="Textual\TextualParserTests.cs" />
-    <Compile Include="Times\DateDurationTests.cs" />
-    <Compile Include="Times\DateIntervalTests.cs" />
-    <Compile Include="Times\LexerTokenTests.cs" />
-    <Compile Include="Times\TimesCommonTests.cs" />
-    <Compile Include="Utility\BoostVariantTests.cs" />
-    <Compile Include="Utility\FileSystemTests.cs" />
-    <Compile Include="Utility\Graph\AdjacencyListTests.cs" />
-    <Compile Include="Utility\Graph\EdgeDescriptorTests.cs" />
-    <Compile Include="Utility\Graph\ReadOnlyGraphTests.cs" />
-    <Compile Include="Utility\Graph\ShortestPathSearcherTests.cs" />
-    <Compile Include="Utility\Graph\VertexDescriptorTests.cs" />
-    <Compile Include="Utility\CollectionIteratorTests.cs" />
-    <Compile Include="Utils\LoggerTests.cs" />
-    <Compile Include="Utility\ObjectExtensionsTests.cs" />
-    <Compile Include="Utility\Rnd\BoolGeneratorTests.cs" />
-    <Compile Include="Utility\Rnd\CharGeneratorTests.cs" />
-    <Compile Include="Utility\Rnd\DoubleGeneratorTests.cs" />
-    <Compile Include="Utility\Rnd\IntegerGeneratorTests.cs" />
-    <Compile Include="Utility\StringExtensionsTests.cs" />
-    <Compile Include="Utility\Xml\XmlExtensionsTests.cs" />
-    <Compile Include="Values\ValueStorageTests.cs" />
-    <Compile Include="Values\ValueTests.cs" />
-    <Compile Include="Xacts\XactTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NLedger\NLedger.csproj">
-      <Project>{e689af5e-55a0-47de-a270-f3a3012ff814}</Project>
-      <Name>NLedger</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Abstracts\Impl\ProcessManagerBatch.cmd">
@@ -189,31 +50,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
