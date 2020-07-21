@@ -242,16 +242,16 @@ namespace NLedger.Iterators
                 if (TruthGen.Value())
                     sb.Append(' ');
                 if (noNegative || TruthGen.Value())
-                    sb.Append(PosNumberGen.Value());
+                    sb.Append(PosNumberGen.Value().ToString("G15"));
                 else
-                    sb.Append(NegNumberGen.Value());
+                    sb.Append(NegNumberGen.Value().ToString("G15"));
             }
             else
             {
                 if (noNegative || TruthGen.Value())
-                    sb.Append(PosNumberGen.Value());
+                    sb.Append(PosNumberGen.Value().ToString("G15"));
                 else
-                    sb.Append(NegNumberGen.Value());
+                    sb.Append(NegNumberGen.Value().ToString("G15"));
                 if (TruthGen.Value())
                     sb.Append(' ');
                 sb.Append(GenerateCommodity(exclude));
