@@ -35,12 +35,14 @@
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Abstracts\Impl\ProcessManagerBatch.cmd">
+    <ContentWithTargetPath Include="Abstracts\Impl\ProcessManagerBatch.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Abstracts\Impl\ProcessManagerErrBatch.cmd">
+      <TargetPath>ProcessManagerBatch.cmd</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Abstracts\Impl\ProcessManagerErrBatch.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <TargetPath>ProcessManagerErrBatch.cmd</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.incomplete.config.xml">

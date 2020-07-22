@@ -17,8 +17,8 @@ using System.Threading.Tasks;
 namespace NLedger.Tests.Abstracts.Impl
 {
     [TestClass]
-    [DeploymentItem(@"Abstracts\Impl\ProcessManagerBatch.cmd")]
-    [DeploymentItem(@"Abstracts\Impl\ProcessManagerErrBatch.cmd")]
+    [DeploymentItem(@"ProcessManagerBatch.cmd")]
+    [DeploymentItem(@"ProcessManagerErrBatch.cmd")]
     public class ProcessManagerTests
     {
         [TestMethod]
