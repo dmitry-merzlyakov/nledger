@@ -43,11 +43,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.incomplete.config.xml">
+    <ContentWithTargetPath Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.incomplete.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.normal.config.xml">
+      <TargetPath>ConfigurationFileSettingsSource.incomplete.config.xml</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.normal.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+      <TargetPath>ConfigurationFileSettingsSource.normal.config.xml</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 </Project>

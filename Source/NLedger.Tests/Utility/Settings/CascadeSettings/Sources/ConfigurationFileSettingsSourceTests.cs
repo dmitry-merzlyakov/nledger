@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 namespace NLedger.Tests.Utility.Settings.CascadeSettings.Sources
 {
     [TestClass]
-    [DeploymentItem(@"Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.normal.config.xml")]
-    [DeploymentItem(@"Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.incomplete.config.xml")]
+    [DeploymentItem(@"ConfigurationFileSettingsSource.normal.config.xml")]
+    [DeploymentItem(@"ConfigurationFileSettingsSource.incomplete.config.xml")]
     public class ConfigurationFileSettingsSourceTests
     {
         [TestMethod]
