@@ -48,7 +48,7 @@ namespace NLedger.Tests
             ContextInit contextInit = GetContextInit();
 
             if (contextInit.HasFlag(ContextInit.InitMainApplicationContext))
-                MainApplicationContext.Initialize();
+                MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             if (contextInit.HasFlag(ContextInit.InitTimesCommon))
                 TimesCommon.Current.TimesInitialize();
             if (contextInit.HasFlag(ContextInit.SaveCultureInfo))
@@ -67,8 +67,10 @@ namespace NLedger.Tests
             if (contextInit.HasFlag(ContextInit.SaveCultureInfo))
                 Thread.CurrentThread.CurrentCulture = CultureInfo;
             if (contextInit.HasFlag(ContextInit.InitMainApplicationContext))
-                MainApplicationContext.Cleanup();
+                MainContextAcquirer.Dispose();
         }
+
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
 
         public virtual void CustomTestInitialize()
         { }

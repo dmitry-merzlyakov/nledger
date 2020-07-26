@@ -100,11 +100,12 @@ namespace NLedger.IntegrationTests
                         {
                             using (var errWriter = new StringWriter())
                             {
-                                var main = new Main();
-                                MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
-                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
-                                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
-                                MainApplicationContext.Current.SetEnvironmentVariables(envs);
+                                var context = new MainApplicationContext();
+                                context.IsAtty = false; // Simulating pipe redirection in original tests
+                                context.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
+                                context.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
+                                context.SetEnvironmentVariables(envs);
+                                var main = new Main(context);
 
                                 var exitCode = main.Execute(args);
 

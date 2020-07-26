@@ -26,15 +26,17 @@ namespace NLedger.IntegrationTests.unit
         [TestInitialize]
         public void Initialize()
         {
-            MainApplicationContext.Initialize();
+            MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             TimesCommon.Current.TimesInitialize();
         }
 
         [TestCleanup]
         public void Cleanup()
         {
-            MainApplicationContext.Cleanup();
+            MainContextAcquirer.Dispose();
         }
+
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
 
         [TestMethod]
         [TestCategory("BoostAutoTest")]

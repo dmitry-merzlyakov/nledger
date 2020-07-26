@@ -25,8 +25,10 @@ namespace NLedger.CLI
         {
             // System.Diagnostics.Debugger.Launch(); // This debugging option might be useful in case of troubleshooting of NLTest issues
 
-            var main = new Main();
-            new NLedgerConfiguration().ConfigureConsole(MainApplicationContext.Current);
+            var context = new MainApplicationContext();
+            new NLedgerConfiguration().ConfigureConsole(context);
+
+            var main = new Main(context);
 
             var argString = GetCommandLine(); // This way is preferrable because of double quotas that are missed by using args
             Environment.ExitCode = main.Execute(argString);

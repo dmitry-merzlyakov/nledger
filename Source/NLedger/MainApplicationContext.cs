@@ -26,16 +26,6 @@ namespace NLedger
     {
         public static MainApplicationContext Current => CurrentInstance;
 
-        public static void Initialize()
-        {
-            CurrentInstance = new MainApplicationContext();
-        }
-
-        public static void Cleanup()
-        {
-            CurrentInstance = null;
-        }
-
         // For GlobalScope
         public bool ArgsOnly { get; set; }
         public string InitFile { get; set; }
@@ -109,6 +99,29 @@ namespace NLedger
         public void SetVirtualConsoleProvider(Func<IVirtualConsoleProvider> virtualConsoleProviderFactory)
         {
             _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(virtualConsoleProviderFactory);
+        }
+
+        public ThreadAcquirer AcquireCurrentThread()
+        {
+            return new ThreadAcquirer(this);
+        }
+
+        public class ThreadAcquirer : IDisposable
+        {
+            public ThreadAcquirer(MainApplicationContext context)
+            {
+                if (context == null)
+                    throw new ArgumentNullException(nameof(context));
+                if (CurrentInstance != null)
+                    throw new InvalidOperationException("Cannot acquire current thread because it has been already acquired");
+
+                CurrentInstance = context;
+            }
+
+            public void Dispose()
+            {
+                CurrentInstance = null;
+            }
         }
 
         [ThreadStatic]

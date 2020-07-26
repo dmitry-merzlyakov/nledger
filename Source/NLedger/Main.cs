@@ -20,127 +20,135 @@ namespace NLedger
 {
     public sealed class Main
     {
-        public Main()
+        public Main(MainApplicationContext mainApplicationContext)
         {
-            MainApplicationContext.Initialize();
+            if (mainApplicationContext == null)
+                throw new ArgumentNullException(nameof(mainApplicationContext));
+
+            MainApplicationContext = mainApplicationContext;
         }
+
+        public MainApplicationContext MainApplicationContext { get; }
 
         public int Execute(string argString)
         {
-            var envp = VirtualEnvironment.GetEnvironmentVariables();
-            var args = CommandLine.PreprocessSingleQuotes(argString);
-
-            int status = 1;
-
-            // The very first thing we do is handle some very special command-line
-            // options, since they affect how the environment is setup:
-            //
-            //   --verify            ; turns on memory tracing
-            //   --verbose           ; turns on logging
-            //   --debug CATEGORY    ; turns on debug logging
-            //   --trace LEVEL       ; turns on trace logging
-            //   --memory            ; turns on memory usage tracing
-            //   --init-file         ; directs ledger to use a different init file
-            GlobalScope.HandleDebugOptions(args);
-            // initialize_memory_tracing - [DM] #memory-tracing
-            Logger.Current.Info(() => LedgerStarting);
-            // ::textdomain("ledger"); - [DM] #localization
-            GlobalScope globalScope = null;
-            try
+            using (MainApplicationContext.AcquireCurrentThread())
             {
-                // Create the session object, which maintains nearly all state relating to
-                // this invocation of Ledger; and register all known journal parsers.
-                globalScope = new GlobalScope(envp);
-                globalScope.Session.FlushOnNextDataFile = true;
+                var envp = VirtualEnvironment.GetEnvironmentVariables();
+                var args = CommandLine.PreprocessSingleQuotes(argString);
 
-                // Look for options and a command verb in the command-line arguments
-                BindScope boundScope = new BindScope(globalScope, globalScope.Report);
-                args = globalScope.ReadCommandArguments(boundScope, args);
+                int status = 1;
 
-                if (globalScope.ScriptHandler.Handled)
+                // The very first thing we do is handle some very special command-line
+                // options, since they affect how the environment is setup:
+                //
+                //   --verify            ; turns on memory tracing
+                //   --verbose           ; turns on logging
+                //   --debug CATEGORY    ; turns on debug logging
+                //   --trace LEVEL       ; turns on trace logging
+                //   --memory            ; turns on memory usage tracing
+                //   --init-file         ; directs ledger to use a different init file
+                GlobalScope.HandleDebugOptions(args);
+                // initialize_memory_tracing - [DM] #memory-tracing
+                Logger.Current.Info(() => LedgerStarting);
+                // ::textdomain("ledger"); - [DM] #localization
+                GlobalScope globalScope = null;
+                try
                 {
-                    // Ledger is being invoked as a script command interpreter
-                    globalScope.Session.ReadJournalFiles();
+                    // Create the session object, which maintains nearly all state relating to
+                    // this invocation of Ledger; and register all known journal parsers.
+                    globalScope = new GlobalScope(envp);
+                    globalScope.Session.FlushOnNextDataFile = true;
 
-                    status = 0;
+                    // Look for options and a command verb in the command-line arguments
+                    BindScope boundScope = new BindScope(globalScope, globalScope.Report);
+                    args = globalScope.ReadCommandArguments(boundScope, args);
 
-                    using (StreamReader sr = FileSystem.GetStreamReader(globalScope.ScriptHandler.Str()))
+                    if (globalScope.ScriptHandler.Handled)
                     {
-                        while (status == 0 && !sr.EndOfStream)
+                        // Ledger is being invoked as a script command interpreter
+                        globalScope.Session.ReadJournalFiles();
+
+                        status = 0;
+
+                        using (StreamReader sr = FileSystem.GetStreamReader(globalScope.ScriptHandler.Str()))
                         {
-                            string line = sr.ReadLine().Trim();
-                            if (!line.StartsWith("#"))
-                                status = globalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(line), true);
+                            while (status == 0 && !sr.EndOfStream)
+                            {
+                                string line = sr.ReadLine().Trim();
+                                if (!line.StartsWith("#"))
+                                    status = globalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(line), true);
+                            }
                         }
                     }
-                }
-                else if (args.Any())
-                {
-                    // User has invoke a verb at the interactive command-line
-                    status = globalScope.ExecuteCommandWrapper(args, false);
-                }
-                else
-                {
-                    // Commence the REPL by displaying the current Ledger version
-                    VirtualConsole.Output.WriteLine(globalScope.ShowVersionInfo());
-
-                    globalScope.Session.ReadJournalFiles();
-
-                    bool exitLoop = false;
-
-                    VirtualConsole.ReadLineName = "Ledger";
-
-                    string p;
-                    while ((p = VirtualConsole.ReadLine(globalScope.PromptString())) != null)
+                    else if (args.Any())
                     {
-                        string expansion = null;
-                        int result = VirtualConsole.HistoryExpand(p.Trim(), ref expansion);
-
-                        if (result < 0 || result == 2)
-                            throw new LogicError(String.Format(LogicError.ErrorMessageFailedToExpandHistoryReference, p));
-                        else if (expansion != null)
-                            VirtualConsole.AddHistory(expansion);
-
-                        CancellationManager.CheckForSignal();
-
-                        if (!String.IsNullOrWhiteSpace(p) && p != "#")
-                        {
-                            if (String.Compare(p, "quit", true) == 0)
-                                exitLoop = true;
-                            else
-                                globalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(p), true);
-                        }
-
-                        if (exitLoop)
-                            break;
+                        // User has invoke a verb at the interactive command-line
+                        status = globalScope.ExecuteCommandWrapper(args, false);
                     }
-                    status = 0;    // report success
+                    else
+                    {
+                        // Commence the REPL by displaying the current Ledger version
+                        VirtualConsole.Output.WriteLine(globalScope.ShowVersionInfo());
+
+                        globalScope.Session.ReadJournalFiles();
+
+                        bool exitLoop = false;
+
+                        VirtualConsole.ReadLineName = "Ledger";
+
+                        string p;
+                        while ((p = VirtualConsole.ReadLine(globalScope.PromptString())) != null)
+                        {
+                            string expansion = null;
+                            int result = VirtualConsole.HistoryExpand(p.Trim(), ref expansion);
+
+                            if (result < 0 || result == 2)
+                                throw new LogicError(String.Format(LogicError.ErrorMessageFailedToExpandHistoryReference, p));
+                            else if (expansion != null)
+                                VirtualConsole.AddHistory(expansion);
+
+                            CancellationManager.CheckForSignal();
+
+                            if (!String.IsNullOrWhiteSpace(p) && p != "#")
+                            {
+                                if (String.Compare(p, "quit", true) == 0)
+                                    exitLoop = true;
+                                else
+                                    globalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(p), true);
+                            }
+
+                            if (exitLoop)
+                                break;
+                        }
+                        status = 0;    // report success
+                    }
                 }
-            }
-            catch (CountError errors)
-            {
-                // used for a "quick" exit, and is used only if help text (such as
-                // --help) was displayed
-                status = errors.Count;
-            }
-            catch (Exception err)
-            {
+                catch (CountError errors)
+                {
+                    // used for a "quick" exit, and is used only if help text (such as
+                    // --help) was displayed
+                    status = errors.Count;
+                }
+                catch (Exception err)
+                {
+                    if (globalScope != null)
+                        globalScope.ReportError(err);
+                    else
+                        VirtualConsole.Error.WriteLine(String.Format(ExceptionDuringInitialization, err.Message));
+                }
+
                 if (globalScope != null)
-                    globalScope.ReportError(err);
-                else
-                    VirtualConsole.Error.WriteLine(String.Format(ExceptionDuringInitialization, err.Message));
-            }
+                {
+                    globalScope.QuickClose();
+                    globalScope.Dispose();  // {DM] It is the most appropriate place to call Dispose for the global scope.
+                }
+                Logger.Current.Info(() => LedgerEnded); // let global_scope leak!
 
-            if (globalScope != null)
-            {
-                globalScope.QuickClose();
-                globalScope.Dispose();  // {DM] It is the most appropriate place to call Dispose for the global scope.
+                // Return the final status to the operating system, either 1 for error or 0
+                // for a successful completion.
+                return status;
             }
-            Logger.Current.Info(() => LedgerEnded); // let global_scope leak!
-
-            // Return the final status to the operating system, either 1 for error or 0
-            // for a successful completion.
-            return status;
         }
 
         private const string LedgerStarting = "Ledger starting";

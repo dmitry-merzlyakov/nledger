@@ -27,7 +27,7 @@ namespace NLedger.IntegrationTests.unit
         [TestInitialize]
         public void Initialize()
         {
-            MainApplicationContext.Initialize();
+            MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             TimesCommon.Current.TimesInitialize();
 
             // Cause the display precision for dollars to be initialized to 2.
@@ -41,8 +41,10 @@ namespace NLedger.IntegrationTests.unit
         [TestCleanup]
         public void Cleanup()
         {
-            MainApplicationContext.Cleanup();
+            MainContextAcquirer.Dispose();
         }
+
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
 
         [TestMethod]
         [TestCategory("BoostAutoTest")]
