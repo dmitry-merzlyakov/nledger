@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NLedger.Abstracts.Impl;
+using NLedger.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -18,19 +20,45 @@ namespace NLedger.Utility.ServiceAPI
 
             ServiceSession = serviceSession;
             
-            //MainApplicationContext = ServiceSession.MainApplicationContext.Clone();
+            MainApplicationContext = ServiceSession.MainApplicationContext.Clone();
+            MainApplicationContext.Logger = new Logger();
+            MainApplicationContext.ErrorContext = new ErrorContext();
+
             InitializeResponse(command);
         }
 
         public ServiceSession ServiceSession { get; }
         public MainApplicationContext MainApplicationContext { get; }
         public int Status { get; private set; } = 1;
+        public bool HasErrors => Status > 0;
+
+        public string OutputText { get; private set; }
+        public string ErrorText { get; private set; }
 
         private void InitializeResponse(string command)
         {
             using (MainApplicationContext.AcquireCurrentThread())
             {
-                Status = ServiceSession.GlobalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(command), true);
+                using (var memoryStreamManager = new MemoryStreamManager())
+                {
+                    MainApplicationContext.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
+
+                    try
+                    {
+                        Status = ServiceSession.GlobalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(command), true);
+                    }
+                    catch (CountError errors)
+                    {
+                        Status = errors.Count;
+                    }
+                    catch (Exception err)
+                    {
+                        ServiceSession.GlobalScope.ReportError(err);
+                    }
+
+                    OutputText = memoryStreamManager.GetOutputText();
+                    ErrorText = memoryStreamManager.GetErrorText();
+                }
             }
         }
     }

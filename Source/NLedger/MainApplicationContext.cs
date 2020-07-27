@@ -59,7 +59,7 @@ namespace NLedger
         public TimeZoneInfo TimeZone { get; set; }
 
         // For Error Context
-        public ErrorContext ErrorContext { get; private set; } = new ErrorContext();
+        public ErrorContext ErrorContext { get; set; } = new ErrorContext();
 
         // Cancellation Management
         private volatile CaughtSignalEnum _CancellationSignal;
@@ -73,7 +73,7 @@ namespace NLedger
         public string DefaultPager { get; set; }
 
         // Environment Variables
-        public IDictionary<string,string> EnvironmentVariables
+        public IDictionary<string, string> EnvironmentVariables
         {
             get { return _EnvironmentVariables ?? Empty; }
         }
@@ -104,6 +104,34 @@ namespace NLedger
         public ThreadAcquirer AcquireCurrentThread()
         {
             return new ThreadAcquirer(this);
+        }
+
+        public MainApplicationContext Clone()
+        {
+            var context = new MainApplicationContext();
+            context.ArgsOnly = ArgsOnly;
+            context.InitFile = InitFile;
+            context.CommodityPool = CommodityPool;
+            context.IsAtty = IsAtty;
+            context.TimesCommon = TimesCommon;
+            context.DefaultScope = DefaultScope;
+            context.EmptyScope = EmptyScope;
+            context.Logger = Logger;
+            context.IsVerifyEnabled = IsVerifyEnabled;
+            context.DefaultStyle = DefaultStyle;
+            context.DefaultStyleChanged = DefaultStyleChanged;
+            context.TimeZone = TimeZone;
+            context.ErrorContext = ErrorContext;
+            context.CancellationSignal = CancellationSignal;
+            context.DefaultPager = DefaultPager;
+            context._EnvironmentVariables = _EnvironmentVariables;
+            context._QuoteProvider = _QuoteProvider;
+            context._ProcessManager = _ProcessManager;
+            context._ManPageProvider = _ManPageProvider;
+            context._VirtualConsoleProvider = _VirtualConsoleProvider;
+            context._FileSystemProvider = _FileSystemProvider;
+            context._PagerProvider = _PagerProvider;
+            return context;
         }
 
         public class ThreadAcquirer : IDisposable
