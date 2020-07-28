@@ -21,5 +21,10 @@ namespace NLedger.Utility.ServiceAPI
 
             return new ServiceSession(context, CommandLine.PreprocessSingleQuotes(args), inputText);
         }
+
+        public Task<ServiceSession> CreateSessionAsync(string args, string inputText)
+        {
+            return Task.Run(() => CreateSession(args, inputText));
+        }
     }
 }

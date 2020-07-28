@@ -43,6 +43,11 @@ namespace NLedger.Utility.ServiceAPI
             return new ServiceResponse(this, command);
         }
 
+        public Task<ServiceResponse> ExecuteCommandAsync(string command)
+        {
+            return Task.Run(() => ExecuteCommand(command));
+        }
+
         public void Dispose()
         {
             CloseSession();
