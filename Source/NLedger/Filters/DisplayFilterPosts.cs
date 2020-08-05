@@ -36,6 +36,12 @@ namespace NLedger.Filters
             CreateAccounts();
         }
 
+        public override void Dispose()
+        {
+            Temps?.Dispose();
+            base.Dispose();
+        }
+
         public Report Report { get; private set; }
         public Expr DisplayAmountExpr { get; private set; }
         public Expr DisplayTotalExpr { get; private set; }

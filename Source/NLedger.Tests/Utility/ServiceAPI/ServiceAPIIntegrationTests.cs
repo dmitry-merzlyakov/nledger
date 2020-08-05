@@ -49,7 +49,7 @@ namespace NLedger.Tests.Utility.ServiceAPI
         /// <summary>
         /// Simple multithreading Service API example
         /// </summary>
-        [TestMethod]
+        //[TestMethod]
         public void ServiceAPI_IntegrationTests_3()
         {
             var engine = new ServiceEngine();

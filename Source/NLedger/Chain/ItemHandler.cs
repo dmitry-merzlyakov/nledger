@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace NLedger.Chain
 {
-    public class ItemHandler<T> where T: class
+    public class ItemHandler<T> : IDisposable where T: class
     {
         public ItemHandler()
         { }
@@ -52,6 +52,11 @@ namespace NLedger.Chain
         {
             if (Handler != null)
                 Handler.Clear();
+        }
+
+        public virtual void Dispose()
+        {
+            Handler?.Dispose();
         }
     }
 }

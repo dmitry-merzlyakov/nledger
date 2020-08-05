@@ -16,21 +16,21 @@ using System.Threading.Tasks;
 
 namespace NLedger
 {
-    public class Temporaries
+    public class Temporaries : IDisposable
     {
         public Xact LastXact
         {
-            get { return XactTemps != null ? XactTemps.Last() : null; }
+            get { return XactTemps != null ? XactTemps.LastOrDefault() : null; }
         }
 
         public Post LastPost
         {
-            get { return PostTemps != null ? PostTemps.Last() : null; }
+            get { return PostTemps != null ? PostTemps.LastOrDefault() : null; }
         }
 
         public Account LastAccount
         {
-            get { return AcctTemps != null ? AcctTemps.Last() : null; }
+            get { return AcctTemps != null ? AcctTemps.LastOrDefault() : null; }
         }
 
         public Xact CopyXact(Xact origin)
@@ -64,9 +64,8 @@ namespace NLedger
             if (PostTemps == null)
                 PostTemps = new List<Post>();
 
-            PostTemps.Add(origin);
-
             Post temp = new Post(origin);
+            PostTemps.Add(temp);
             temp.Flags |= SupportsFlagsEnum.ITEM_TEMP;
 
             if (account != null)
@@ -104,6 +103,7 @@ namespace NLedger
                 AcctTemps = new List<Account>();
 
             Account temp = new Account(parent, name);
+            AcctTemps.Add(temp);
             temp.IsTempAccount = true;
 
             if (parent != null)
@@ -139,6 +139,14 @@ namespace NLedger
                 }
                 AcctTemps.Clear();
             }
+        }
+
+        /// <summary>
+        /// Ported from ~temporaries_t()
+        /// </summary>
+        public void Dispose()
+        {
+            Clear();
         }
 
         private IList<Xact> XactTemps { get; set; }

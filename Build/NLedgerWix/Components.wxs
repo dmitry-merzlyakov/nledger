@@ -458,6 +458,8 @@
                         <File Id="File_opt_download_test" Name="opt-download.test" Source="$(var.PackageFolder)NLedger\test\nledger\opt-download.test"/>
                         <File Id="File_gh_issues_5_test" Name="gh-issues-5.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-5.test"/>
                         <File Id="File_gh_issues_7_test" Name="gh-issues-7.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-7.test"/>
+                        <File Id="File_nl-issues-1.test" Name="nl-issues-1.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.test"/>
+                        <File Id="File_nl-issues-1.dat" Name="nl-issues-1.dat" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.dat"/>
                         <File Id="File_pricedb_dat" Name="pricedb.dat" Source="$(var.PackageFolder)NLedger\test\nledger\pricedb.dat"/>
                      </Component>
                   </Directory>

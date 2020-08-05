@@ -30,6 +30,13 @@ namespace NLedger.IntegrationTests
 		
         [TestMethod]
         [TestCategory("Integration")]
+        public void IntegrationTest_test_nledger_nl_issues_1()
+        {
+            new TestRunner(@"test\nledger\nl-issues-1.test").Run();
+        }
+		
+        [TestMethod]
+        [TestCategory("Integration")]
         public void IntegrationTest_test_nledger_opt_download()
         {
             new TestRunner(@"test\nledger\opt-download.test").Run();

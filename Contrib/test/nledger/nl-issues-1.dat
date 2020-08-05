@@ -1,0 +1,2 @@
+--no-pager --columns=80 bal checking --account=code
+--no-pager --columns=80 bal checking --account=code
