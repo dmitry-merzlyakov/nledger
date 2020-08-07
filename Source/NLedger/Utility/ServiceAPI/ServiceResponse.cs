@@ -39,25 +39,33 @@ namespace NLedger.Utility.ServiceAPI
         {
             using (MainApplicationContext.AcquireCurrentThread())
             {
-                using (var memoryStreamManager = new MemoryStreamManager())
+                // [DM] This is a quick workaround to fix multithreading issues caused by original non-thread-safe legder code.
+                // When ExecuteCommandWrapper is executing, it changes the state of GlobalScope object, it can also change the state of 
+                // accounts and xacts (depending on the command). However, it properly restores the original state when it finishes.
+                // Therefore, the quick solution is to limit parallel requests with only one running executor at the moment.
+                // The right solution would be cloning GlobalScope object for every thread (or, fixing thread-unsafe code).
+                lock (ServiceSession) 
                 {
-                    MainApplicationContext.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
+                    using (var memoryStreamManager = new MemoryStreamManager())
+                    {
+                        MainApplicationContext.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
 
-                    try
-                    {
-                        Status = ServiceSession.GlobalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(command), true);
-                    }
-                    catch (CountError errors)
-                    {
-                        Status = errors.Count;
-                    }
-                    catch (Exception err)
-                    {
-                        ServiceSession.GlobalScope.ReportError(err);
-                    }
+                        try
+                        {
+                            Status = ServiceSession.GlobalScope.ExecuteCommandWrapper(StringExtensions.SplitArguments(command), true);
+                        }
+                        catch (CountError errors)
+                        {
+                            Status = errors.Count;
+                        }
+                        catch (Exception err)
+                        {
+                            ServiceSession.GlobalScope.ReportError(err);
+                        }
 
-                    OutputText = memoryStreamManager.GetOutputText();
-                    ErrorText = memoryStreamManager.GetErrorText();
+                        OutputText = memoryStreamManager.GetOutputText();
+                        ErrorText = memoryStreamManager.GetErrorText();
+                    }
                 }
             }
         }

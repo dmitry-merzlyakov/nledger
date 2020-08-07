@@ -25,6 +25,18 @@ namespace NLedger.Tests.Utility.ServiceAPI
             var response = session.ExecuteCommand("bal checking --account=code");
             Assert.IsFalse(response.HasErrors);
             Assert.AreEqual(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+
+            response = session.ExecuteCommand("bal checking --account=code");
+            Assert.IsFalse(response.HasErrors);
+            Assert.AreEqual(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+
+            response = session.ExecuteCommand("bal");
+            Assert.IsFalse(response.HasErrors);
+            Assert.AreEqual(BalOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+
+            response = session.ExecuteCommand("reg");
+            Assert.IsFalse(response.HasErrors);
+            Assert.AreEqual(RegOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
         }
 
         /// <summary>
@@ -47,10 +59,28 @@ namespace NLedger.Tests.Utility.ServiceAPI
         }
 
         /// <summary>
+        /// Simple multi-step async Service API example
+        /// </summary>
+        [TestMethod]
+        public void ServiceAPI_IntegrationTests_3()
+        {
+            var engine = new ServiceEngine();
+            var session = engine.CreateSessionAsync("-f /dev/stdin", InputText).Result;
+
+            var ex1 = CheckSessionResponseOutput(session.ExecuteCommandAsync("bal checking --account=code").Result, BalCheckingOutputText);
+            var ex2 = CheckSessionResponseOutput(session.ExecuteCommandAsync("bal").Result, BalOutputText);
+            var ex3 = CheckSessionResponseOutput(session.ExecuteCommandAsync("reg").Result, RegOutputText);
+
+            Assert.IsNull(CheckSessionResponseOutput(session.ExecuteCommandAsync("bal checking --account=code").Result, BalCheckingOutputText));
+            Assert.IsNull(CheckSessionResponseOutput(session.ExecuteCommandAsync("bal").Result, BalOutputText));
+            Assert.IsNull(CheckSessionResponseOutput(session.ExecuteCommandAsync("reg").Result, RegOutputText));
+        }
+
+        /// <summary>
         /// Simple multithreading Service API example
         /// </summary>
-        //[TestMethod]
-        public void ServiceAPI_IntegrationTests_3()
+        [TestMethod]
+        public void ServiceAPI_IntegrationTests_4()
         {
             var engine = new ServiceEngine();
             var session = engine.CreateSession("-f /dev/stdin", InputText);
