@@ -13,7 +13,8 @@
     <!-- Path to ProductInfo file -->
     <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
     <!-- Paths to test project assemblies separated by spaces -->
-    <TestAssemblies>$(SourceRoot)NLedger.Tests\bin\Release\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\NLedger.IntegrationTests.dll</TestAssemblies>
+    <TestAssembliesFramework>$(SourceRoot)NLedger.Tests\bin\Release\net45\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\net45\NLedger.IntegrationTests.dll</TestAssembliesFramework>
+    <TestAssembliesCore>$(SourceRoot)NLedger.Tests\bin\Release\netcoreapp3.1\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\netcoreapp3.1\NLedger.IntegrationTests.dll</TestAssembliesCore>
 
     <!-- Output file structure -->
 
@@ -51,7 +52,8 @@
 
   <Target Name="CodeTests" DependsOnTargets="Build;CheckOutputDir">
     <Message Text="Target : CodeTests (executing all unit tests defined in code)"/>
-    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssemblies) /Logger:trx" />
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesFramework) /Logger:trx" />
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesCore) /Logger:trx" />
     <!-- Copy trx files (s) to output folder -->
     <CreateItem Include="$(TestResultsDir)**\*.*">
       <Output TaskParameter="Include" ItemName="TestResultsFiles" />
