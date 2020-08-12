@@ -10,6 +10,7 @@
                <Directory Id="NLManagementFolder" Name="NLManagement">
                   <Component Id="NLManagementCommon" Guid="6EF42737-8561-47E2-A7BE-920D2BB6337A" >
                      <File Id="File_NLCommon_psm1" Name="NLCommon.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLCommon.psm1"/>
+                     <File Id="File_NLWhere_psm1" Name="NLWhere.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLWhere.psm1"/>
                   </Component>
                   <Component Id="NLManagementSetup" Guid="5BF41549-2630-46C8-BFAC-078503FB7174" >
                      <File Id="File_NLSetup_psm1" Name="NLSetup.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLSetup.psm1"/>
