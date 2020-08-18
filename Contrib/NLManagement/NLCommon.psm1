@@ -1,6 +1,7 @@
 ﻿# NLedger Management Module that shares a common routine functions with others
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+Import-Module $Script:ScriptPath\..\NLManagement\NLWhere.psm1 -Force
 
 # Helper function that returns a structure indicating a failure
 function Get-Fault {
@@ -218,21 +219,9 @@ function NLedgerLocation {
   [CmdletBinding()]
   Param()
 
-  [string]$Private:nLedgerPath = ".."
-  if (!(Test-Path -LiteralPath ([System.IO.Path]::GetFullPath("$Script:ScriptPath\$Private:nLedgerPath\NLedger-cli.exe")) -PathType Leaf)) { 
-    [string]$Private:debugNLedgerPath = "..\..\Source\NLedger.CLI\bin\Debug"
-    [bool]$Private:debugExists = Test-Path -LiteralPath ([System.IO.Path]::GetFullPath("$Script:ScriptPath\$Private:debugNLedgerPath\NLedger-cli.exe")) -PathType Leaf
-    [string]$Private:releaseNLedgerPath = "..\..\Source\NLedger.CLI\bin\Release"
-    [bool]$Private:releaseExists = Test-Path -LiteralPath ([System.IO.Path]::GetFullPath("$Script:ScriptPath\$Private:releaseNLedgerPath\NLedger-cli.exe")) -PathType Leaf
-    if (!$Private:debugExists -and !$Private:releaseExists) { throw "Cannot find NLedger-cli.exe" }
-    if ($Private:debugExists -and $Private:releaseExists) {
-        $Private:debugDate = (Get-Item -Path ([System.IO.Path]::GetFullPath("$Script:ScriptPath\$Private:debugNLedgerPath\NLedger-cli.exe"))).LastWriteTime
-        $Private:releaseDate = (Get-Item -Path ([System.IO.Path]::GetFullPath("$Script:ScriptPath\$Private:releaseNLedgerPath\NLedger-cli.exe"))).LastWriteTime
-        if ($Private:debugDate -gt $Private:releaseDate) { $Private:nLedgerPath = $Private:debugNLedgerPath } else { $Private:nLedgerPath = $Private:releaseNLedgerPath }
-    } else { if ($Private:debugExists) { $Private:nLedgerPath = $Private:debugNLedgerPath } else { $Private:nLedgerPath = $Private:releaseNLedgerPath } }
-  }
-  Write-Verbose "NLedger binaries are detected in : $Private:nLedgerPath"
-  return [System.IO.Path]::GetFullPath("$Script:ScriptPath\$Private:nLedgerPath")
+  $private:path = Get-NLedgerPath -preferCore:$false
+  if (!$private:path) { throw "Cannot find NLedger executable file" }
+  return [System.IO.Path]::GetDirectoryName($private:path)
 }
 
 Export-ModuleMember -function * -alias *
