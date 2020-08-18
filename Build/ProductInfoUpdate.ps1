@@ -7,7 +7,8 @@
 Param(
     [Parameter(Mandatory=$False)][string]$sourceCodePath = "..\Source\",
     [Parameter(Mandatory=$False)][string]$productInfoPath = "ProductInfo.xml",
-    [Switch]$verify = $False
+    [Switch]$verify = $False,
+    [Switch]$outversion = $False
 )
 
 trap 
@@ -25,9 +26,9 @@ Write-Verbose "Product info path: $Script:absProductInfoPath"
 
 [xml]$script:productInfoContent = Get-Content "$Script:absProductInfoPath"
 
-# Update all assembly info files
+# Update all project files
 
-Write-Verbose "Update AssemblyInfo.cs files"
+Write-Verbose "Update *.csproj files"
 
 function ApplyVar {
     [CmdletBinding()]
@@ -54,43 +55,26 @@ function ApplyGlobals {
     return $innerText
 }
 
-foreach ($Private:asmInfo in (Get-ChildItem -Path $Script:absSourceCodePath -Filter AssemblyInfo.cs -Recurse -ErrorAction Stop -Force | %{$_.FullName})) {
+foreach ($Private:asmInfo in (Get-ChildItem -Path $Script:absSourceCodePath -Filter *.csproj -Recurse -ErrorAction Stop -Force | %{$_.FullName})) {
     Write-Verbose "Processing $Private:asmInfo"
-    $Private:asmInfoContent = (Get-Content $Private:asmInfo | Out-String ).Trim()
+    [xml]$Private:asmInfoContent = (Get-Content $Private:asmInfo)
     [bool]$Private:HasChanges = $False
     foreach($Private:infoAttr in $script:productInfoContent.SelectNodes("/ProductInfo/AssemblyInfo/*")) {
-        [string]$Private:regex = "\n(\[assembly:\s*$($Private:infoAttr.Name)\(\"")([^""]*)(\""\)\])"
-        Write-Verbose "Try regex '$Private:regex'"
-        if ($Private:infoAttr.remove) {
-            Write-Verbose "Removing attribute '$($Private:infoAttr.Name)'"
-            if ($Private:infoAttr.InnerText) { throw "Inner text is not allowed for an attribute to be removed" }
-            if ($Private:asmInfoContent -match $Private:regex) {
-			    $Private:asmInfoContent = $Private:asmInfoContent -replace $Private:regex, "`n"
-			    $Private:HasChanges = $True
-            }
-        }
-        else {
-	        [string]$Private:replacementText = ApplyGlobals $Private:infoAttr.InnerText
-            Write-Verbose "Process attribute '$($Private:infoAttr.Name)' with value '$Private:replacementText'"
-            if ($Private:asmInfoContent -match $Private:regex) {
-			    if ($Matches[2] -eq $Private:replacementText) {
-				    Write-Verbose "The value of the found attribute is the same as in ProductInfo.xml; no changes."
-			    }
-			    else {
-				    Write-Verbose "The value '$($Matches[2])' of the found attribute does not match ProductInfo.xml; updating..."
-				    $Private:asmInfoContent = $Private:asmInfoContent -replace $Private:regex, "$($Matches[1])$($Private:replacementText)$($Matches[3])"
-				    $Private:HasChanges = $True
-			    }
-            } else {
-                Write-Verbose "No matches found; adding the attribute"
-                $Private:asmInfoContent += "`r`n[assembly: $($Private:infoAttr.Name)(""$($($Private:replacementText))"")]"
-                $Private:HasChanges = $True
-            }
+        [string]$Private:replacementText = ApplyGlobals $Private:infoAttr.InnerText
+        Write-Verbose "Process attribute '$($Private:infoAttr.Name)' with value '$Private:replacementText'"
+        $Private:asmInfoAttr = $Private:asmInfoContent.SelectNodes("/Project/PropertyGroup/$($Private:infoAttr.Name)")
+        if (!$Private:asmInfoAttr) { throw "Cannot find element /Project/PropertyGroup/$($Private:infoAttr.Name) in file $Private:asmInfo"}
+        if ($Private:asmInfoAttr.InnerText -ne $Private:replacementText) {
+            Write-Verbose "Detected differences; updating..."           
+            $Private:asmInfoAttr.InnerText = $Private:replacementText
+            $Private:HasChanges = $True
+        } else {
+            Write-Verbose "The value of the found attribute is the same as in ProductInfo.xml; no changes."
         }
     }
     if ($Private:HasChanges) {
         if ($verify) { throw "Verification fails. File $Private:asmInfo needs to be updated." }        
-        ($Private:asmInfoContent -join "`r`n") | Set-Content -Encoding UTF8 -Path $Private:asmInfo -ErrorAction Stop
+        $Private:asmInfoContent | Set-Content -Path $Private:asmInfo -ErrorAction Stop
         Write-Output "File $Private:asmInfo has been updated with recent product info."
     } else {
         Write-Verbose "File $Private:asmInfo has the latest product info; no changes."
@@ -120,8 +104,24 @@ foreach ($Private:csFile in (Get-ChildItem -Path $Script:absSourceCodePath -Filt
     }
 }
 
-Write-Verbose "Done.";
+# Prepare version auto-generation attributes
+
+Write-Verbose "Build version autogeneration"
+
+[DateTime]$Script:BasePatchDate = $script:productInfoContent.ProductInfo.BuildVersionAutoGeneration.BasePatchDate
+[int]$Script:BuildVersion = [DateTime]::UtcNow.Subtract($Script:BasePatchDate).TotalMinutes / 20
+Write-Verbose "Build version: $Script:BuildVersion"
+
+[string]$Script:VersionPrefix = "$(ApplyGlobals $script:productInfoContent.ProductInfo.AssemblyInfo.VersionPrefix).$Script:BuildVersion"
+Write-Verbose "Generated VersionPrefix: $Script:VersionPrefix"
+
+[string]$Script:SourceRevisionId = (git rev-parse --short HEAD)
+Write-Verbose "SourceRevisionId: $Script:SourceRevisionId"
+
+if ($outversion) {
+    write-output $Script:VersionPrefix
+    write-output $Script:SourceRevisionId
+}
 
 
-
-
+Write-Verbose "Done."

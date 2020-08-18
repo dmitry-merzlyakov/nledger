@@ -2,7 +2,8 @@
 <ProductInfo>
   <General>
 	<Version>0.8</Version>
-	<Stage>Public Beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
+	<Patch>0</Patch>
+	<Stage>beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
     <!-- This is a reference to a snapshot of the original source code that has been ported. -->
     <OriginalSource>
         <Repository>https://github.com/ledger/ledger</Repository>
@@ -13,15 +14,18 @@
   <AssemblyInfo>
     <!-- Product info -->
     <AssemblyTitle>NLedger</AssemblyTitle>
-    <AssemblyDescription>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</AssemblyDescription>
-    <AssemblyProduct>NLedger, the double-entry accounting tool</AssemblyProduct>
-    <AssemblyCopyright>Copyright &#169; 2015-{{Year}}, Dmitry Merzlyakov</AssemblyCopyright>
-    <AssemblyCompany>Dmitry Merzlyakov</AssemblyCompany>
+    <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
+    <Product>NLedger, the double-entry accounting tool</Product>
+    <Copyright>Copyright &#169; 2015-{{Year}}, Dmitry Merzlyakov</Copyright>
+    <Company>Dmitry Merzlyakov</Company>
     <!-- Version information -->
-    <AssemblyVersion>{{Version}}.*</AssemblyVersion>					<!-- Auto-generate the build and release numbers -->
-    <AssemblyFileVersion remove="true" />					<!-- Remove this attribue to make AssemblyVersion visible on the file details tab -->
-    <AssemblyInformationalVersion>{{Version}} {{Stage}}</AssemblyInformationalVersion>
+    <VersionPrefix>{{Version}}.{{Patch}}</VersionPrefix>
+    <VersionSuffix>{{Stage}}</VersionSuffix>
   </AssemblyInfo>
+  <BuildVersionAutoGeneration>
+    <!-- Version auto-generation -->
+    <BasePatchDate>2020/01/01</BasePatchDate>  <!-- Build number is generated as a difference (in minutes divided 20) between current date/time and BasePatchDate. -->
+  </BuildVersionAutoGeneration>
   <SourceLicensing>
     <FileHeader>
         // **********************************************************************************
