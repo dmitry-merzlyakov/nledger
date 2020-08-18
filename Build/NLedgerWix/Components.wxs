@@ -459,8 +459,8 @@
                         <File Id="File_opt_download_test" Name="opt-download.test" Source="$(var.PackageFolder)NLedger\test\nledger\opt-download.test"/>
                         <File Id="File_gh_issues_5_test" Name="gh-issues-5.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-5.test"/>
                         <File Id="File_gh_issues_7_test" Name="gh-issues-7.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-7.test"/>
-                        <File Id="File_nl-issues-1.test" Name="nl-issues-1.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.test"/>
-                        <File Id="File_nl-issues-1.dat" Name="nl-issues-1.dat" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.dat"/>
+                        <File Id="File_nl_issues_1_test" Name="nl-issues-1.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.test"/>
+                        <File Id="File_nl_issues_1_dat" Name="nl-issues-1.dat" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.dat"/>
                         <File Id="File_pricedb_dat" Name="pricedb.dat" Source="$(var.PackageFolder)NLedger\test\nledger\pricedb.dat"/>
                      </Component>
                   </Directory>
@@ -678,6 +678,18 @@
                     <File Id="File_NLedger_Launcher_ps1" Name="NLedger.Launcher.ps1" Source="$(var.PackageFolder)NLedger\Install\NLedger.Launcher.ps1"/>
                     <File Id="File_NLedger_Uninstall_cmd" Name="NLedger.Uninstall.cmd" Source="$(var.PackageFolder)NLedger\Install\NLedger.Uninstall.cmd"/>
                   </Component>
+               </Directory>
+               <Directory Id="BinFolder" Name="bin">
+                  <Directory Id="NetCoreApp31Folder" Name="netcoreapp3.1">
+                    <Component Id="AppBinCoreFiles" Guid="74DDC5E7-4EEE-4BCF-982C-9B88848E8A30" >
+                      <File Id="File_NLedger_Core_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger.dll"/>
+                      <File Id="File_NLedger_Core_cli_dll" Name="NLedger-cli.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.dll"/>
+                      <File Id="File_NLedger_Core_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.exe"/>
+                      <File Id="File_NLedger_Core_cli_deps_json" Name="NLedger-cli.deps.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.deps.json"/>
+                      <File Id="File_NLedger_Core_cli_dll_config" Name="NLedger-cli.dll.config" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.dll.config"/>
+                      <File Id="File_NLedger_Core_cli_runtimeconfig_json" Name="NLedger-cli.runtimeconfig.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"/>
+                    </Component>
+                  </Directory>
                </Directory>
                <Component Id="AppBinFiles" Guid="59E7E5B2-E13F-4FBC-B05C-B5E1DFC1F06A" >
                   <File Id="File_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\NLedger.dll"/>

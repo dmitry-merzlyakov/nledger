@@ -99,7 +99,8 @@
     <!-- Call NGEN to create a native image to speed up the tests. Requires elevated permissions -->
     <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -addPath:$False -addAlias:$False" />
     <!-- Run all integration tests -->
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -htmlReport -reportFileName &quot;$(OutputDir)NLTest.LastTestResults&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetFramework.LastTestResults&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetCore.LastTestResults&quot;" />
     <!-- Remove the native image from the cache -->
     <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -uninstall -addPath:$False -addAlias:$False" />
   </Target>
