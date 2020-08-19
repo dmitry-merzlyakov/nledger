@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Times;
 using NLedger.Utility;
 using NLedger.Utils;
@@ -40,9 +39,18 @@ namespace NLedger.Tests
         public ContextInit ContextInit { get; set; }
     }
 
-    public abstract class TestFixture
+    public abstract class TestFixture : IDisposable
     {
-        [TestInitialize]
+        public TestFixture()
+        {
+            TestInitialize();
+        }
+
+        public void Dispose()
+        {
+            TestCleanup();
+        }
+
         public void TestInitialize()
         {
             ContextInit contextInit = GetContextInit();
@@ -57,7 +65,6 @@ namespace NLedger.Tests
             CustomTestInitialize();
         }
 
-        [TestCleanup]
         public void TestCleanup()
         {
             ContextInit contextInit = GetContextInit();

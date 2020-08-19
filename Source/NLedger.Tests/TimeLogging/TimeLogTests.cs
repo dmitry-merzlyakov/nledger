@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Items;
 using NLedger.Journals;
@@ -17,13 +16,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.TimeLogging
 {
-    [TestClass]
     public class TimeLogTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void TimeLog_CreateTimelogXact_ProducesPostWithSpecialCommodity()
         {
             ItemPosition itemPosition = new ItemPosition();
@@ -37,7 +36,7 @@ namespace NLedger.Tests.TimeLogging
 
             TimeLog.CreateTimelogXact(inEvent, outEvent, parseContext);
 
-            Assert.AreEqual("5400s", account.Posts.First().Amount.ToString());
+            Assert.Equal("5400s", account.Posts.First().Amount.ToString());
         }
     }
 }

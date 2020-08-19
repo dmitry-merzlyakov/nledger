@@ -6,23 +6,22 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility
 {
-    [TestClass]
     public class FileSystemTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void FileSystem_IsAtty_ReflectsContextState()
         {
-            Assert.AreEqual(MainApplicationContext.Current.IsAtty, VirtualConsole.IsAtty());
+            Assert.Equal(MainApplicationContext.Current.IsAtty, VirtualConsole.IsAtty());
         }
     }
 }

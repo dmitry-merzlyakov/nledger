@@ -6,30 +6,29 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests
 {
-    [TestClass]
     public class TextualReaderTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void TextualReader_PeekWhitespaceLine_TrueIfIsNotEndOfFile()
         {
             using (var sr = new StreamReader(new MemoryStream()))
             {
                 var reader = new TextualReader(sr);
-                Assert.IsFalse(reader.PeekWhitespaceLine());
+                Assert.False(reader.PeekWhitespaceLine());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TextualReader_PeekWhitespaceLine_TrueIfIsSpaceOrTabAndFalseOtherwise()
         {
             using (var ms = new MemoryStream())
@@ -44,11 +43,11 @@ namespace NLedger.Tests
                 ms.Position = 0;
 
                 var reader = new TextualReader(new StreamReader(ms));
-                Assert.IsFalse(reader.PeekWhitespaceLine()); reader.ReadLine();
-                Assert.IsTrue(reader.PeekWhitespaceLine()); reader.ReadLine();
-                Assert.IsTrue(reader.PeekWhitespaceLine()); reader.ReadLine();
-                Assert.IsFalse(reader.PeekWhitespaceLine()); reader.ReadLine();
-                Assert.IsFalse(reader.PeekWhitespaceLine()); reader.ReadLine();
+                Assert.False(reader.PeekWhitespaceLine()); reader.ReadLine();
+                Assert.True(reader.PeekWhitespaceLine()); reader.ReadLine();
+                Assert.True(reader.PeekWhitespaceLine()); reader.ReadLine();
+                Assert.False(reader.PeekWhitespaceLine()); reader.ReadLine();
+                Assert.False(reader.PeekWhitespaceLine()); reader.ReadLine();
             }
         }
 

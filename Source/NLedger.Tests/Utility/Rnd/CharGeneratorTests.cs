@@ -6,20 +6,19 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Rnd;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Rnd
 {
-    [TestClass]
     public class CharGeneratorTests
     {
-        [TestMethod]
+        [Fact]
         public void CharGenerator_Value_ProvidesMassiveOfCharsInSpecifiedRange()
         {
             int size = 1000;
@@ -30,9 +29,9 @@ namespace NLedger.Tests.Utility.Rnd
                 massive[i] = charGen.Value();
             var usedNumbers = massive.Distinct().OrderBy(i => i).ToList();
 
-            Assert.AreEqual('a', usedNumbers[0]);
-            Assert.AreEqual('b', usedNumbers[1]);
-            Assert.AreEqual('c', usedNumbers[2]);
+            Assert.Equal('a', usedNumbers[0]);
+            Assert.Equal('b', usedNumbers[1]);
+            Assert.Equal('c', usedNumbers[2]);
         }
 
     }

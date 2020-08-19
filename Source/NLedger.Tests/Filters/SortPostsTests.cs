@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Filters;
 using NLedger.Scopus;
 using NLedger.Utility;
@@ -17,13 +16,13 @@ using System.Text;
 using System.Threading.Tasks;
 using NLedger.Chain;
 using NLedger.Expressions;
+using Xunit;
 
 namespace NLedger.Tests.Filters
 {
-    [TestClass]
     public class SortPostsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void SortPosts_PostAccumulatedPosts_UsesStableSortAlgorithm()
         {
             CollectPosts collectPosts = new CollectPosts();
@@ -35,10 +34,10 @@ namespace NLedger.Tests.Filters
 
             sortPosts.PostAccumulatedPosts();
 
-            Assert.AreEqual("4", collectPosts.Posts[0].Note);
-            Assert.AreEqual("2", collectPosts.Posts[1].Note);   // Posts with equal key keep original order (2, 3)
-            Assert.AreEqual("3", collectPosts.Posts[2].Note);
-            Assert.AreEqual("1", collectPosts.Posts[3].Note);
+            Assert.Equal("4", collectPosts.Posts[0].Note);
+            Assert.Equal("2", collectPosts.Posts[1].Note);   // Posts with equal key keep original order (2, 3)
+            Assert.Equal("3", collectPosts.Posts[2].Note);
+            Assert.Equal("1", collectPosts.Posts[3].Note);
         }
 
         private class TestSortPosts : SortPosts
@@ -52,7 +51,7 @@ namespace NLedger.Tests.Filters
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void SortPosts_PostAccumulatedPosts_CallsBaseHandler()
         {
             CollectPosts collectPosts = new CollectPosts();

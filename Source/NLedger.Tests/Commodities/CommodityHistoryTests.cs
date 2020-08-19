@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Commodities;
 using NLedger.Utility.Graph;
@@ -15,13 +14,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Commodities
 {
-    [TestClass]
     public class CommodityHistoryTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void CommodityHistory_AddCommodity_AddsACommodity()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -29,10 +28,10 @@ namespace NLedger.Tests.Commodities
 
             commodityHistory.AddCommodity(commodity);
 
-            Assert.IsTrue(commodityHistory.PriceGraphAccessor.HasVertex(commodity));
+            Assert.True(commodityHistory.PriceGraphAccessor.HasVertex(commodity));
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityHistory_AddPrice_AddsEdgeAndPrice()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -47,13 +46,13 @@ namespace NLedger.Tests.Commodities
             commodityHistory.AddPrice(commodity1, when, price);
 
             var edgeDesc = commodityHistory.PriceGraphAccessor.FindEdgeDescriptor(commodity1, commodity2);
-            Assert.AreEqual(commodity1, edgeDesc.Vertex1);
-            Assert.AreEqual(commodity2, edgeDesc.Vertex2);
-            Assert.AreEqual(1, edgeDesc.Edge.Prices.Count);
-            Assert.AreEqual(price, edgeDesc.Edge.Prices[when]);
+            Assert.Equal(commodity1, edgeDesc.Vertex1);
+            Assert.Equal(commodity2, edgeDesc.Vertex2);
+            Assert.Equal(1, edgeDesc.Edge.Prices.Count);
+            Assert.Equal(price, edgeDesc.Edge.Prices[when]);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityHistory_RemovePrice_RemovesPriceAndEdge()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -69,10 +68,10 @@ namespace NLedger.Tests.Commodities
             commodityHistory.RemovePrice(commodity1, commodity2, when);
 
             var edgeDesc = commodityHistory.PriceGraphAccessor.FindEdgeDescriptor(commodity1, commodity2);
-            Assert.IsNull(edgeDesc);
+            Assert.Null(edgeDesc);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityHistory_MapPrices_IteratesAppropriatePrices()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -88,12 +87,12 @@ namespace NLedger.Tests.Commodities
             IList<PricePoint> pricePoints = new List<PricePoint>();
             commodityHistory.MapPrices((d, a) => pricePoints.Add(new PricePoint(d, a)), commodity1, when.AddDays(1));
 
-            Assert.AreEqual(1, pricePoints.Count());
-            Assert.AreEqual(when, pricePoints.First().When);
-            Assert.AreEqual(price, pricePoints.First().Price);
+            Assert.Single(pricePoints);
+            Assert.Equal(when, pricePoints.First().When);
+            Assert.Equal(price, pricePoints.First().Price);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityHistory_FindPrice_ReturnsAppropriatePriceForCommodityAndDate()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -108,11 +107,11 @@ namespace NLedger.Tests.Commodities
 
             PricePoint? pricePoint = commodityHistory.FindPrice(commodity1, when.AddDays(1));
 
-            Assert.AreEqual(when, pricePoint.Value.When);
-            Assert.AreEqual(price, pricePoint.Value.Price);
+            Assert.Equal(when, pricePoint.Value.When);
+            Assert.Equal(price, pricePoint.Value.Price);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityHistory_FindPrice_LooksForShortestPath()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -127,11 +126,11 @@ namespace NLedger.Tests.Commodities
 
             PricePoint? pricePoint = commodityHistory.FindPrice(commodity1, commodity2, when.AddDays(1));
 
-            Assert.AreEqual(when, pricePoint.Value.When);
-            Assert.AreEqual(price, pricePoint.Value.Price);
+            Assert.Equal(when, pricePoint.Value.When);
+            Assert.Equal(price, pricePoint.Value.Price);
         }
 
-        [TestMethod]
+        [Fact]
         public void RecentEdgeWeight_Filter_ReturnsFalseIfPricesAreEmpty()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -143,10 +142,10 @@ namespace NLedger.Tests.Commodities
 
             var result = recentEdgeWeight.Filter(commodity1, commodity2, edge);
 
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void RecentEdgeWeight_Filter_ReturnsFalseIfRefTimeLessThanFirstPrice()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -162,10 +161,10 @@ namespace NLedger.Tests.Commodities
 
             var result = recentEdgeWeight.Filter(commodity1, commodity2, edge);
 
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void RecentEdgeWeight_Filter_ReturnsFalseIfRefTimeGreaterThanFirstPriceButLessThanOldest()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -182,10 +181,10 @@ namespace NLedger.Tests.Commodities
 
             var result = recentEdgeWeight.Filter(commodity1, commodity2, edge);
 
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void RecentEdgeWeight_Filter_ReturnsTrueIfRefTimeBiggerThanFirstPrice()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -201,10 +200,10 @@ namespace NLedger.Tests.Commodities
 
             var result = recentEdgeWeight.Filter(commodity1, commodity2, edge);
 
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void RecentEdgeWeight_Filter_ReturnsTrueIfRefTimeGreaterThanFirstPriceAndActualPriceGreaterThanOldest()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -223,10 +222,10 @@ namespace NLedger.Tests.Commodities
 
             var result = recentEdgeWeight.Filter(commodity1, commodity2, edge);
 
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void RecentEdgeWeight_Filter_ReturnsTrueAndUpdatesWeight()
         {
             CommodityHistoryAccessor commodityHistory = new CommodityHistoryAccessor();
@@ -245,10 +244,10 @@ namespace NLedger.Tests.Commodities
 
             var result = recentEdgeWeight.Filter(commodity1, commodity2, edge);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(refTime - actualPriceTime, edge.Weight);
-            Assert.AreEqual(actualPriceTime, edge.PricePoint.When);
-            Assert.AreEqual(new Amount(12), edge.Prices[actualPriceTime]);
+            Assert.True(result);
+            Assert.Equal(refTime - actualPriceTime, edge.Weight);
+            Assert.Equal(actualPriceTime, edge.PricePoint.When);
+            Assert.Equal(new Amount(12), edge.Prices[actualPriceTime]);
         }
 
         public class CommodityHistoryAccessor : CommodityHistory

@@ -6,60 +6,59 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Times;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Times
 {
-    [TestClass]
     public class CTimeToNetFormatConverterTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_Constructor_SetsDefaultValues()
         {
             CTimeToNetFormatConverter converter = new CTimeToNetFormatConverter();
-            Assert.IsFalse(converter.IsMarker);
-            Assert.IsFalse(converter.IsQuote);
+            Assert.False(converter.IsMarker);
+            Assert.False(converter.IsQuote);
         }
 
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_OpenQuotes_AddsQuoteIfNotInQuotes()
         {
             CTimeToNetFormatConverter converter = new CTimeToNetFormatConverter();
-            Assert.IsFalse(converter.IsQuote);
+            Assert.False(converter.IsQuote);
             converter.OpenQuotes();
-            Assert.IsTrue(converter.IsQuote);
-            Assert.AreEqual("'", converter.ToString());
+            Assert.True(converter.IsQuote);
+            Assert.Equal("'", converter.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_OpenQuotes_AddsNothingIfInQuotes()
         {
             CTimeToNetFormatConverter converter = new CTimeToNetFormatConverter();
             converter.OpenQuotes();
 
             converter.OpenQuotes();
-            Assert.IsTrue(converter.IsQuote);
-            Assert.AreEqual("'", converter.ToString());
+            Assert.True(converter.IsQuote);
+            Assert.Equal("'", converter.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_CloseQuotes_AddsQuoteIfInQuotes()
         {
             CTimeToNetFormatConverter converter = new CTimeToNetFormatConverter();
             converter.OpenQuotes();
 
             converter.CloseQuotes();
-            Assert.IsFalse(converter.IsQuote);
-            Assert.AreEqual("''", converter.ToString());
+            Assert.False(converter.IsQuote);
+            Assert.Equal("''", converter.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_CloseQuotes_AddsNothingIfNotInQuotes()
         {
             CTimeToNetFormatConverter converter = new CTimeToNetFormatConverter();
@@ -67,28 +66,28 @@ namespace NLedger.Tests.Times
             converter.CloseQuotes();
 
             converter.CloseQuotes();
-            Assert.IsFalse(converter.IsQuote);
-            Assert.AreEqual("''", converter.ToString());
+            Assert.False(converter.IsQuote);
+            Assert.Equal("''", converter.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_ConvertCTimeToNet_VariousFormats()
         {
-            Assert.AreEqual("",  CTimeToNetFormatConverter.ConvertCTimeToNet("", NetDateTimeFormat.ParseFormat));
-            Assert.AreEqual(" ", CTimeToNetFormatConverter.ConvertCTimeToNet(" ", NetDateTimeFormat.ParseFormat));
-            Assert.AreEqual("'no marker string'", CTimeToNetFormatConverter.ConvertCTimeToNet("no marker string", NetDateTimeFormat.ParseFormat));
-            Assert.AreEqual("yyyyyyMMMMdHHmmsshhttdddd", CTimeToNetFormatConverter.ConvertCTimeToNet("%Y%y%m%b%d%H%M%S%I%p%A", NetDateTimeFormat.ParseFormat));
-            Assert.AreEqual("yyyyyyMMMMMddHHmmsshhttdddd", CTimeToNetFormatConverter.ConvertCTimeToNet("%Y%y%m%b%d%H%M%S%I%p%A", NetDateTimeFormat.PrintFormat));
-            Assert.AreEqual("yyyy-M-d", CTimeToNetFormatConverter.ConvertCTimeToNet("%F", NetDateTimeFormat.ParseFormat));
-            Assert.AreEqual("yyyy-MM-dd", CTimeToNetFormatConverter.ConvertCTimeToNet("%F", NetDateTimeFormat.PrintFormat));
-            Assert.AreEqual("'Today is 'yyyy' 'dd' - 'MM", CTimeToNetFormatConverter.ConvertCTimeToNet("Today is %Y %d - %m", NetDateTimeFormat.PrintFormat));
+            Assert.Equal("",  CTimeToNetFormatConverter.ConvertCTimeToNet("", NetDateTimeFormat.ParseFormat));
+            Assert.Equal(" ", CTimeToNetFormatConverter.ConvertCTimeToNet(" ", NetDateTimeFormat.ParseFormat));
+            Assert.Equal("'no marker string'", CTimeToNetFormatConverter.ConvertCTimeToNet("no marker string", NetDateTimeFormat.ParseFormat));
+            Assert.Equal("yyyyyyMMMMdHHmmsshhttdddd", CTimeToNetFormatConverter.ConvertCTimeToNet("%Y%y%m%b%d%H%M%S%I%p%A", NetDateTimeFormat.ParseFormat));
+            Assert.Equal("yyyyyyMMMMMddHHmmsshhttdddd", CTimeToNetFormatConverter.ConvertCTimeToNet("%Y%y%m%b%d%H%M%S%I%p%A", NetDateTimeFormat.PrintFormat));
+            Assert.Equal("yyyy-M-d", CTimeToNetFormatConverter.ConvertCTimeToNet("%F", NetDateTimeFormat.ParseFormat));
+            Assert.Equal("yyyy-MM-dd", CTimeToNetFormatConverter.ConvertCTimeToNet("%F", NetDateTimeFormat.PrintFormat));
+            Assert.Equal("'Today is 'yyyy' 'dd' - 'MM", CTimeToNetFormatConverter.ConvertCTimeToNet("Today is %Y %d - %m", NetDateTimeFormat.PrintFormat));
         }
 
-        [TestMethod]
+        [Fact]
         public void CTimeToNetFormatConverter_ConvertCTimeToNet_HandlesDoubleMarkerAsSingleChar()
         {
-            Assert.AreEqual("'%'", CTimeToNetFormatConverter.ConvertCTimeToNet("%%", NetDateTimeFormat.ParseFormat));
-            Assert.AreEqual("'%'", CTimeToNetFormatConverter.ConvertCTimeToNet("%%", NetDateTimeFormat.PrintFormat));
+            Assert.Equal("'%'", CTimeToNetFormatConverter.ConvertCTimeToNet("%%", NetDateTimeFormat.ParseFormat));
+            Assert.Equal("'%'", CTimeToNetFormatConverter.ConvertCTimeToNet("%%", NetDateTimeFormat.PrintFormat));
         }
 
     }

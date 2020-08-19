@@ -6,57 +6,56 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.ServiceAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.ServiceAPI
 {
-    [TestClass]
     public class ServiceAPIIntegrationTests
     {
         /// <summary>
         /// Simple Service API example
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ServiceAPI_IntegrationTests_1()
         {
             var engine = new ServiceEngine();
 
             var session = engine.CreateSession("-f /dev/stdin", InputText);
-            Assert.IsTrue(session.IsActive);
+            Assert.True(session.IsActive);
 
             var response = session.ExecuteCommand("bal checking --account=code");
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
 
             response = session.ExecuteCommand("bal checking --account=code");
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
 
             response = session.ExecuteCommand("bal");
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(BalOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
 
             response = session.ExecuteCommand("reg");
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(RegOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+            Assert.False(response.HasErrors);
+            Assert.Equal(RegOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
         }
 
         /// <summary>
         /// Simple async Service API example
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ServiceAPI_IntegrationTests_2()
         {
             var engine = new ServiceEngine();
             var response = ServiceAPI_IntegrationTests_2_Exec(engine).Result;
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
         }
 
         private async Task<ServiceResponse> ServiceAPI_IntegrationTests_2_Exec(ServiceEngine serviceEngine)
@@ -69,7 +68,7 @@ namespace NLedger.Tests.Utility.ServiceAPI
         /// <summary>
         /// Simple multi-step async Service API example
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ServiceAPI_IntegrationTests_3()
         {
             var engine = new ServiceEngine();
@@ -79,15 +78,15 @@ namespace NLedger.Tests.Utility.ServiceAPI
             var ex2 = CheckSessionResponseOutput(session.ExecuteCommandAsync("bal").Result, BalOutputText);
             var ex3 = CheckSessionResponseOutput(session.ExecuteCommandAsync("reg").Result, RegOutputText);
 
-            Assert.IsNull(CheckSessionResponseOutput(session.ExecuteCommandAsync("bal checking --account=code").Result, BalCheckingOutputText));
-            Assert.IsNull(CheckSessionResponseOutput(session.ExecuteCommandAsync("bal").Result, BalOutputText));
-            Assert.IsNull(CheckSessionResponseOutput(session.ExecuteCommandAsync("reg").Result, RegOutputText));
+            Assert.Null(CheckSessionResponseOutput(session.ExecuteCommandAsync("bal checking --account=code").Result, BalCheckingOutputText));
+            Assert.Null(CheckSessionResponseOutput(session.ExecuteCommandAsync("bal").Result, BalOutputText));
+            Assert.Null(CheckSessionResponseOutput(session.ExecuteCommandAsync("reg").Result, RegOutputText));
         }
 
         /// <summary>
         /// Simple multithreading Service API example
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ServiceAPI_IntegrationTests_4()
         {
             var engine = new ServiceEngine();
@@ -102,17 +101,17 @@ namespace NLedger.Tests.Utility.ServiceAPI
             }
 
             Task.WhenAll(tasks).Wait();
-            Assert.IsFalse(tasks.Any(t => t.IsFaulted));
-            Assert.IsTrue(tasks.All(t => t.Result == null));
+            Assert.DoesNotContain(tasks, t => t.IsFaulted);
+            Assert.True(tasks.All(t => t.Result == null));
         }
 
         private Exception CheckSessionResponseOutput(ServiceResponse serviceResponse, string expectedOutput)
         {
             try
             {
-                Assert.IsNotNull(serviceResponse);
-                Assert.IsFalse(serviceResponse.HasErrors);
-                Assert.AreEqual(expectedOutput.Replace("\r", "").Trim(), serviceResponse.OutputText.Trim());
+                Assert.NotNull(serviceResponse);
+                Assert.False(serviceResponse.HasErrors);
+                Assert.Equal(expectedOutput.Replace("\r", "").Trim(), serviceResponse.OutputText.Trim());
                 return null;
             }
             catch (Exception ex)

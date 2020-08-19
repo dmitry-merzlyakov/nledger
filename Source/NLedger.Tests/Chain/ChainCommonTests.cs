@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Chain;
 using NLedger.Filters;
 using NLedger.Scopus;
@@ -15,25 +14,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Chain
 {
-    [TestClass]
     public class ChainCommonTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void ChainCommon_ChainPostHandlers_AddsSubtotalPostsOnlyIfSubTotalHandlerIsHandled()
         {
             // bool forAccountsReport, bool subTotalHandlerHandled, bool equityHandlerHandled
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(false, false, false));
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(false, false, true));
-            Assert.IsTrue(TestChainPostHandlersAddsSubtotalPosts(false, true, false));  // The only case when SubtotalPosts handler is added
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(false, true, true));
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(false, false, false));
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(false, false, true));
+            Assert.True(TestChainPostHandlersAddsSubtotalPosts(false, true, false));  // The only case when SubtotalPosts handler is added
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(false, true, true));
 
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(true, false, false));
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(true, false, true));
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(true, true, false));
-            Assert.IsFalse(TestChainPostHandlersAddsSubtotalPosts(true, true, true));
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(true, false, false));
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(true, false, true));
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(true, true, false));
+            Assert.False(TestChainPostHandlersAddsSubtotalPosts(true, true, true));
         }
 
         private bool TestChainPostHandlersAddsSubtotalPosts(bool forAccountsReport, bool subTotalHandlerHandled, bool equityHandlerHandled)

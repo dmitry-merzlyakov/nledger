@@ -6,40 +6,39 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Abstracts.Impl
 {
-    [TestClass]
-    [DeploymentItem(@"ProcessManagerBatch.cmd")]
-    [DeploymentItem(@"ProcessManagerErrBatch.cmd")]
+    // [DeploymentItem(@"ProcessManagerBatch.cmd")]
+    // [DeploymentItem(@"ProcessManagerErrBatch.cmd")]
     public class ProcessManagerTests
     {
-        [TestMethod]
+        [Fact]
         public void ProcessManager_RunProcess_CanExecuteBatchFile()
         {
             // Note that it expects to find an executable in the current folder (unit test results folder in this case)
             // Note that it does require an extension for executable in case of running "cmd" process
             var result = ProcessManager.RunProcess("cmd", "/c ProcessManagerBatch param1 param2");
-            Assert.IsNotNull(result);
-            Assert.AreEqual("", result.StandardError);
-            Assert.AreEqual("Process Manager Test Batch File\r\nParameter 1 - param1\r\nParameter 2 - param2\r\nParameter 3 - \r\n", result.StandardOutput);
-            Assert.AreEqual(0, result.ExitCode);
-            Assert.IsFalse(result.IsTimeouted);
+            Assert.NotNull(result);
+            Assert.Equal("", result.StandardError);
+            Assert.Equal("Process Manager Test Batch File\r\nParameter 1 - param1\r\nParameter 2 - param2\r\nParameter 3 - \r\n", result.StandardOutput);
+            Assert.Equal(0, result.ExitCode);
+            Assert.False(result.IsTimeouted);
         }
 
-        [TestMethod]
+        [Fact]
         public void ProcessManager_RunProcess_DetectsBatchExistCode()
         {
             var result = ProcessManager.RunProcess("cmd", "/c ProcessManagerErrBatch");
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.ExitCode);
+            Assert.NotNull(result);
+            Assert.Equal(1, result.ExitCode);
         }
 
     }

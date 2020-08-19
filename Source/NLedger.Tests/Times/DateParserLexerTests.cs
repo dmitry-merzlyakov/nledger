@@ -6,20 +6,19 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Times;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Times
 {
-    [TestClass]
     public class DateParserLexerTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void DateParserLexer_PeekToken_CallsNextTokenIfCacheIsNull()
         {
             var dateParserLexer = new DateParserLexer("100");
@@ -27,10 +26,10 @@ namespace NLedger.Tests.Times
 
             var token = dateParserLexer.PeekToken();
 
-            Assert.AreEqual(LexerTokenKindEnum.TOK_INT, token.Kind);
-            Assert.AreEqual(100, token.Value.GetValue<int>());
+            Assert.Equal(LexerTokenKindEnum.TOK_INT, token.Kind);
+            Assert.Equal(100, token.Value.GetValue<int>());
 
-            Assert.AreEqual(token, dateParserLexer.TokenCache);
+            Assert.Equal(token, dateParserLexer.TokenCache);
         }
     }
 }

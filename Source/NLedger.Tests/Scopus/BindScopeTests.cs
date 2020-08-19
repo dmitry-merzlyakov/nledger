@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Expressions;
 using NLedger.Scopus;
 using System;
@@ -14,13 +13,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Scopus
 {
-    [TestClass]
     public class BindScopeTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void BindScope_Contructor_PopulatesGrandChild()
         {
             MockScope mockScope1 = new MockScope();
@@ -28,11 +27,11 @@ namespace NLedger.Tests.Scopus
 
             BindScope bindScope = new BindScope(mockScope1, mockScope2);
 
-            Assert.AreEqual(mockScope1, bindScope.Parent);
-            Assert.AreEqual(mockScope2, bindScope.GrandChild);
+            Assert.Equal(mockScope1, bindScope.Parent);
+            Assert.Equal(mockScope2, bindScope.GrandChild);
         }
 
-        [TestMethod]
+        [Fact]
         public void BindScope_Description_IsGrandChildDescription()
         {
             MockScope mockScope1 = new MockScope();
@@ -40,10 +39,10 @@ namespace NLedger.Tests.Scopus
 
             BindScope bindScope = new BindScope(mockScope1, mockScope2);
 
-            Assert.AreEqual(mockScope2.Description, bindScope.Description);
+            Assert.Equal(mockScope2.Description, bindScope.Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void BindScope_Lookup_CallsGrandChildLookupFirst()
         {
             MockScope mockScope1 = new MockScope();
@@ -52,11 +51,11 @@ namespace NLedger.Tests.Scopus
             BindScope bindScope = new BindScope(mockScope1, mockScope2);
             ExprOp lookupResult = bindScope.Lookup(SymbolKindEnum.FUNCTION, "dummy");
 
-            Assert.AreEqual(mockScope2.LookupResult, lookupResult);
-            Assert.AreEqual(1, mockScope2.LookupCalls.Count);
+            Assert.Equal(mockScope2.LookupResult, lookupResult);
+            Assert.Equal(1, mockScope2.LookupCalls.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void BindScope_Lookup_CallsParentLookupNext()
         {
             MockScope mockScope1 = new MockScope();
@@ -66,12 +65,12 @@ namespace NLedger.Tests.Scopus
             BindScope bindScope = new BindScope(mockScope1, mockScope2);
             ExprOp lookupResult = bindScope.Lookup(SymbolKindEnum.FUNCTION, "dummy");
 
-            Assert.AreEqual(mockScope1.LookupResult, lookupResult);
-            Assert.AreEqual(1, mockScope1.LookupCalls.Count);
-            Assert.AreEqual(1, mockScope2.LookupCalls.Count);
+            Assert.Equal(mockScope1.LookupResult, lookupResult);
+            Assert.Equal(1, mockScope1.LookupCalls.Count);
+            Assert.Equal(1, mockScope2.LookupCalls.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void BindScope_Define_CallsParentAndGrandChildDefine()
         {
             MockScope mockScope1 = new MockScope();
@@ -80,8 +79,8 @@ namespace NLedger.Tests.Scopus
             BindScope bindScope = new BindScope(mockScope1, mockScope2);
             bindScope.Define(SymbolKindEnum.FUNCTION, "dummy", new ExprOp());
 
-            Assert.AreEqual(1, mockScope1.DefineCalls.Count);
-            Assert.AreEqual(1, mockScope2.DefineCalls.Count);
+            Assert.Equal(1, mockScope1.DefineCalls.Count);
+            Assert.Equal(1, mockScope2.DefineCalls.Count);
         }
 
     }

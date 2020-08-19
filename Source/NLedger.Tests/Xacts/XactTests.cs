@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Utility;
 using NLedger.Xacts;
@@ -15,13 +14,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Xacts
 {
-    [TestClass]
     public class XactTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Xact_AddPost_PopulatesXactInPost()
         {
             Xact xact = new Xact();
@@ -29,11 +28,10 @@ namespace NLedger.Tests.Xacts
 
             xact.AddPost(post);
 
-            Assert.AreEqual(xact, post.Xact);
+            Assert.Equal(xact, post.Xact);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void Xact_Detach_FailsIfThereIsTempPost()
         {
             Account account = new Account();
@@ -42,10 +40,10 @@ namespace NLedger.Tests.Xacts
             post.Flags = SupportsFlagsEnum.ITEM_TEMP;
             xact.AddPost(post);
 
-            xact.Detach();
+            Assert.Throws<InvalidOperationException>(() => xact.Detach());
         }
 
-        [TestMethod]
+        [Fact]
         public void Xact_Detach_RemovesPostsFromAccounts()
         {
             Account account = new Account();
@@ -56,10 +54,10 @@ namespace NLedger.Tests.Xacts
 
             xact.Detach();
 
-            Assert.AreEqual(0, account.Posts.Count);  // Post has been removed
+            Assert.Equal(0, account.Posts.Count);  // Post has been removed
         }
 
-        [TestMethod]
+        [Fact]
         public void Xact_Detach_DoesNothingIf_ITEM_TEMP()
         {
             Account account = new Account();
@@ -75,17 +73,17 @@ namespace NLedger.Tests.Xacts
 
             xact.Detach();
 
-            Assert.AreEqual(1, account.Posts.Count);  // Post has not been removed
+            Assert.Equal(1, account.Posts.Count);  // Post has not been removed
         }
 
-        [TestMethod]
+        [Fact]
         public void Xact_Valid_FailsIfNoDateValue()
         {
             Xact xact = new Xact();
-            Assert.IsFalse(xact.Valid());
+            Assert.False(xact.Valid());
 
             xact.Date = (Date)DateTime.Today;
-            Assert.IsTrue(xact.Valid());
+            Assert.True(xact.Valid());
         }
     }
 }

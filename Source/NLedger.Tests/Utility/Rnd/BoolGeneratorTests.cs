@@ -6,29 +6,28 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Rnd;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Rnd
 {
-    [TestClass]
     public class BoolGeneratorTests
     {
-        [TestMethod]
+        [Fact]
         public void BoolGenerator_Value_ProvidesSequenceOfBooleanValues()
         {
             Random random = new Random(200);
             BoolGenerator boolGen = new BoolGenerator(random);
-            Assert.IsFalse(boolGen.Value());
-            Assert.IsTrue(boolGen.Value());
-            Assert.IsTrue(boolGen.Value());
-            Assert.IsFalse(boolGen.Value());
-            Assert.IsTrue(boolGen.Value());
+            Assert.False(boolGen.Value());
+            Assert.True(boolGen.Value());
+            Assert.True(boolGen.Value());
+            Assert.False(boolGen.Value());
+            Assert.True(boolGen.Value());
         }
     }
 }

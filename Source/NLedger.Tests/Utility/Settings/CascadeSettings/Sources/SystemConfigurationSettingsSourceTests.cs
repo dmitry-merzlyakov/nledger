@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Sources;
 using System;
@@ -14,18 +13,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Settings.CascadeSettings.Sources
 {
-    [TestClass]
     public class SystemConfigurationSettingsSourceTests
     {
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void SystemConfigurationSettingsSource_Scope_Application()
         {
             var source = new SystemConfigurationSettingsSource();
-            Assert.AreEqual(SettingScopeEnum.Application, source.Scope);
+            Assert.Equal(SettingScopeEnum.Application, source.Scope);
         }
     }
 }

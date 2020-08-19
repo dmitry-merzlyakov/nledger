@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Expressions;
 using NLedger.Scopus;
 using System;
@@ -14,29 +13,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Scopus
 {
-    [TestClass]
     public class SymbolScopeTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void SymbolScope_Symbols_AreEmptyByDefault()
         {
             MockScope mockScope = new MockScope();
             SymbolScope symbolScope = new SymbolScope(mockScope);
-            Assert.IsNull(symbolScope.Symbols);  // By default, Symbols is empty until Define is called
+            Assert.Null(symbolScope.Symbols);  // By default, Symbols is empty until Define is called
         }
 
-        [TestMethod]
+        [Fact]
         public void SymbolScope_Description_ReturnsParentDesription()
         {
             MockScope mockScope = new MockScope();
             SymbolScope symbolScope = new SymbolScope(mockScope);
-            Assert.AreEqual(mockScope.Description, symbolScope.Description);
+            Assert.Equal(mockScope.Description, symbolScope.Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void SymbolScope_Define_AddsSymbolToSymbols()
         {
             MockScope mockScope = new MockScope();
@@ -48,14 +47,14 @@ namespace NLedger.Tests.Scopus
 
             symbolScope.Define(kind, name, exprOp);
 
-            Assert.AreEqual(1, symbolScope.Symbols.Count);
-            Assert.AreEqual(kind, symbolScope.Symbols.First().Key.Kind);
-            Assert.AreEqual(name, symbolScope.Symbols.First().Key.Name);
-            Assert.AreEqual(exprOp, symbolScope.Symbols.First().Key.Definition);
-            Assert.AreEqual(exprOp, symbolScope.Symbols[symbolScope.Symbols.First().Key]);
+            Assert.Equal(1, symbolScope.Symbols.Count);
+            Assert.Equal(kind, symbolScope.Symbols.First().Key.Kind);
+            Assert.Equal(name, symbolScope.Symbols.First().Key.Name);
+            Assert.Equal(exprOp, symbolScope.Symbols.First().Key.Definition);
+            Assert.Equal(exprOp, symbolScope.Symbols[symbolScope.Symbols.First().Key]);
         }
 
-        [TestMethod]
+        [Fact]
         public void SymbolScope_Lookup_TriesGetAValueFromSymbols()
         {
             MockScope mockScope = new MockScope();
@@ -67,10 +66,10 @@ namespace NLedger.Tests.Scopus
             symbolScope.Define(kind, name, exprOp);
 
             ExprOp result = symbolScope.Lookup(kind, name);
-            Assert.AreEqual(exprOp, result);
+            Assert.Equal(exprOp, result);
 
             ExprOp result2 = symbolScope.Lookup(SymbolKindEnum.OPTION, "dummy");
-            Assert.AreEqual(mockScope.LookupResult, result2);
+            Assert.Equal(mockScope.LookupResult, result2);
         }
 
     }
