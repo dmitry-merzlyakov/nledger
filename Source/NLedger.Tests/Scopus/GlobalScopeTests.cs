@@ -23,14 +23,14 @@ namespace NLedger.Tests.Scopus
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class GlobalScopeTests : TestFixture
     {
-        public override void CustomTestInitialize()
+        protected override void CustomTestInitialize()
         {
             GlobalScopeArgsOnly = GlobalScope.ArgsOnly;
             ValidatorIsVerifyEnabled = Validator.IsVerifyEnabled;
             GlobalScopeInitFile = GlobalScope.InitFile;
         }
 
-        public override void CustomTestCleanup()
+        protected override void CustomTestCleanup()
         {
             GlobalScope.ArgsOnly = GlobalScopeArgsOnly;
             Validator.IsVerifyEnabled = ValidatorIsVerifyEnabled;

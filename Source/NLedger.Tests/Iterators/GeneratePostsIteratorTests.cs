@@ -23,7 +23,7 @@ namespace NLedger.Tests.Iterators
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon | ContextInit.SaveCultureInfo)]
     public class GeneratePostsIteratorTests : TestFixture
     {
-        public override void CustomTestInitialize()
+        protected override void CustomTestInitialize()
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         }

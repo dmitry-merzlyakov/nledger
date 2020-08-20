@@ -79,10 +79,10 @@ namespace NLedger.Tests
 
         public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
 
-        public virtual void CustomTestInitialize()
+        protected virtual void CustomTestInitialize()
         { }
 
-        public virtual void CustomTestCleanup()
+        protected virtual void CustomTestCleanup()
         { }
 
         private ContextInit GetContextInit()

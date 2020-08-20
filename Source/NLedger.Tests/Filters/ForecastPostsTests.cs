@@ -20,7 +20,7 @@ namespace NLedger.Tests.Filters
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class ForecastPostsTests : TestFixture
     {
-        public override void CustomTestInitialize()
+        protected override void CustomTestInitialize()
         {
             TimesCommon.Current.Epoch = new DateTime(2010, 05, 01);
         }
