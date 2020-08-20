@@ -17,6 +17,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
+// [DM] Disable parallelism for xUnits tests since NLedger code has thread-specific dependencies (MainApplicationContext needs to be initialized for every thread)
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace NLedger.IntegrationTests
 {
     public sealed class TestRunner
