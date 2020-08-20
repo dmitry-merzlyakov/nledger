@@ -6,83 +6,83 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 namespace NLedger.IntegrationTests
 {
-    [TestClass]
-    [DeploymentItem(@"test\manual", @"test\manual")]
+    // [DeploymentItem(@"test\manual", @"test\manual")]
     public class TestSet1_test_manual
     {
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_codes_1()
         {
             new TestRunner(@"test\manual\transaction-codes-1.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_codes_2()
         {
             new TestRunner(@"test\manual\transaction-codes-2.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_1()
         {
             new TestRunner(@"test\manual\transaction-notes-1.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_2()
         {
             new TestRunner(@"test\manual\transaction-notes-2.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_3()
         {
             new TestRunner(@"test\manual\transaction-notes-3.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_4()
         {
             new TestRunner(@"test\manual\transaction-notes-4.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_1()
         {
             new TestRunner(@"test\manual\transaction-status-1.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_2()
         {
             new TestRunner(@"test\manual\transaction-status-2.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_3()
         {
             new TestRunner(@"test\manual\transaction-status-3.test").Run();
         }
 		
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_4()
         {
             new TestRunner(@"test\manual\transaction-status-4.test").Run();
         }
 		
+
     }
 }

@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts;
 using NLedger.Utility;
 using System;
@@ -16,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.IntegrationTests
 {
@@ -121,17 +121,17 @@ namespace NLedger.IntegrationTests
                                 var normalizedExpectedErr = NormalizeOutput(testCase.ExpectedError);
                                 var normalizedErr = ignoreStdErr ? "" : NormalizeOutput(err);
 
-                                Assert.AreEqual(normalizedExpectedOutput, normalizedOutput, $"Produced output does not match expected one ({DescribeDifference(normalizedExpectedOutput, normalizedOutput)})");
-                                Assert.AreEqual(normalizedExpectedErr, normalizedErr, $"Produced error stream does not match expected one ({DescribeDifference(normalizedExpectedErr, normalizedErr)})");
+                                Assert.True(normalizedExpectedOutput == normalizedOutput, $"Produced output does not match expected one ({DescribeDifference(normalizedExpectedOutput, normalizedOutput)})");
+                                Assert.True(normalizedExpectedErr == normalizedErr, $"Produced error stream does not match expected one ({DescribeDifference(normalizedExpectedErr, normalizedErr)})");
 
-                                Assert.AreEqual(expectedExitCode, exitCode, "Unexpected exit code");
+                                Assert.True(expectedExitCode == exitCode, "Unexpected exit code");
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Assert.Fail($"Test case failed with runtime error: {ex.Message}");
+                    Assert.True(false, $"Test case failed with runtime error: {ex.Message}");
                 }
             }
         }
