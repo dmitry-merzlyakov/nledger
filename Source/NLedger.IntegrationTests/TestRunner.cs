@@ -24,10 +24,17 @@ namespace NLedger.IntegrationTests
 {
     public sealed class TestRunner
     {
+        public static readonly string WindowsPreferredTimeZone = "Central Standard Time";
+        public static readonly string LinuxPreferredTimeZone = "America/Chicago";
+        public static TimeZoneInfo PreferredTimeZone = FindTimeZone(WindowsPreferredTimeZone) ?? FindTimeZone(LinuxPreferredTimeZone);
+
         public TestRunner(string fileName)
         {
             if (String.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException("fileName");
+
+            if (PreferredTimeZone == null)
+                throw new InvalidOperationException($"Cannot find a preferred time zone; neither {WindowsPreferredTimeZone} nor {LinuxPreferredTimeZone} found.");
 
             FileName = Path.GetFullPath(fileName);
             TestCases = ParseTestFile(File.ReadAllText(fileName));
@@ -105,7 +112,7 @@ namespace NLedger.IntegrationTests
                             {
                                 var context = new MainApplicationContext();
                                 context.IsAtty = false; // Simulating pipe redirection in original tests
-                                context.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
+                                context.TimeZone = PreferredTimeZone; // Either "Central Standard Time" for Windows or "America/Chicago" for other systems
                                 context.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
                                 context.SetEnvironmentVariables(envs);
                                 var main = new Main(context);
@@ -273,6 +280,11 @@ namespace NLedger.IntegrationTests
                 len = s.Length - pos;
 
             return s.Substring(pos, len);
+        }
+
+        private static TimeZoneInfo FindTimeZone (string id)
+        {
+            return TimeZoneInfo.GetSystemTimeZones().SingleOrDefault(t => t.Id == id);
         }
 
         private class TestConsoleProvider : IVirtualConsoleProvider
