@@ -24,8 +24,8 @@ namespace NLedger.Tests.Times
         public void TimesCommon_ShowPeriodTokens_ReturnsTokensForGivenTime()
         {
             string result = TimesCommon.Current.ShowPeriodTokens("2012/10/22");
-            string expected = "--- Period expression tokens ---\r\nTOK_DATE:  year 2012 month Oct day 22\r\nEND_REACHED: <EOF>\r\n";
-            Assert.Equal(expected, result);
+            string expected = "--- Period expression tokens ---\nTOK_DATE:  year 2012 month Oct day 22\nEND_REACHED: <EOF>\n";
+            Assert.Equal(expected, result.RemoveCarriageReturns());
         }
 
         [Fact]

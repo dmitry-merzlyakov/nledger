@@ -221,7 +221,7 @@ namespace NLedger.Tests.Expressions
             ExprOp exprOp2 = new ExprOp(OpKindEnum.O_OR);
             exprOp2.Left = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(10) };
             exprOp2.Right = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.False };
-            Assert.Equal("O_OR (0)\r\n VALUE: 10 (0)\r\n VALUE: false (0)", exprOp2.Dump().TrimEnd());
+            Assert.Equal("O_OR (0)\n VALUE: 10 (0)\n VALUE: false (0)", exprOp2.Dump().TrimEnd().RemoveCarriageReturns());
 
         }
 

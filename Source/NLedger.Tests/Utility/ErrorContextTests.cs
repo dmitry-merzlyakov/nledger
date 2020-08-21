@@ -31,7 +31,7 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteError("error-text");
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.Equal("error-text\r\n", result);
+                Assert.Equal("error-text\n", result.RemoveCarriageReturns());
             }
         }
 
@@ -59,7 +59,7 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteError(new Exception("exception-text"));
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.Equal("Error: exception-text\r\n", result);
+                Assert.Equal("Error: exception-text\n", result.RemoveCarriageReturns());
             }
         }
 
@@ -73,7 +73,7 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteWarning("warning-text");
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.Equal("Warning: warning-text\r\n", result);
+                Assert.Equal("Warning: warning-text\n", result.RemoveCarriageReturns());
             }
         }
     }

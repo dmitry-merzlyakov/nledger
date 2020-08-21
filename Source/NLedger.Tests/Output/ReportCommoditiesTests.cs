@@ -44,7 +44,7 @@ namespace NLedger.Tests.Output
             reportCommodities.Flush();
 
             report.OutputStream.Flush();
-            Assert.Equal("A1\r\nA2\r\nA3\r\n", report.OutputStream.ToString());
+            Assert.Equal("A1\nA2\nA3\n", report.OutputStream.ToString().RemoveCarriageReturns());
         }
     }
 }

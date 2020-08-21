@@ -244,7 +244,7 @@ namespace NLedger.Tests.Scopus
         {
             Option option1 = new Option("myname");
             option1.On("source");  // to handle
-            Assert.Equal("                  myname                                             source\r\n", option1.Report());
+            Assert.Equal("                  myname                                             source\n", option1.Report().RemoveCarriageReturns());
         }
 
         [Fact]
@@ -253,7 +253,7 @@ namespace NLedger.Tests.Scopus
             Option option1 = new Option("myname_");
             option1.Value = "val";
             option1.On("source");  // to handle
-            Assert.Equal("                  myname = val                                       source\r\n", option1.Report());
+            Assert.Equal("                  myname = val                                       source\n", option1.Report().RemoveCarriageReturns());
         }
 
         [Fact]

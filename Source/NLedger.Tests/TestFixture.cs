@@ -32,6 +32,17 @@ namespace NLedger.Tests
         SaveCultureInfo= 3
     }
 
+    public static class HelperStringExtensions
+    {
+        public static string RemoveCarriageReturns(this string s)
+        {
+            if (s != null)
+                s = s.Replace("\r", "");
+
+            return s;
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class TestFixtureInitAttribute : Attribute
     {

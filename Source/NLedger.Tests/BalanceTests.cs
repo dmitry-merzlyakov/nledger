@@ -540,7 +540,7 @@ namespace NLedger.Tests
             balance.Add(new Amount(Quantity.Parse("1.22"), commodity1));
             balance.Add(new Amount(Quantity.Parse("2.44"), commodity2));
 
-            Assert.Equal("balToStrA1  \r\nbalToStrB2", balance.ToString());
+            Assert.Equal("balToStrA1  \nbalToStrB2", balance.ToString().RemoveCarriageReturns());
         }
 
         [Fact]
