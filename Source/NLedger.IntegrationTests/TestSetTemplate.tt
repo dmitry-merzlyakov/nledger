@@ -36,7 +36,7 @@ namespace NLedger.IntegrationTests
         [Trait("Category", "Integration")]
         public void IntegrationTest_<#= folderName.Replace(@"\", "_") #>_<#= methodName #>()
         {
-            new TestRunner(@"<#= folderName + @"\" + shortFileName #>").Run();
+            new TestRunner(@"<#= folderName.Replace(@"\", "/") + @"/" + shortFileName #>").Run();
         }
 		<#+ } #>
 

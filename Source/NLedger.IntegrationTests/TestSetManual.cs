@@ -17,70 +17,70 @@ namespace NLedger.IntegrationTests
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_codes_1()
         {
-            new TestRunner(@"test\manual\transaction-codes-1.test").Run();
+            new TestRunner(@"test/manual/transaction-codes-1.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_codes_2()
         {
-            new TestRunner(@"test\manual\transaction-codes-2.test").Run();
+            new TestRunner(@"test/manual/transaction-codes-2.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_1()
         {
-            new TestRunner(@"test\manual\transaction-notes-1.test").Run();
+            new TestRunner(@"test/manual/transaction-notes-1.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_2()
         {
-            new TestRunner(@"test\manual\transaction-notes-2.test").Run();
+            new TestRunner(@"test/manual/transaction-notes-2.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_3()
         {
-            new TestRunner(@"test\manual\transaction-notes-3.test").Run();
+            new TestRunner(@"test/manual/transaction-notes-3.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_notes_4()
         {
-            new TestRunner(@"test\manual\transaction-notes-4.test").Run();
+            new TestRunner(@"test/manual/transaction-notes-4.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_1()
         {
-            new TestRunner(@"test\manual\transaction-status-1.test").Run();
+            new TestRunner(@"test/manual/transaction-status-1.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_2()
         {
-            new TestRunner(@"test\manual\transaction-status-2.test").Run();
+            new TestRunner(@"test/manual/transaction-status-2.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_3()
         {
-            new TestRunner(@"test\manual\transaction-status-3.test").Run();
+            new TestRunner(@"test/manual/transaction-status-3.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_status_4()
         {
-            new TestRunner(@"test\manual\transaction-status-4.test").Run();
+            new TestRunner(@"test/manual/transaction-status-4.test").Run();
         }
 		
 

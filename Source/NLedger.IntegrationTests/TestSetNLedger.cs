@@ -17,28 +17,28 @@ namespace NLedger.IntegrationTests
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_nledger_gh_issues_5()
         {
-            new TestRunner(@"test\nledger\gh-issues-5.test").Run();
+            new TestRunner(@"test/nledger/gh-issues-5.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_nledger_gh_issues_7()
         {
-            new TestRunner(@"test\nledger\gh-issues-7.test").Run();
+            new TestRunner(@"test/nledger/gh-issues-7.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_nledger_nl_issues_1()
         {
-            new TestRunner(@"test\nledger\nl-issues-1.test").Run();
+            new TestRunner(@"test/nledger/nl-issues-1.test").Run();
         }
 		
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_nledger_opt_download()
         {
-            new TestRunner(@"test\nledger\opt-download.test").Run();
+            new TestRunner(@"test/nledger/opt-download.test").Run();
         }
 		
 
