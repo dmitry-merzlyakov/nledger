@@ -91,8 +91,9 @@ namespace NLedger.Tests.Utility
         [Fact]
         public void DateExtension_CurrentTimeZone_ReturnsTimeZoneByCode()
         {
-            MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-            Assert.Equal(TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"), DateExtension.CurrentTimeZone());
+            var timeZone = TimeZoneInfo.GetSystemTimeZones().First();
+            MainApplicationContext.Current.TimeZone = timeZone;
+            Assert.Equal(timeZone, DateExtension.CurrentTimeZone());
         }
 
     }

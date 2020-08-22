@@ -52,7 +52,7 @@ namespace NLedger.Tests.Utility
         {
             var comparer = new FileNameComparer();
             Assert.True(comparer.Equals(@"aa.txt", @"aa.txt"));
-            Assert.True(comparer.Equals(@".\aa.txt", @".\aa\..\aa.txt"));
+            Assert.True(comparer.Equals(@"./aa.txt", @"./aa/../aa.txt"));  // Path.GetFullPath can properly normalize path on linux only if it contains forward slashes. On Windows, any slashes work fine.
         }
 
         [Fact]
