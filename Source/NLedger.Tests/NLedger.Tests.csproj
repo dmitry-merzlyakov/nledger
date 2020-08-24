@@ -29,23 +29,17 @@
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ContentWithTargetPath Include="Abstracts\Impl\ProcessManagerBatch.cmd">
+    <ContentWithTargetPath Include="**\*.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>ProcessManagerBatch.cmd</TargetPath>
+      <TargetPath>%(Filename).cmd</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Abstracts\Impl\ProcessManagerErrBatch.cmd">
+    <ContentWithTargetPath Include="**\*.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>ProcessManagerErrBatch.cmd</TargetPath>
+      <TargetPath>%(Filename).sh</TargetPath>
     </ContentWithTargetPath>
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.incomplete.config.xml">
+    <ContentWithTargetPath Include="**\*.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>ConfigurationFileSettingsSource.incomplete.config.xml</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Utility\Settings\CascadeSettings\Sources\ConfigurationFileSettingsSource.normal.config.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>ConfigurationFileSettingsSource.normal.config.xml</TargetPath>
+      <TargetPath>%(Filename).xml</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
 </Project>

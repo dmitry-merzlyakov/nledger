@@ -9,6 +9,7 @@
 using NLedger.Abstracts.Impl;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,9 +24,11 @@ namespace NLedger.Tests.Abstracts.Impl
         [Fact]
         public void ProcessManager_RunProcess_CanExecuteBatchFile()
         {
-            // Note that it expects to find an executable in the current folder (unit test results folder in this case)
-            // Note that it does require an extension for executable in case of running "cmd" process
-            var result = ProcessManager.RunProcess("cmd", "/c ProcessManagerBatch param1 param2");
+            var shellName = NLedger.Utility.PlatformHelper.IsWindows() ? "cmd" : "bash";
+            var shellPrefix = NLedger.Utility.PlatformHelper.IsWindows() ? "/c " : "";
+            var shellExtension = NLedger.Utility.PlatformHelper.IsWindows() ? ".cmd" : ".sh";
+
+            var result = ProcessManager.RunProcess(shellName, $"{shellPrefix}.{Path.DirectorySeparatorChar}ProcessManagerBatch{shellExtension} param1 param2");
             Assert.NotNull(result);
             Assert.Equal("", result.StandardError);
             Assert.Equal("Process Manager Test Batch File\r\nParameter 1 - param1\r\nParameter 2 - param2\r\nParameter 3 - \r\n", result.StandardOutput);
@@ -36,8 +39,13 @@ namespace NLedger.Tests.Abstracts.Impl
         [Fact]
         public void ProcessManager_RunProcess_DetectsBatchExistCode()
         {
-            var result = ProcessManager.RunProcess("cmd", "/c ProcessManagerErrBatch");
+            var shellName = NLedger.Utility.PlatformHelper.IsWindows() ? "cmd" : "bash";
+            var shellPrefix = NLedger.Utility.PlatformHelper.IsWindows() ? "/c " : "";
+            var shellExtension = NLedger.Utility.PlatformHelper.IsWindows() ? ".cmd" : ".sh";
+
+            var result = ProcessManager.RunProcess(shellName, $"{shellPrefix}.{Path.DirectorySeparatorChar}ProcessManagerErrBatch{shellExtension}");
             Assert.NotNull(result);
+            Assert.Equal("", result.StandardError);
             Assert.Equal(1, result.ExitCode);
         }
 

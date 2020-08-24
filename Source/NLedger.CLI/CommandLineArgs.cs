@@ -26,7 +26,7 @@ namespace NLedger.CLI
             return ExtractArguments(Environment.CommandLine);
 #else
             // For .Net Core running on Windows, the only way to get the original command line with double quotas is P/Invoke (Win32 GetCommandLine)
-            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (NLedger.Utility.PlatformHelper.IsWindows())
             {
                 System.IntPtr ptr = GetCommandLine();
                 var environmentCommandLine =  Marshal.PtrToStringAuto(ptr);
