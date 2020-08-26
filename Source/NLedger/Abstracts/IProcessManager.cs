@@ -41,6 +41,15 @@ namespace NLedger.Abstracts
         int Execute(string fileName, string arguments, string workingDirectory, string input, bool noTimeout = false);
 
         /// <summary>
+        /// Executes a shell command with arguments
+        /// </summary>
+        /// <param name="command">Shell command with arguments.</param>
+        /// <param name="workingDirectory">Optional path to working directory</param>
+        /// <param name="output">The output that the command generates</param>
+        /// <returns>Exit code that the process returns</returns>
+        int ExecuteShellCommand(string command, string workingDirectory, out string output);
+
+        /// <summary>
         /// Starts a process that is associated with a particular file type. 
         /// E.g. opens a default browser for an HTML file.
         /// </summary>

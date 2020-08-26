@@ -27,7 +27,7 @@ namespace NLedger.Abstracts.Impl
                 throw new ArgumentNullException("command");
 
             var getQuotePath = VirtualEnvironment.GetEnvironmentVariable("GETQUOTEPATH");
-            return MainApplicationContext.Current.ProcessManager.Execute("cmd", "/c " + command, getQuotePath, out response) == 0;
+            return MainApplicationContext.Current.ProcessManager.ExecuteShellCommand(command, getQuotePath, out response) == 0;
         }
     }
 }
