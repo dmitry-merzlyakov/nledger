@@ -227,7 +227,7 @@ namespace NLedger.IntegrationTests
                                 {
                                     var idx = match.Groups["path"].Index;
                                     var len = match.Groups["path"].Length;
-                                    line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + "\\");
+                                    line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar);
                                 }
 
                                 if (directToErr)
