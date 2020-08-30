@@ -37,7 +37,11 @@
 .PARAMETER disableIgnoreList
     Relative or absolute path to a file with a list of test to be ignored.
     In case of a relative path, the tool uses the own location folder as a base.
-    This switch forces executing all test files disregarding the content of ignore list.
+.PARAMETER noConsole
+    Writes all output console messages to Verbose channel.
+    This option is helpful if this script is called from another script.
+.PARAMETER showProgress
+    Shows testing progress by means of Write-Progress command
 .EXAMPLE
     C:\PS> .\NLTest.ps1
     Executes all test files and displays short summary in the console.
@@ -69,7 +73,9 @@ Param(
     [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))\NLedger\NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
     [Switch]$xmlReport = $False,
     [Switch]$htmlReport = $False,
-    [Switch]$showReport = $False
+    [Switch]$showReport = $False,
+    [Switch]$noConsole = $False,
+    [Switch]$showProgress = $False
 )
 
 if ($nledgerExePath -eq "") { $nledgerExePath = if ($env:nledgerExePath -eq $null) { "..\NLedger-cli.exe" } else { $env:nledgerExePath } }
@@ -106,6 +112,7 @@ Write-Verbose "Read IgnoreList; found $($Script:ignoreListTable.Count) test(s) t
 [int]$Script:TimeoutMilliseconds = 30 * 1000 # Execution timeout is 30s
 
 # Tech: writes interactive console output
+[System.Text.StringBuilder]$Script:outBuffer = [System.Text.StringBuilder]::new()
 function ConsoleMessage {
     [CmdletBinding()]
     Param(    
@@ -115,11 +122,42 @@ function ConsoleMessage {
         [Switch]$warn = $False,
         [Switch]$comment = $False
     )
-    if ($newLine) {
-        if ($err) { Write-Host $text -ForegroundColor Red } else { if ($comment) { Write-Host $text -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else { Write-Host $text -ForegroundColor White } } }
+    if ($noConsole) {
+        $Script:outBuffer.Append($text)
+        if ($newLine) { 
+            Write-Verbose $Script:outBuffer.ToString()
+            $Script:outBuffer.Clear()
+        }
     } else {
-        if ($err) { Write-Host $text -NoNewline -ForegroundColor Red } else { if ($comment) { Write-Host $text -NoNewline -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else {Write-Host -NoNewline $text -ForegroundColor White } } }
+        if ($newLine) {
+            if ($err) { Write-Host $text -ForegroundColor Red } else { if ($comment) { Write-Host $text -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else { Write-Host $text -ForegroundColor White } } }
+        } else {
+            if ($err) { Write-Host $text -NoNewline -ForegroundColor Red } else { if ($comment) { Write-Host $text -NoNewline -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else {Write-Host -NoNewline $text -ForegroundColor White } } }
+        }
     }
+}
+
+[int]$Script:WriteProgressID = 1
+
+function ProgressMessage() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$True)]$testCase,
+        [Parameter(Mandatory=$True)][int]$testsCount,
+        [Parameter(Mandatory=$True)][int]$failedTestsCount
+    )
+    if ($showProgress) {
+        [int]$Private:PercentComplete = (($Script:testCase.TestIndex / $Script:testCounter) * 100)
+        [string]$Private:Activity = "NLedger Test Toolkit: testing $nledgerExePath"
+        [string]$Private:Failed = $(if($failedTestsCount -eq 0){"[No Failed]"}else{"[Failed $failedTestsCount]"})
+        [string]$Private:Status = "[Test $($Script:testCase.TestIndex) out of $Script:testCounter Case $($Script:testCase.TestCaseIndex)] $Private:Failed $($Script:testCase.ShortFileName)"
+        Write-Progress -Id $Script:WriteProgressID -Activity $Private:Activity -Status $Private:Status -PercentComplete $Private:PercentComplete
+    }
+}
+
+function DoneProgressMessage() {
+    [CmdletBinding()] Param()
+    Write-Progress -Id $Script:WriteProgressID -Activity "Done" -Completed
 }
 
 # Tech: normalizes the text to be ready for comparison
@@ -515,11 +553,15 @@ foreach($Script:relTestFile in $Script:selectedTests) {
 ConsoleMessage -newLine -comment "Collected $($Script:testCases.Length) test cases in $($Script:selectedTests.Length) tests"
 Write-Verbose "Collected $($Script:testCases.Length) test cases"
 
+[int]$Script:failedTestCases = 0
 $Script:testCaseResults = @()
 foreach($Script:testCase in $Script:testCases) {
+    $null = ProgressMessage -testCase $Script:testCase -testsCount $Script:testCounter -failedTestsCount $Script:failedTestCases
     $Private:testCaseResult = RunTestCase $Script:testCase $Script:testCounter
     $Script:testCaseResults += $Private:testCaseResult
+    if ($Private:testCaseResult.IsFailed) {$Script:failedTestCases++}
 }
+$null = DoneProgressMessage
 
 Write-Verbose "Building summary information"
 

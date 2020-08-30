@@ -63,7 +63,7 @@ trap
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 [Version]$minDotnetVersion = "3.1"
 
-Write-Progress -Activity "Building, testing and installing NLedger" -Status "Initialization" -PercentComplete 0
+Write-Progress -Activity "Building, testing and installing NLedger" -Status "Initialization"
 
 # Check environmental information
 
@@ -96,7 +96,7 @@ if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$nlTestPath' 
 
 # First step: build sources
 
-Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building source code" -PercentComplete 20
+Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building source code [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
 
 [string]$buildCommandLine = "dotnet build '$solutionPath'"
 if ($coreOnly) { $buildCommandLine += " /p:CoreOnly=True"}
@@ -108,24 +108,72 @@ if ($LASTEXITCODE -ne 0) { throw "Build failed for some reason. Run this script 
 
 # Second step: run unit tests
 
-Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running unit tests" -PercentComplete 40
+if(!$noUnitTests) {
+    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running unit tests [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
 
-[string]$unittestCommandLine = "dotnet test '$solutionPath'"
-if ($coreOnly) { $unittestCommandLine += " /p:CoreOnly=True"}
-if ($debugMode) { $unittestCommandLine += " --configuration Debug"} else { $buildCommandLine += " --configuration Release" }
-Write-Verbose "Run unit tests command line: $unittestCommandLine"
+    [string]$unittestCommandLine = "dotnet test '$solutionPath'"
+    if ($coreOnly) { $unittestCommandLine += " /p:CoreOnly=True"}
+    if ($debugMode) { $unittestCommandLine += " --configuration Debug"} else { $buildCommandLine += " --configuration Release" }
+    Write-Verbose "Run unit tests command line: $unittestCommandLine"
 
-$null = (Invoke-Expression $unittestCommandLine | Write-Verbose)
-if ($LASTEXITCODE -ne 0) { throw "Unit tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+    $null = (Invoke-Expression $unittestCommandLine | Write-Verbose)
+    if ($LASTEXITCODE -ne 0) { throw "Unit tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+}
 
 # Third step: run integration tests
 
-Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration (NLTestToolkit) tests" -PercentComplete 60
+function composeNLedgerExePath {
+    Param([Parameter(Mandatory=$True)][bool]$core)
+    [string]$private:config = $(if($debugMode){"Debug"}else{"Release"})
+    [string]$private:framework = $(if($core){"netcoreapp3.1"}else{"net45"})
+    [string]$private:extension = $(if($isWindowsPlatform){".exe"}else{""})
+    return [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.CLI/bin/$private:config/$private:framework/NLedger-cli$private:extension")
+}    
 
-[string]$nledgerCoreExeFile = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.CLI/bin/Release/netcoreapp3.1/NLedger-cli.exe")
-$null = (& $nlTestPath -nledgerExePath $nledgerCoreExeFile | Write-Verbose)
-if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+if (!$noNLTests)
+{
+    if (!$coreOnly){
+        Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [.Net Framework] [$(if($debugMode){"Debug"}else{"Release"})]"
 
+        [string]$nledgerFrameworkExeFile = composeNLedgerExePath -core $false
+        if (!(Test-Path -LiteralPath $nledgerFrameworkExeFile -PathType Leaf)) { throw "Cannot find $nledgerFrameworkExeFile" }
+
+        $null = (& $nlTestPath -nledgerExePath $nledgerFrameworkExeFile -noconsole -showProgress | Write-Verbose)
+        if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+    }
+
+    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [.Net Core] [$(if($debugMode){"Debug"}else{"Release"})]"
+
+    [string]$nledgerCoreExeFile = composeNLedgerExePath -core $true
+    if (!(Test-Path -LiteralPath $nledgerCoreExeFile -PathType Leaf)) { throw "Cannot find $nledgerCoreExeFile" }
+
+    $null = (& $nlTestPath -nledgerExePath $nledgerCoreExeFile -noconsole -showProgress | Write-Verbose)
+    if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+}
 
 
 Write-Progress -Activity "Building, testing and installing NLedger" -Status "Completed" -Completed
+
+# Print summary
+
+Write-Host "*** NLedger Build succeeded ***"
+Write-Host
+
+Write-Host "Build source code: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
+if (!($coreOnly)) {Write-Host "   .Net Framework binary: $(composeNLedgerExePath -core $false)"}
+Write-Host "   .Net Core binary: $(composeNLedgerExePath -core $true)"
+Write-Host
+
+if (!($noUnitTests)) {
+    Write-Host "Unit tests: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
+} else {
+    Write-Host "Unit tests: IGNORED"
+}
+Write-Host
+
+if (!($noNLTests)) {
+    Write-Host "NLedger tests: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
+} else {
+    Write-Host "NLedger tests: IGNORED"
+}
+Write-Host
