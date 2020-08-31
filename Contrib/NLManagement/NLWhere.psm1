@@ -22,10 +22,15 @@ function checkPath {
     [Switch][bool]$isRelease = $false,
     [Switch][bool]$isPackage = $false,
     [Switch][bool]$isCore = $false,
-    [Switch][bool]$isAlias = $false
+    [Switch][bool]$isAlias = $false,
+    [Switch][bool]$isNotWindows = $false
   )
 
-  [string]$private:exePath = getFullPath("$Script:ScriptPath\$path")
+  [string]$private:buildPath = "$Script:ScriptPath$([System.IO.Path]::DirectorySeparatorChar)$path"
+  Write-Verbose "Building path: $private:buildPath"
+  [string]$private:exePath = getFullPath($private:buildPath)
+  Write-Verbose "Checking path: $private:exePath"
+
   if (Test-Path -LiteralPath $Private:exePath -PathType Leaf) {
      Write-Verbose "Found by path: $Private:exePath"
      [PsCustomObject]@{
@@ -36,6 +41,7 @@ function checkPath {
         IsPackage = $isPackage
         IsCore = $isCore
         IsAlias = $isAlias
+        IsWindows = $(!($isNotWindows))
      }
   }
 }
@@ -61,9 +67,11 @@ function Get-NLedgerInstances {
 
   checkPath -path "..\..\Source\NLedger.CLI\bin\Debug\net45\NLedger-cli.exe" -isDebug
   checkPath -path "..\..\Source\NLedger.CLI\bin\Debug\netcoreapp3.1\NLedger-cli.exe" -isDebug -isCore
+  checkPath -path "../../Source/NLedger.CLI/bin/Debug/netcoreapp3.1/NLedger-cli" -isDebug -isCore -isNotWindows
 
   checkPath -path "..\..\Source\NLedger.CLI\bin\Release\net45\NLedger-cli.exe" -isRelease
   checkPath -path "..\..\Source\NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.exe" -isRelease -isCore
+  checkPath -path "../../Source/NLedger.CLI/bin/Release/netcoreapp3.1/NLedger-cli" -isRelease -isCore -isNotWindows
 
   checkPath -path "..\NLedger-cli.exe" -isPackage
   checkPath -path "..\bin\netcoreapp3.1\NLedger-cli.exe" -isPackage -isCore
@@ -89,7 +97,10 @@ function Select-NLedgerInstance {
   )
   Begin { $Private:coll = @() }
   Process { $Private:coll += $instances }
-  End { $Private:coll | Sort-Object -Property Date -Descending | Where-Object {!$_.IsAlias -and $_.IsCore -eq $preferCore} | Select-Object -First 1 }
+  End { 
+    $private:collected = $Private:coll | Sort-Object -Property Date -Descending | Where-Object {!$_.IsAlias}
+    if ($preferCore -and $($private:collected | Where-Object {$_.IsCore})) { $private:collected = $private:collected | Where-Object {$_.IsCore}}
+    $private:collected | Select-Object -First 1 }
 }
 
 <#

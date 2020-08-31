@@ -70,7 +70,7 @@ Param(
     [Parameter(Mandatory=$False)][string]$filterRegex = "",
     [Parameter(Mandatory=$False)][string]$ignoreListPath = ".\NLTest.IgnoreList.xml",
     [Switch]$disableIgnoreList = $False,
-    [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))\NLedger\NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
+    [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))/NLedger/NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
     [Switch]$xmlReport = $False,
     [Switch]$htmlReport = $False,
     [Switch]$showReport = $False,
@@ -97,7 +97,7 @@ if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot
 if (!(Test-Path $Script:absIgnoreListPath -PathType Leaf)) { throw "Cannot find Ignore List file: $Script:absIgnoreListPath" }
 
 [string]$Script:absTestRootPath = $Script:absNLedgerTestPath
-$Script:absNLedgerTestPath = "$Script:absNLedgerTestPath\test"
+$Script:absNLedgerTestPath = "$Script:absNLedgerTestPath$([System.IO.Path]::DirectorySeparatorChar)test"
 if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot find 'test' subfolder in test root folder: $Script:absNLedgerTestPath" }
 
 Write-Verbose "NLedger executable path: $Script:absNLedgerExePath"
@@ -108,6 +108,9 @@ Write-Verbose "Source folder path: $Script:absTestRootPath"
 $Script:ignoreListTable = @{}
 $Script:ignoreListContent.SelectNodes("/nltest-ignore-list/ignore") | ForEach { $Script:ignoreListTable[$_.test] = $_.reason }
 Write-Verbose "Read IgnoreList; found $($Script:ignoreListTable.Count) test(s) to ignore"
+
+[bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+Write-Verbose "Detected: is windows platform=$isWindowsPlatform"
 
 [int]$Script:TimeoutMilliseconds = 30 * 1000 # Execution timeout is 30s
 
@@ -352,8 +355,8 @@ function RunTestCase {
     $env:COLUMNS = "80"
     # Simulating pipe redirection in original tests
     $env:nledgerIsAtty = "false"
-    # Equals to TZ=America/Chicago
-    $env:nledgerTimeZoneId = "Central Standard Time"
+    # CST is equal to TZ=America/Chicago
+    $env:nledgerTimeZoneId = if($Script:isWindowsPlatform) {"Central Standard Time"}else{"America/Chicago"}
     # Force setting output encoding to UTF8 (powershell console issue)
     $env:nledgerOutputEncoding = "utf-8"
     # Disable colored Ansi Terminal emulation to pass output Ansi control codes that some tests validate
@@ -380,6 +383,10 @@ function RunTestCase {
         $Private:testCaseResult.DiffOut = $Private:nrmExpectedOut -ne $Private:nrmActualOut
         $Private:testCaseResult.DiffErr = $Private:nrmExpectedErr -ne $Private:nrmActualErr
         $Private:testCaseResult.DiffCode = $Private:testCaseResult.exitcode -ne $Private:testCaseResult.runResult.exitcode
+
+        if($Private:testCaseResult.DiffOut) {Write-Verbose "Expected output: $Private:nrmActualOut"}
+        if($Private:testCaseResult.DiffErr) {Write-Verbose "Expected error: $Private:nrmActualErr"}
+        if($Private:testCaseResult.DiffCode) {Write-Verbose "Expected code: $($Private:testCaseResult.runResult.exitcode)"}
     }
     catch {
         $Private:testCaseResult.ExceptionMessage = $_
@@ -591,7 +598,7 @@ if ($xmlReport -or $htmlReport -or $showReport) {
 
         Write-Verbose "Generating an html report"
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
-        $xslt.Load("$Script:ScriptPath\NLTest.xslt");
+        $xslt.Load("$Script:ScriptPath/NLTest.xslt");
         [System.Xml.XmlReader]$xmlReader = [System.Xml.XmlNodeReader]::new($xml);
         $writer= [System.IO.StreamWriter] "$reportFileName.html"
         $rd = $xslt.Transform($xmlReader, $null, $writer);

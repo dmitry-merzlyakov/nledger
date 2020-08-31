@@ -5,7 +5,8 @@ Param()
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath\..\NLManagement\NLWhere.psm1 -Force
 
-cd $Script:ScriptPath
+[string]$nlTestPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/NLTest.ps1")
+if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) {throw "Cannot find '$nlTestPath'"}
 
 function run {
 [CmdletBinding()]
@@ -13,9 +14,9 @@ Param(
     [Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = ""
 )
     if ([string]::IsNullOrWhiteSpace($filterRegex)) {
-        .\nltest.ps1 -showReport
+        $null = (& $nlTestPath -showReport)
     } else {
-        .\nltest.ps1 -showReport -filterRegex $filterRegex
+        $null = (& $nlTestPath -showReport -filterRegex $filterRegex)
     }
 }
 
@@ -25,9 +26,9 @@ Param(
     [Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = ""
 )
     if ([string]::IsNullOrWhiteSpace($filterRegex)) {
-        .\nltest.ps1
+        $null = (& $nlTestPath)
     } else {
-        .\nltest.ps1 -filterRegex $filterRegex
+        $null = (& $nlTestPath -filterRegex $filterRegex)
     }
 }
 
@@ -37,9 +38,9 @@ Param(
     [Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = ""
 )
     if ([string]::IsNullOrWhiteSpace($filterRegex)) {
-        .\nltest.ps1 -disableIgnoreList
+        $null = (& $nlTestPath -disableIgnoreList)
     } else {
-        .\nltest.ps1 -disableIgnoreList -filterRegex $filterRegex
+        $null = (& $nlTestPath -disableIgnoreList -filterRegex $filterRegex)
     }
 }
 

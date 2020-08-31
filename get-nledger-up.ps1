@@ -34,6 +34,7 @@
 .EXAMPLE
     PS> ./get-nledger-up.ps1 -coreOnly
     Create .Net Core binaries only.
+    Note: this switch is set automatically on non-windows platforms.
 .EXAMPLE
     PS> ./get-nledger-up.ps1 -uninstall
     Uninstall NLedger if it was previously installed
