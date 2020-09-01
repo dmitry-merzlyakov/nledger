@@ -87,6 +87,7 @@ trap
 } 
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+[string]$Script:DirSeparator = [System.IO.Path]::DirectorySeparatorChar
 
 [string]$Script:absNLedgerExePath = if (![System.IO.Path]::IsPathRooted($nledgerExePath)) { Resolve-Path (Join-Path $Script:ScriptPath $nledgerExePath) -ErrorAction Stop } else { $nledgerExePath }
 [string]$Script:absNLedgerTestPath = if (![System.IO.Path]::IsPathRooted($nledgerTestPath)) { Resolve-Path (Join-Path $Script:ScriptPath $nledgerTestPath) -ErrorAction Stop } else { $nledgerTestPath }
@@ -97,7 +98,7 @@ if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot
 if (!(Test-Path $Script:absIgnoreListPath -PathType Leaf)) { throw "Cannot find Ignore List file: $Script:absIgnoreListPath" }
 
 [string]$Script:absTestRootPath = $Script:absNLedgerTestPath
-$Script:absNLedgerTestPath = "$Script:absNLedgerTestPath$([System.IO.Path]::DirectorySeparatorChar)test"
+$Script:absNLedgerTestPath = "$Script:absNLedgerTestPath$($Script:DirSeparator)test"
 if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot find 'test' subfolder in test root folder: $Script:absNLedgerTestPath" }
 
 Write-Verbose "NLedger executable path: $Script:absNLedgerExePath"
@@ -106,7 +107,7 @@ Write-Verbose "Source folder path: $Script:absTestRootPath"
 
 [xml]$Script:ignoreListContent = Get-Content $Script:absIgnoreListPath
 $Script:ignoreListTable = @{}
-$Script:ignoreListContent.SelectNodes("/nltest-ignore-list/ignore") | ForEach { $Script:ignoreListTable[$_.test] = $_.reason }
+$Script:ignoreListContent.SelectNodes("/nltest-ignore-list/ignore") | ForEach { $Script:ignoreListTable[$_.test.Replace('\',$($Script:DirSeparator))] = $_.reason }
 Write-Verbose "Read IgnoreList; found $($Script:ignoreListTable.Count) test(s) to ignore"
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
@@ -229,14 +230,14 @@ function ParseTestFile {
                         $Private:setVariables = @{}
                     } else {
                         # If current line contains a template "$sourcepath" - adopt it to current folder
-                        if ($Private:line -match '\"\$sourcepath/([^\"]*)\"') { $Private:line = $Private:line -replace '\"\$sourcepath/([^\"]*)\"',"""$Script:absTestRootPath\$($Matches[1].Replace('/','\'))""" }
+                        if ($Private:line -match '\"\$sourcepath/([^\"]*)\"') { $Private:line = $Private:line -replace '\"\$sourcepath/([^\"]*)\"',"""$Script:absTestRootPath$($Script:DirSeparator)$($Matches[1].Replace('/',$($Script:DirSeparator)))""" }
                         # The same but w/o quites
-                        if ($Private:line -match '\$sourcepath/(.*)') { $Private:line = $Private:line -replace '\$sourcepath/(.*)',"$Script:absTestRootPath\$($Matches[1].Replace('/','\'))" }
+                        if ($Private:line -match '\$sourcepath/(.*)') { $Private:line = $Private:line -replace '\$sourcepath/(.*)',"$Script:absTestRootPath$($Script:DirSeparator)$($Matches[1].Replace('/',$($Script:DirSeparator)))" }
                         # If the line contains $FILE template - replace it with current file name
                         $Private:line = $Private:line -replace '\$FILE', $absTestFile
                         # Special case: if error message contains a relative path in a file name, expand it
                         $Private:errFileName = "(Error: File to include was not found: "")(?<path>\.\/)"
-                        $Private:line = $Private:line -replace $Private:errFileName, "Error: File to include was not found: ""$Script:absTestRootPath\"
+                        $Private:line = $Private:line -replace $Private:errFileName, "Error: File to include was not found: ""$Script:absTestRootPath$($Script:DirSeparator)"
                         # Add the line either to the output or stderr
                         if ($Private:directToErr) { $Private:err += $Private:line+"`r`n" } else { $Private:output += $Private:line+"`r`n" }
                     }
@@ -269,7 +270,33 @@ function RunExecutable {
     $Private:pinfo.RedirectStandardOutput = $true
     $Private:pinfo.RedirectStandardInput = $isStdin
     $Private:pinfo.UseShellExecute = $false
-    $Private:pinfo.Arguments = $arguments
+
+    if($Script:isWindowsPlatform) {
+        $Private:pinfo.Arguments = $arguments
+    } else {
+        # Simulate schell preprocessing
+        [string]$Private:quoteChar = $null
+        [string]$Private:quoteText = $null
+        foreach ($arg in [char[]]$arguments) {
+            if($Private:quoteChar) {
+                if($arg -eq $Private:quoteChar) { $Private:quoteChar = $null }
+                else { $Private:quoteText += $arg }
+            } else {
+                if ($arg -eq "'" -or $arg -eq '"') { $Private:quoteChar = $arg }
+                else {
+                    if ($arg -eq ' ') {
+                        if ($Private:quoteText) { $null = $Private:pinfo.ArgumentList.Add($Private:quoteText) }
+                        $Private:quoteText = $null
+                    } else {
+                        $Private:quoteText += $arg
+                    }    
+                }
+            }
+        }        
+        if ($Private:quoteText) { $null = $Private:pinfo.ArgumentList.Add($Private:quoteText) }
+        foreach($parg in $Private:pinfo.ArgumentList) {Write-Verbose "PInfo Argument: $parg"}
+    }
+
     $Private:pinfo.CreateNoWindow = $true
     $Private:pinfo.WorkingDirectory = $Script:absTestRootPath
     $Private:pinfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8
@@ -384,9 +411,9 @@ function RunTestCase {
         $Private:testCaseResult.DiffErr = $Private:nrmExpectedErr -ne $Private:nrmActualErr
         $Private:testCaseResult.DiffCode = $Private:testCaseResult.exitcode -ne $Private:testCaseResult.runResult.exitcode
 
-        if($Private:testCaseResult.DiffOut) {Write-Verbose "Expected output: $Private:nrmActualOut"}
-        if($Private:testCaseResult.DiffErr) {Write-Verbose "Expected error: $Private:nrmActualErr"}
-        if($Private:testCaseResult.DiffCode) {Write-Verbose "Expected code: $($Private:testCaseResult.runResult.exitcode)"}
+        if($Private:testCaseResult.DiffOut) {Write-Verbose "Actual output: $Private:nrmActualOut"}
+        if($Private:testCaseResult.DiffErr) {Write-Verbose "Actual error: $Private:nrmActualErr"}
+        if($Private:testCaseResult.DiffCode) {Write-Verbose "Actual code: $($Private:testCaseResult.runResult.exitcode)"}
     }
     catch {
         $Private:testCaseResult.ExceptionMessage = $_

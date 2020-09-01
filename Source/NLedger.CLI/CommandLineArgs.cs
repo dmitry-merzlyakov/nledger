@@ -33,8 +33,8 @@ namespace NLedger.CLI
                 return ExtractArguments(environmentCommandLine);
             }
 
-            // For .Net Core running on Linux/OSX, we only need to join input arguments that are alreay properly split by single quotas.
-            return String.Join(" ", args);
+            // For .Net Core running on Linux/OSX, we need to re-compose the original command line by adding quotas to some arguments.
+            return Enquote(args);
 #endif
         }
 
@@ -50,6 +50,41 @@ namespace NLedger.CLI
 #if !NETFRAMEWORK
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         private static extern System.IntPtr GetCommandLine();
+
+        private static string Enquote(IEnumerable<string> args)
+        {
+            var sb = new StringBuilder();
+            foreach(var arg in args)
+            {
+                if (sb.Length > 0)
+                    sb.Append(' ');
+
+                if (arg.StartsWith('\'') && arg.EndsWith('\''))
+                    sb.Append(arg);     // Already quoted
+
+                else if (arg.StartsWith('\"') && arg.EndsWith('\"'))
+                    sb.Append(arg);     // Already quoted
+
+                else
+                {
+                    var hasSingleQuote = arg.Contains('\'');
+                    var hasDoubleQuote = arg.Contains('\"');
+                    var hasSpaces = arg.Contains(' ');
+
+                    var needsQuote = hasSingleQuote || hasDoubleQuote || hasSpaces;
+                    var quoteChar = hasSingleQuote ? '\"' : '\'';
+
+                    if (needsQuote)
+                        sb.Append(quoteChar);
+
+                    sb.Append(arg);
+
+                    if (needsQuote)
+                        sb.Append(quoteChar);
+                }
+            }
+            return sb.ToString();
+        }
 #endif
 
     }
