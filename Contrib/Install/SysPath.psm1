@@ -13,12 +13,6 @@ Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 
-trap 
-{ 
-  write-error $_ 
-  exit 1 
-} 
-
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
 [string]$Script:PathsSeparator = $(if($Script:isWindowsPlatform){";"}else{":"})
 

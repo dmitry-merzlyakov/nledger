@@ -13,12 +13,6 @@ Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 
-trap 
-{ 
-  write-error $_ 
-  exit 1 
-} 
-
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
 
 <#
@@ -49,6 +43,19 @@ function Get-InstalledNGens {
 
     if (Test-Path -LiteralPath $Private:ngen64 -PathType Leaf) { $Private:ngen64 }
     if (Test-Path -LiteralPath $Private:ngen32 -PathType Leaf) { $Private:ngen32 }
+}
+
+<#
+.SYNOPSIS
+    Checks whether NGen functions can be called
+.DESCRIPTION
+    The conditions are: windows platform, administrative privileges, NGen is available
+#>
+function Test-CanCallNGen {
+    [CmdletBinding()]
+    Param()
+
+    return $Script:isWindowsPlatform -and (Test-AdministrativePriviledges) -and (Get-InstalledNGens)
 }
 
 <#

@@ -100,6 +100,7 @@ function Select-NLedgerInstance {
   End { 
     $private:collected = $Private:coll | Sort-Object -Property Date -Descending | Where-Object {!$_.IsAlias}
     if ($preferCore -and $($private:collected | Where-Object {$_.IsCore})) { $private:collected = $private:collected | Where-Object {$_.IsCore}}
+    if (!($preferCore) -and $($private:collected | Where-Object {!($_.IsCore)})) { $private:collected = $private:collected | Where-Object {!($_.IsCore)}}
     $private:collected | Select-Object -First 1 }
 }
 

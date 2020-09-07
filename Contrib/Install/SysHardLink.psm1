@@ -13,12 +13,6 @@ Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 
-trap 
-{ 
-  write-error $_ 
-  exit 1 
-} 
-
 <#
 .SYNOPSIS
     Checks whether given path is a hard link to a file
@@ -56,7 +50,7 @@ function Add-HardLink {
     if (!(Test-Path -LiteralPath $filePath -PathType Leaf)) { throw "Link target file does not exist: $filePath" }
     if (Test-Path -LiteralPath $linkPath -PathType Leaf) { throw "Link name already exist: $linkPath" }
 
-    $null = (New-Item -ItemType HardLink -Name $linkPath -Value $filePath)
+    $null = (New-Item -ItemType HardLink -Path $linkPath -Value $filePath -ErrorAction Stop)
 }
 
 <#
