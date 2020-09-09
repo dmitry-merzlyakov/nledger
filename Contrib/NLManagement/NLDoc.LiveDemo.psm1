@@ -4,6 +4,9 @@
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath\NLSetup.psm1 -Force
 
+[bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+[string]$Script:dsp = [System.IO.Path]::DirectorySeparatorChar
+
 function GetDefaultDemoSettings {
   [CmdletBinding()]
   Param()
@@ -13,7 +16,7 @@ function GetDefaultDemoSettings {
     sandbox = "{MyDocuments}/NLedger/DemoSandbox"
     demoURL = "http://localhost:8080/"
     demoFile = "NLDoc.LiveDemo.ledger3.html"
-    editor = "wordpad.exe"
+    editor = $(if($Script:isWindowsPlatform){"wordpad.exe"}else{"xdg-open"})
     browser = ""
   }
 }
@@ -44,9 +47,9 @@ function GetDemoConfig {
 
   $private:settings = GetDefaultDemoSettings
   $private:configData = GetConfigData
-  $private:settings["demoURL"] = ($private:configData.Settings | ?{$_.Name -eq "DemoURL"}).EffectiveSettingValue
-  $private:settings["editor"] = ($private:configData.Settings | ?{$_.Name -eq "DemoEditor"}).EffectiveSettingValue
-  $private:settings["browser"] = ($private:configData.Settings | ?{$_.Name -eq "DemoBrowser"}).EffectiveSettingValue
+  $private:settings["demoURL"] = ($private:configData.Settings | Where-Object{$_.Name -eq "DemoURL"}).EffectiveSettingValue
+  $private:settings["editor"] = ($private:configData.Settings | Where-Object{$_.Name -eq "DemoEditor"}).EffectiveSettingValue
+  $private:settings["browser"] = ($private:configData.Settings | Where-Object{$_.Name -eq "DemoBrowser"}).EffectiveSettingValue
 
   [string]$liveDemoConfig = "$Script:ScriptPath\$($private:settings.demoConfig)"
 
@@ -114,7 +117,7 @@ function InitDemoSandbox {
   if (!(Test-Path $sandbox -PathType Container)) { New-Item -ItemType Directory -Force -Path $sandbox }
   foreach($key in $files.Keys) {
     [string]$sourceFile = Resolve-Path (Join-Path $Script:ScriptPath $files[$key]) -ErrorAction Stop
-    [string]$targetFile = "$sandbox\$key"
+    [string]$targetFile = "$sandbox$Script:dsp$key"
     if (!(Test-Path $sourceFile -PathType Leaf)) { throw "Source file does not exist: $sourceFile" }
     if (!(Test-Path $targetFile -PathType Leaf)) { Copy-Item -LiteralPath $sourceFile -Destination $targetFile | Out-Null }
   }
@@ -131,7 +134,7 @@ function RevertDemoSandboxFile {
 
   if (!(Test-Path $sandbox -PathType Container)) { throw "No sandbox folder" }
   [string]$sourceFile = Resolve-Path (Join-Path $Script:ScriptPath $files[$fileName]) -ErrorAction Stop
-  [string]$targetFile = "$sandbox\$key"
+  [string]$targetFile = "$sandbox$Script:dsp$key"
   if (!(Test-Path $sourceFile -PathType Leaf)) { throw "Source file does not exist: $sourceFile" }
   Copy-Item -LiteralPath $sourceFile -Destination $targetFile -Force | Out-Null
 }
@@ -157,12 +160,18 @@ function actRun {
 
   $private:command = $demoConfig.Commands[$testid]
   if ($private:command) {
-    $private:cmd = "/k """"$ScriptPath\NLDoc.LiveDemo.Launch.cmd"" $private:command"""
     $env:CMDTORUN = $private:command
-    $env:CMDTOVIEW = $private:command.Replace("^","^^")
     Write-Verbose "Command to execute (CMDTORUN): $env:CMDTORUN"
-    Write-Verbose "Command to view (CMDTOVIEW): $env:CMDTOVIEW"
-    start-process -workingdirectory $demoConfig.Sandbox -filepath "$env:comspec" -ArgumentList $private:cmd
+    if ($Script:isWindowsPlatform) {
+      $private:cmd = "/k """"$ScriptPath\NLDoc.LiveDemo.Launch.cmd"" $private:command"""
+      $env:CMDTOVIEW = $private:command.Replace("^","^^")
+      Write-Verbose "Command to view (CMDTOVIEW): $env:CMDTOVIEW"
+      Write-Verbose "Start process - working directory: $($demoConfig.Sandbox); file path: $env:comspec; ArgumentList: $private:cmd"
+      start-process -workingdirectory $demoConfig.Sandbox -filepath "$env:comspec" -ArgumentList $private:cmd  
+    } else {
+      [string]$Private:xargs = "-e `"$ScriptPath/NLDoc.LiveDemo.Launch.sh;bash`""
+      start-process -workingdirectory $demoConfig.Sandbox -filepath "xterm" -ArgumentList $Private:xargs 
+    }
     return "OK: $testid"
   } else {
     return "FAIL: command not found - $testid"
@@ -179,7 +188,7 @@ function actEdit {
   Write-Verbose "Requested edit data file for test $testid"
 
   $private:file = $demoConfig.TestFiles[$testid]
-  if ($private:file) {    
+  if ($private:file) {
     start-process -WorkingDirectory $demoConfig.Sandbox -FilePath $demoConfig.Editor $private:file
     return "OK: $testid"
   } else {
@@ -198,7 +207,12 @@ function actOpen {
 
   $private:file = $demoConfig.TestFiles[$testid]
   if ($private:file) {    
-    start-process -WorkingDirectory $demoConfig.Sandbox -FilePath "explorer" "/e, /select, `"$($demoConfig.Sandbox.Replace('/','\'))\$private:file`""
+    if ($Script:isWindowsPlatform) {
+      start-process -WorkingDirectory $demoConfig.Sandbox -FilePath "explorer" "/e, /select, `"$($demoConfig.Sandbox.Replace('/','\'))\$private:file`""
+    }
+    else {
+      start-process -WorkingDirectory $demoConfig.Sandbox -FilePath "xdg-open" -ArgumentList $demoConfig.Sandbox
+    }
     return "OK: $testid"
   } else {
     return "FAIL: file not found - $testid"
