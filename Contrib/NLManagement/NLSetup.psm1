@@ -6,6 +6,7 @@ Param(
 )
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+Import-Module $Script:ScriptPath\NLWhere.psm1 -Force
 Import-Module $Script:ScriptPath\NLCommon.psm1 -Force
 
 $Global:ConfigDataExtensions = @{}
@@ -268,6 +269,26 @@ function setAppConfigFile {
     [NLedger.Utility.Settings.CascadeSettings.Sources.SystemConfigurationSettingsSource]::AppConfigFileName = $appConfigFile
 }
 
+function SetPlatform {
+    [CmdletBinding()]
+    Param(
+        [Switch][bool]$preferCore = $false
+    )
+
+    [string]$private:frameworkLedger = Get-NLedgerPath
+    [string]$private:coreLedger = Get-NLedgerPath -preferCore
+    if (!($private:frameworkLedger) -and !($private:coreLedger)) {throw "No binaries found. Check that they are built"}
+    if ($private:frameworkLedger -eq $private:coreLedger) {$private:frameworkLedger = $null}
+
+    [string]$Private:preferableNLedger = Get-NLedgerPath -preferCore:$preferCore
+    [string]$Private:preferablePath = [System.IO.Path]::GetDirectoryName($Private:preferableNLedger)
+
+    $Script:IsCorePlatform = $private:coreLedger -eq $Private:preferableNLedger
+    $Script:AppSettingsFile = if($Script:IsCorePlatform){"$Private:preferablePath\NLedger-cli.dll.config"}else{"$Private:preferablePath\NLedger-cli.exe.config"}
+    $Script:AppSettingsFileExists = (Test-Path -LiteralPath $Script:AppSettingsFile -PathType Leaf)
+
+    return get-success "Current platform is $(if($Script:IsCorePlatform){".Net Core"}else{".Net Framework"}) [App config file is $($Script:AppSettingsFile)]"
+}
 
 # Module Initialization
 
@@ -287,5 +308,8 @@ if (!$Script:NLedgerConfigurationType) { throw "Class NLedger.Utility.Settings.N
 $Script:StringSettingDefinitionType = $Script:NLedgerAssembly.GetType("NLedger.Utility.Settings.CascadeSettings.Definitions.StringSettingDefinition")
 if (!$Script:StringSettingDefinitionType) { throw "Class NLedger.Utility.Settings.CascadeSettings.Definitions.StringSettingDefinition not found." }
 
-$Script:AppSettingsFile = "$Script:nledgerPath\NLedger-cli.exe.config"
-$Script:AppSettingsFileExists = (Test-Path -LiteralPath $Script:AppSettingsFile -PathType Leaf)
+$Script:IsCorePlatform = $false
+$Script:AppSettingsFile = $null
+$Script:AppSettingsFileExists = $null
+$null = SetPlatform
+
