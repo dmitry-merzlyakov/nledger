@@ -211,7 +211,7 @@ function show-details {
     if ($_.Description) { Write-Console "{c:gray}Description:     {c:white}$($_.Description)" }
     if ($_.Category)    { Write-Console "{c:gray}Category:        {c:white}$($_.Category)" }
     Write-Console "{c:gray}Value Type:      {c:white}$($_.SettingType)"
-    if ($showPermitted -and $_.PossibleValues) {
+    if ($showPermitted -and $($_.PossibleValues)) {
         Write-Console -NoNewLine "{c:gray}Permitted:       "
         Write-Columns ($_.PossibleValues | Sort-Object) -leftMargin 17 -rightBoundary 88
     }

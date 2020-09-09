@@ -283,8 +283,10 @@ function SetPlatform {
     [string]$Private:preferableNLedger = Get-NLedgerPath -preferCore:$preferCore
     [string]$Private:preferablePath = [System.IO.Path]::GetDirectoryName($Private:preferableNLedger)
 
+    [string]$Private:dsp = [System.IO.Path]::DirectorySeparatorChar
+
     $Script:IsCorePlatform = $private:coreLedger -eq $Private:preferableNLedger
-    $Script:AppSettingsFile = if($Script:IsCorePlatform){"$Private:preferablePath\NLedger-cli.dll.config"}else{"$Private:preferablePath\NLedger-cli.exe.config"}
+    $Script:AppSettingsFile = if($Script:IsCorePlatform){"$Private:preferablePath$($Private:dsp)NLedger-cli.dll.config"}else{"$Private:preferablePath$($Private:dsp)NLedger-cli.exe.config"}
     $Script:AppSettingsFileExists = (Test-Path -LiteralPath $Script:AppSettingsFile -PathType Leaf)
 
     return get-success "Current platform is $(if($Script:IsCorePlatform){".Net Core"}else{".Net Framework"}) [App config file is $($Script:AppSettingsFile)]"
