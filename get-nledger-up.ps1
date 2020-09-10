@@ -1,30 +1,24 @@
 <#
 .SYNOPSIS
-    Build, verify and install NLedger from source code on any OS.
+    Build, verify and optionally install NLedger from source code.
 .DESCRIPTION
-    This script helps people to get workable NLedger from source code
-    on their computer. It performs four basic steps: a) build binaries;
-    b) run unit tests; c) run integration tests; d) install created binaries
-    (add to PATH and create 'ledger' link). In case of any errors on any steps,
+    This script helps  to get workable NLedger from source code
+    on their computer. It performs four basic steps: a) builds binaries;
+    b) runs unit tests; c) runs integration tests; d) optionally, installs created binaries
+    (adds to PATH and creates 'ledger' hard link). In case of any errors on any steps,
     the script provides troubleshooting information to help people solve environmental
-    issues. Switches can regulate this process (omit some steps as well as uninstall 
-    previously installed binaries).
+    issues. Switches can regulate this process. The script works on any platform (Windows, Linux, OSX).
 .PARAMETER coreOnly
     Orders to create .Net Core binaries only. By default, the script creates both Framework
     and Core binaries. This switch is selected automatically on non-Windows platforms.
 .PARAMETER debugMode
     Orders to create binaries in Debug mode (Release by default)
 .PARAMETER noUnitTests
-    Omits running xUnit tests
+    Omits xUnit tests
 .PARAMETER noNLTests
-    Omits running NLTest integration tests
-.PARAMETER noInstall
-    Do not install created binaries. By default, the script adds the folder with binaries
-    to PATH and creates a hard link 'ledger'. For .Net Framework binaries, it also
-    triggers NGen run.
-.PARAMETER uninstall
-    If this switch is selected, the script removes binaries with PATH and deletes a hard link.
-    Any other switches are ignored.
+    Omits NLTest integration tests
+.PARAMETER install
+    If this switch is set, the script installs NLedger when binaries are built and verified.
 .EXAMPLE
     PS> ./get-nledger-up.ps1
     Build, verify and install NLedger from source code.
@@ -35,9 +29,6 @@
     PS> ./get-nledger-up.ps1 -coreOnly
     Create .Net Core binaries only.
     Note: this switch is set automatically on non-windows platforms.
-.EXAMPLE
-    PS> ./get-nledger-up.ps1 -uninstall
-    Uninstall NLedger if it was previously installed
 .NOTES
     Author: Dmitry Merzlyakov
     Date:   August 27, 2020
@@ -51,8 +42,7 @@ Param(
     [Switch][bool]$debugMode = $False,
     [Switch][bool]$noUnitTests = $False,
     [Switch][bool]$noNLTests = $False,
-    [Switch][bool]$noInstall = $False,
-    [Switch][bool]$uninstall = $False
+    [Switch][bool]$install = $False
 )
 
 trap 
@@ -139,6 +129,9 @@ if (!$noNLTests)
         [string]$nledgerFrameworkExeFile = composeNLedgerExePath -core $false
         if (!(Test-Path -LiteralPath $nledgerFrameworkExeFile -PathType Leaf)) { throw "Cannot find $nledgerFrameworkExeFile" }
 
+        Import-Module "$Script:ScriptPath/Contrib/Install/SysNGen.psm1"
+        if (Test-CanCallNGen) {$null = Add-NGenImage $nledgerFrameworkExeFile}
+
         $null = (& $nlTestPath -nledgerExePath $nledgerFrameworkExeFile -noconsole -showProgress | Write-Verbose)
         if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
     }
@@ -152,6 +145,11 @@ if (!$noNLTests)
     if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
 }
 
+if ($install) {
+    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Installing NLeger binaries"
+    $null = (& powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -install | Write-Verbose)
+    if ($LASTEXITCODE -ne 0) { throw "Installation failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+}
 
 Write-Progress -Activity "Building, testing and installing NLedger" -Status "Completed" -Completed
 
@@ -176,5 +174,12 @@ if (!($noNLTests)) {
     Write-Host "NLedger tests: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
 } else {
     Write-Host "NLedger tests: IGNORED"
+}
+Write-Host
+
+if ($install) {
+    Write-Host "NLedger install: OK (Note: run a new console session to get effect of changes in environment variables)"
+} else {
+    Write-Host "NLedger is ready to be installed (use ./get-nledger-tools -install)"
 }
 Write-Host
