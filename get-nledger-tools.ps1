@@ -76,39 +76,40 @@ trap
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+[string]$Script:powershell = $(if($Script:isWindowsPlatform){"powershell"}else{"pwsh"})
 
 if ($install) {
-    & powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -install
+    & $Script:powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -install
     return
 }
 
 if ($installPreferCore) {
-    & powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -installPreferCore
+    & $Script:powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -installPreferCore
     return
 }
 
 if ($uninstall) {
-    & powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -uninstall
+    & $Script:powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -uninstall
     return
 }
 
 if ($installConsole) {
-    & powershell -NoExit -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1")
+    & $Script:powershell -NoExit -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1")
     return
 }
 
 if ($testConsole) {
-    & powershell -NoExit -File $("$Script:ScriptPath/Contrib/NLTestToolkit/NLTest.Launcher.ps1")
+    & $Script:powershell -NoExit -File $("$Script:ScriptPath/Contrib/NLTestToolkit/NLTest.Launcher.ps1")
     return
 }
 
 if ($settings) {
-    & powershell -NoExit -File $("$Script:ScriptPath/Contrib/NLManagement/NLSetup.Console.ps1")
+    & $Script:powershell -NoExit -File $("$Script:ScriptPath/Contrib/NLManagement/NLSetup.Console.ps1")
     return
 }
 
 if ($demo) {
-    & powershell -File $("$Script:ScriptPath/Contrib/NLManagement/NLDoc.LiveDemo.WebConsole.ps1")
+    & $Script:powershell -File $("$Script:ScriptPath/Contrib/NLManagement/NLDoc.LiveDemo.WebConsole.ps1")
     return
 }
 

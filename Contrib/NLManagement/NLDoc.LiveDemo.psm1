@@ -5,6 +5,7 @@
 Import-Module $Script:ScriptPath\NLSetup.psm1 -Force
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+[bool]$Script:isOsxPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
 [string]$Script:dsp = [System.IO.Path]::DirectorySeparatorChar
 
 function GetDefaultDemoSettings {
@@ -169,8 +170,13 @@ function actRun {
       Write-Verbose "Start process - working directory: $($demoConfig.Sandbox); file path: $env:comspec; ArgumentList: $private:cmd"
       start-process -workingdirectory $demoConfig.Sandbox -filepath "$env:comspec" -ArgumentList $private:cmd  
     } else {
-      [string]$Private:xargs = "-e `"$ScriptPath/NLDoc.LiveDemo.Launch.sh;bash`""
-      start-process -workingdirectory $demoConfig.Sandbox -filepath "xterm" -ArgumentList $Private:xargs 
+      if($isOsxPlatform) {
+        [string]$Private:xargs = "-a Terminal '$ScriptPath/NLDoc.LiveDemo.Launch.sh'"
+        start-process -workingdirectory $demoConfig.Sandbox -filepath "open" -ArgumentList $Private:xargs 
+      } else {
+        [string]$Private:xargs = "-e `"$ScriptPath/NLDoc.LiveDemo.Launch.sh;bash`""
+        start-process -workingdirectory $demoConfig.Sandbox -filepath "xterm" -ArgumentList $Private:xargs 
+      }
     }
     return "OK: $testid"
   } else {

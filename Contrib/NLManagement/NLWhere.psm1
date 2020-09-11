@@ -68,10 +68,12 @@ function Get-NLedgerInstances {
   checkPath -path "..\..\Source\NLedger.CLI\bin\Debug\net45\NLedger-cli.exe" -isDebug
   checkPath -path "..\..\Source\NLedger.CLI\bin\Debug\netcoreapp3.1\NLedger-cli.exe" -isDebug -isCore
   checkPath -path "../../Source/NLedger.CLI/bin/Debug/netcoreapp3.1/NLedger-cli" -isDebug -isCore -isNotWindows
+  checkPath -path "../../Source/NLedger.CLI/bin/Debug/netcoreapp3.1/osx-x64/NLedger-cli" -isDebug -isCore -isNotWindows
 
   checkPath -path "..\..\Source\NLedger.CLI\bin\Release\net45\NLedger-cli.exe" -isRelease
   checkPath -path "..\..\Source\NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.exe" -isRelease -isCore
   checkPath -path "../../Source/NLedger.CLI/bin/Release/netcoreapp3.1/NLedger-cli" -isRelease -isCore -isNotWindows
+  checkPath -path "../../Source/NLedger.CLI/bin/Release/netcoreapp3.1/osx-x64/NLedger-cli" -isRelease -isCore -isNotWindows
 
   checkPath -path "..\NLedger-cli.exe" -isPackage
   checkPath -path "..\bin\netcoreapp3.1\NLedger-cli.exe" -isPackage -isCore

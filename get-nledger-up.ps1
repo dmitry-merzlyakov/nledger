@@ -59,7 +59,8 @@ Write-Progress -Activity "Building, testing and installing NLedger" -Status "Ini
 # Check environmental information
 
 [bool]$isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-Write-Verbose "Detected: is windows platform=$isWindowsPlatform"
+[bool]$isOsxPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+Write-Verbose "Detected: is windows platform=$isWindowsPlatform; is OSX platform: $isOsxPlatform"
 
 [bool]$isDotNetInstalled = -not(-not($(get-command dotnet -ErrorAction SilentlyContinue)))
 if (!$isDotNetInstalled) { throw "DotNet Core is not installed (command 'dotnet' is not available)" }
@@ -92,6 +93,7 @@ Write-Progress -Activity "Building, testing and installing NLedger" -Status "Bui
 [string]$buildCommandLine = "dotnet build '$solutionPath'"
 if ($coreOnly) { $buildCommandLine += " /p:CoreOnly=True"}
 if ($debugMode) { $buildCommandLine += " --configuration Debug"} else { $buildCommandLine += " --configuration Release" }
+if ($isOsxPlatform) { $buildCommandLine += " -r osx-x64"}
 Write-Verbose "Build sources command line: $buildCommandLine"
 
 $null = (Invoke-Expression $buildCommandLine | Write-Verbose)
@@ -105,6 +107,7 @@ if(!$noUnitTests) {
     [string]$unittestCommandLine = "dotnet test '$solutionPath'"
     if ($coreOnly) { $unittestCommandLine += " /p:CoreOnly=True"}
     if ($debugMode) { $unittestCommandLine += " --configuration Debug"} else { $buildCommandLine += " --configuration Release" }
+    if ($isOsxPlatform) { $buildCommandLine += " -r osx-x64"}
     Write-Verbose "Run unit tests command line: $unittestCommandLine"
 
     $null = (Invoke-Expression $unittestCommandLine | Write-Verbose)
@@ -117,8 +120,9 @@ function composeNLedgerExePath {
     Param([Parameter(Mandatory=$True)][bool]$core)
     [string]$private:config = $(if($debugMode){"Debug"}else{"Release"})
     [string]$private:framework = $(if($core){"netcoreapp3.1"}else{"net45"})
+    [string]$private:osxBin = $(if($isOsxPlatform){"/osx-x64"})
     [string]$private:extension = $(if($isWindowsPlatform){".exe"}else{""})
-    return [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.CLI/bin/$private:config/$private:framework/NLedger-cli$private:extension")
+    return [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.CLI/bin/$private:config/$private:framework$($private:osxBin)/NLedger-cli$private:extension")
 }    
 
 if (!$noNLTests)
