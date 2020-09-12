@@ -14,18 +14,19 @@ Param()
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-[bool]$Script:isOsxPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
 [string]$Script:PathsSeparator = $(if($Script:isWindowsPlatform){";"}else{":"})
 
-[string]$Script:ShellConfig = "$HOME/.bashrc"
-if($Script:isOsxPlatform) {
-    if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) {
-        $Script:ShellConfig = "$HOME/.bash_profile"
-        $null = Add-Content $Script:ShellConfig ""
+# Locate shell config file for unix-like platforms (linux and OSX)
+[string]$Script:ShellConfig = $null
+if(!$Script:isWindowsPlatform) {
+    if ($env:SHELL -eq "/bin/zsh") { $Script:ShellConfig = "$HOME/.zshrc" }
+    else {
+        $Script:ShellConfig = "$HOME/.bashrc"
+        if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $Script:ShellConfig = "$HOME/.bash_profile" }
+        if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $null = Add-Content $Script:ShellConfig "" }
+        if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { throw "Cannot find shell config file" }
     }
 }
-
-if (!($Script:isWindowsPlatform) -and !(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { throw "Cannot find file $Script:ShellConfig" }
 
 <#
 .SYNOPSIS
