@@ -171,8 +171,13 @@ function actRun {
       start-process -workingdirectory $demoConfig.Sandbox -filepath "$env:comspec" -ArgumentList $private:cmd  
     } else {
       if($isOsxPlatform) {
-        [string]$Private:xargs = "-a Terminal '$ScriptPath/NLDoc.LiveDemo.Launch.sh'"
-        start-process -workingdirectory $demoConfig.Sandbox -filepath "open" -ArgumentList $Private:xargs 
+        [string]$Private:osxTempRunFile = "/tmp/nldoclivedemolaunch.sh"
+        if(Test-Path -LiteralPath $Private:osxTempRunFile -PathType Leaf) { Remove-Item -LiteralPath $Private:osxTempRunFile }        
+        $null = Add-Content $Private:osxTempRunFile "cd $($demoConfig.Sandbox)"
+        $null = Add-Content $Private:osxTempRunFile "echo $env:CMDTORUN"
+        $null = Add-Content $Private:osxTempRunFile "$env:CMDTORUN"
+        $null = (& chmod +x $Private:osxTempRunFile)
+        start-process -workingdirectory $demoConfig.Sandbox -filepath "open" -ArgumentList "-a Terminal $Private:osxTempRunFile"
       } else {
         [string]$Private:xargs = "-e `"$ScriptPath/NLDoc.LiveDemo.Launch.sh;bash`""
         start-process -workingdirectory $demoConfig.Sandbox -filepath "xterm" -ArgumentList $Private:xargs 
@@ -195,7 +200,11 @@ function actEdit {
 
   $private:file = $demoConfig.TestFiles[$testid]
   if ($private:file) {
-    start-process -WorkingDirectory $demoConfig.Sandbox -FilePath $demoConfig.Editor $private:file
+    if($isOsxPlatform) {
+      Start-process -FilePath "open" -ArgumentList "-t $($demoConfig.Sandbox)/$private:file"
+    } else {
+      start-process -WorkingDirectory $demoConfig.Sandbox -FilePath $demoConfig.Editor $private:file
+    }
     return "OK: $testid"
   } else {
     return "FAIL: file not found - $testid"
@@ -217,7 +226,11 @@ function actOpen {
       start-process -WorkingDirectory $demoConfig.Sandbox -FilePath "explorer" "/e, /select, `"$($demoConfig.Sandbox.Replace('/','\'))\$private:file`""
     }
     else {
-      start-process -WorkingDirectory $demoConfig.Sandbox -FilePath "xdg-open" -ArgumentList $demoConfig.Sandbox
+      if($isOsxPlatform) {
+         start-process -FilePath "open" -ArgumentList $demoConfig.Sandbox
+      } else {
+         start-process -WorkingDirectory $demoConfig.Sandbox -FilePath "xdg-open" -ArgumentList $demoConfig.Sandbox
+      }
     }
     return "OK: $testid"
   } else {
