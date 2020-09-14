@@ -13,7 +13,7 @@
     <!-- Path to ProductInfo file -->
     <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
     <!-- Paths to test project assemblies separated by spaces -->
-    <TestAssembliesFramework>$(SourceRoot)NLedger.Tests\bin\Release\net45\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\net45\NLedger.IntegrationTests.dll</TestAssembliesFramework>
+    <TestAssembliesFramework>$(SourceRoot)NLedger.Tests\bin\Release\net452\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\net452\NLedger.IntegrationTests.dll</TestAssembliesFramework>
     <TestAssembliesCore>$(SourceRoot)NLedger.Tests\bin\Release\netcoreapp3.1\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\netcoreapp3.1\NLedger.IntegrationTests.dll</TestAssembliesCore>
 
     <!-- Output file structure -->
@@ -72,9 +72,9 @@
     <RemoveDir Directories="$(PackageDir)"/>
     <MakeDir Directories="$(PackageDir)"/>
     <!-- Add binaries (.Net Framework) -->
-    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\net45\NLedger.dll" DestinationFiles="$(PackageDir)NLedger.dll"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe" DestinationFiles="$(PackageDir)NLedger-cli.exe"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)NLedger-cli.exe.config"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\net45\NLedger.dll" DestinationFiles="$(PackageDir)bin\net45\NLedger.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe.config"  />
     <!-- Add binaries (.Net Core) -->
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\netstandard2.0\NLedger.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe"  />
@@ -100,12 +100,12 @@
   <Target Name="IntegrationTests" DependsOnTargets="Release">
     <Message Text="Target : IntegrationTests (executing all Ledger tests in NLTest Toolkit)"/>
     <!-- Call NGEN to create a native image to speed up the tests. Requires elevated permissions -->
-    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -addPath:$False -addAlias:$False" />
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Add-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
     <!-- Run all integration tests -->
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetFramework.LastTestResults&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\net45\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetFramework.LastTestResults&quot;" />
     <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetCore.LastTestResults&quot;" />
     <!-- Remove the native image from the cache -->
-    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -uninstall -addPath:$False -addAlias:$False" />
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Remove-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
   </Target>
 
   <Target Name="Package" DependsOnTargets="GetProductVersion;Release">

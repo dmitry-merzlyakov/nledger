@@ -76,6 +76,7 @@ function Get-NLedgerInstances {
   checkPath -path "../../Source/NLedger.CLI/bin/Release/netcoreapp3.1/osx-x64/NLedger-cli" -isRelease -isCore -isNotWindows
 
   checkPath -path "..\NLedger-cli.exe" -isPackage
+  checkPath -path "..\bin\net45\NLedger-cli.exe" -isPackage
   checkPath -path "..\bin\netcoreapp3.1\NLedger-cli.exe" -isPackage -isCore
 
   checkPath -path "..\ledger.exe" -isAlias -isPackage

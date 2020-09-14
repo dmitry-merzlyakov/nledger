@@ -48,7 +48,11 @@ function ComposeFileItemForSubFolder {
 # Wix Components Validation Exception
 $Script:WixComponentValidationExceptions = @(
   "NLedger\LICENSE.RTF",
-  "NLedger\NLManagement\NonDeliverable\"
+  "NLedger\NLManagement\NonDeliverable\",
+  "NLedger\NLManagement\NLDoc.LiveDemo.Launch.sh",
+  "NLedger\test\nledger\getquote"
+  "NLedger\bin\net45\NLedger-cli.exe",
+  "NLedger\bin\net45\NLedger-cli.exe.config"
 )
 
 # Validates the content of wix components

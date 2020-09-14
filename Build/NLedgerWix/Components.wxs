@@ -677,6 +677,10 @@
                     <File Id="File_NLedger_Install_ps1" Name="NLedger.Install.ps1" Source="$(var.PackageFolder)NLedger\Install\NLedger.Install.ps1"/>
                     <File Id="File_NLedger_Launcher_ps1" Name="NLedger.Launcher.ps1" Source="$(var.PackageFolder)NLedger\Install\NLedger.Launcher.ps1"/>
                     <File Id="File_NLedger_Uninstall_cmd" Name="NLedger.Uninstall.cmd" Source="$(var.PackageFolder)NLedger\Install\NLedger.Uninstall.cmd"/>
+                    <File Id="File_NLedger_NLInstall_psm1" Name="NLInstall.psm1" Source="$(var.PackageFolder)NLedger\Install\NLInstall.psm1"/>
+                    <File Id="File_NLedger_SysHardLink_psm1" Name="SysHardLink.psm1" Source="$(var.PackageFolder)NLedger\Install\SysHardLink.psm1"/>
+                    <File Id="File_NLedger_SysNGen_psm1" Name="SysNGen.psm1" Source="$(var.PackageFolder)NLedger\Install\SysNGen.psm1"/>
+                    <File Id="File_NLedger_SysPath_psm1" Name="SysPath.psm1" Source="$(var.PackageFolder)NLedger\Install\SysPath.psm1"/>
                   </Component>
                </Directory>
                <Directory Id="BinFolder" Name="bin">
@@ -692,12 +696,12 @@
                   </Directory>
                </Directory>
                <Component Id="AppBinFiles" Guid="59E7E5B2-E13F-4FBC-B05C-B5E1DFC1F06A" >
-                  <File Id="File_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\NLedger.dll"/>
-                  <File Id="File_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\NLedger-cli.exe">
+                  <File Id="File_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net45\NLedger.dll"/>
+                  <File Id="File_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\\bin\net45\NLedger-cli.exe">
                      <!-- Call NGen -->
 		     <netfx:NativeImage Id="File_NLedger_cli_exe" Platform="all" Priority="0" />
                   </File>
-                  <File Id="File_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\NLedger-cli.exe.config"/>
+                  <File Id="File_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\\bin\net45\NLedger-cli.exe.config"/>
                </Component>
                <Component Id="LicenseFiles" Guid="9D31EDB8-04BC-4EF7-856C-3F29655E78CF" >
                   <File Id="File_LICENSE" Name="LICENSE" Source="$(var.PackageFolder)NLedger\LICENSE"/>
