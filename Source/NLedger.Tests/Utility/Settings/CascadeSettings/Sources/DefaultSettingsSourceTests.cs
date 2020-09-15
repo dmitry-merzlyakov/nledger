@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Definitions;
 using NLedger.Utility.Settings.CascadeSettings.Sources;
@@ -15,14 +14,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Settings.CascadeSettings.Sources
 {
-    [TestClass]
     public class DefaultSettingsSourceTests
     {
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void DefaultSettingsSource_Constructor_CreateDefinitionDictionary()
         {
             var bool1Def = new BoolSettingDefinition("key1", "desc", true);
@@ -31,16 +30,16 @@ namespace NLedger.Tests.Utility.Settings.CascadeSettings.Sources
             var int2Def = new IntegerSettingDefinition("key4", "desc", 0);
 
             var source = new DefaultSettingsSource(new ISettingDefinition[] { bool1Def, bool2Def, int1Def, int2Def });
-            Assert.IsNotNull(source.SettingDefinitions);
-            Assert.AreEqual(4, source.SettingDefinitions.Count);
-            Assert.AreEqual(bool1Def, source.SettingDefinitions["key1"]);
-            Assert.AreEqual(bool2Def, source.SettingDefinitions["key2"]);
-            Assert.AreEqual(int1Def, source.SettingDefinitions["key3"]);
-            Assert.AreEqual(int2Def, source.SettingDefinitions["key4"]);
+            Assert.NotNull(source.SettingDefinitions);
+            Assert.Equal(4, source.SettingDefinitions.Count);
+            Assert.Equal(bool1Def, source.SettingDefinitions["key1"]);
+            Assert.Equal(bool2Def, source.SettingDefinitions["key2"]);
+            Assert.Equal(int1Def, source.SettingDefinitions["key3"]);
+            Assert.Equal(int2Def, source.SettingDefinitions["key4"]);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void DefaultSettingsSource_GetValue_ReturnsDefaultValues()
         {
             var bool1Def = new BoolSettingDefinition("key1", "desc", true);
@@ -50,18 +49,18 @@ namespace NLedger.Tests.Utility.Settings.CascadeSettings.Sources
 
             var source = new DefaultSettingsSource(new ISettingDefinition[] { bool1Def, bool2Def, int1Def, int2Def });
 
-            Assert.AreEqual("True", source.GetValue("key1"));
-            Assert.AreEqual("False", source.GetValue("key2"));
-            Assert.AreEqual("1", source.GetValue("key3"));
-            Assert.AreEqual("0", source.GetValue("key4"));
+            Assert.Equal("True", source.GetValue("key1"));
+            Assert.Equal("False", source.GetValue("key2"));
+            Assert.Equal("1", source.GetValue("key3"));
+            Assert.Equal("0", source.GetValue("key4"));
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void DefaultSettingsSource_Scope_Application()
         {
             var source = new DefaultSettingsSource(new ISettingDefinition[] { });
-            Assert.AreEqual(SettingScopeEnum.Application, source.Scope);
+            Assert.Equal(SettingScopeEnum.Application, source.Scope);
         }
 
     }

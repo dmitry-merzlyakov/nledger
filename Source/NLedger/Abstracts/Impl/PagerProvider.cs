@@ -72,7 +72,7 @@ namespace NLedger.Abstracts.Impl
                 var path = index > 0 ? pagerPath.Substring(0, index) : pagerPath;
 
                 Logger.Current.Debug("pager", () => String.Format("Looking for a pager by path {0}; arguments {1}", path, args));
-                var exePath = FileSystem.GetExecutablePath(path);
+                var exePath = NLedger.Utility.PlatformHelper.IsWindows() ? FileSystem.GetExecutablePath(path) : path;
                 if (String.IsNullOrEmpty(exePath))
                     throw new InvalidOperationException(String.Format("Application '{0}' (arguments: '{1}') not found", path, args));
 

@@ -24,8 +24,8 @@ namespace NLedger.Utility.Settings
     {
         public NLedgerSettingsContainer(IEnumerable<ISettingDefinition> definitions)
         {
-            var commonSettingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @".\NLedger\common.config");
-            var userSettingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @".\NLedger\user.config");
+            var commonSettingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"./NLedger/common.config");
+            var userSettingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"./NLedger/user.config");
 
             DefaultSettings = AddSource(new DefaultSettingsSource(definitions));
             AppSettings = AddSource(new SystemConfigurationSettingsSource());

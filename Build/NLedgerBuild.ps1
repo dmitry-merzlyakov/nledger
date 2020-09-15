@@ -22,26 +22,29 @@ cd $Script:ScriptPath
 [string]$Script:projPath = Resolve-Path (Join-Path $Script:ScriptPath ".\NLedgerBuild.proj") -ErrorAction Stop
 [string]$Script:outRootPath = Resolve-Path (Join-Path $Script:ScriptPath "..") -ErrorAction Stop
 
+function FindVsLocation {
+  [CmdletBinding()]
+  Param()
+  if (!(Get-Module -ListAvailable -Name VSSetup)) {
+     Write-Verbose "Module VSSetup is not installed. Installing..."
+     Install-Module VSSetup -Scope CurrentUser
+  }
+  [string]$private:vsPath = (Get-VSSetupInstance | Select-VSSetupInstance -Latest).InstallationPath
+  if (!$private:vsPath) {throw "Cannot find a path to the installed Visual Studio"}
+  Write-Verbose "Found VS path: $private:vsPath"
+  return $private:vsPath
+}
+
 function FindMsBuildLocation {
   [CmdletBinding()]
   Param()
-  [string]$Private:msbuildPath = ""
-  foreach($Private:version in ("2.0", "3.5", "4.0", "12.0", "14.0")) {
-     $Private:value = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\MSBuild\ToolsVersions\$Private:version"
-     if ($Private:value) { $Private:msbuildPath = "$($Private:value.MSBuildToolsPath)MSBuild.exe" }
-  }
-  return $Private:msbuildPath
+  return "$(FindVsLocation)\MSBuild\Current\Bin\MSBuild.exe"
 }
 
 function FindVsTestLocation {
   [CmdletBinding()]
   Param()
-  [string]$Private:vsTestPath = ""
-  foreach($Private:version in ("110", "120", "140")) {
-     $Private:value = [environment]::GetEnvironmentVariable("VS$($Private:version)COMNTOOLS","Process")
-     if ($Private:value -and (Test-Path $Private:value -PathType Container)) { $Private:vsTestPath = "$Private:value..\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" }
-  }
-  return $Private:vsTestPath
+  return "$(FindVsLocation)\Common7\IDE\Extensions\TestPlatform\vstest.console.exe"
 }
 
 function WrapArg {

@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts.Impl;
 using NLedger.Scopus;
 using NLedger.Utility;
@@ -17,34 +16,34 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Scopus
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class GlobalScopeTests : TestFixture
     {
-        public override void CustomTestInitialize()
+        protected override void CustomTestInitialize()
         {
             GlobalScopeArgsOnly = GlobalScope.ArgsOnly;
             ValidatorIsVerifyEnabled = Validator.IsVerifyEnabled;
             GlobalScopeInitFile = GlobalScope.InitFile;
         }
 
-        public override void CustomTestCleanup()
+        protected override void CustomTestCleanup()
         {
             GlobalScope.ArgsOnly = GlobalScopeArgsOnly;
             Validator.IsVerifyEnabled = ValidatorIsVerifyEnabled;
             GlobalScope.InitFile = GlobalScopeInitFile;
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_Description_ReturnsGlobalScopeConstant()
         {
-            Assert.AreEqual(GlobalScope.GlobalScopeDescription, new GlobalScope().Description);
+            Assert.Equal(GlobalScope.GlobalScopeDescription, new GlobalScope().Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_HandleDebugOptions_Configures_ArgsOnly_VerifyMemory_InitFile()
         {
             List<string> args = new List<string>();
@@ -55,13 +54,13 @@ namespace NLedger.Tests.Scopus
 
             GlobalScope.HandleDebugOptions(args);
 
-            Assert.IsTrue(GlobalScope.ArgsOnly);
-            Assert.IsTrue(Validator.IsVerifyEnabled);
-            Assert.AreEqual(LogLevelEnum.LOG_DEBUG, Logger.Current.LogLevel);
-            Assert.AreEqual("memory\\.counts", Logger.Current.LogCategory);
+            Assert.True(GlobalScope.ArgsOnly);
+            Assert.True(Validator.IsVerifyEnabled);
+            Assert.Equal(LogLevelEnum.LOG_DEBUG, Logger.Current.LogLevel);
+            Assert.Equal("memory\\.counts", Logger.Current.LogCategory);
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_HandleDebugOptions_Configures_Verify()
         {
             List<string> args = new List<string>();
@@ -69,10 +68,10 @@ namespace NLedger.Tests.Scopus
 
             GlobalScope.HandleDebugOptions(args);
 
-            Assert.IsTrue(Validator.IsVerifyEnabled);
+            Assert.True(Validator.IsVerifyEnabled);
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_HandleDebugOptions_Configures_Verbose()
         {
             List<string> args = new List<string>();
@@ -80,10 +79,10 @@ namespace NLedger.Tests.Scopus
 
             GlobalScope.HandleDebugOptions(args);
 
-            Assert.AreEqual(LogLevelEnum.LOG_INFO, Logger.Current.LogLevel);
+            Assert.Equal(LogLevelEnum.LOG_INFO, Logger.Current.LogLevel);
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_HandleDebugOptions_Configures_Debug()
         {
             List<string> args = new List<string>();
@@ -92,11 +91,11 @@ namespace NLedger.Tests.Scopus
 
             GlobalScope.HandleDebugOptions(args);
 
-            Assert.AreEqual(LogLevelEnum.LOG_DEBUG, Logger.Current.LogLevel);
-            Assert.AreEqual("debug-category", Logger.Current.LogCategory);
+            Assert.Equal(LogLevelEnum.LOG_DEBUG, Logger.Current.LogLevel);
+            Assert.Equal("debug-category", Logger.Current.LogCategory);
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_HandleDebugOptions_Configures_Trace()
         {
             List<string> args = new List<string>();
@@ -105,19 +104,19 @@ namespace NLedger.Tests.Scopus
 
             GlobalScope.HandleDebugOptions(args);
 
-            Assert.AreEqual(LogLevelEnum.LOG_TRACE, Logger.Current.LogLevel);
-            Assert.AreEqual(23, Logger.Current.TraceLevel);
+            Assert.Equal(LogLevelEnum.LOG_TRACE, Logger.Current.LogLevel);
+            Assert.Equal(23, Logger.Current.TraceLevel);
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_ShowVersionInfo_PopulatesOriginalLedgerVersion()
         {
             string expected =  String.Format(GlobalScope.ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH, VersionInfo.Ledger_VERSION_DATE);
             GlobalScope globalScope = new GlobalScope();
-            Assert.AreEqual(expected, globalScope.ShowVersionInfo());
+            Assert.Equal(expected, globalScope.ShowVersionInfo());
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_ReportError_WritesErrorIfNoCancellationReques()
         {
             var globalScope = new GlobalScope();
@@ -131,11 +130,11 @@ namespace NLedger.Tests.Scopus
                 globalScope.ReportError(ex);
 
                 textWriter.Flush();
-                Assert.AreEqual("Error: some exception", textWriter.ToString().TrimEnd());
+                Assert.Equal("Error: some exception", textWriter.ToString().TrimEnd());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_ReportError_DiscardsCancellationRequestAndDoesNothing()
         {
             var globalScope = new GlobalScope();
@@ -150,8 +149,8 @@ namespace NLedger.Tests.Scopus
                 globalScope.ReportError(ex);
 
                 textWriter.Flush();
-                Assert.AreEqual("", textWriter.ToString().TrimEnd());
-                Assert.AreEqual(CaughtSignalEnum.NONE_CAUGHT, MainApplicationContext.Current.CancellationSignal);
+                Assert.Equal("", textWriter.ToString().TrimEnd());
+                Assert.Equal(CaughtSignalEnum.NONE_CAUGHT, MainApplicationContext.Current.CancellationSignal);
             }
         }
 
@@ -166,7 +165,7 @@ namespace NLedger.Tests.Scopus
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void GlobalScope_PopReport_ClosesOutputStream()
         {
             var globalScope = new GlobalScope();
@@ -176,9 +175,9 @@ namespace NLedger.Tests.Scopus
                 globalScope.ReportStack.Push(report);
                 globalScope.ReportStack.Push(report);
 
-                Assert.IsFalse(textWriter.IsClosed);
+                Assert.False(textWriter.IsClosed);
                 globalScope.PopReport();
-                Assert.IsTrue(textWriter.IsClosed);
+                Assert.True(textWriter.IsClosed);
             }
         }
 

@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Expressions;
@@ -16,13 +15,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Filters
 {
-    [TestClass]
     public class CalcPostsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void CalcPosts_Handle_ClonesXDataTotalForCalcRunningTotal()
         {
             // Arrange
@@ -36,10 +35,10 @@ namespace NLedger.Tests.Filters
             calcPosts.Handle(post2);
 
             // Assert
-            Assert.AreNotEqual(post1.XData.Total, post2.XData.Total);
+            Assert.NotEqual(post1.XData.Total, post2.XData.Total);
 
-            Assert.AreEqual(100, post1.XData.Total.AsLong);
-            Assert.AreEqual(300, post2.XData.Total.AsLong);
+            Assert.Equal(100, post1.XData.Total.AsLong);
+            Assert.Equal(300, post2.XData.Total.AsLong);
         }
     }
 }

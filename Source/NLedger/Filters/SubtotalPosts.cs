@@ -37,6 +37,12 @@ namespace NLedger.Filters
             Values = new SortedDictionary<string, AcctValue>();
         }
 
+        public override void Dispose()
+        {
+            Temps?.Dispose();
+            base.Dispose();
+        }
+
         public Expr AmountExpr { get; private set; }
         public IDictionary<string, AcctValue> Values { get; private set; }
         public string DateFormat { get; private set; }

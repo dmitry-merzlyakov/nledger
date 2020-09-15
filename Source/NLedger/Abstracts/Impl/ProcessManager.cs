@@ -53,6 +53,11 @@ namespace NLedger.Abstracts.Impl
             return result.ExitCode;
         }
 
+        public int ExecuteShellCommand(string command, string workingDirectory, out string output)
+        {
+            return Execute(GetShellName(), GetShellCommandPrefix() + command, workingDirectory, out output);
+        }
+
         public static ProcessExecutionResult RunProcess(string fileName, string arguments, string workingDirectory = null,  string stdInput = null, int msTimeout = DefaultExecutionTimeout, 
             RunProcessOptionsEnum runProcessOptions = RunProcessOptionsEnum.NoWindow | RunProcessOptionsEnum.RedirectOutput | RunProcessOptionsEnum.RedirectError)
         {
@@ -117,7 +122,14 @@ namespace NLedger.Abstracts.Impl
 
             try
             {
-                Process.Start(fileName, arguments);
+                var processStartInfo = new ProcessStartInfo()
+                {
+                    FileName = fileName,
+                    Arguments = arguments,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processStartInfo);
                 return true;
             }
             catch (Exception ex)
@@ -126,5 +138,16 @@ namespace NLedger.Abstracts.Impl
                 return false;
             }
         }
+
+        private string GetShellName()
+        {
+            return PlatformHelper.IsWindows() ? "cmd" : "bash";
+        }
+
+        private string GetShellCommandPrefix()
+        {
+            return PlatformHelper.IsWindows() ? "/c " : "";
+        }
+
     }
 }

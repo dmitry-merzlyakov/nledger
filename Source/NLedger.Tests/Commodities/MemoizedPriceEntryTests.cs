@@ -6,20 +6,19 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Commodities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Commodities
 {
-    [TestClass]
     public class MemoizedPriceEntryTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void MemoizedPriceEntry_Integration_CanBeUsedAsDictionaryKey()
         {
             DateTime dt1 = new DateTime(2010, 10, 15);
@@ -77,21 +76,21 @@ namespace NLedger.Tests.Commodities
             MemoizedPriceEntry check14 = new MemoizedPriceEntry() { End = dt2, Commodity = comm2 };
             MemoizedPriceEntry check15 = new MemoizedPriceEntry() { Commodity = comm2 };
 
-            Assert.AreEqual("1", dictionary[check1]);
-            Assert.AreEqual("2", dictionary[check2]);
-            Assert.AreEqual("3", dictionary[check3]);
-            Assert.AreEqual("4", dictionary[check4]);
-            Assert.AreEqual("5", dictionary[check5]);
-            Assert.AreEqual("6", dictionary[check6]);
-            Assert.AreEqual("7", dictionary[check7]);
-            Assert.AreEqual("8", dictionary[check8]);
-            Assert.AreEqual("9", dictionary[check9]);
-            Assert.AreEqual("10", dictionary[check10]);
-            Assert.AreEqual("11", dictionary[check11]);
-            Assert.AreEqual("12", dictionary[check12]);
-            Assert.AreEqual("13", dictionary[check13]);
-            Assert.AreEqual("14", dictionary[check14]);
-            Assert.AreEqual("15", dictionary[check15]);
+            Assert.Equal("1", dictionary[check1]);
+            Assert.Equal("2", dictionary[check2]);
+            Assert.Equal("3", dictionary[check3]);
+            Assert.Equal("4", dictionary[check4]);
+            Assert.Equal("5", dictionary[check5]);
+            Assert.Equal("6", dictionary[check6]);
+            Assert.Equal("7", dictionary[check7]);
+            Assert.Equal("8", dictionary[check8]);
+            Assert.Equal("9", dictionary[check9]);
+            Assert.Equal("10", dictionary[check10]);
+            Assert.Equal("11", dictionary[check11]);
+            Assert.Equal("12", dictionary[check12]);
+            Assert.Equal("13", dictionary[check13]);
+            Assert.Equal("14", dictionary[check14]);
+            Assert.Equal("15", dictionary[check15]);
         }
     }
 }

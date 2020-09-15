@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Commodities;
 using NLedger.Filters;
@@ -15,28 +14,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Filters
 {
-    [TestClass]
     public class AnonymizePostsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void AnonymizePosts_Constuctor_AcceptsNulls()
         {
             AnonymizePosts anonymizePosts = new AnonymizePosts(null);
-            Assert.IsNull(anonymizePosts.Handler);
+            Assert.Null(anonymizePosts.Handler);
         }
 
-        [TestMethod]
+        [Fact]
         public void AnonymizePosts_Constuctor_PopulatesHandler()
         {
             AnonymizePosts parent = new AnonymizePosts(null);
             AnonymizePosts current = new AnonymizePosts(parent);
-            Assert.AreEqual(parent, current.Handler);
+            Assert.Equal(parent, current.Handler);
         }
 
-        [TestMethod]
+        [Fact]
         public void AnonymizePosts_RenderCommodity_HidesCommodityName()
         {
             string commodityName1 = "comm-name-1";
@@ -50,11 +49,11 @@ namespace NLedger.Tests.Filters
             anonymizePosts.RenderCommodity(amount1);
             anonymizePosts.RenderCommodity(amount2);
 
-            Assert.AreEqual("A", amount1.Commodity.Symbol);
-            Assert.AreEqual("B", amount2.Commodity.Symbol);
+            Assert.Equal("A", amount1.Commodity.Symbol);
+            Assert.Equal("B", amount2.Commodity.Symbol);
 
-            Assert.AreEqual(commodityName1, anonymizePosts.CommodityIndexMap.Keys.First().BaseSymbol);
-            Assert.AreEqual(commodityName2, anonymizePosts.CommodityIndexMap.Keys.Last().BaseSymbol);
+            Assert.Equal(commodityName1, anonymizePosts.CommodityIndexMap.Keys.First().BaseSymbol);
+            Assert.Equal(commodityName2, anonymizePosts.CommodityIndexMap.Keys.Last().BaseSymbol);
         }
 
     }

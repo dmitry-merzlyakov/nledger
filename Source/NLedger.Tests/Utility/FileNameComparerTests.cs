@@ -6,61 +6,60 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class FileNameComparerTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void FileNameComparer_Instance_IsPopuplated()
         {
-            Assert.IsNotNull(FileNameComparer.Instance as IEqualityComparer<string>);
+            Assert.NotNull(FileNameComparer.Instance as IEqualityComparer<string>);
         }
 
-        [TestMethod]
+        [Fact]
         public void FileNameComparer_GetHashCode_ReturnsStringHashcode()
         {
             var comparer = new FileNameComparer();
-            Assert.AreEqual("10".GetHashCode(), comparer.GetHashCode("10"));
-            Assert.AreEqual("".GetHashCode(), comparer.GetHashCode(""));
-            Assert.AreEqual(0, comparer.GetHashCode(null));
+            Assert.Equal("10".GetHashCode(), comparer.GetHashCode("10"));
+            Assert.Equal("".GetHashCode(), comparer.GetHashCode(""));
+            Assert.Equal(0, comparer.GetHashCode(null));
         }
 
-        [TestMethod]
+        [Fact]
         public void FileNameComparer_Equals_ReturnsTrueIfBothEmpty()
         {
             var comparer = new FileNameComparer();
-            Assert.IsTrue(comparer.Equals("", ""));
-            Assert.IsTrue(comparer.Equals(" ", ""));
-            Assert.IsTrue(comparer.Equals("", " "));
-            Assert.IsTrue(comparer.Equals(null, ""));
-            Assert.IsTrue(comparer.Equals("", null));
-            Assert.IsFalse(comparer.Equals("", "something"));
-            Assert.IsFalse(comparer.Equals("something", ""));
+            Assert.True(comparer.Equals("", ""));
+            Assert.True(comparer.Equals(" ", ""));
+            Assert.True(comparer.Equals("", " "));
+            Assert.True(comparer.Equals(null, ""));
+            Assert.True(comparer.Equals("", null));
+            Assert.False(comparer.Equals("", "something"));
+            Assert.False(comparer.Equals("something", ""));
         }
 
-        [TestMethod]
+        [Fact]
         public void FileNameComparer_Equals_ReturnsTrueForEqualFiles()
         {
             var comparer = new FileNameComparer();
-            Assert.IsTrue(comparer.Equals(@"aa.txt", @"aa.txt"));
-            Assert.IsTrue(comparer.Equals(@".\aa.txt", @".\aa\..\aa.txt"));
+            Assert.True(comparer.Equals(@"aa.txt", @"aa.txt"));
+            Assert.True(comparer.Equals(@"./aa.txt", @"./aa/../aa.txt"));  // Path.GetFullPath can properly normalize path on linux only if it contains forward slashes. On Windows, any slashes work fine.
         }
 
-        [TestMethod]
+        [Fact]
         public void FileNameComparer_Equals_IsCaseInsensitive()
         {
             var comparer = new FileNameComparer();
-            Assert.IsTrue(comparer.Equals(@"aa.txt", @"AA.txt"));
+            Assert.True(comparer.Equals(@"aa.txt", @"AA.txt"));
         }
 
     }

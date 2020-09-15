@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Expressions;
 using NLedger.Items;
@@ -17,33 +16,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Xacts
 {
-    [TestClass]
     public class AutoXactTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void AutoXact_Description_ReturnsPosOrStaticText()
         {
             AutoXact autoXact = new AutoXact();
-            Assert.AreEqual(AutoXact.GeneratedAutomatedTransactionKey, autoXact.Description);
+            Assert.Equal(AutoXact.GeneratedAutomatedTransactionKey, autoXact.Description);
 
             autoXact.Pos = new ItemPosition() { BegLine = 22 };
-            Assert.AreEqual("automated transaction at line 22", autoXact.Description);
+            Assert.Equal("automated transaction at line 22", autoXact.Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoXact_PostPred_Checks_VALUE()
         {
             ExprOp op = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(true) };
-            Assert.IsTrue(AutoXact.PostPred(op, null));
+            Assert.True(AutoXact.PostPred(op, null));
 
             ExprOp op1 = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(false) };
-            Assert.IsFalse(AutoXact.PostPred(op1, null));
+            Assert.False(AutoXact.PostPred(op1, null));
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoXact_PostPred_Checks_O_MATCH()
         {
             ExprOp op = new ExprOp(OpKindEnum.O_MATCH)
@@ -56,16 +55,16 @@ namespace NLedger.Tests.Xacts
             {
                 ReportedAccount = new Account(null, "acc-name")
             };
-            Assert.IsTrue(AutoXact.PostPred(op, post));
+            Assert.True(AutoXact.PostPred(op, post));
 
             Post post1 = new Post()
             {
                 ReportedAccount = new Account(null, "dummy")
             };
-            Assert.IsFalse(AutoXact.PostPred(op, post1));
+            Assert.False(AutoXact.PostPred(op, post1));
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoXact_PostPred_Checks_O_EQ()
         {
             ExprOp op = new ExprOp(OpKindEnum.O_EQ)
@@ -73,14 +72,14 @@ namespace NLedger.Tests.Xacts
                 Left = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(true) },
                 Right = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(true) },
             };
-            Assert.IsTrue(AutoXact.PostPred(op, null));
+            Assert.True(AutoXact.PostPred(op, null));
 
             ExprOp op1 = new ExprOp(OpKindEnum.O_EQ)
             {
                 Left = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(false) },
                 Right = new ExprOp(OpKindEnum.VALUE) { AsValue = Value.Get(true) },
             };
-            Assert.IsFalse(AutoXact.PostPred(op1, null));
+            Assert.False(AutoXact.PostPred(op1, null));
         }
 
     }

@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Scopus;
 using NLedger.Values;
 using System;
@@ -14,37 +13,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Scopus
 {
-    [TestClass]
     public class EmptyScopeTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void EmptyScope_Description_ReturnsEmptyConstant()
         {
-            Assert.AreEqual(EmptyScope.EmptyDescription, new EmptyScope().Description);
+            Assert.Equal(EmptyScope.EmptyDescription, new EmptyScope().Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyScope_Lookup_ReturnsNull()
         {
-            Assert.IsNull(new EmptyScope().Lookup(SymbolKindEnum.COMMAND, "none"));
+            Assert.Null(new EmptyScope().Lookup(SymbolKindEnum.COMMAND, "none"));
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyScope_TypeRequired_IsFalse()
         {
-            Assert.IsFalse(new EmptyScope().TypeRequired);
+            Assert.False(new EmptyScope().TypeRequired);
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyScope_TypeContext_IsVoid()
         {
-            Assert.AreEqual(ValueTypeEnum.Void, new EmptyScope().TypeContext);
+            Assert.Equal(ValueTypeEnum.Void, new EmptyScope().TypeContext);
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyScope_Define_DoesNothing()
         {
             var scope = new EmptyScope();

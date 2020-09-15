@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Filters;
 using NLedger.Times;
 using NLedger.Utility;
@@ -15,13 +14,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Filters
 {
-    [TestClass]
     public class GeneratePostsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void GeneratePosts_AddPost_ClonesDateIntervalBeforeAdding()
         {
             DateInterval dateInterval = new DateInterval();
@@ -31,9 +30,9 @@ namespace NLedger.Tests.Filters
             generatePosts.AddPost(dateInterval, post);
             dateInterval.Range = new DateSpecifierOrRange(new DateSpecifier((Date)DateTime.Now.Date));
 
-            Assert.AreEqual(1, generatePosts.PendingPosts.Count());
-            Assert.IsNull(generatePosts.PendingPosts.ElementAt(0).DateInterval.Range);
-            Assert.IsNotNull(dateInterval.Range);  // Changes in added interval does not affect the original interval
+            Assert.Single(generatePosts.PendingPosts);
+            Assert.Null(generatePosts.PendingPosts.ElementAt(0).DateInterval.Range);
+            Assert.NotNull(dateInterval.Range);  // Changes in added interval does not affect the original interval
         }
     }
 }

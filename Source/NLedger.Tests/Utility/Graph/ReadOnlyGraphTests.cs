@@ -6,20 +6,19 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Graph
 {
-    [TestClass]
     public class ReadOnlyGraphTests
     {
-        [TestMethod]
+        [Fact]
         public void ReadOnlyGraph_Coontructor_PopulatesEdgesAndVertices()
         {
             int vertex1 = 10;
@@ -34,12 +33,12 @@ namespace NLedger.Tests.Utility.Graph
             IEnumerable<EdgeDescriptor<int, string>> edges = new List<EdgeDescriptor<int, string>>() { edgeDescriptor1, edgeDescriptor2 };
             ReadOnlyGraph<int, string> readOnlyGraph = new ReadOnlyGraph<int, string>(edges);
 
-            Assert.AreEqual(3, readOnlyGraph.NumVertices);
-            Assert.IsTrue(readOnlyGraph.HasVertex(vertex1));
-            Assert.IsTrue(readOnlyGraph.HasVertex(vertex2));
-            Assert.IsTrue(readOnlyGraph.HasVertex(vertex3));
-            Assert.AreEqual(edge1, readOnlyGraph.FindEdge(vertex1, vertex2));
-            Assert.AreEqual(edge2, readOnlyGraph.FindEdge(vertex1, vertex3));
+            Assert.Equal(3, readOnlyGraph.NumVertices);
+            Assert.True(readOnlyGraph.HasVertex(vertex1));
+            Assert.True(readOnlyGraph.HasVertex(vertex2));
+            Assert.True(readOnlyGraph.HasVertex(vertex3));
+            Assert.Equal(edge1, readOnlyGraph.FindEdge(vertex1, vertex2));
+            Assert.Equal(edge2, readOnlyGraph.FindEdge(vertex1, vertex3));
         }
     }
 }

@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Filters;
 using System;
@@ -14,13 +13,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Filters
 {
-    [TestClass]
     public class SubtotalPostsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void SubtotalPosts_Values_ShouldBeSorted()
         {
             SubtotalPosts subtotalPosts = new SubtotalPosts(new IgnorePosts(), null);
@@ -28,9 +27,9 @@ namespace NLedger.Tests.Filters
             subtotalPosts.Values.Add("ZZZ", new SubtotalPosts.AcctValue(null));
             subtotalPosts.Values.Add("AAA", new SubtotalPosts.AcctValue(null));
 
-            Assert.AreEqual("AAA", subtotalPosts.Values.ElementAt(0).Key);
-            Assert.AreEqual("PPP", subtotalPosts.Values.ElementAt(1).Key);
-            Assert.AreEqual("ZZZ", subtotalPosts.Values.ElementAt(2).Key);
+            Assert.Equal("AAA", subtotalPosts.Values.ElementAt(0).Key);
+            Assert.Equal("PPP", subtotalPosts.Values.ElementAt(1).Key);
+            Assert.Equal("ZZZ", subtotalPosts.Values.ElementAt(2).Key);
         }
     }
 }

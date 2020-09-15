@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Annotate;
 using NLedger.Commodities;
@@ -15,92 +14,92 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Amounts
 {
-    [TestClass]
     public class AmountTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Amount_ParseQuantity_ReturnsEmptyForEmptyString()
         {
             string line = null;
-            Assert.AreEqual(String.Empty, Amount.ParseQuantity(ref line));
+            Assert.Equal(String.Empty, Amount.ParseQuantity(ref line));
             line = String.Empty;
-            Assert.AreEqual(String.Empty, Amount.ParseQuantity(ref line));
+            Assert.Equal(String.Empty, Amount.ParseQuantity(ref line));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_ParseQuantity_IgnoresInitialWhiteSpaces()
         {
             string line = "12345";
-            Assert.AreEqual("12345", Amount.ParseQuantity(ref line));
+            Assert.Equal("12345", Amount.ParseQuantity(ref line));
 
             line = "   12345";
-            Assert.AreEqual("12345", Amount.ParseQuantity(ref line));
+            Assert.Equal("12345", Amount.ParseQuantity(ref line));
 
             line = "\t12345";
-            Assert.AreEqual("12345", Amount.ParseQuantity(ref line));
+            Assert.Equal("12345", Amount.ParseQuantity(ref line));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_ParseQuantity_ReadsDigitsAndOtherChars()
         {
             string line = "12345$ rest of line";
-            Assert.AreEqual("12345", Amount.ParseQuantity(ref line));
-            Assert.AreEqual("$ rest of line", line);
+            Assert.Equal("12345", Amount.ParseQuantity(ref line));
+            Assert.Equal("$ rest of line", line);
 
             line = "-12,345 rest of line";
-            Assert.AreEqual("-12,345", Amount.ParseQuantity(ref line));
-            Assert.AreEqual(" rest of line", line);
+            Assert.Equal("-12,345", Amount.ParseQuantity(ref line));
+            Assert.Equal(" rest of line", line);
 
             line = "-12,34.5rest of line";
-            Assert.AreEqual("-12,34.5", Amount.ParseQuantity(ref line));
-            Assert.AreEqual("rest of line", line);
+            Assert.Equal("-12,34.5", Amount.ParseQuantity(ref line));
+            Assert.Equal("rest of line", line);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_ParseQuantity_IgnoresTrailingNonDigitChars()
         {
             string line = "12345, rest of line";
-            Assert.AreEqual("12345", Amount.ParseQuantity(ref line));
-            Assert.AreEqual(", rest of line", line);
+            Assert.Equal("12345", Amount.ParseQuantity(ref line));
+            Assert.Equal(", rest of line", line);
 
             line = "-12,345. rest of line";
-            Assert.AreEqual("-12,345", Amount.ParseQuantity(ref line));
-            Assert.AreEqual(". rest of line", line);
+            Assert.Equal("-12,345", Amount.ParseQuantity(ref line));
+            Assert.Equal(". rest of line", line);
 
             line = "-12,34.5. rest of line";
-            Assert.AreEqual("-12,34.5", Amount.ParseQuantity(ref line));
-            Assert.AreEqual(". rest of line", line);
+            Assert.Equal("-12,34.5", Amount.ParseQuantity(ref line));
+            Assert.Equal(". rest of line", line);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Parse_Integration()
         {
             Amount amount1 = new Amount();
             string line1 = "-10 USD";
             amount1.Parse(ref line1, AmountParseFlagsEnum.PARSE_DEFAULT);
-            Assert.AreEqual(-10, amount1.Quantity.ToLong());
-            Assert.AreEqual("USD", amount1.Commodity.BaseSymbol);
-            Assert.AreEqual(String.Empty, line1);
+            Assert.Equal(-10, amount1.Quantity.ToLong());
+            Assert.Equal("USD", amount1.Commodity.BaseSymbol);
+            Assert.Equal(String.Empty, line1);
 
             Amount amount2 = new Amount();
             string line2 = "99 USD";
             amount2.Parse(ref line2, AmountParseFlagsEnum.PARSE_DEFAULT);
-            Assert.AreEqual(99, amount2.Quantity.ToLong());
-            Assert.AreEqual("USD", amount2.Commodity.BaseSymbol);
-            Assert.AreEqual(String.Empty, line2);
+            Assert.Equal(99, amount2.Quantity.ToLong());
+            Assert.Equal("USD", amount2.Commodity.BaseSymbol);
+            Assert.Equal(String.Empty, line2);
 
             Amount amount3 = new Amount();
             string line3 = "STS 99.99";
             amount3.Parse(ref line3, AmountParseFlagsEnum.PARSE_DEFAULT);
-            Assert.AreEqual(Quantity.Parse("99.99", 2), amount3.Quantity);  // Precision = 2
-            Assert.AreEqual("STS", amount3.Commodity.BaseSymbol);
-            Assert.AreEqual(String.Empty, line3);
+            Assert.Equal(Quantity.Parse("99.99", 2), amount3.Quantity);  // Precision = 2
+            Assert.Equal("STS", amount3.Commodity.BaseSymbol);
+            Assert.Equal(String.Empty, line3);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_StripAnnotations_ReturnsOriginalAmountIfKeepAllIsTrue()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
@@ -110,10 +109,10 @@ namespace NLedger.Tests.Amounts
             // Commodity is not annotated - it is enough condition to return the original object
             Amount newAmount = amount.StripAnnotations(keepDetails);
 
-            Assert.AreEqual(amount, newAmount);
+            Assert.Equal(amount, newAmount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_StripAnnotations_ReturnsNewAmountForAnnotatedCommodity()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
@@ -124,37 +123,37 @@ namespace NLedger.Tests.Amounts
             // The original ampunt has annotated commodity, but "keepDetails" does not specify anything to keep.
             // Therefore, the new amount has not annotated commodity
             Amount newAmount = amount.StripAnnotations(keepDetails);
-            Assert.IsFalse(newAmount.Commodity.IsAnnotated);
+            Assert.False(newAmount.Commodity.IsAnnotated);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_FitsInLong_ReturnsTrueIfQuantityCanBeConvertedToLong()
         {
             Amount tooBigNegativeAmount = new Amount(Quantity.Parse("-99999999999999999999"), null);
-            Assert.IsFalse(tooBigNegativeAmount.FitsInLong);
+            Assert.False(tooBigNegativeAmount.FitsInLong);
 
             Amount normalAmount = new Amount(Quantity.Parse("99"), null);
-            Assert.IsTrue(normalAmount.FitsInLong);
+            Assert.True(normalAmount.FitsInLong);
 
             Amount tooBigPositiveAmount = new Amount(Quantity.Parse("99999999999999999999"), null);
-            Assert.IsFalse(tooBigPositiveAmount.FitsInLong);
+            Assert.False(tooBigPositiveAmount.FitsInLong);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsRealZero_IndicatesThatAmountHasZeroValue()
         {
             // Not applicable - method Sign requires non-empty Quantity. Confirmed by Boost auto-tests
             // Amount amount = new Amount();
-            // Assert.IsTrue(amount.IsRealZero);
+            // Assert.True(amount.IsRealZero);
 
             Amount amount = new Amount(0);
-            Assert.IsTrue(amount.IsRealZero);
+            Assert.True(amount.IsRealZero);
 
             amount = new Amount(Quantity.Parse("0"), null);
-            Assert.IsTrue(amount.IsRealZero);
+            Assert.True(amount.IsRealZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_DivideBy_ReturnsDividedAmount()
         {
             Amount amount10 = new Amount(Quantity.Parse("10", 2), null);
@@ -163,10 +162,10 @@ namespace NLedger.Tests.Amounts
             Amount amount = amount10.InPlaceDivide(amount4);
 
             int expectedPrecision = 2 + 2 + Amount.ExtendByDigits;
-            Assert.AreEqual(Quantity.Parse("2.5", expectedPrecision), amount.Quantity);
+            Assert.Equal(Quantity.Parse("2.5", expectedPrecision), amount.Quantity);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Multiply_ReturnsMultipliedAmount()
         {
             Amount amount10 = new Amount(Quantity.Parse("10", 2), null);
@@ -175,10 +174,10 @@ namespace NLedger.Tests.Amounts
             Amount amount = amount10.Multiply(amount4);
 
             int expectedPrecision = 2 + 2;
-            Assert.AreEqual(Quantity.Parse("40", expectedPrecision), amount.Quantity);
+            Assert.Equal(Quantity.Parse("40", expectedPrecision), amount.Quantity);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Subtract_ReturnsSubtractedAmountForNoCommodities()
         {
             Amount amount10 = new Amount(10);
@@ -186,10 +185,10 @@ namespace NLedger.Tests.Amounts
 
             Amount amount = amount10.InPlaceSubtract(amount8);
 
-            Assert.AreEqual(2, amount.Quantity.ToLong());
+            Assert.Equal(2, amount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Subtract_ReturnsSubtractedAmountForTheSameCommodity()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
@@ -198,190 +197,184 @@ namespace NLedger.Tests.Amounts
 
             Amount amount = amount10.InPlaceSubtract(amount8);
 
-            Assert.AreEqual(2, amount.Quantity.ToLong());
+            Assert.Equal(2, amount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Negated_ReturnsInvertedAmount()
         {
             Amount amount = new Amount(8);
-            Assert.AreEqual(-8, amount.Negated().Quantity.ToLong());
+            Assert.Equal(-8, amount.Negated().Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_HasAnnotation_FailsIfQuantityIsNotSpecified()
         {
             Amount amount = new Amount();
-            Assert.IsFalse(amount.HasAnnotation);
+            Assert.Throws<AmountError>(() => amount.HasAnnotation);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_HasAnnotation_ReturnsFalseIfNoCommodity()
         {
             Amount amount = new Amount(1);
-            Assert.IsFalse(amount.HasAnnotation);
+            Assert.False(amount.HasAnnotation);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_HasAnnotation_ReturnsFalseIfCommodityIsNotAnnotated()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             Amount amount = new Amount(1, comm);
-            Assert.IsFalse(amount.HasAnnotation);
+            Assert.False(amount.HasAnnotation);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_HasAnnotation_ReturnsTrueIfCommodityIsAnnotated()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             AnnotatedCommodity annComm = new AnnotatedCommodity(comm, new Annotation());
             Amount amount = new Amount(1, annComm);
-            Assert.IsTrue(amount.HasAnnotation);
+            Assert.True(amount.HasAnnotation);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void Amount_HasAnnotation_FailsIfAnnotatedCommodityHasNoDetails()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             AnnotatedCommodity annComm = new AnnotatedCommodity(comm, null);
             Amount amount = new Amount(1, annComm);
-            Assert.IsTrue(amount.HasAnnotation);
+            Assert.Throws<InvalidOperationException>(() => amount.HasAnnotation);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_IsZero_FailsIfQuantityIsEmpty()
         {
             Amount amount = new Amount();
-            Assert.IsTrue(amount.IsZero);
+            Assert.Throws<AmountError>(() => amount.IsZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsZero_ReturnsRealZeroIfNoCommodity()
         {
             Amount amount = new Amount(Quantity.Parse("0.00005", 2), null);  // Notice that precision less than a value.
-            Assert.IsFalse(amount.IsZero);
+            Assert.False(amount.IsZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsZero_ReturnsPrecisionedZeroIfItHasCommodityAndNoKeepPrecision()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             Amount amount = new Amount(Quantity.Parse("0.00005", 2), comm);  // Notice that precision less than a value.
-            Assert.IsTrue(amount.IsZero);
+            Assert.True(amount.IsZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsZero_PrecisionedZeroUsesCommodityPrecision()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm")) { Precision = 2 };
             Amount amount = new Amount(Quantity.Parse("0.00005", 10), comm);  // Notice commodity's precision has higher priority
-            Assert.IsTrue(amount.IsZero);
+            Assert.True(amount.IsZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsZero_RoundsToCommodityPrecision()
         {
             Commodity commodityA = new Commodity(CommodityPool.Current, new CommodityBase("AmtNZeroA")) { Precision = 2 };
             // Set a value that less than commodity precision (2) but higher than quantity precision (8)
             Amount amountA = new Amount(Quantity.Parse("0.008", 8), commodityA);
-            Assert.IsFalse(amountA.IsZero);  // The value is rounded to 0.01 accorrding to Commodity precision
+            Assert.False(amountA.IsZero);  // The value is rounded to 0.01 accorrding to Commodity precision
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_SetCommodity_SetsZeroIfQuantityIsEmpty()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             Amount amount = new Amount();
 
-            Assert.IsFalse(amount.HasCommodity);
+            Assert.False(amount.HasCommodity);
             amount.SetCommodity(comm);
-            Assert.IsTrue(amount.HasCommodity);
-            Assert.IsTrue(amount.IsZero);
-            Assert.IsTrue(amount.IsRealZero);
+            Assert.True(amount.HasCommodity);
+            Assert.True(amount.IsZero);
+            Assert.True(amount.IsRealZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_ParseConversion_SetsUpConversionCommodities()
         {
             CommodityPool.Cleanup();
             Amount.ParseConversion("1.0m", "60s");
 
             Commodity larger = CommodityPool.Current.Find("m");
-            Assert.AreEqual("m", larger.Symbol);
-            Assert.IsNull(larger.Larger);
-            Assert.IsNotNull(larger.Smaller);
-            Assert.AreEqual("s", larger.Smaller.Commodity.Symbol);
-            Assert.AreEqual(60, larger.Smaller.Quantity.ToLong());
+            Assert.Equal("m", larger.Symbol);
+            Assert.Null(larger.Larger);
+            Assert.NotNull(larger.Smaller);
+            Assert.Equal("s", larger.Smaller.Commodity.Symbol);
+            Assert.Equal(60, larger.Smaller.Quantity.ToLong());
 
             Commodity smaller = CommodityPool.Current.Find("s");
-            Assert.AreEqual("s", smaller.Symbol);
-            Assert.IsNotNull(smaller.Larger);
-            Assert.IsNull(smaller.Smaller);
-            Assert.AreEqual("m", smaller.Larger.Commodity.Symbol);
-            Assert.AreEqual(60, smaller.Larger.Quantity.ToLong());
+            Assert.Equal("s", smaller.Symbol);
+            Assert.NotNull(smaller.Larger);
+            Assert.Null(smaller.Smaller);
+            Assert.Equal("m", smaller.Larger.Commodity.Symbol);
+            Assert.Equal(60, smaller.Larger.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsLessThan_ChecksWhetherGivenAmountLessThanAnother()
         {
             Amount amount1 = new Amount(10);
             Amount amount2 = new Amount(20);
-            Assert.IsTrue(amount1.IsLessThan(amount2));
-            Assert.IsFalse(amount2.IsLessThan(amount1));
+            Assert.True(amount1.IsLessThan(amount2));
+            Assert.False(amount2.IsLessThan(amount1));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsGreaterThan_ChecksWhetherGivenAmountGreaterThanAnother()
         {
             Amount amount1 = new Amount(10);
             Amount amount2 = new Amount(20);
-            Assert.IsFalse(amount1.IsGreaterThan(amount2));
-            Assert.IsTrue(amount2.IsGreaterThan(amount1));
+            Assert.False(amount1.IsGreaterThan(amount2));
+            Assert.True(amount2.IsGreaterThan(amount1));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void Amount_Compare_FailsIfAmountIsNull()
         {
             Amount amount1 = new Amount(10);
-            amount1.Compare(null);
+            Assert.Throws<ArgumentException>(() => amount1.Compare(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Compare_FailsIfQuantityIsNotSpecified()
         {
             Amount amount1 = new Amount(10);
-            amount1.Compare(new Amount());
+            Assert.Throws<AmountError>(() => amount1.Compare(new Amount()));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Compare_FailsIfCommoditiesAreDifferent()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Commodity commodity2 = new Commodity(CommodityPool.Current, new CommodityBase("base-2"));
             Amount amount1 = new Amount(10, commodity1);
             Amount amount2 = new Amount(12, commodity2);
-            amount1.Compare(amount2);
+            Assert.Throws<AmountError>(() => amount1.Compare(amount2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Compare_ReturnsMinusOneOrZeroOrOne()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
             Amount amount2 = new Amount(12, commodity1);
 
-            Assert.AreEqual(-1, amount1.Compare(amount2));
-            Assert.AreEqual(0, amount1.Compare(amount1));
-            Assert.AreEqual(1, amount2.Compare(amount1));
+            Assert.Equal(-1, amount1.Compare(amount2));
+            Assert.Equal(0, amount1.Compare(amount1));
+            Assert.Equal(1, amount2.Compare(amount1));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Abs_ReturnsNewAmountWithAbsoluteValue()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -391,68 +384,63 @@ namespace NLedger.Tests.Amounts
             Amount result1 = amount1.Abs();
             Amount result2 = amount2.Abs();
 
-            Assert.AreEqual(10, result1.Quantity.ToLong());
-            Assert.AreEqual(10, result2.Quantity.ToLong());
+            Assert.Equal(10, result1.Quantity.ToLong());
+            Assert.Equal(10, result2.Quantity.ToLong());
 
-            Assert.IsTrue(Object.ReferenceEquals(result1, amount1));  // If the value is not changed, return the original object
-            Assert.IsFalse(Object.ReferenceEquals(result2, amount2));
+            Assert.True(Object.ReferenceEquals(result1, amount1));  // If the value is not changed, return the original object
+            Assert.False(Object.ReferenceEquals(result2, amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void Amount_Add_NullAmountCausesException()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
-            amount1.InPlaceAdd(null);
+            Assert.Throws<ArgumentException>(() => amount1.InPlaceAdd(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Add_InvalidAmountCausesException()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
             Amount amount2 = new Amount(Quantity.Empty, commodity1);
 
-            Assert.IsFalse(amount2.Valid());
-            amount1.InPlaceAdd(amount2);
+            Assert.False(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceAdd(amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Add_UninitializedFirstAmountCausesException()
         {
             Amount amount1 = new Amount();
             Amount amount2 = new Amount(10);
 
-            Assert.IsTrue(amount2.Valid());
-            amount1.InPlaceAdd(amount2);
+            Assert.True(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceAdd(amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Add_UninitializedSecondAmountCausesException()
         {
             Amount amount1 = new Amount(10);
             Amount amount2 = new Amount();
 
-            Assert.IsTrue(amount2.Valid());
-            amount1.InPlaceAdd(amount2);
+            Assert.True(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceAdd(amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Add_TwoUninitializedAmountsCauseException()
         {
             Amount amount1 = new Amount();
             Amount amount2 = new Amount();
 
-            Assert.IsTrue(amount2.Valid());
-            amount1.InPlaceAdd(amount2);
+            Assert.True(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceAdd(amount2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Add_AddsAmountsWithoutCommodities()
         {
             Amount amount1 = new Amount(10);
@@ -460,11 +448,10 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amount1.InPlaceAdd(amount2);
 
-            Assert.AreEqual(30, result.Quantity.ToLong());
+            Assert.Equal(30, result.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Add_ChecksThatBothCommoditiesAreEqual()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -472,10 +459,10 @@ namespace NLedger.Tests.Amounts
             Amount amount1 = new Amount(10, commodity1);
             Amount amount2 = new Amount(20, commodity2);
 
-            amount1.InPlaceAdd(amount2);
+            Assert.Throws<AmountError>(() => amount1.InPlaceAdd(amount2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Add_ChangesPrecision()
         {
             var quantity1 = Quantity.FromLong(10);
@@ -487,64 +474,59 @@ namespace NLedger.Tests.Amounts
             Amount amount2 = new Amount(quantity2, null);
 
             Amount result = amount1.InPlaceAdd(amount2);
-            Assert.AreEqual(2, result.Quantity.Precision);
+            Assert.Equal(2, result.Quantity.Precision);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void Amount_Subtract_NullAmountCausesException()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
-            amount1.InPlaceSubtract(null);
+            Assert.Throws<ArgumentException>(() => amount1.InPlaceSubtract(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Subtract_InvalidAmountCausesException()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
             Amount amount2 = new Amount(Quantity.Empty, commodity1);
 
-            Assert.IsFalse(amount2.Valid());
-            amount1.InPlaceSubtract(amount2);
+            Assert.False(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceSubtract(amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Subtract_UninitializedFirstAmountCausesException()
         {
             Amount amount1 = new Amount();
             Amount amount2 = new Amount(10);
 
-            Assert.IsTrue(amount2.Valid());
-            amount1.InPlaceSubtract(amount2);
+            Assert.True(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceSubtract(amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Subtract_UninitializedSecondAmountCausesException()
         {
             Amount amount1 = new Amount(10);
             Amount amount2 = new Amount();
 
-            Assert.IsTrue(amount2.Valid());
-            amount1.InPlaceSubtract(amount2);
+            Assert.True(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceSubtract(amount2));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Subtract_TwoUninitializedAmountsCauseException()
         {
             Amount amount1 = new Amount();
             Amount amount2 = new Amount();
 
-            Assert.IsTrue(amount2.Valid());
-            amount1.InPlaceSubtract(amount2);
+            Assert.True(amount2.Valid());
+            Assert.Throws<AmountError>(() => amount1.InPlaceSubtract(amount2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Subtract_SubtractsAmountsWithoutCommodities()
         {
             Amount amount1 = new Amount(30);
@@ -552,11 +534,10 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amount1.InPlaceSubtract(amount2);
 
-            Assert.AreEqual(10, result.Quantity.ToLong());
+            Assert.Equal(10, result.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Subtract_ChecksThatBothCommoditiesAreEqual()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -564,10 +545,10 @@ namespace NLedger.Tests.Amounts
             Amount amount1 = new Amount(10, commodity1);
             Amount amount2 = new Amount(20, commodity2);
 
-            amount1.InPlaceSubtract(amount2);
+            Assert.Throws<AmountError>(() => amount1.InPlaceSubtract(amount2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Subtract_ChangesPrecision()
         {
             var quantity1 = Quantity.FromLong(30);
@@ -579,39 +560,38 @@ namespace NLedger.Tests.Amounts
             Amount amount2 = new Amount(quantity2, null);
 
             Amount result = amount1.InPlaceSubtract(amount2);
-            Assert.AreEqual(3, result.Quantity.Precision);
+            Assert.Equal(3, result.Quantity.Precision);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_Annotate_FailsIfNoQuantity()
         {
             Amount amount1 = new Amount(Quantity.Empty, null);
-            amount1.Annotate(new Annotation());
+            Assert.Throws<AmountError>(() => amount1.Annotate(new Annotation()));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Annotate_DoesNothingIfNoCOmmodity()
         {
             Amount amount1 = new Amount(10, null);
             amount1.Annotate(new Annotation());
-            Assert.IsFalse(amount1.HasAnnotation);
+            Assert.False(amount1.HasAnnotation);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Annotate_CreatesAnnotatedCommodityForNonAnnotated()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
 
-            Assert.IsFalse(amount1.Commodity.IsAnnotated);
+            Assert.False(amount1.Commodity.IsAnnotated);
             amount1.Annotate(new Annotation());
             
-            Assert.IsTrue(amount1.HasAnnotation);
-            Assert.IsTrue(amount1.Commodity.IsAnnotated);
+            Assert.True(amount1.HasAnnotation);
+            Assert.True(amount1.Commodity.IsAnnotated);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Annotate_CreatesNewAnnotatedCommodityForAnnotated()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("aac-base-1"));
@@ -619,57 +599,55 @@ namespace NLedger.Tests.Amounts
             Amount amount1 = new Amount(10, annotatedCommodity1);
             Annotation newAnnotation = new Annotation();
 
-            Assert.IsTrue(amount1.Commodity.IsAnnotated);
+            Assert.True(amount1.Commodity.IsAnnotated);
             amount1.Annotate(newAnnotation);
 
-            Assert.IsTrue(amount1.HasAnnotation);
-            Assert.IsTrue(amount1.Commodity.IsAnnotated);
+            Assert.True(amount1.HasAnnotation);
+            Assert.True(amount1.Commodity.IsAnnotated);
 
             AnnotatedCommodity resultCommodity = (AnnotatedCommodity)amount1.Commodity;
-            Assert.AreEqual(newAnnotation, resultCommodity.Details);
+            Assert.Equal(newAnnotation, resultCommodity.Details);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_ClearCommodity_ClearsCommodity()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
             Amount amount1 = new Amount(10, commodity1);
 
-            Assert.IsNotNull(amount1.Commodity);
+            Assert.NotNull(amount1.Commodity);
             amount1.ClearCommodity();
-            Assert.AreEqual(CommodityPool.Current.NullCommodity, amount1.Commodity);
+            Assert.Equal(CommodityPool.Current.NullCommodity, amount1.Commodity);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_GetInvertedQuantity_ReturnsInvertedQuantityOrZrero()
         {
             Amount amount1 = new Amount(10);
             var result1 = amount1.GetInvertedQuantity();
-            Assert.AreEqual(0.1m, result1.ToDecimal());
+            Assert.Equal(0.1m, result1.ToDecimal());
 
             Amount amount2 = new Amount();
             var result2 = amount2.GetInvertedQuantity();
-            Assert.AreEqual(0m, result2.ToDecimal());
+            Assert.Equal(0m, result2.ToDecimal());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void Amount_Merge_FailsWithEmptyArgument()
         {
             Amount amount1 = new Amount();
-            amount1.Merge(null);
+            Assert.Throws<ArgumentNullException>(() => amount1.Merge(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void Amount_Merge_FailsWithEqualCommodity()
         {
             Amount amount1 = new Amount();
             Amount amount2 = new Amount();
-            amount1.Merge(amount2);
+            Assert.Throws<InvalidOperationException>(() => amount1.Merge(amount2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Merge_ReturnsMultipliesValues()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -679,11 +657,11 @@ namespace NLedger.Tests.Amounts
             Amount amount2 = new Amount(20, commodity2);
 
             Amount result = amount1.Merge(amount2);
-            Assert.AreEqual(200, result.Quantity.ToLong());
-            Assert.AreEqual(commodity2, result.Commodity);
+            Assert.Equal(200, result.Quantity.ToLong());
+            Assert.Equal(commodity2, result.Commodity);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_ToString_ReturnsPrintedValue()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("ABC"));
@@ -693,29 +671,28 @@ namespace NLedger.Tests.Amounts
             Amount amount2 = new Amount(20, commodity2);
             Amount amount3 = new Amount(30);
 
-            Assert.AreEqual("ABC10", amount1.ToString());
-            Assert.AreEqual("CDE20", amount2.ToString());
-            Assert.AreEqual("30", amount3.ToString());
+            Assert.Equal("ABC10", amount1.ToString());
+            Assert.Equal("CDE20", amount2.ToString());
+            Assert.Equal("30", amount3.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(AmountError))]
+        [Fact]
         public void Amount_DisplayPrecision_FailsIfNoQuantity()
         {
             Amount amount = new Amount();
-            Assert.IsFalse(amount.Quantity.HasValue);
-            int precision = amount.DisplayPrecision;
+            Assert.False(amount.Quantity.HasValue);
+            Assert.Throws<AmountError>(() => amount.DisplayPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_DisplayPrecision_ReturnsQuantityPrecisionIfNoCommodity()
         {
             var quantity = Quantity.Parse("121", 3);
             Amount amount = new Amount(quantity, null);
-            Assert.AreEqual(3, amount.DisplayPrecision);
+            Assert.Equal(3, amount.DisplayPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_DisplayPrecision_ReturnsCommodityPrecisionIfNotKeepPrecision()
         {
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("ABC"));
@@ -724,10 +701,10 @@ namespace NLedger.Tests.Amounts
             var quantity = Quantity.Parse("121", 4).SetKeepPrecision(false);
 
             Amount amount = new Amount(quantity, commodity);
-            Assert.AreEqual(3, amount.DisplayPrecision);
+            Assert.Equal(3, amount.DisplayPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_DisplayPrecision_ReturnsMaxCommodityOrQuantityPrecision()
         {
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("ABC"));
@@ -736,10 +713,10 @@ namespace NLedger.Tests.Amounts
             var quantity = Quantity.Parse("121", 4).SetKeepPrecision(true);
 
             Amount amount = new Amount(quantity, commodity);
-            Assert.AreEqual(4, amount.DisplayPrecision);
+            Assert.Equal(4, amount.DisplayPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Print_UsesQuantityPrint()
         {
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("ABC"));
@@ -748,45 +725,45 @@ namespace NLedger.Tests.Amounts
             Amount amount = new Amount(quantity, commodity);
 
             string result = amount.Print();
-            Assert.AreEqual("ABC121.000", result);
+            Assert.Equal("ABC121.000", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_IsNullOrEmpty_ReturnsTrueIfAmpuntIsEmpty()
         {
             // null
-            Assert.IsTrue(Amount.IsNullOrEmpty(null));
+            Assert.True(Amount.IsNullOrEmpty(null));
 
             // empty
             Amount empty = new Amount();
-            Assert.IsTrue(Amount.IsNullOrEmpty(empty));
-            Assert.IsTrue(empty.IsEmpty);
+            Assert.True(Amount.IsNullOrEmpty(empty));
+            Assert.True(empty.IsEmpty);
 
             // non-empty
             Amount ten = new Amount(10);
-            Assert.IsFalse(Amount.IsNullOrEmpty(ten));
-            Assert.IsFalse(ten.IsEmpty);
+            Assert.False(Amount.IsNullOrEmpty(ten));
+            Assert.False(ten.IsEmpty);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Print_DoesNotAddSuffixSpaceInCaseCommodityStyleSeparatedNotSpecified()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("TKP1"));
             commodity1.Flags |= CommodityFlagsEnum.COMMODITY_STYLE_SUFFIXED;
             Amount amount1 = new Amount(10, commodity1);
-            Assert.AreEqual("10TKP1", amount1.Print());
+            Assert.Equal("10TKP1", amount1.Print());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Print_AddsSuffixSpaceInCaseCommodityStyleSeparatedSpecified()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("TKP1"));
             commodity1.Flags |= CommodityFlagsEnum.COMMODITY_STYLE_SUFFIXED | CommodityFlagsEnum.COMMODITY_STYLE_SEPARATED; /* COMMODITY_STYLE_SEPARATED is added */ 
             Amount amount1 = new Amount(10, commodity1);
-            Assert.AreEqual("10 TKP1", amount1.Print()); /* Space between the number and commodity */
+            Assert.Equal("10 TKP1", amount1.Print()); /* Space between the number and commodity */
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Merge_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
@@ -794,10 +771,10 @@ namespace NLedger.Tests.Amounts
             Amount amt2 = new Amount(Quantity.FromLong(20), commodity1);
 
             Amount result = amt1.Merge(amt2);
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Multiply_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
@@ -805,10 +782,10 @@ namespace NLedger.Tests.Amounts
             Amount amt2 = new Amount(Quantity.FromLong(20), commodity1);
 
             Amount result = amt1.Multiply(amt2);
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Add_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
@@ -816,10 +793,10 @@ namespace NLedger.Tests.Amounts
             Amount amt2 = new Amount(Quantity.FromLong(20), commodity1);
 
             Amount result = amt1.InPlaceAdd(amt2);
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Subtract_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
@@ -827,40 +804,40 @@ namespace NLedger.Tests.Amounts
             Amount amt2 = new Amount(Quantity.FromLong(5), commodity1);
 
             Amount result = amt1.InPlaceSubtract(amt2);
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Abs_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
             Amount amt1 = new Amount(Quantity.FromLong(10).SetKeepPrecision(true), null);
 
             Amount result = amt1.Abs();
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Negated_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
             Amount amt1 = new Amount(Quantity.FromLong(10).SetKeepPrecision(true), null);
 
             Amount result = amt1.Negated();
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_StripAnnotation_HoldsKeepPrecisionFlag()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("AAHKPF1"));
             Amount amt1 = new Amount(Quantity.FromLong(10).SetKeepPrecision(true), null);
 
             Amount result = amt1.StripAnnotations(new AnnotationKeepDetails());
-            Assert.IsTrue(result.KeepPrecision);
+            Assert.True(result.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_OperatorDivide_DoesNotModifyOperands()
         {
             Amount amountA = new Amount(10);
@@ -868,12 +845,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA / amountB;
 
-            Assert.AreEqual(10, amountA.Quantity.ToLong());
-            Assert.AreEqual(5, amountB.Quantity.ToLong());
-            Assert.AreEqual(2, result.Quantity.ToLong());
+            Assert.Equal(10, amountA.Quantity.ToLong());
+            Assert.Equal(5, amountB.Quantity.ToLong());
+            Assert.Equal(2, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_InPlaceDivide_UpdatesFirstOperand()
         {
             Amount amountA = new Amount(10);
@@ -881,13 +858,13 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA.InPlaceDivide(amountB);
 
-            Assert.AreEqual(2, amountA.Quantity.ToLong());
-            Assert.AreEqual(5, amountB.Quantity.ToLong());
-            Assert.AreEqual(2, result.Quantity.ToLong());
+            Assert.Equal(2, amountA.Quantity.ToLong());
+            Assert.Equal(5, amountB.Quantity.ToLong());
+            Assert.Equal(2, result.Quantity.ToLong());
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Amount_OperatorMultiply_DoesNotModifyOperands()
         {
             Amount amountA = new Amount(10);
@@ -895,12 +872,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA * amountB;
 
-            Assert.AreEqual(10, amountA.Quantity.ToLong());
-            Assert.AreEqual(5, amountB.Quantity.ToLong());
-            Assert.AreEqual(50, result.Quantity.ToLong());
+            Assert.Equal(10, amountA.Quantity.ToLong());
+            Assert.Equal(5, amountB.Quantity.ToLong());
+            Assert.Equal(50, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Multiply_UpdatesFirstOperand()
         {
             Amount amountA = new Amount(10);
@@ -908,12 +885,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA.Multiply(amountB);
 
-            Assert.AreEqual(50, amountA.Quantity.ToLong());
-            Assert.AreEqual(5, amountB.Quantity.ToLong());
-            Assert.AreEqual(50, result.Quantity.ToLong());
+            Assert.Equal(50, amountA.Quantity.ToLong());
+            Assert.Equal(5, amountB.Quantity.ToLong());
+            Assert.Equal(50, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_OperatorSubtract_DoesNotModifyOperands()
         {
             Amount amountA = new Amount(10);
@@ -921,12 +898,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA - amountB;
 
-            Assert.AreEqual(10, amountA.Quantity.ToLong());
-            Assert.AreEqual(2, amountB.Quantity.ToLong());
-            Assert.AreEqual(8, result.Quantity.ToLong());
+            Assert.Equal(10, amountA.Quantity.ToLong());
+            Assert.Equal(2, amountB.Quantity.ToLong());
+            Assert.Equal(8, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_InPlaceSubtract_UpdatesFirstOperand()
         {
             Amount amountA = new Amount(10);
@@ -934,12 +911,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA.InPlaceSubtract(amountB);
 
-            Assert.AreEqual(8, amountA.Quantity.ToLong());
-            Assert.AreEqual(2, amountB.Quantity.ToLong());
-            Assert.AreEqual(8, result.Quantity.ToLong());
+            Assert.Equal(8, amountA.Quantity.ToLong());
+            Assert.Equal(2, amountB.Quantity.ToLong());
+            Assert.Equal(8, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_OperatorAdd_DoesNotModifyOperands()
         {
             Amount amountA = new Amount(10);
@@ -947,12 +924,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA + amountB;
 
-            Assert.AreEqual(10, amountA.Quantity.ToLong());
-            Assert.AreEqual(2, amountB.Quantity.ToLong());
-            Assert.AreEqual(12, result.Quantity.ToLong());
+            Assert.Equal(10, amountA.Quantity.ToLong());
+            Assert.Equal(2, amountB.Quantity.ToLong());
+            Assert.Equal(12, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_InPlaceAdd_UpdatesFirstOperand()
         {
             Amount amountA = new Amount(10);
@@ -960,12 +937,12 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amountA.InPlaceAdd(amountB);
 
-            Assert.AreEqual(12, amountA.Quantity.ToLong());
-            Assert.AreEqual(2, amountB.Quantity.ToLong());
-            Assert.AreEqual(12, result.Quantity.ToLong());
+            Assert.Equal(12, amountA.Quantity.ToLong());
+            Assert.Equal(2, amountB.Quantity.ToLong());
+            Assert.Equal(12, result.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Inverted_ReturnsNewInvertedAmount()
         {
             var bigInt = Quantity.FromLong(10, 2);
@@ -973,11 +950,11 @@ namespace NLedger.Tests.Amounts
 
             Amount amountB = amountA.Inverted();
 
-            Assert.AreEqual("10", amountA.ToString());
-            Assert.AreEqual("0.1", amountB.ToString());
+            Assert.Equal("10", amountA.ToString());
+            Assert.Equal("0.1", amountB.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_InPlaceInvert_InvertsItself()
         {
             var bigInt = Quantity.FromLong(10, 2);
@@ -985,34 +962,34 @@ namespace NLedger.Tests.Amounts
 
             amountA.InPlaceInvert();
 
-            Assert.AreEqual("0.1", amountA.ToString());
+            Assert.Equal("0.1", amountA.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_HasCommodity_ChecksNullCommodity()
         {
             var bigInt = Quantity.FromLong(10, 2);
             Amount amountA = new Amount(bigInt, null);
 
-            Assert.IsFalse(amountA.HasCommodity);
-            Assert.AreEqual(CommodityPool.Current.NullCommodity, amountA.Commodity);
+            Assert.False(amountA.HasCommodity);
+            Assert.Equal(CommodityPool.Current.NullCommodity, amountA.Commodity);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Parse_PARSE_NO_MIGRATE_sets_KeepPrecision_True()
         {
             Amount amt1 = new Amount();
             string line1 = "234";
             amt1.Parse(ref line1, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
-            Assert.IsTrue(amt1.KeepPrecision);
+            Assert.True(amt1.KeepPrecision);
 
             Amount amt2 = new Amount();
             string line2 = "234.76";
             amt2.Parse(ref line2, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
-            Assert.IsTrue(amt2.KeepPrecision);
+            Assert.True(amt2.KeepPrecision);
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Multiply_ReducesQuantityPrecisionIfHasCommodityAndNoKeepPrecision()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("AMTSTRDQ"));
@@ -1025,10 +1002,10 @@ namespace NLedger.Tests.Amounts
 
             Amount result = amt1.Multiply(amt1);
 
-            Assert.AreEqual(8, result.Quantity.Precision);  // 8 == comm_prec(2) + extend_by_digits(6)
+            Assert.Equal(8, result.Quantity.Precision);  // 8 == comm_prec(2) + extend_by_digits(6)
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_InPlaceTruncate_RoundsToDisplayPrecision()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("AMTTRCRDS"));
@@ -1040,29 +1017,29 @@ namespace NLedger.Tests.Amounts
             var quant2 = Quantity.Parse("100.1232");
             Amount amt2 = new Amount(quant2, comm);
 
-            Assert.AreEqual(100.88M, amt1.Truncated().Quantity.ToDecimal());
-            Assert.AreEqual(100.12M, amt2.Truncated().Quantity.ToDecimal());
+            Assert.Equal(100.88M, amt1.Truncated().Quantity.ToDecimal());
+            Assert.Equal(100.12M, amt2.Truncated().Quantity.ToDecimal());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Valid_ReturnsTrueIfNoQuantityAndCommodity()
         {
             Amount amount = new Amount();
-            Assert.IsFalse(amount.Quantity.HasValue);
-            Assert.IsFalse(amount.HasCommodity);
-            Assert.IsTrue(amount.Valid());
+            Assert.False(amount.Quantity.HasValue);
+            Assert.False(amount.HasCommodity);
+            Assert.True(amount.Valid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Amount_Valid_ReturnsFalseIfQuantityIsNotValid()
         {
             Amount amount = new Amount(100);
-            Assert.IsTrue(amount.Valid());
+            Assert.True(amount.Valid());
 
             var quantity = amount.Quantity.SetPrecision(2048);
             amount = new Amount(quantity, null);
-            Assert.IsFalse(amount.Quantity.Valid());
-            Assert.IsFalse(amount.Valid());
+            Assert.False(amount.Quantity.Valid());
+            Assert.False(amount.Valid());
         }
     }
 }

@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Expressions;
 using NLedger.Scopus;
 using System;
@@ -14,22 +13,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Scopus
 {
-    [TestClass]
     public class ChildScopeTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void ChildScope_Constructor_PopulatesParent()
         {
             MockScope parent = new MockScope();
             TestChildScope childScope = new TestChildScope(parent);
 
-            Assert.AreEqual(parent, childScope.Parent);
+            Assert.Equal(parent, childScope.Parent);
         }
 
-        [TestMethod]
+        [Fact]
         public void ChildScope_Define_CallsParentDefine()
         {
             MockScope parent = new MockScope();
@@ -37,10 +36,10 @@ namespace NLedger.Tests.Scopus
 
             childScope.Define(SymbolKindEnum.FUNCTION, "dummy", new ExprOp());
 
-            Assert.AreEqual(1, parent.DefineCalls.Count);
+            Assert.Equal(1, parent.DefineCalls.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void ChildScope_Lookup_CallsParentLookup()
         {
             MockScope parent = new MockScope() { LookupResult = new ExprOp() };
@@ -48,8 +47,8 @@ namespace NLedger.Tests.Scopus
 
             ExprOp result = childScope.Lookup(SymbolKindEnum.FUNCTION, "dummy");
 
-            Assert.AreEqual(1, parent.LookupCalls.Count);
-            Assert.AreEqual(result, parent.LookupResult);
+            Assert.Equal(1, parent.LookupCalls.Count);
+            Assert.Equal(result, parent.LookupResult);
         }
 
         private class TestChildScope : ChildScope

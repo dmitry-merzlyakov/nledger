@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Sources;
 using System;
@@ -14,60 +13,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Settings.CascadeSettings.Sources
 {
-    [TestClass]
     public class EnvironmentVariablesSettingsSourceTests
     {
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void EnvironmentVariablesSettingsSource_Constructor_PopulatesEnvironmentVariables()
         {
             var source = new EnvironmentVariablesSettingsSource();
-            Assert.IsNotNull(source.EnvironmentVariables);
-            Assert.AreEqual(Environment.GetEnvironmentVariables().Count, source.EnvironmentVariables.Count);
+            Assert.NotNull(source.EnvironmentVariables);
+            Assert.Equal(Environment.GetEnvironmentVariables().Count, source.EnvironmentVariables.Count);
             foreach (var kv in source.EnvironmentVariables)
-                Assert.AreEqual(Environment.GetEnvironmentVariable(kv.Key) ?? String.Empty, kv.Value);
+                Assert.Equal(Environment.GetEnvironmentVariable(kv.Key) ?? String.Empty, kv.Value);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void EnvironmentVariablesSettingsSource_Constructor_CanWorkWithEmptyPrefix()
         {
             var source = new EnvironmentVariablesSettingsSource();
-            Assert.AreNotEqual(0, source.EnvironmentVariables.Count);
-            Assert.AreEqual(source.EffectiveVariables.Count, source.EnvironmentVariables.Count);
+            Assert.NotEqual(0, source.EnvironmentVariables.Count);
+            Assert.Equal(source.EffectiveVariables.Count, source.EnvironmentVariables.Count);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void EnvironmentVariablesSettingsSource_Constructor_ManagesPrefix()
         {
             Environment.SetEnvironmentVariable("envvarTestVariable", "test-value");
 
             var source = new EnvironmentVariablesSettingsSource("envvar");
-            Assert.AreEqual(1, source.EffectiveVariables.Count);
-            Assert.AreEqual("TestVariable", source.EffectiveVariables.Keys.First());
-            Assert.AreEqual("test-value", source.EffectiveVariables.Values.First());
+            Assert.Equal(1, source.EffectiveVariables.Count);
+            Assert.Equal("TestVariable", source.EffectiveVariables.Keys.First());
+            Assert.Equal("test-value", source.EffectiveVariables.Values.First());
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void EnvironmentVariablesSettingsSource_Scope_Application()
         {
             var source = new EnvironmentVariablesSettingsSource();
-            Assert.AreEqual(SettingScopeEnum.Application, source.Scope);
+            Assert.Equal(SettingScopeEnum.Application, source.Scope);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void EnvironmentVariablesSettingsSource_GetValue_DealsWithEffectiveVariables()
         {
             Environment.SetEnvironmentVariable("envvarTestVariable", "test-value");
             var source = new EnvironmentVariablesSettingsSource("envvar");
-            Assert.AreEqual("test-value", source.GetValue("TestVariable"));
-            Assert.IsNull(source.GetValue("ProgramData"));  // This env variable always exists but filtered out by the prefix
+            Assert.Equal("test-value", source.GetValue("TestVariable"));
+            Assert.Null(source.GetValue("ProgramData"));  // This env variable always exists but filtered out by the prefix
         }
 
     }

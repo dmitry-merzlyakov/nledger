@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Querying;
 using NLedger.Times;
 using NLedger.Values;
@@ -15,27 +14,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.IntegrationTests.unit
 {
     /// <summary>
     /// Ported from t_expr.cc
     /// </summary>
-    [TestClass]
-    public class TestExpr
+    public class TestExpr : IDisposable
     {
-        [TestInitialize]
-        public void Initialize()
+        public TestExpr()
         {
-            MainApplicationContext.Initialize();
+            Initialize();
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
+            MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             TimesCommon.Current.TimesInitialize();
         }
 
-        [TestCleanup]
-        public void Cleanup()
+        private void Cleanup()
         {
-            MainApplicationContext.Cleanup();
+            MainContextAcquirer.Dispose();
         }
+
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
 
         // 1.  foo and bar
         // 2.  'foo and bar'
@@ -54,8 +63,8 @@ namespace NLedger.IntegrationTests.unit
         // 15. foo and bar|baz
         // 16. foo 'and bar|baz'
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer1()
         {
             Value args = new Value();
@@ -65,14 +74,14 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer2()
         {
             Value args = new Value();
@@ -80,14 +89,14 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence, false);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer3()
         {
             Value args = new Value();
@@ -97,16 +106,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.LPAREN, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.RPAREN, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.LPAREN, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.RPAREN, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer4()
         {
             Value args = new Value();
@@ -118,16 +127,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.LPAREN, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.RPAREN, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.LPAREN, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.RPAREN, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer5()
         {
             Value args = new Value();
@@ -136,16 +145,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence, false);
 
-            Assert.AreEqual(QueryLexerTokenKind.LPAREN, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.RPAREN, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.LPAREN, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.RPAREN, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer6()
         {
             Value args = new Value();
@@ -155,15 +164,15 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TOK_EQ, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_EQ, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer7()
         {
             Value args = new Value();
@@ -171,13 +180,13 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TOK_EQ, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_EQ, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer8()
         {
             Value args = new Value();
@@ -185,13 +194,13 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence, false);
 
-            Assert.AreEqual(QueryLexerTokenKind.TOK_EXPR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_EXPR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer9()
         {
             Value args = new Value();
@@ -200,13 +209,13 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TOK_EXPR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_EXPR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer10()
         {
             Value args = new Value();
@@ -217,15 +226,15 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TOK_EXPR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_EXPR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer11()
         {
             Value args = new Value();
@@ -237,16 +246,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer12()
         {
             Value args = new Value();
@@ -258,16 +267,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer13()
         {
             Value args = new Value();
@@ -278,16 +287,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer14()
         {
             Value args = new Value();
@@ -298,16 +307,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer15()
         {
             Value args = new Value();
@@ -317,16 +326,16 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Expr_TestPredicateTokenizer16()
         {
             Value args = new Value();
@@ -335,12 +344,12 @@ namespace NLedger.IntegrationTests.unit
 
             QueryLexer tokens = new QueryLexer(args.AsSequence, false);
 
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
-            Assert.AreEqual(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_AND, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TOK_OR, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.TERM, tokens.NextToken().Kind);
+            Assert.Equal(QueryLexerTokenKind.END_REACHED, tokens.NextToken().Kind);
         }
 
     }

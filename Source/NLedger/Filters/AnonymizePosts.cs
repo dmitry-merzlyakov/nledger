@@ -27,6 +27,12 @@ namespace NLedger.Filters
             : base(handler)
         { }
 
+        public override void Dispose()
+        {
+            Temps.Dispose();
+            base.Dispose();
+        }
+
         public IDictionary<Commodity, int> CommodityIndexMap
         {
             get { return Comms; }

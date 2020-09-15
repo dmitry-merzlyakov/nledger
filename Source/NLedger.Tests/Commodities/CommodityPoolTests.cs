@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts;
 using NLedger.Annotate;
 using NLedger.Commodities;
@@ -15,14 +14,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Commodities
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class CommodityPoolTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void CommodityPool_CreateBySymbol_CreatesCommodityAndAddsToPool()
         {
             string symbol = "symbol";
@@ -30,16 +29,16 @@ namespace NLedger.Tests.Commodities
             
             Commodity commodity = commodityPool.Create(symbol);
 
-            Assert.IsNotNull(commodity);
-            Assert.AreEqual(symbol, commodity.BaseSymbol);
-            Assert.AreEqual(symbol, commodity.Symbol);
-            Assert.IsNull(commodity.QualifiedSymbol);
-            Assert.IsTrue(commodityPool.Commodities.ContainsKey(symbol));
-            Assert.AreEqual(commodity, commodityPool.Commodities[symbol]);
-            Assert.IsFalse(commodityPool.AnnotatedCommodities.Any());
+            Assert.NotNull(commodity);
+            Assert.Equal(symbol, commodity.BaseSymbol);
+            Assert.Equal(symbol, commodity.Symbol);
+            Assert.Null(commodity.QualifiedSymbol);
+            Assert.True(commodityPool.Commodities.ContainsKey(symbol));
+            Assert.Equal(commodity, commodityPool.Commodities[symbol]);
+            Assert.False(commodityPool.AnnotatedCommodities.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_CreateBySymbol_AddsQualifiedTextIfNeeded()
         {
             string symbol = "sym&bol";
@@ -49,13 +48,13 @@ namespace NLedger.Tests.Commodities
 
             Commodity commodity = commodityPool.Create(symbol);
 
-            Assert.IsNotNull(commodity);
-            Assert.AreEqual(symbol, commodity.BaseSymbol);
-            Assert.AreEqual(qualifiedSymbol, commodity.Symbol);
-            Assert.AreEqual(qualifiedSymbol, commodity.QualifiedSymbol);
+            Assert.NotNull(commodity);
+            Assert.Equal(symbol, commodity.BaseSymbol);
+            Assert.Equal(qualifiedSymbol, commodity.Symbol);
+            Assert.Equal(qualifiedSymbol, commodity.QualifiedSymbol);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_CreateByCommodityAndDetails_CreatesCommodityAndAddsToPool()
         {
             TestCommodityPool commodityPool = new TestCommodityPool();
@@ -65,21 +64,21 @@ namespace NLedger.Tests.Commodities
 
             AnnotatedCommodity annotatedCommodity = commodityPool.Create(commodity, details) as AnnotatedCommodity;
 
-            Assert.IsNotNull(annotatedCommodity);
-            Assert.AreEqual(details, annotatedCommodity.Details);
+            Assert.NotNull(annotatedCommodity);
+            Assert.Equal(details, annotatedCommodity.Details);
 
-            Assert.AreEqual(symbol, annotatedCommodity.BaseSymbol);
-            Assert.AreEqual(symbol, annotatedCommodity.Symbol);
-            Assert.IsNull(annotatedCommodity.QualifiedSymbol);
+            Assert.Equal(symbol, annotatedCommodity.BaseSymbol);
+            Assert.Equal(symbol, annotatedCommodity.Symbol);
+            Assert.Null(annotatedCommodity.QualifiedSymbol);
 
-            Assert.IsTrue(commodityPool.Commodities.ContainsKey(symbol));
-            Assert.AreEqual(commodity, commodityPool.Commodities[symbol]);
+            Assert.True(commodityPool.Commodities.ContainsKey(symbol));
+            Assert.Equal(commodity, commodityPool.Commodities[symbol]);
 
-            Assert.IsTrue(commodityPool.AnnotatedCommodities.ContainsKey(new Tuple<string, Annotation>(symbol, details)));
-            Assert.AreEqual(annotatedCommodity, commodityPool.AnnotatedCommodities[new Tuple<string, Annotation>(symbol, details)]);
+            Assert.True(commodityPool.AnnotatedCommodities.ContainsKey(new Tuple<string, Annotation>(symbol, details)));
+            Assert.Equal(annotatedCommodity, commodityPool.AnnotatedCommodities[new Tuple<string, Annotation>(symbol, details)]);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_FindBySymbol_ReturnsCommodityIfExists()
         {
             TestCommodityPool commodityPool = new TestCommodityPool();
@@ -88,11 +87,11 @@ namespace NLedger.Tests.Commodities
 
             Commodity commodity = commodityPool.Create(symbol);
 
-            Assert.AreEqual(commodity, commodityPool.Find(symbol));
-            Assert.IsNull(commodityPool.Find(wrongSymbol));
+            Assert.Equal(commodity, commodityPool.Find(symbol));
+            Assert.Null(commodityPool.Find(wrongSymbol));
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_FindBySymbolAndDetails_ReturnsAnnotatedCommodityIfExists()
         {
             TestCommodityPool commodityPool = new TestCommodityPool();
@@ -103,11 +102,11 @@ namespace NLedger.Tests.Commodities
             Commodity commodity = commodityPool.Create(symbol);
             AnnotatedCommodity annotatedCommodity = commodityPool.Create(commodity, details) as AnnotatedCommodity;
 
-            Assert.AreEqual(annotatedCommodity, commodityPool.Find(symbol, details));
-            Assert.IsNull(commodityPool.Find(wrongSymbol));
+            Assert.Equal(annotatedCommodity, commodityPool.Find(symbol, details));
+            Assert.Null(commodityPool.Find(wrongSymbol));
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_FindOrCreateByCommodityAndDetails_CreatesAnnotatedCommodity()
         {
             TestCommodityPool commodityPool = new TestCommodityPool();
@@ -117,15 +116,15 @@ namespace NLedger.Tests.Commodities
                       
             AnnotatedCommodity annotatedCommodity = commodityPool.FindOrCreate(commodity, details) as AnnotatedCommodity;
 
-            Assert.IsNotNull(annotatedCommodity);
-            Assert.AreEqual(details, annotatedCommodity.Details);
+            Assert.NotNull(annotatedCommodity);
+            Assert.Equal(details, annotatedCommodity.Details);
 
             AnnotatedCommodity annotatedCommodity2 = commodityPool.FindOrCreate(commodity, details) as AnnotatedCommodity;
 
-            Assert.AreEqual(annotatedCommodity, annotatedCommodity2);
+            Assert.Equal(annotatedCommodity, annotatedCommodity2);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_FindWithAnnotation_IgnoresAnnotationFlags()
         {
             TestCommodityPool commodityPool = new TestCommodityPool();
@@ -136,23 +135,23 @@ namespace NLedger.Tests.Commodities
 
             // The same annotation but with another flags - annotated commodity is found
             Annotation details1 = new Annotation() { IsPriceFixated = true };
-            Assert.IsNotNull(commodityPool.Find(symbol, details1));
+            Assert.NotNull(commodityPool.Find(symbol, details1));
 
             // Another annotation - no results
             Annotation details2 = new Annotation() { Tag = "tag" };
-            Assert.IsNull(commodityPool.Find(symbol, details2));
+            Assert.Null(commodityPool.Find(symbol, details2));
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_ParsePriceExpression_ReturnsCommodity()
         {
             TestCommodityPool commodityPool = new TestCommodityPool();
             Commodity comm = commodityPool.ParsePriceExpression("CommPoolParseExpr");
-            Assert.IsNotNull(comm);
-            Assert.AreEqual("CommPoolParseExpr", comm.Symbol);
+            Assert.NotNull(comm);
+            Assert.Equal("CommPoolParseExpr", comm.Symbol);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_CommodityQuoteFromScript_AddsCommoditiesToCommand()
         {
             Commodity commodity1 = CommodityPool.Current.Create("QUO1"); commodity1.QualifiedSymbol = "QUO1";
@@ -162,13 +161,13 @@ namespace NLedger.Tests.Commodities
             MainApplicationContext.Current.SetQuoteProvider(() => quoteProvider);
 
             CommodityPool.CommodityQuoteFromScript(commodity1, null);
-            Assert.AreEqual("getquote \"QUO1\" \"\"", quoteProvider.ReceivedCommand);
+            Assert.Equal("getquote \"QUO1\" \"\"", quoteProvider.ReceivedCommand);
 
             CommodityPool.CommodityQuoteFromScript(commodity1, commodity2);
-            Assert.AreEqual("getquote \"QUO1\" \"QUO2\"", quoteProvider.ReceivedCommand);
+            Assert.Equal("getquote \"QUO1\" \"QUO2\"", quoteProvider.ReceivedCommand);
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_CommodityQuoteFromScript_SetsNoMarkedFlagInCaseOfFailure()
         {
             Commodity commodity1 = CommodityPool.Current.Create("QUO1"); commodity1.QualifiedSymbol = "QUO1";
@@ -177,11 +176,11 @@ namespace NLedger.Tests.Commodities
             MainApplicationContext.Current.SetQuoteProvider(() => quoteProvider);
 
             var result = CommodityPool.CommodityQuoteFromScript(commodity1, null);
-            Assert.IsNull(result);
-            Assert.IsTrue(commodity1.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_NOMARKET));
+            Assert.Null(result);
+            Assert.True(commodity1.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_NOMARKET));
         }
 
-        [TestMethod]
+        [Fact]
         public void CommodityPool_CommodityQuoteFromScript_ReturnsPricePointInCaseOfSuccess()
         {
             Commodity commodity1 = CommodityPool.Current.Create("QUO1");
@@ -191,9 +190,9 @@ namespace NLedger.Tests.Commodities
             MainApplicationContext.Current.SetQuoteProvider(() => quoteProvider);
 
             var result = CommodityPool.CommodityQuoteFromScript(commodity1, null);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(new DateTime(2010, 10, 10, 10, 11, 12), result.Value.When);
-            Assert.AreEqual("$100", result.Value.Price.ToString());
+            Assert.NotNull(result);
+            Assert.Equal(new DateTime(2010, 10, 10, 10, 11, 12), result.Value.When);
+            Assert.Equal("$100", result.Value.Price.ToString());
         }
 
         public class TestCommodityPool : CommodityPool

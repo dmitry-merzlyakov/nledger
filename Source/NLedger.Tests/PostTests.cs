@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Commodities;
@@ -17,13 +16,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests
 {
-    [TestClass]
     public class PostTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Post_ExtendPost_DoesNotExtendCommodityIfNoValueTag()
         {
             Commodity comm = CommodityPool.Current.FindOrCreate("test-comm-post");            
@@ -31,10 +30,10 @@ namespace NLedger.Tests
 
             Post.ExtendPost(post, new Journal());
 
-            Assert.AreEqual(comm, post.Amount.Commodity);
+            Assert.Equal(comm, post.Amount.Commodity);
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Constructor_ClonesAmount()
         {
             Post post1 = new Post() { Amount = new Amount(100) };
@@ -42,11 +41,11 @@ namespace NLedger.Tests
             Post newPost = new Post(post1);
             newPost.Amount.Multiply(new Amount(10));
 
-            Assert.AreEqual("100", post1.Amount.ToString());
-            Assert.AreEqual("1000", newPost.Amount.ToString());
+            Assert.Equal("100", post1.Amount.ToString());
+            Assert.Equal("1000", newPost.Amount.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Constructor_ClonesXData()
         {
             Post post1 = new Post();
@@ -54,53 +53,53 @@ namespace NLedger.Tests
 
             post1.XData.Visited = true;
 
-            Assert.IsTrue(post1.XData.Visited);
-            Assert.IsFalse(newPost.XData.Visited);
+            Assert.True(post1.XData.Visited);
+            Assert.False(newPost.XData.Visited);
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Description_ReturnsGeneratedIfNoPos()
         {
             Post post = new Post();
-            Assert.IsFalse(post.HasPos);
-            Assert.AreEqual(Post.GeneratedPostingKey, post.Description);
+            Assert.False(post.HasPos);
+            Assert.Equal(Post.GeneratedPostingKey, post.Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Description_ReturnsPositionIfAvailable()
         {
             Post post = new Post();
             post.Pos.BegLine = 5;
 
-            Assert.IsTrue(post.HasPos);
-            Assert.AreEqual("posting at line 5", post.Description);
+            Assert.True(post.HasPos);
+            Assert.Equal("posting at line 5", post.Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Valid_CheckWhetherXactIsPopulated()
         {
             Post post = new Post(new Account(), new Amount(10));
             Xact xact = new Xact();
             xact.Posts.Add(post);
 
-            Assert.IsFalse(post.Valid());
+            Assert.False(post.Valid());
             post.Xact = xact;
-            Assert.IsTrue(post.Valid());
+            Assert.True(post.Valid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Valid_CheckWhetherXactRefersToPost()
         {
             Post post = new Post(new Account(), new Amount(10));
             Xact xact = new Xact();
             post.Xact = xact;
 
-            Assert.IsFalse(post.Valid());
+            Assert.False(post.Valid());
             xact.Posts.Add(post);
-            Assert.IsTrue(post.Valid());
+            Assert.True(post.Valid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Valid_CheckWhetherAccountIsPopulated()
         {
             Post post = new Post(null, new Amount(10));
@@ -108,12 +107,12 @@ namespace NLedger.Tests
             post.Xact = xact;
             xact.Posts.Add(post);
 
-            Assert.IsFalse(post.Valid());
+            Assert.False(post.Valid());
             post.Account = new Account();
-            Assert.IsTrue(post.Valid());
+            Assert.True(post.Valid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Post_Valid_CheckWhetherAmountIsValid()
         {
             Post post = new Post(new Account(), new Amount(10));
@@ -121,11 +120,11 @@ namespace NLedger.Tests
             post.Xact = xact;
             xact.Posts.Add(post);
 
-            Assert.IsTrue(post.Valid());
+            Assert.True(post.Valid());
             var quantity = new Amount(10).Quantity.SetPrecision(2048);
             post.Amount = new Amount(quantity, null);
-            Assert.IsFalse(post.Amount.Valid());
-            Assert.IsFalse(post.Valid());
+            Assert.False(post.Amount.Valid());
+            Assert.False(post.Valid());
         }
 
     }

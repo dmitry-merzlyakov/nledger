@@ -36,6 +36,12 @@ namespace NLedger.Filters
             Temps = new Temporaries();
         }
 
+        public override void Dispose()
+        {
+            Temps?.Dispose();
+            base.Dispose();
+        }
+
         public Account Master { get; private set; }
         public Expr Expr { get; private set; }
         public Scope Scope { get; private set; }

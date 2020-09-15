@@ -685,6 +685,9 @@ namespace NLedger.Scopus
 
             if (!GroupByHandler.Handled)
                 new AccountsFlusher(handler, this).Handle(Value.Empty);
+
+            // [DM] Disposing handlers at the moment when they go out of scope (like invoking a descructor in c++ code)
+            chain?.Dispose();
         }
 
         /// <summary>

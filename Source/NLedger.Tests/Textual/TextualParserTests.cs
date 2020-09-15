@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Annotate;
@@ -21,10 +20,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Textual
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class TextualParserTests : TestFixture
     {
@@ -36,7 +35,7 @@ namespace NLedger.Tests.Textual
             return new TextualParser(parseContextStack, parseContext);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextualParser_ParsePost_ExpensesFoodGroceriesIntegrationTest()
         {
             string line = "  Expenses:Food:Groceries             $ 37.50  ; [=2011/03/01]";
@@ -46,14 +45,14 @@ namespace NLedger.Tests.Textual
             Xact xact = new Xact();
             Post post = parser.ParsePost(line, xact, account);
 
-            Assert.IsNotNull(post);
-            Assert.AreEqual("Expenses:Food:Groceries", post.Account.FullName);
-            Assert.AreEqual("$", post.Amount.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("37.50", 2), post.Amount.Quantity);
-            Assert.AreEqual(new Date(2011, 03, 01), post.DateAux);
+            Assert.NotNull(post);
+            Assert.Equal("Expenses:Food:Groceries", post.Account.FullName);
+            Assert.Equal("$", post.Amount.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("37.50", 2), post.Amount.Quantity);
+            Assert.Equal(new Date(2011, 03, 01), post.DateAux);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextualParser_ParsePost_BrokerageIntegrationTest()
         {
             string line = "  Assets:Brokerage                                 50 AAPL @ $30.00";
@@ -63,16 +62,16 @@ namespace NLedger.Tests.Textual
             Xact xact = new Xact();
             Post post = parser.ParsePost(line, xact, account);
 
-            Assert.IsNotNull(post);
-            Assert.AreEqual("Assets:Brokerage", post.Account.FullName);
-            Assert.AreEqual("AAPL", post.Amount.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("50"), post.Amount.Quantity);
-            Assert.AreEqual("$", post.Cost.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("1500", 2), post.Cost.Quantity);
-            Assert.AreEqual(post.Cost, post.GivenCost);
+            Assert.NotNull(post);
+            Assert.Equal("Assets:Brokerage", post.Account.FullName);
+            Assert.Equal("AAPL", post.Amount.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("50"), post.Amount.Quantity);
+            Assert.Equal("$", post.Cost.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("1500", 2), post.Cost.Quantity);
+            Assert.Equal(post.Cost, post.GivenCost);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextualParser_ParsePost_AssetsWyshonaItemsIntegrationTest()
         {
             string line = "  Assets:Wyshona:Items                \"Plans: Wildthorn Mail\" 1 {1.25G}";
@@ -82,15 +81,15 @@ namespace NLedger.Tests.Textual
             Xact xact = new Xact();
             Post post = parser.ParsePost(line, xact, account);
 
-            Assert.IsNotNull(post);
-            Assert.AreEqual("Assets:Wyshona:Items", post.Account.FullName);
-            Assert.AreEqual("\"Plans: Wildthorn Mail\"", post.Amount.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("1"), post.Amount.Quantity);
-            Assert.AreEqual("G", ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("1.25", 2), ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Quantity);
+            Assert.NotNull(post);
+            Assert.Equal("Assets:Wyshona:Items", post.Account.FullName);
+            Assert.Equal("\"Plans: Wildthorn Mail\"", post.Amount.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("1"), post.Amount.Quantity);
+            Assert.Equal("G", ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("1.25", 2), ((AnnotatedCommodity)post.Amount.Commodity).Details.Price.Quantity);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextualParser_ParseXact_CheckingBalanceIntegrationTest()
         {
             string line = 
@@ -104,24 +103,24 @@ namespace NLedger.Tests.Textual
             string current = reader.ReadLine();
             Xact xact = parser.ParseXact(current, reader, account);
 
-            Assert.IsNotNull(xact);
-            Assert.AreEqual(new Date(2003,12,01), xact.Date);
-            Assert.IsNull(xact.DateAux);
-            Assert.AreEqual(ItemStateEnum.Cleared, xact.State);
-            Assert.AreEqual("Checking balance", xact.Payee);
-            Assert.AreEqual(2, xact.Posts.Count);
+            Assert.NotNull(xact);
+            Assert.Equal(new Date(2003,12,01), xact.Date);
+            Assert.Null(xact.DateAux);
+            Assert.Equal(ItemStateEnum.Cleared, xact.State);
+            Assert.Equal("Checking balance", xact.Payee);
+            Assert.Equal(2, xact.Posts.Count);
 
             Post post1 = xact.Posts.First();
-            Assert.AreEqual("Assets:Checking", post1.Account.FullName);
-            Assert.AreEqual("$", post1.Amount.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("1000", 2), post1.Amount.Quantity);
+            Assert.Equal("Assets:Checking", post1.Account.FullName);
+            Assert.Equal("$", post1.Amount.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("1000", 2), post1.Amount.Quantity);
 
             Post post2 = xact.Posts.Last();
-            Assert.AreEqual("Equity:Opening Balances", post2.Account.FullName);
-            Assert.IsNull(post2.Amount);
+            Assert.Equal("Equity:Opening Balances", post2.Account.FullName);
+            Assert.Null(post2.Amount);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextualParser_ParseXact_BankIntegrationTest()
         {
             string line =
@@ -137,26 +136,26 @@ namespace NLedger.Tests.Textual
             string current = reader.ReadLine();
             Xact xact = parser.ParseXact(current, reader, account);
 
-            Assert.IsNotNull(xact);
-            Assert.AreEqual(new Date(2011, 01, 25), xact.Date);
-            Assert.AreEqual(new Date(2011, 01, 28), xact.DateAux);
-            Assert.AreEqual(ItemStateEnum.Uncleared, xact.State);
-            Assert.AreEqual("Bank", xact.Payee);
-            Assert.AreEqual(" Transfer to cover car purchase", xact.Note); // Notice the trailing space.
-            Assert.IsTrue(xact.Flags.HasFlag(SupportsFlagsEnum.ITEM_NOTE_ON_NEXT_LINE));
-            Assert.AreEqual(2, xact.Posts.Count);
+            Assert.NotNull(xact);
+            Assert.Equal(new Date(2011, 01, 25), xact.Date);
+            Assert.Equal(new Date(2011, 01, 28), xact.DateAux);
+            Assert.Equal(ItemStateEnum.Uncleared, xact.State);
+            Assert.Equal("Bank", xact.Payee);
+            Assert.Equal(" Transfer to cover car purchase", xact.Note); // Notice the trailing space.
+            Assert.True(xact.Flags.HasFlag(SupportsFlagsEnum.ITEM_NOTE_ON_NEXT_LINE));
+            Assert.Equal(2, xact.Posts.Count);
 
             Post post1 = xact.Posts.First();
-            Assert.AreEqual("Assets:Checking", post1.Account.FullName);
-            Assert.AreEqual("$", post1.Amount.Commodity.Symbol);
-            Assert.AreEqual(Quantity.Parse("5500", 2), post1.Amount.Quantity);
+            Assert.Equal("Assets:Checking", post1.Account.FullName);
+            Assert.Equal("$", post1.Amount.Commodity.Symbol);
+            Assert.Equal(Quantity.Parse("5500", 2), post1.Amount.Quantity);
 
             Post post2 = xact.Posts.Last();
-            Assert.AreEqual("Assets:Savings", post2.Account.FullName);
-            Assert.AreEqual(" :nobudget:", post2.Note);
-            Assert.IsTrue(post2.Flags.HasFlag(SupportsFlagsEnum.ITEM_NOTE_ON_NEXT_LINE));
-            Assert.IsTrue(post2.HasTag("nobudget"));
-            Assert.IsNull(post2.Amount);
+            Assert.Equal("Assets:Savings", post2.Account.FullName);
+            Assert.Equal(" :nobudget:", post2.Note);
+            Assert.True(post2.Flags.HasFlag(SupportsFlagsEnum.ITEM_NOTE_ON_NEXT_LINE));
+            Assert.True(post2.HasTag("nobudget"));
+            Assert.Null(post2.Amount);
         }
 
         private ITextualReader CreateReaderForString(string s)

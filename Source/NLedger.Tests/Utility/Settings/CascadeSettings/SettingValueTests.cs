@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Definitions;
 using NLedger.Utility.Settings.CascadeSettings.Sources;
@@ -15,14 +14,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Settings.CascadeSettings
 {
-    [TestClass]
     public class SettingValueTests
     {
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BaseSettingValue_Constructor_TakesContainerAndDefinition()
         {
             var definition = new IntegerSettingDefinition("test", "desc", 0);
@@ -30,12 +29,12 @@ namespace NLedger.Tests.Utility.Settings.CascadeSettings
 
             var settingValue = new SettingValue<int>(container, definition);
 
-            Assert.AreEqual(container, settingValue.SettingsContainer);
-            Assert.AreEqual(definition, settingValue.Definition);
+            Assert.Equal(container, settingValue.SettingsContainer);
+            Assert.Equal(definition, settingValue.Definition);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BaseSettingValue_Value_ReturnsEffectiveValue()
         {
             var definition = new IntegerSettingDefinition("key1", "desc", 0);
@@ -46,12 +45,11 @@ namespace NLedger.Tests.Utility.Settings.CascadeSettings
 
             source.Data["key1"] = "100";
 
-            Assert.AreEqual(100, settingValue.Value);
+            Assert.Equal(100, settingValue.Value);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BaseSettingValue_Value_RaisesExceptionIfNotConvertible()
         {
             var definition = new IntegerSettingDefinition("key1", "desc", 0);
@@ -62,7 +60,7 @@ namespace NLedger.Tests.Utility.Settings.CascadeSettings
 
             source.Data["key1"] = "text";
 
-            Assert.AreEqual(100, settingValue.Value);
+            Assert.Throws<InvalidOperationException>(() => settingValue.Value);
         }
 
     }

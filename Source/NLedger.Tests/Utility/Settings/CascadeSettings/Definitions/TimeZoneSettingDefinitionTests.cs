@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Definitions;
 using System;
@@ -14,57 +13,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Settings.CascadeSettings.Definitions
 {
-    [TestClass]
     public class TimeZoneSettingDefinitionTests
     {
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void TimeZoneSettingDefinition_Constructor_PopulatesProperties()
         {
             var definition = new TimeZoneSettingDefinition("test", "desc", TimeZoneInfo.Local, SettingScopeEnum.Application);
-            Assert.AreEqual("test", definition.Name);
-            Assert.AreEqual("desc", definition.Description);
-            Assert.AreEqual(TimeZoneInfo.Local.Id, definition.DefaultValue);
-            Assert.AreEqual(SettingScopeEnum.Application, definition.Scope);
+            Assert.Equal("test", definition.Name);
+            Assert.Equal("desc", definition.Description);
+            Assert.Equal(TimeZoneInfo.Local.Id, definition.DefaultValue);
+            Assert.Equal(SettingScopeEnum.Application, definition.Scope);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void TimeZoneSettingDefinition_GetValues_ReturnsAvailableTimeZones()
         {
             var definition = new TimeZoneSettingDefinition("test", "desc", TimeZoneInfo.Local);
             var values = definition.GetValues();
-            Assert.IsNotNull(values);
-            Assert.AreNotEqual(0, values.Count());
+            Assert.NotNull(values);
+            Assert.NotEmpty(values);
             foreach (var name in values)
             {
-                Assert.IsNotNull(TimeZoneInfo.FindSystemTimeZoneById(name));
+                Assert.NotNull(TimeZoneInfo.FindSystemTimeZoneById(name));
             }
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void TimeZoneSettingDefinition_ConvertToString_ReturnsTzId()
         {
             var definition = new TimeZoneSettingDefinition("test", "desc", TimeZoneInfo.Local);
 
             var tz = TimeZoneInfo.Local;
             var str = definition.ConvertToString(tz);
-            Assert.AreEqual(tz.Id, str);
+            Assert.Equal(tz.Id, str);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void TimeZoneSettingDefinition_ConvertFromString_ReturnsTimeZoneInfo()
         {
             var definition = new TimeZoneSettingDefinition("test", "desc", TimeZoneInfo.Local);
 
             var tz = TimeZoneInfo.Local;
             var converted = definition.ConvertFromString(tz.Id);
-            Assert.AreEqual(tz, converted);
+            Assert.Equal(tz, converted);
         }
 
 

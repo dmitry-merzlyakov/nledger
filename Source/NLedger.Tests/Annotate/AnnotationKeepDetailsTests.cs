@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Annotate;
 using NLedger.Commodities;
 using System;
@@ -14,33 +13,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Annotate
 {
-    [TestClass]
     public class AnnotationKeepDetailsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void AnnotationKeepDetails_DefaultContructors_ProducesInstanceWithAllFlagsUnchecked()
         {
             AnnotationKeepDetails details = new AnnotationKeepDetails();
-            Assert.IsFalse(details.KeepPrice);
-            Assert.IsFalse(details.KeepDate);
-            Assert.IsFalse(details.KeepTag);
-            Assert.IsFalse(details.OnlyActuals);
+            Assert.False(details.KeepPrice);
+            Assert.False(details.KeepDate);
+            Assert.False(details.KeepTag);
+            Assert.False(details.OnlyActuals);
         }
 
-        [TestMethod]
+        [Fact]
         public void AnnotationKeepDetails_KeepAll_ValidationMatrix()
         {
-            Assert.IsTrue((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = true, OnlyActuals = false }).KeepAll() );
-            Assert.IsFalse((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = true, KeepTag = true, OnlyActuals = false }).KeepAll());
-            Assert.IsFalse((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = false, KeepTag = true, OnlyActuals = false }).KeepAll());
-            Assert.IsFalse((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = false, OnlyActuals = false }).KeepAll());
-            Assert.IsFalse((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = true, OnlyActuals = true }).KeepAll());
+            Assert.True((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = true, OnlyActuals = false }).KeepAll() );
+            Assert.False((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = true, KeepTag = true, OnlyActuals = false }).KeepAll());
+            Assert.False((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = false, KeepTag = true, OnlyActuals = false }).KeepAll());
+            Assert.False((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = false, OnlyActuals = false }).KeepAll());
+            Assert.False((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = true, OnlyActuals = true }).KeepAll());
         }
 
-        [TestMethod]
+        [Fact]
         public void AnnotationKeepDetails_KeepAll_IfCommodityIsNotAnnotated()
         {
             AnnotationKeepDetails detailsKeepAllTrue = new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = true, OnlyActuals = false };
@@ -48,23 +47,23 @@ namespace NLedger.Tests.Annotate
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             AnnotatedCommodity annCommodity = new AnnotatedCommodity(commodity, new Annotation());
 
-            Assert.IsTrue(detailsKeepAllTrue.KeepAll(commodity));
-            Assert.IsTrue(detailsKeepAllTrue.KeepAll(annCommodity));
+            Assert.True(detailsKeepAllTrue.KeepAll(commodity));
+            Assert.True(detailsKeepAllTrue.KeepAll(annCommodity));
 
-            Assert.IsTrue(detailsKeepAllFalse.KeepAll(commodity));
-            Assert.IsFalse(detailsKeepAllFalse.KeepAll(annCommodity));
+            Assert.True(detailsKeepAllFalse.KeepAll(commodity));
+            Assert.False(detailsKeepAllFalse.KeepAll(annCommodity));
         }
 
-        [TestMethod]
+        [Fact]
         public void AnnotationKeepDetails_KeepAny_ValidationMatrix()
         {
-            Assert.IsFalse((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = false, KeepTag = false }).KeepAny());
-            Assert.IsTrue((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = false, KeepTag = false }).KeepAny());
-            Assert.IsTrue((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = true, KeepTag = false }).KeepAny());
-            Assert.IsTrue((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = false, KeepTag = true }).KeepAny());
+            Assert.False((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = false, KeepTag = false }).KeepAny());
+            Assert.True((new AnnotationKeepDetails() { KeepPrice = true, KeepDate = false, KeepTag = false }).KeepAny());
+            Assert.True((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = true, KeepTag = false }).KeepAny());
+            Assert.True((new AnnotationKeepDetails() { KeepPrice = false, KeepDate = false, KeepTag = true }).KeepAny());
         }
 
-        [TestMethod]
+        [Fact]
         public void AnnotationKeepDetails_KeepAny_IfCommodityIsAnnotated()
         {
             AnnotationKeepDetails detailsKeepAnyTrue = new AnnotationKeepDetails() { KeepPrice = true, KeepDate = true, KeepTag = true };
@@ -72,11 +71,11 @@ namespace NLedger.Tests.Annotate
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             AnnotatedCommodity annCommodity = new AnnotatedCommodity(commodity, new Annotation());
 
-            Assert.IsFalse(detailsKeepAnyTrue.KeepAny(commodity));
-            Assert.IsTrue(detailsKeepAnyTrue.KeepAny(annCommodity));
+            Assert.False(detailsKeepAnyTrue.KeepAny(commodity));
+            Assert.True(detailsKeepAnyTrue.KeepAny(annCommodity));
 
-            Assert.IsFalse(detailsKeepAnyFalse.KeepAny(commodity));
-            Assert.IsFalse(detailsKeepAnyFalse.KeepAny(annCommodity));
+            Assert.False(detailsKeepAnyFalse.KeepAny(commodity));
+            Assert.False(detailsKeepAnyFalse.KeepAny(annCommodity));
         }
 
     }

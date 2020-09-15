@@ -26,6 +26,12 @@ namespace NLedger.Filters
             Temps = new Temporaries();
         }
 
+        public override void Dispose()
+        {
+            Temps?.Dispose();
+            base.Dispose();
+        }
+
         public IList<PendingPostsPair> PendingPosts { get; private set; }
         public Temporaries Temps { get; private set; }
 

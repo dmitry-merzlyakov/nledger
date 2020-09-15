@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts.Impl;
 using NLedger.Utility;
 using System;
@@ -15,14 +14,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext)]
     public class ErrorContextTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void ErrorContext_WriteError_AddsToErrorStream()
         {
             using (var outWriter = new StringWriter())
@@ -32,11 +31,11 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteError("error-text");
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.AreEqual("error-text\r\n", result);
+                Assert.Equal("error-text\n", result.RemoveCarriageReturns());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ErrorContext_WriteError_AddsNothingForEmptyMessage()
         {
             using (var outWriter = new StringWriter())
@@ -46,11 +45,11 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteError("");
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.AreEqual("", result);
+                Assert.Equal("", result);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ErrorContext_WriteError_AddsErrorWordForException()
         {
             using (var outWriter = new StringWriter())
@@ -60,11 +59,11 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteError(new Exception("exception-text"));
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.AreEqual("Error: exception-text\r\n", result);
+                Assert.Equal("Error: exception-text\n", result.RemoveCarriageReturns());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ErrorContext_WriteWarning_AddsWarningWord()
         {
             using (var outWriter = new StringWriter())
@@ -74,7 +73,7 @@ namespace NLedger.Tests.Utility
                 ErrorContext.Current.WriteWarning("warning-text");
                 outWriter.Flush();
                 var result = outWriter.ToString();
-                Assert.AreEqual("Warning: warning-text\r\n", result);
+                Assert.Equal("Warning: warning-text\n", result.RemoveCarriageReturns());
             }
         }
     }

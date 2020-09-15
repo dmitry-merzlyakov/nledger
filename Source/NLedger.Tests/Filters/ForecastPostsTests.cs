@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Filters;
 using NLedger.Times;
 using System;
@@ -14,19 +13,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Filters
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class ForecastPostsTests : TestFixture
     {
-        public override void CustomTestInitialize()
+        protected override void CustomTestInitialize()
         {
             TimesCommon.Current.Epoch = new DateTime(2010, 05, 01);
         }
 
-        [TestMethod]
+        [Fact]
         public void ForecastPosts_AddPost_DoesNotModifyInputPeriod()
         {
             ForecastPosts forecastPosts = new ForecastPosts(null, null, null, 1);
@@ -34,12 +33,12 @@ namespace NLedger.Tests.Filters
             dateInterval.Duration = new DateDuration(SkipQuantumEnum.DAYS, 5);
             Post post = new Post();
 
-            Assert.IsNull(dateInterval.Start);
+            Assert.Null(dateInterval.Start);
 
             forecastPosts.AddPost(dateInterval, post);
 
-            Assert.IsNull(dateInterval.Start);
-            Assert.IsNotNull(forecastPosts.PendingPosts.First().DateInterval.Start);
+            Assert.Null(dateInterval.Start);
+            Assert.NotNull(forecastPosts.PendingPosts.First().DateInterval.Start);
         }
     }
 }

@@ -1,3 +1,6 @@
+[CmdletBinding()]
+Param()
+
 # If you run this script in ISE, you may want to configure Execution Policy by this command:
 # set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process
 

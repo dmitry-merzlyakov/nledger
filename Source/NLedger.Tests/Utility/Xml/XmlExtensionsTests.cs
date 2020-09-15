@@ -6,7 +6,6 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Xml;
 using System;
 using System.Collections.Generic;
@@ -14,20 +13,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Xml
 {
-    [TestClass]
     public class XmlExtensionsTests
     {
-        [TestMethod]
+        [Fact]
         public void XmlExtensions_CreateLedgerDoc_CreatesEmptyXmlDocument()
         {
             string s = "<ledger version=\"197121\" />";
-            Assert.AreEqual(s, XmlExtensions.CreateLedgerDoc().ToString());
+            Assert.Equal(s, XmlExtensions.CreateLedgerDoc().ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void XmlExtensions_AddElement_AddsElementWithGivenNameToContainer()
         {
             XDocument xdoc = XmlExtensions.CreateLedgerDoc();
@@ -37,11 +36,11 @@ namespace NLedger.Tests.Utility.Xml
 @"<ledger version=""197121"">
   <test />
 </ledger>";
-            Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
-            Assert.AreEqual("<test />", xelem.ToString());
+            Assert.Equal(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
+            Assert.Equal("<test />", xelem.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void XmlExtensions_AddElement_AddsElementWithGivenNameAndValueToContainer()
         {
             XDocument xdoc = XmlExtensions.CreateLedgerDoc();
@@ -51,8 +50,8 @@ namespace NLedger.Tests.Utility.Xml
 @"<ledger version=""197121"">
   <test>val</test>
 </ledger>";
-            Assert.AreEqual(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
-            Assert.AreEqual("<test>val</test>", xelem.ToString());
+            Assert.Equal(expectedDoc.Replace("\r\n", "\n"), xdoc.ToString().Replace("\r\n", "\n"));
+            Assert.Equal("<test>val</test>", xelem.ToString());
         }
 
     }

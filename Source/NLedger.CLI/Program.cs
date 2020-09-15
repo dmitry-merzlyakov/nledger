@@ -6,16 +6,11 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using NLedger.Abstracts.Impl;
-using NLedger.Utility;
 using NLedger.Utility.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NLedger.CLI
 {
@@ -25,19 +20,13 @@ namespace NLedger.CLI
         {
             // System.Diagnostics.Debugger.Launch(); // This debugging option might be useful in case of troubleshooting of NLTest issues
 
-            var main = new Main();
-            new NLedgerConfiguration().ConfigureConsole(MainApplicationContext.Current);
+            var context = new MainApplicationContext();
+            new NLedgerConfiguration().ConfigureConsole(context);
 
-            var argString = GetCommandLine(); // This way is preferrable because of double quotas that are missed by using args
+            var main = new Main(context);
+
+            var argString = CommandLineArgs.GetArguments(args); // This way is preferrable because of double quotas that are missed by using args
             Environment.ExitCode = main.Execute(argString);
-        }
-
-        private static string GetCommandLine()
-        {
-            // returns the original command line arguments w/o execution file name
-            var commandLine = Environment.CommandLine;
-            int pos = commandLine[0] == '"' ? pos = commandLine.IndexOf('"', 1) : commandLine.IndexOf(' ');
-            return pos >= 0 ? commandLine.Substring(pos + 1).TrimStart() : String.Empty;
         }
     }
 }

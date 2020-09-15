@@ -36,6 +36,12 @@ namespace NLedger.Filters
             }
         }
 
+        public override void Dispose()
+        {
+            Temps?.Dispose();
+            base.Dispose();
+        }
+
         public Temporaries Temps { get; private set; }
         public IList<Tuple<string, Account, ISet<Xact>>> TagsList { get; private set; }
 
