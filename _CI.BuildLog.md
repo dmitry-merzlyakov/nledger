@@ -19,6 +19,22 @@ the latest build status is:
 
 
 ***
+#### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [67] 2020/09/15 14:57:44
+
+>Build #67; Status:Failed
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: 94a9b7c3267193924da30f65f9dc8821545a2a4a
+
+Build logs: [NLedger-BuildLogs-v0.8.Build.67.zip](https://www.dropbox.com/s/o1333xgi5c8m2s3/NLedger-BuildLogs-v0.8.Build.67.zip?dl=0) MD5: 7A6B9C329D06C6711A124298D173145E
+
+Install package: Not created
+
+MSI package: Not created
+***
 #### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [66] 2020/09/15 14:01:11
 
 >Build #66; Status:Failed
@@ -435,6 +451,7 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
 
 
 
