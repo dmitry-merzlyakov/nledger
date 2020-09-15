@@ -693,6 +693,9 @@
                       <File Id="File_NLedger_Core_cli_dll_config" Name="NLedger-cli.dll.config" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.dll.config"/>
                       <File Id="File_NLedger_Core_cli_runtimeconfig_json" Name="NLedger-cli.runtimeconfig.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"/>
                     </Component>
+                    <Component Id="LedgerCoreManFiles" Guid="C4C85651-C61F-4B2B-AE5F-C4A3BFAE8930" >
+                        <File Id="File_Core_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\ledger.1.html"/>
+                    </Component>
                   </Directory>
                </Directory>
                <Component Id="AppBinFiles" Guid="59E7E5B2-E13F-4FBC-B05C-B5E1DFC1F06A" >
