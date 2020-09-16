@@ -79,6 +79,7 @@
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\net45\NLedger.dll" DestinationFiles="$(PackageDir)bin\net45\NLedger.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe.config"  />
+    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net45\ledger.1.html"  />
     <!-- Add binaries (.Net Core) -->
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\netstandard2.0\NLedger.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe"  />
@@ -86,6 +87,7 @@
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.dll.config" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.dll.config"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.deps.json" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.deps.json"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.runtimeconfig.json" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"  />
+    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\ledger.1.html"  />
     <!-- Add Contrib files -->
     <CreateItem Include="$(ProjectRoot)Contrib\**\*.*">
       <Output TaskParameter="Include" ItemName="ContribFiles" />

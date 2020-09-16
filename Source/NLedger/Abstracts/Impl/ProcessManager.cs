@@ -122,7 +122,14 @@ namespace NLedger.Abstracts.Impl
 
             try
             {
-                Process.Start(fileName, arguments);
+                var processStartInfo = new ProcessStartInfo()
+                {
+                    FileName = fileName,
+                    Arguments = arguments,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processStartInfo);
                 return true;
             }
             catch (Exception ex)

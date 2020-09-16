@@ -5,7 +5,7 @@
 Import-Module $Script:ScriptPath\NLSetup.psm1 -Force
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-[bool]$Script:isOsxPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+[bool]$Script:isOsxPlatform = if(!($Script:isWindowsPlatform)) { [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX) } else { $false }
 [string]$Script:dsp = [System.IO.Path]::DirectorySeparatorChar
 
 function GetDefaultDemoSettings {

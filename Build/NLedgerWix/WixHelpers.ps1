@@ -53,6 +53,8 @@ $Script:WixComponentValidationExceptions = @(
   "NLedger\test\nledger\getquote"
   "NLedger\bin\net45\NLedger-cli.exe",
   "NLedger\bin\net45\NLedger-cli.exe.config"
+  "NLedger\bin\net45\ledger.1.html",
+  "NLedger\bin\netcoreapp3.1\ledger.1.html"
 )
 
 # Validates the content of wix components
