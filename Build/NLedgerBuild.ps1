@@ -139,6 +139,12 @@ function msi {
     RunBuild "MSI" $False
 }
 
+function nuget {
+    [CmdletBinding()]
+    Param()
+    RunBuild "Nuget" $False
+}
+
 function help {
 [CmdletBinding()]
 Param()
@@ -162,6 +168,8 @@ Param()
      write-host -NoNewline "        compile and build a package; no testing;`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "msi"
      write-host -NoNewline "            create an MSI package; no testing;`r`n PS> "
+     write-host -NoNewline -ForegroundColor Yellow "nuget"
+     write-host -NoNewline "          create an Nuget package; no testing;`r`n PS> "
      write-host -NoNewline -ForegroundColor Yellow "help"
      write-host -NoNewline "           show this help page again.`r`n"
      write-host -NoNewline "`r`nNote: some build targets require administrative priviledges because they try to create NLedger native images by means of NGen."

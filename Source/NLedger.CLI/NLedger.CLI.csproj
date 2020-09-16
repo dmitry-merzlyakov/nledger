@@ -28,6 +28,7 @@
     <VersionSuffix>beta</VersionSuffix>
     <SourceRevisionId>dev-environment</SourceRevisionId>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>

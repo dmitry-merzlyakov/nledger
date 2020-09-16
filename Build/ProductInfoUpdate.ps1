@@ -109,11 +109,14 @@ foreach ($Private:csFile in (Get-ChildItem -Path $Script:absSourceCodePath -Filt
 Write-Verbose "Build version autogeneration"
 
 [DateTime]$Script:BasePatchDate = $script:productInfoContent.ProductInfo.BuildVersionAutoGeneration.BasePatchDate
-[int]$Script:BuildVersion = [DateTime]::UtcNow.Subtract($Script:BasePatchDate).TotalMinutes / 20
-Write-Verbose "Build version: $Script:BuildVersion"
+[int]$Script:BuildNumber = [DateTime]::UtcNow.Subtract($Script:BasePatchDate).TotalMinutes / 20
+Write-Verbose "Build number: $Script:BuildNumber"
 
-[string]$Script:VersionPrefix = "$(ApplyGlobals $script:productInfoContent.ProductInfo.AssemblyInfo.VersionPrefix).$Script:BuildVersion"
-Write-Verbose "Generated VersionPrefix: $Script:VersionPrefix"
+[string]$Script:VersionPrefix = "$(ApplyGlobals $script:productInfoContent.ProductInfo.AssemblyInfo.VersionPrefix)"
+Write-Verbose "VersionPrefix: $Script:VersionPrefix"
+
+[string]$Script:VersionSuffix = "$(ApplyGlobals $script:productInfoContent.ProductInfo.AssemblyInfo.VersionSuffix)"
+Write-Verbose "VersionSuffix: $Script:VersionSuffix"
 
 [string]$Script:SourceRevisionId = (git rev-parse --short HEAD)
 Write-Verbose "SourceRevisionId: $Script:SourceRevisionId"
@@ -121,6 +124,8 @@ Write-Verbose "SourceRevisionId: $Script:SourceRevisionId"
 if ($outversion) {
     write-output $Script:VersionPrefix
     write-output $Script:SourceRevisionId
+    write-output $Script:VersionSuffix
+    write-output $Script:BuildNumber
 }
 
 
