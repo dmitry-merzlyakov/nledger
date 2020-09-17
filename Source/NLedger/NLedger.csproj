@@ -11,6 +11,11 @@
     <VersionSuffix>beta</VersionSuffix>
     <SourceRevisionId>dev-environment</SourceRevisionId>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Title>NLedger</Title>
+    <Authors>Dmitry Merzlyakov</Authors>
+    <RepositoryUrl>https://github.com/dmitry-merzlyakov/nledger</RepositoryUrl>
+    <PackageTags>ledger;plaintext-accounting;accounting;cli;csharp;dotnet</PackageTags>
+    <PackageLicenseExpression>BSD-3-Clause-Clear</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
