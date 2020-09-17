@@ -34,6 +34,7 @@
     <Elevated Condition=" '$(Elevated)'=='' ">False</Elevated>
 
     <!-- Auto-generated build version parameters; they are populated by CheckLicensing target -->
+    <ProductVersion></ProductVersion>			<!-- x.x         -->
     <VersionPrefix></VersionPrefix>			<!-- x.x.x       -->
     <SourceRevisionId></SourceRevisionId>               <!-- git commit  -->
     <VersionSuffix></VersionSuffix>                     <!-- beta/rc/etc         -->
@@ -51,7 +52,7 @@
     <CallTarget Targets="Nuget" />
   </Target>
 
-  <Target Name="Build" DependsOnTargets="CheckLicensing">
+  <Target Name="Build" DependsOnTargets="GetProductVersion;CheckLicensing">
     <Message Text="Target : Build (building source code)"/>
     <Exec Command="dotnet restore" WorkingDirectory="$(SourceRoot)" />
     <MSBuild Projects="$(SourceRoot)NLedger.sln" Properties="Configuration=Release;VersionPrefix=$(VersionPrefix).$(BuildNumber);SourceRevisionId=$(SourceRevisionId)" />
@@ -114,7 +115,7 @@
     <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Remove-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
   </Target>
 
-  <Target Name="Package" DependsOnTargets="GetProductVersion;Release">
+  <Target Name="Package" DependsOnTargets="Release">
     <Message Text="Target : Package (creating a zip package)"/>
     <Delete Files="$(OutputDir)NLedger-v$(ProductVersion).zip" />
     <ZipDir ZipFileName="$(OutputDir)NLedger-v$(ProductVersion).zip" DirectoryName="$(PackageDir).." />
@@ -128,7 +129,7 @@
     <Copy SourceFiles="$(BuildDir)NLedgerWix\bin\Release\en-us\NLedger.msi" DestinationFiles="$(OutputDir)NLedger-v$(ProductVersion).msi"  />
   </Target>
 
-  <Target Name="Nuget" DependsOnTargets="Build;GetProductVersion">
+  <Target Name="Nuget" DependsOnTargets="Build">
     <Message Text="Target : Create NuGet package"/>
     <Exec Command="dotnet pack --configuration Release --no-build" WorkingDirectory="$(SourceRoot)" />
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\NLedger.$(VersionPrefix)-$(VersionSuffix).nupkg" DestinationFiles="$(OutputDir)NLedger.$(VersionPrefix)-$(VersionSuffix).nupkg" />
@@ -144,25 +145,7 @@
   <Target Name="CheckLicensing">
     <Message Text="Checking version and licensing info in all source code files" />
     <Message Text="NOTE: if this task fails, execute ProductInfoUpdate.cmd to actualize data and observe modifications in a source control system." />
-    <PropertyGroup>
-       <OutputOfProductInfoUpdate></OutputOfProductInfoUpdate>
-    </PropertyGroup>
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(BuildDir)ProductInfoUpdate.ps1&quot; -verify -outversion" ConsoleToMSBuild="true" >
-        <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfProductInfoUpdate" />
-    </Exec>
-    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[0])">
-        <Output PropertyName="VersionPrefix" TaskParameter="Value"/>
-     </CreateProperty>
-     <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[1])">
-        <Output PropertyName="SourceRevisionId" TaskParameter="Value"/>
-     </CreateProperty>
-     <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[2])">
-        <Output PropertyName="VersionSuffix" TaskParameter="Value"/>
-     </CreateProperty>
-     <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[3])">
-        <Output PropertyName="BuildNumber" TaskParameter="Value"/>
-     </CreateProperty>
-    <Message Text="Received version info: VersionPrefix='$(VersionPrefix)'; SourceRevisionId='$(SourceRevisionId)'; VersionSuffix='$(VersionSuffix)'; BuildNumber='$(BuildNumber)'"/>
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(BuildDir)ProductInfo.psm1 ; Test-VersionInfoAndLicenseNotes&quot;" />
   </Target>
 
   <!-- Technical task - checking the content of Wix configuration files -->
@@ -174,10 +157,29 @@
   
   <!-- Technical task: getting a product version from Product Info file -->
   <Target Name="GetProductVersion">
-    <XmlPeek XmlInputPath="$(ProductInfoPath)" Query="/ProductInfo/General/Version/text()">
-      <Output TaskParameter="Result" PropertyName="ProductVersion" />
-    </XmlPeek>
-    <Message Text="Found product version: $(ProductVersion)" />
+    <Message Text="Get version information from VersionInfo.xml" />
+    <PropertyGroup>
+       <OutputOfProductInfoUpdate></OutputOfProductInfoUpdate>
+    </PropertyGroup>
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(BuildDir)ProductInfo.psm1 ; Get-VersionInfoArray&quot;" ConsoleToMSBuild="true" >
+        <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfProductInfoUpdate" />
+    </Exec>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[0])">
+        <Output PropertyName="VersionPrefix" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[1])">
+        <Output PropertyName="SourceRevisionId" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[2])">
+        <Output PropertyName="VersionSuffix" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[3])">
+        <Output PropertyName="BuildNumber" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[4])">
+        <Output PropertyName="ProductVersion" TaskParameter="Value"/>
+    </CreateProperty>
+    <Message Text="Received version info: ProductVersion='$(ProductVersion)'; VersionPrefix='$(VersionPrefix)'; SourceRevisionId='$(SourceRevisionId)'; VersionSuffix='$(VersionSuffix)'; BuildNumber='$(BuildNumber)'"/>
   </Target>
 
   <!-- Technical task: create a zip file -->
