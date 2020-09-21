@@ -86,7 +86,7 @@ namespace NLedger.Commodities
             Logger.Current.Debug("commodity.download", () => String.Format("invoking command: {0}", getquote_cmd));
 
             string buf;
-            bool success = MainApplicationContext.Current.QuoteProvider.Get(getquote_cmd, out buf);
+            bool success = MainApplicationContext.Current.ApplicationServiceProvider.QuoteProvider.Get(getquote_cmd, out buf);
             if (success && buf != null)
             {
                 buf = buf.GetFirstLine();

@@ -77,7 +77,7 @@ namespace NLedger.Abstracts.Impl
                     throw new InvalidOperationException(String.Format("Application '{0}' (arguments: '{1}') not found", path, args));
 
                 Logger.Current.Debug("pager", () => String.Format("Found path {0}", exePath));
-                MainApplicationContext.Current.ProcessManager.Execute(exePath, args, null, outputText, noTimeout: true);
+                MainApplicationContext.Current.ApplicationServiceProvider.ProcessManager.Execute(exePath, args, null, outputText, noTimeout: true);
             }
             catch (Exception ex)
             {

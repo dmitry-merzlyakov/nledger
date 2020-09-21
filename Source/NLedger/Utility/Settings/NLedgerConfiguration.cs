@@ -59,19 +59,21 @@ namespace NLedger.Utility.Settings
         /// <summary>
         /// Popupates the main application context with effective settings for a console application
         /// </summary>
-        public void ConfigureConsole(MainApplicationContext context)
+        public MainApplicationContext CreateConsoleApplicationContext()
         {
-            context.IsAtty = IsAtty.Value;
-            context.TimeZone = TimeZoneId.Value;
-
             Console.OutputEncoding = OutputEncoding.Value;
             if (AnsiTerminalEmulation.Value)
                 AnsiTextWriter.Attach();
 
-            context.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(Console.In, Console.Out, Console.Error));
-            context.DefaultPager = DefaultPager.Value;
+            var context = new MainApplicationContext()
+            {
+                IsAtty = IsAtty.Value,
+                TimeZone = TimeZoneId.Value,
+                DefaultPager = DefaultPager.Value
+            };
 
             context.SetEnvironmentVariables(SettingsContainer.VarSettings.EnvironmentVariables);
+            return context;
         }
 
         private T AddDefinition<T>(T definition) where T: ISettingDefinition

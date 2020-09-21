@@ -318,7 +318,7 @@ namespace NLedger.Scopus
 
         public void VisitManPage()
         {
-            if (!MainApplicationContext.Current.ManPageProvider.Show())
+            if (!MainApplicationContext.Current.ApplicationServiceProvider.ManPageProvider.Show())
                 throw new LogicError("Failed to fork child process");
         }
 

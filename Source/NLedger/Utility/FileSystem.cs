@@ -279,7 +279,7 @@ namespace NLedger.Utility
 
         private static IFileSystemProvider FileSystemProvider
         {
-            get { return MainApplicationContext.Current.FileSystemProvider; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.FileSystemProvider; }
         }
 
         private static readonly string DirectorySeparatorChar = new string(new char[] { Path.DirectorySeparatorChar });

@@ -158,7 +158,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity2 = CommodityPool.Current.Create("QUO2"); commodity2.QualifiedSymbol = "QUO2";
 
             TestQuoteProvider quoteProvider = new TestQuoteProvider() { ResultGet = true, ResultResponse = String.Empty };
-            MainApplicationContext.Current.SetQuoteProvider(() => quoteProvider);
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (quoteProviderFactory: () => quoteProvider));
 
             CommodityPool.CommodityQuoteFromScript(commodity1, null);
             Assert.Equal("getquote \"QUO1\" \"\"", quoteProvider.ReceivedCommand);
@@ -173,7 +174,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity1 = CommodityPool.Current.Create("QUO1"); commodity1.QualifiedSymbol = "QUO1";
 
             TestQuoteProvider quoteProvider = new TestQuoteProvider() { ResultGet = false };
-            MainApplicationContext.Current.SetQuoteProvider(() => quoteProvider);
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (quoteProviderFactory: () => quoteProvider));
 
             var result = CommodityPool.CommodityQuoteFromScript(commodity1, null);
             Assert.Null(result);
@@ -187,7 +189,8 @@ namespace NLedger.Tests.Commodities
             Commodity commodity2 = CommodityPool.Current.Create("QUO2");
 
             TestQuoteProvider quoteProvider = new TestQuoteProvider() { ResultGet = true, ResultResponse = "2010/10/10 10:11:12 AAPL $100.00" };
-            MainApplicationContext.Current.SetQuoteProvider(() => quoteProvider);
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (quoteProviderFactory: () => quoteProvider));
 
             var result = CommodityPool.CommodityQuoteFromScript(commodity1, null);
             Assert.NotNull(result);

@@ -124,8 +124,8 @@ namespace NLedger.Tests.Scopus
 
             using (var textWriter = new StringWriter())
             {
-                MainApplicationContext.Current.SetVirtualConsoleProvider(() =>
-                    new VirtualConsoleProvider(consoleError: textWriter));
+                MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                    (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(consoleError: textWriter)));
 
                 globalScope.ReportError(ex);
 
@@ -142,8 +142,8 @@ namespace NLedger.Tests.Scopus
 
             using (var textWriter = new StringWriter())
             {
-                MainApplicationContext.Current.SetVirtualConsoleProvider(() =>
-                    new VirtualConsoleProvider(consoleError: textWriter));
+                MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                    (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(consoleError: textWriter)));
 
                 MainApplicationContext.Current.CancellationSignal = CaughtSignalEnum.INTERRUPTED;
                 globalScope.ReportError(ex);

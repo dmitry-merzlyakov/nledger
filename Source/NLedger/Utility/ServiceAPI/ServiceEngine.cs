@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Abstracts.Impl;
 using NLedger.Utility.Settings;
 using System;
 using System.Collections.Generic;
@@ -15,24 +16,40 @@ using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
 {
-    public sealed class ServiceEngine
+    public class ServiceEngine
     {
         public ServiceSession CreateSession(string args, string inputText)
         {
-            //var configuration = new NLedgerConfiguration();
-            var context = new MainApplicationContext();
-
-            context.IsAtty = false;
-            //context.TimeZone = configuration.TimeZoneId.Value;
-            //context.DefaultPager = configuration.DefaultPager.Value;
-            //context.SetEnvironmentVariables(configuration.SettingsContainer.VarSettings.EnvironmentVariables);
-
-            return new ServiceSession(context, CommandLine.PreprocessSingleQuotes(args), inputText);
+            return new ServiceSession(this, CommandLine.PreprocessSingleQuotes(args), inputText);
         }
 
         public Task<ServiceSession> CreateSessionAsync(string args, string inputText)
         {
             return Task.Run(() => CreateSession(args, inputText));
+        }
+
+        public virtual MainApplicationContext CreateContext(MemoryStreamManager memoryStreamManager)
+        {
+            var context = new MainApplicationContext(CreateApplicationServiceProvider(memoryStreamManager));
+            context.IsAtty = false;
+            // This is the subject for potential configuring: context.TimeZone, context.DefaultPager, context.SetEnvironmentVariables()
+            return context;
+        }
+
+        public virtual MainApplicationContext CloneContext(MainApplicationContext mainApplicationContext, MemoryStreamManager memoryStreamManager)
+        {
+            if (mainApplicationContext == null)
+                throw new ArgumentNullException(nameof(mainApplicationContext));
+
+            return mainApplicationContext.Clone(CreateApplicationServiceProvider(memoryStreamManager));
+        }
+
+        protected virtual IApplicationServiceProvider CreateApplicationServiceProvider(MemoryStreamManager memoryStreamManager)
+        {
+            if (memoryStreamManager == null)
+                throw new ArgumentNullException(nameof(memoryStreamManager));
+
+            return new ApplicationServiceProvider(virtualConsoleProviderFactory: () => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
         }
     }
 }

@@ -19,22 +19,22 @@ namespace NLedger.Utility
     {
         public static TextReader Input
         {
-            get { return MainApplicationContext.Current.VirtualConsoleProvider.ConsoleInput; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.VirtualConsoleProvider.ConsoleInput; }
         }
 
         public static TextWriter Output
         {
-            get { return MainApplicationContext.Current.VirtualConsoleProvider.ConsoleOutput; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.VirtualConsoleProvider.ConsoleOutput; }
         }
 
         public static TextWriter Error
         {
-            get { return MainApplicationContext.Current.VirtualConsoleProvider.ConsoleError; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.VirtualConsoleProvider.ConsoleError; }
         }
 
         public static int WindowWidth
         {
-            get { return MainApplicationContext.Current.VirtualConsoleProvider.WindowWidth; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.VirtualConsoleProvider.WindowWidth; }
         }
 
         public static bool IsAtty()
@@ -59,13 +59,13 @@ namespace NLedger.Utility
         // #readline-library - history_expand
         public static int HistoryExpand(string str, ref string output)
         {
-            return MainApplicationContext.Current.VirtualConsoleProvider.HistoryExpand(_ReadLineName, str, ref output);
+            return MainApplicationContext.Current.ApplicationServiceProvider.VirtualConsoleProvider.HistoryExpand(_ReadLineName, str, ref output);
         }
 
         // #readline-library - add_history
         public static void AddHistory(string str)
         {
-            MainApplicationContext.Current.VirtualConsoleProvider.AddHistory(_ReadLineName, str);
+            MainApplicationContext.Current.ApplicationServiceProvider.VirtualConsoleProvider.AddHistory(_ReadLineName, str);
         }
 
         [ThreadStatic]
