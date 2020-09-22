@@ -28,6 +28,15 @@ namespace NLedger.Utility.ServiceAPI
         public TextReader ConsoleInput { get; private set; }
         public TextWriter ConsoleOutput { get; private set; }
 
+        public void Attach(Func<TextWriter, BaseAnsiTextWriter> ansiTextWriterFactory)
+        {
+            if (ansiTextWriterFactory == null)
+                throw new ArgumentNullException(nameof(ansiTextWriterFactory));
+
+            ConsoleOutput = ansiTextWriterFactory(ConsoleOutput);
+            ConsoleError = ansiTextWriterFactory(ConsoleError);
+        }
+
         public string GetOutputText()
         {
             return ConsoleOutput.ToString();

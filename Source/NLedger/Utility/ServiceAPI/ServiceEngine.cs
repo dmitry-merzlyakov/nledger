@@ -16,8 +16,31 @@ using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
 {
+    /// <summary>
+    /// Main Service API manager that creates NLedger API session instances
+    /// </summary>
     public class ServiceEngine
     {
+        /// <summary>
+        /// Create a new instance of API manager.
+        /// </summary>
+        /// <param name="configureContext">Optional action that allows to configure a session's MainApplicationContext</param>
+        /// <param name="createCustomProvider">Optional function that allows to customize service providers for a session</param>
+        public ServiceEngine(Action<MainApplicationContext> configureContext = null, Func<MemoryStreamManager, IApplicationServiceProvider> createCustomProvider = null)
+        {
+            ConfigureContext = configureContext;
+            CreateCustomProvider = createCustomProvider;
+        }
+
+        public Action<MainApplicationContext> ConfigureContext { get; }
+        public Func<MemoryStreamManager, IApplicationServiceProvider> CreateCustomProvider { get; }
+
+        /// <summary>
+        /// Creates a session (that basically means reading Ledger journal)
+        /// </summary>
+        /// <param name="args">Command line arguments that specify session behavior (primarily, source location).</param>
+        /// <param name="inputText">Optional source text (if source is specified as '-f /dev/stdin')</param>
+        /// <returns></returns>
         public ServiceSession CreateSession(string args, string inputText)
         {
             return new ServiceSession(this, CommandLine.PreprocessSingleQuotes(args), inputText);
@@ -32,7 +55,9 @@ namespace NLedger.Utility.ServiceAPI
         {
             var context = new MainApplicationContext(CreateApplicationServiceProvider(memoryStreamManager));
             context.IsAtty = false;
-            // This is the subject for potential configuring: context.TimeZone, context.DefaultPager, context.SetEnvironmentVariables()
+
+            ConfigureContext?.Invoke(context);
+
             return context;
         }
 
@@ -48,6 +73,10 @@ namespace NLedger.Utility.ServiceAPI
         {
             if (memoryStreamManager == null)
                 throw new ArgumentNullException(nameof(memoryStreamManager));
+
+            var customProvider = CreateCustomProvider?.Invoke(memoryStreamManager);
+            if (customProvider != null)
+                return customProvider;
 
             return new ApplicationServiceProvider(virtualConsoleProviderFactory: () => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
         }

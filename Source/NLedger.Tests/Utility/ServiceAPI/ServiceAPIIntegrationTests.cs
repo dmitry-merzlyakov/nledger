@@ -105,6 +105,26 @@ namespace NLedger.Tests.Utility.ServiceAPI
             Assert.True(tasks.All(t => t.Result == null));
         }
 
+        /// <summary>
+        /// Example of configuring ANSI writer
+        /// </summary>
+        [Fact]
+        public void ServiceAPI_IntegrationTests_5()
+        {
+            var engine = new ServiceEngine(
+                configureContext: context => { context.IsAtty = true; },
+                createCustomProvider: mem =>
+                {
+                    mem.Attach(w => new MemoryAnsiTextWriter(w));
+                    return null;
+                });
+
+            var session = engine.CreateSession("-f /dev/stdin", InputText);
+            var response = session.ExecuteCommand("bal checking --account=code");
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalCheckingOutputTextWithSpans.Replace("\r", "").Trim(), response.OutputText.Trim());
+        }
+
         private Exception CheckSessionResponseOutput(ServiceResponse serviceResponse, string expectedOutput)
         {
             try
@@ -141,6 +161,13 @@ namespace NLedger.Tests.Utility.ServiceAPI
         private static readonly string BalCheckingOutputText = @"
               $20.00  DEP:Assets:Checking
               $-9.00  XFER:Assets:Checking
+--------------------
+              $11.00
+";
+
+        private static readonly string BalCheckingOutputTextWithSpans = @"
+              $20.00  <span class=""fg1"">DEP:Assets:Checking</span>
+              <span class=""fg4"">$-9.00</span>  <span class=""fg1"">XFER:Assets:Checking</span>
 --------------------
               $11.00
 ";

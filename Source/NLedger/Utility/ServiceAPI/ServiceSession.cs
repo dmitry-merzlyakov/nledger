@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
 {
+    /// <summary>
+    /// Service API session object that represent parsed ledger journal.
+    /// </summary>
     public class ServiceSession : IDisposable
     {
         public ServiceSession(ServiceEngine serviceEngine, IEnumerable<string> args, string inputText)

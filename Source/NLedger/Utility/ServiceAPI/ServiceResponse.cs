@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
 {
+    /// <summary>
+    /// Service API command response (contains the result of an executed command)
+    /// </summary>
     public class ServiceResponse
     {
         public ServiceResponse(ServiceSession serviceSession, string command)
