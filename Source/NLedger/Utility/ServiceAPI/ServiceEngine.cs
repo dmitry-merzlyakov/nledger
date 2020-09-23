@@ -41,7 +41,7 @@ namespace NLedger.Utility.ServiceAPI
         /// <param name="args">Command line arguments that specify session behavior (primarily, source location).</param>
         /// <param name="inputText">Optional source text (if source is specified as '-f /dev/stdin')</param>
         /// <returns></returns>
-        public ServiceSession CreateSession(string args, string inputText)
+        public ServiceSession CreateSession(string args, string inputText = null)
         {
             return new ServiceSession(this, CommandLine.PreprocessSingleQuotes(args), inputText);
         }

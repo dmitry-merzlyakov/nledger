@@ -6,6 +6,7 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
+using NLedger.Abstracts.Impl;
 using NLedger.Utility.ServiceAPI;
 using System;
 using System.Collections.Generic;
@@ -123,6 +124,29 @@ namespace NLedger.Tests.Utility.ServiceAPI
             var response = session.ExecuteCommand("bal checking --account=code");
             Assert.False(response.HasErrors);
             Assert.Equal(BalCheckingOutputTextWithSpans.Replace("\r", "").Trim(), response.OutputText.Trim());
+        }
+
+        /// <summary>
+        /// Example of configuring a virtual file system
+        /// </summary>
+        [Fact]
+        public void ServiceAPI_IntegrationTests_6()
+        {
+            var fs = new MemoryFileSystemProvider();
+            fs.CreateFile("input.dat", InputText);
+
+            var engine = new ServiceEngine(
+                createCustomProvider: mem =>
+                {
+                    return new ApplicationServiceProvider(
+                        fileSystemProviderFactory: () => fs,
+                        virtualConsoleProviderFactory: () => new VirtualConsoleProvider(mem.ConsoleInput, mem.ConsoleOutput, mem.ConsoleError));
+                });
+
+            var session = engine.CreateSession("-f input.dat");
+            var response = session.ExecuteCommand("bal checking --account=code");
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
         }
 
         private Exception CheckSessionResponseOutput(ServiceResponse serviceResponse, string expectedOutput)

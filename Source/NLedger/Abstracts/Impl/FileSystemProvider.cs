@@ -45,7 +45,7 @@ namespace NLedger.Abstracts.Impl
             return File.OpenText(path);
         }
 
-        public FileStream OpenRead(string path)
+        public Stream OpenRead(string path)
         {
             return File.OpenRead(path);
         }

@@ -28,7 +28,7 @@ namespace NLedger.Abstracts
         IEnumerable<string> GetFiles(string path);
 
         StreamReader OpenText(string path);
-        FileStream OpenRead(string path);
+        Stream OpenRead(string path);
         TextWriter CreateText(string path);
         void AppendAllText(string path, string contents);
 
