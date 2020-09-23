@@ -5,14 +5,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace NLedger.Utility.ServiceAPI
 {
+    /// <summary>
+    /// Simulates a virtual in-memory linux-style file system.
+    /// </summary>
     public class MemoryFileSystemProvider : IFileSystemProvider
     {
-        public MemoryFileSystemProvider(string rootName = null)
+        public static readonly string DirectorySeparator = "/";
+
+        public MemoryFileSystemProvider()
         {
-            Root = new FileSystemRoot(rootName ?? "home");
+            Root = new FileSystemRoot();
         }
 
         public void AppendAllText(string path, string content)
@@ -110,6 +116,12 @@ namespace NLedger.Utility.ServiceAPI
             return FileSystemRoot.PathCombine(path1, path2);
         }
 
+        public string GetFolderPath(SpecialFolder folder)
+        {
+            // In virtual file system, all special folders are associated with the root
+            return Root.FullPath;
+        }
+
         // Helper methods
 
         public void SetCurrentDirectory(string path)
@@ -139,9 +151,9 @@ namespace NLedger.Utility.ServiceAPI
         {
             public FileSystemEntry(string name, FileSystemFolder parent)
             {
-                if (String.IsNullOrWhiteSpace(name))
+                if (HasParent && String.IsNullOrWhiteSpace(name))
                     throw new ArgumentNullException(nameof(name));
-                if (parent == null && HasParent)
+                if (HasParent && parent == null)
                     throw new ArgumentNullException(nameof(parent));
 
                 Name = name;
@@ -155,7 +167,7 @@ namespace NLedger.Utility.ServiceAPI
 
             public abstract bool IsFolder { get; }
             public virtual FileSystemRoot Root => Parent.Root;
-            public virtual string FullPath => Parent.FullPath + "/" + Name;
+            public virtual string FullPath => Parent != Root ? Parent.FullPath + DirectorySeparator + Name : DirectorySeparator + Name;
             public virtual bool HasParent => true;
         }
 
@@ -223,26 +235,49 @@ namespace NLedger.Utility.ServiceAPI
 
         private class FileSystemRoot : FileSystemFolder
         {
-            public FileSystemRoot(string name)
-                : base(name, null)
+            public FileSystemRoot()
+                : base(String.Empty, null)
             {
                 CurrentFolder = this;
             }
 
             public override FileSystemRoot Root => this;
-            public override string FullPath => "/" + Name;
+            public override string FullPath => DirectorySeparator;
             public override bool HasParent => false;
 
             public FileSystemFolder CurrentFolder { get; private set; }
 
+            public static bool IsAbsolutePath(string path)
+            {
+                return !String.IsNullOrEmpty(path) && path.StartsWith(DirectorySeparator);
+            }
+
             public static string PathCombine(string path1, string path2)
             {
-                if (path2.StartsWith("/"))
+                if (IsAbsolutePath(path2))
                     return path2;
 
-                var baseUri = path1.Contains(@":\") ? new Uri(path1) : new Uri("/" + path1);      // Expected absolute path
-                var fullUri = new Uri(baseUri, "./" + path2);   // Expected relative path
-                return fullUri.AbsoluteUri.Substring("file:/".Length);
+                var items = ((path1 + DirectorySeparator + path2).Split(new string[] { DirectorySeparator }, StringSplitOptions.RemoveEmptyEntries)).ToArray();
+                var normalized = new Stack<string>();
+
+                foreach(var item in items)
+                {
+                    if (item == "..")
+                    {
+                        if (normalized.Count == 0)
+                            throw new InvalidOperationException($"Cannot combine paths '{path1}' and '{path2}'");
+
+                        normalized.Pop();
+                    }
+                    else
+                    {
+                        if (item != ".")
+                            normalized.Push(item);
+                    }
+                }
+
+                var root = IsAbsolutePath(path1) ? DirectorySeparator : String.Empty;
+                return root + String.Join(DirectorySeparator, normalized.Reverse().ToArray());
             }
 
             public string GetFullPath(string path)
@@ -250,7 +285,7 @@ namespace NLedger.Utility.ServiceAPI
                 if (String.IsNullOrWhiteSpace(path))
                     throw new ArgumentNullException(nameof(path));
 
-                if (path.StartsWith("/"))
+                if (IsAbsolutePath(path))
                     return path;
 
                 return PathCombine(CurrentFolder.FullPath, path);
@@ -258,13 +293,13 @@ namespace NLedger.Utility.ServiceAPI
 
             public string[] GetFullPathArray(string path)
             {
-                return GetFullPath(path).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+                return GetFullPath(path).Split(new string[] { DirectorySeparator }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             }
 
             public string GetDirectoryName(string path)
             {
                 var pathArray = GetFullPathArray(path);
-                return "/" + String.Join("/", pathArray.Take(pathArray.Length - 1).ToArray());
+                return DirectorySeparator + String.Join(DirectorySeparator, pathArray.Take(pathArray.Length - 1).ToArray());
             }
 
             public string GetFileName(string path)
@@ -276,13 +311,13 @@ namespace NLedger.Utility.ServiceAPI
             public FileSystemFolder GetFolder(string path)
             {
                 var pathArray = GetFullPathArray(path);
-                if (pathArray.Length < 1 || pathArray[0] != Name)
-                    return null;
+                if (!pathArray.Any())
+                    return this;
 
                 FileSystemFolder folder = this;
-                for (int i=1; i< pathArray.Length; i++)
+                foreach (var item in pathArray)
                 {
-                    if (!folder.Folders.TryGetValue(pathArray[i], out folder))
+                    if (!folder.Folders.TryGetValue(item, out folder))
                         return null;                    
                 }
 
@@ -326,9 +361,9 @@ namespace NLedger.Utility.ServiceAPI
 
             public FileSystemFile FileSystemFile { get; }
 
-            public override void Flush()
+            public override void Close()
             {
-                base.Flush();
+                base.Close();
                 FileSystemFile.SetContent(ToString());
             }
         }

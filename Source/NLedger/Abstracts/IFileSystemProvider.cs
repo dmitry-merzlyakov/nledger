@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace NLedger.Abstracts
 {
@@ -39,5 +40,6 @@ namespace NLedger.Abstracts
         string GetFileName(string path);
         string PathCombine(string path1, string path2);
         string GetFullPath(string path);
+        string GetFolderPath(SpecialFolder folder);
     }
 }
