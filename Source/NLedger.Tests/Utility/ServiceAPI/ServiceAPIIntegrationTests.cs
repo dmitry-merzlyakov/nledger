@@ -149,6 +149,24 @@ namespace NLedger.Tests.Utility.ServiceAPI
             Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
         }
 
+        /// <summary>
+        /// Example of setting environment variables
+        /// </summary>
+        [Fact]
+        public void ServiceAPI_IntegrationTests_7()
+        {
+            var engine = new ServiceEngine(
+                configureContext: context => 
+                    {
+                        context.SetEnvironmentVariables(new Dictionary<string, string>() { { "COLUMNS", "120" } });
+                    });
+
+            var session = engine.CreateSession("-f /dev/stdin", InputText);
+            var response = session.ExecuteCommand("bal checking --account=code");
+            Assert.False(response.HasErrors);
+            Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
+        }
+
         private Exception CheckSessionResponseOutput(ServiceResponse serviceResponse, string expectedOutput)
         {
             try

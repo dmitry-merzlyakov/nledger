@@ -67,7 +67,7 @@ namespace NLedger.Utility.ServiceAPI
             if (folder == null)
                 throw new InvalidOperationException($"Folder not found: {path}");
 
-            return folder.Files.Keys;
+            return folder.Files.Values.Select(f => f.FullPath).OrderBy(f => f);
         }
 
         public long GetFileSize(string fileName)
