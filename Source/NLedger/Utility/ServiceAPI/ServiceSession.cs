@@ -31,13 +31,16 @@ namespace NLedger.Utility.ServiceAPI
 
             ServiceEngine = serviceEngine;
             InputText = inputText ?? String.Empty;
-            MainApplicationContext = InitializeSession(args);
+
+            using (new ScopeTimeTracker(time => ExecutionTime = time))
+                MainApplicationContext = InitializeSession(args);
         }
 
         public ServiceEngine ServiceEngine { get; }
         public MainApplicationContext MainApplicationContext { get; }
         public GlobalScope GlobalScope { get; private set; }
         public int Status { get; private set; } = 1;
+        public TimeSpan ExecutionTime { get; private set; }
 
         public string InputText { get; private set; }
         public string OutputText { get; private set; }

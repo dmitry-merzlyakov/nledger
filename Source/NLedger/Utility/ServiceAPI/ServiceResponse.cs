@@ -29,13 +29,15 @@ namespace NLedger.Utility.ServiceAPI
             if (String.IsNullOrWhiteSpace(command))
                 throw new ArgumentNullException(nameof(command));
 
-            ServiceSession = serviceSession;            
-            MainApplicationContext = InitializeResponse(command);
+            ServiceSession = serviceSession;
+            using (new ScopeTimeTracker(time => ExecutionTime = time))
+                MainApplicationContext = InitializeResponse(command);
         }
 
         public ServiceSession ServiceSession { get; }
         public MainApplicationContext MainApplicationContext { get; }
         public int Status { get; private set; } = 1;
+        public TimeSpan ExecutionTime { get; private set; }
         public bool HasErrors => Status > 0;
 
         public string OutputText { get; private set; }
