@@ -19,13 +19,14 @@ Param()
 # Locate shell config file for unix-like platforms (linux and OSX)
 [string]$Script:ShellConfig = $null
 if(!$Script:isWindowsPlatform) {
-    if ($env:SHELL -eq "/bin/zsh") { $Script:ShellConfig = "$HOME/.zshrc" }
-    else {
+    if ($env:SHELL -eq "/bin/zsh") { 
+        $Script:ShellConfig = "$HOME/.zshrc" 
+    } else {
         $Script:ShellConfig = "$HOME/.bashrc"
         if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $Script:ShellConfig = "$HOME/.bash_profile" }
-        if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $null = Add-Content $Script:ShellConfig "" }
-        if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { throw "Cannot find shell config file" }
     }
+    if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $null = Add-Content $Script:ShellConfig "" }
+    if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { throw "Cannot find shell config file" }
 }
 
 <#
