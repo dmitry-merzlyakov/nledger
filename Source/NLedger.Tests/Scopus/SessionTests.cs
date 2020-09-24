@@ -78,7 +78,8 @@ namespace NLedger.Tests.Scopus
         public void Session_ReadData_UsesInputStreamIfFileNameIsMinus()
         {
             var input = new System.IO.StringReader(Session_ReadJournalFromString_Example);
-            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(input));
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(input)));
 
             Scope.DefaultScope = new EmptyScope();
             Session session = new Session();

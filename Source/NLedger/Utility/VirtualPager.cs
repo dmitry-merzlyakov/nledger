@@ -20,7 +20,7 @@ namespace NLedger.Utility
     {
         public static IPagerProvider PagerProvider
         {
-            get { return MainApplicationContext.Current.PagerProvider; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.PagerProvider; }
         }
 
         public static TextWriter GetPager(string pagerPath)

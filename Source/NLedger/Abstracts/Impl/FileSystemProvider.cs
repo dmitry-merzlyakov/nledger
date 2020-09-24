@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace NLedger.Abstracts.Impl
 {
@@ -45,7 +46,7 @@ namespace NLedger.Abstracts.Impl
             return File.OpenText(path);
         }
 
-        public FileStream OpenRead(string path)
+        public Stream OpenRead(string path)
         {
             return File.OpenRead(path);
         }
@@ -88,6 +89,11 @@ namespace NLedger.Abstracts.Impl
         public string GetFullPath(string path)
         {
             return Path.GetFullPath(path);
+        }
+
+        public string GetFolderPath(SpecialFolder folder)
+        {
+            return Environment.GetFolderPath(folder);
         }
 
     }

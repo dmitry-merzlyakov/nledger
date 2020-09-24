@@ -6,23 +6,36 @@
 // Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using NLedger.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLedger.Abstracts.Impl
+namespace NLedger.Utility
 {
-    public class ManPageProvider : IManPageProvider
+    public class ScopeTimeTracker : IDisposable
     {
-        public const string LedgerManFile = "ledger.1.html";
-
-        public bool Show()
+        public ScopeTimeTracker(Action<TimeSpan> setResult)
         {
-            string pathName = FileSystem.Combine(LedgerManFile, FileSystem.AppPath());
-            return MainApplicationContext.Current.ApplicationServiceProvider.ProcessManager.Start(pathName);
+            if (setResult == null)
+                throw new ArgumentNullException(nameof(setResult));
+
+            SetResult = setResult;
+            Stopwatch = Stopwatch.StartNew();
         }
+
+        public void Dispose()
+        {
+            if (Stopwatch.IsRunning)
+            {
+                Stopwatch.Stop();
+                SetResult(Stopwatch.Elapsed);
+            }
+        }
+
+        private readonly Action<TimeSpan> SetResult;
+        private readonly Stopwatch Stopwatch;        
     }
 }

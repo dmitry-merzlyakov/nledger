@@ -22,9 +22,54 @@ using System.Threading.Tasks;
 
 namespace NLedger
 {
+    public interface IApplicationServiceProvider
+    {
+        IQuoteProvider QuoteProvider { get; }
+        IProcessManager ProcessManager { get; }
+        IManPageProvider ManPageProvider { get; }
+        IVirtualConsoleProvider VirtualConsoleProvider { get; }
+        IFileSystemProvider FileSystemProvider { get; }
+        IPagerProvider PagerProvider { get; }
+    }
+
+    public class ApplicationServiceProvider : IApplicationServiceProvider
+    {
+        public ApplicationServiceProvider(Func<IQuoteProvider> quoteProviderFactory = null, Func<IProcessManager> processManagerFactory = null, 
+            Func<IManPageProvider> manPageProviderFactory = null, Func<IVirtualConsoleProvider> virtualConsoleProviderFactory = null,
+            Func<IFileSystemProvider> fileSystemProviderFactory = null, Func<IPagerProvider> pagerProviderFactory = null)
+        {
+            _QuoteProvider = new Lazy<IQuoteProvider>(quoteProviderFactory ?? (() => new QuoteProvider()));
+            _ProcessManager = new Lazy<IProcessManager>(processManagerFactory ?? (() => new ProcessManager()));
+            _ManPageProvider = new Lazy<IManPageProvider>(manPageProviderFactory ?? (() => new ManPageProvider()));
+            _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(virtualConsoleProviderFactory ?? (() => new VirtualConsoleProvider()));
+            _FileSystemProvider = new Lazy<IFileSystemProvider>(fileSystemProviderFactory ?? (() => new FileSystemProvider()));
+            _PagerProvider = new Lazy<IPagerProvider>(pagerProviderFactory ?? (() => new PagerProvider()));
+        }
+
+        public IQuoteProvider QuoteProvider => _QuoteProvider.Value;
+        public IProcessManager ProcessManager => _ProcessManager.Value;
+        public IManPageProvider ManPageProvider => _ManPageProvider.Value;
+        public IVirtualConsoleProvider VirtualConsoleProvider => _VirtualConsoleProvider.Value;
+        public IFileSystemProvider FileSystemProvider => _FileSystemProvider.Value;
+        public IPagerProvider PagerProvider => _PagerProvider.Value;
+
+        private readonly Lazy<IQuoteProvider> _QuoteProvider;
+        private readonly Lazy<IProcessManager> _ProcessManager;
+        private readonly Lazy<IManPageProvider> _ManPageProvider;
+        private readonly Lazy<IVirtualConsoleProvider> _VirtualConsoleProvider;
+        private readonly Lazy<IFileSystemProvider> _FileSystemProvider;
+        private readonly Lazy<IPagerProvider> _PagerProvider;
+    }
+
+
     public sealed class MainApplicationContext
     {
         public static MainApplicationContext Current => CurrentInstance;
+
+        public MainApplicationContext(IApplicationServiceProvider applicationServiceProvider = null)
+        {
+            _ApplicationServiceProvider = applicationServiceProvider ?? new ApplicationServiceProvider();
+        }
 
         // For GlobalScope
         public bool ArgsOnly { get; set; }
@@ -84,31 +129,26 @@ namespace NLedger
         }
 
         // Abstract Application Services
-        public IQuoteProvider QuoteProvider => _QuoteProvider.Value;
-        public IProcessManager ProcessManager => _ProcessManager.Value;
-        public IManPageProvider ManPageProvider => _ManPageProvider.Value;
-        public IVirtualConsoleProvider VirtualConsoleProvider => _VirtualConsoleProvider.Value;
-        public IFileSystemProvider FileSystemProvider => _FileSystemProvider.Value;
-        public IPagerProvider PagerProvider => _PagerProvider.Value;
+        public IApplicationServiceProvider ApplicationServiceProvider => _ApplicationServiceProvider;
 
-        public void SetQuoteProvider(Func<IQuoteProvider> quoteProviderFactory)
+        // Primarily, for testing purposes only
+        public void SetApplicationServiceProvider(IApplicationServiceProvider applicationServiceProvider)
         {
-            _QuoteProvider = new Lazy<IQuoteProvider>(quoteProviderFactory);
+            if (applicationServiceProvider == null)
+                throw new ArgumentNullException(nameof(applicationServiceProvider));
+
+            _ApplicationServiceProvider = applicationServiceProvider;
         }
 
-        public void SetVirtualConsoleProvider(Func<IVirtualConsoleProvider> virtualConsoleProviderFactory)
-        {
-            _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(virtualConsoleProviderFactory);
-        }
-
+        // Request an excluse access to the current thread
         public ThreadAcquirer AcquireCurrentThread()
         {
             return new ThreadAcquirer(this);
         }
 
-        public MainApplicationContext Clone()
+        public MainApplicationContext Clone(IApplicationServiceProvider applicationServiceProvider = null)
         {
-            var context = new MainApplicationContext();
+            var context = new MainApplicationContext(applicationServiceProvider ?? _ApplicationServiceProvider);
             context.ArgsOnly = ArgsOnly;
             context.InitFile = InitFile;
             context.CommodityPool = CommodityPool;
@@ -125,12 +165,6 @@ namespace NLedger
             context.CancellationSignal = CancellationSignal;
             context.DefaultPager = DefaultPager;
             context._EnvironmentVariables = _EnvironmentVariables;
-            context._QuoteProvider = _QuoteProvider;
-            context._ProcessManager = _ProcessManager;
-            context._ManPageProvider = _ManPageProvider;
-            context._VirtualConsoleProvider = _VirtualConsoleProvider;
-            context._FileSystemProvider = _FileSystemProvider;
-            context._PagerProvider = _PagerProvider;
             return context;
         }
 
@@ -157,12 +191,7 @@ namespace NLedger
         private static readonly IDictionary<string, string> Empty = new Dictionary<string, string>();
 
         private CommodityPool _CommodityPool;
-        private Lazy<IQuoteProvider> _QuoteProvider = new Lazy<IQuoteProvider>(() => new QuoteProvider());
-        private Lazy<IProcessManager> _ProcessManager = new Lazy<IProcessManager>(() => new ProcessManager());
-        private Lazy<IManPageProvider> _ManPageProvider = new Lazy<IManPageProvider>(() => new ManPageProvider());
-        private Lazy<IVirtualConsoleProvider> _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(() => new VirtualConsoleProvider());
-        private Lazy<IFileSystemProvider> _FileSystemProvider = new Lazy<IFileSystemProvider>(() => new FileSystemProvider());
-        private Lazy<IPagerProvider> _PagerProvider = new Lazy<IPagerProvider>(() => new PagerProvider());
+        private IApplicationServiceProvider _ApplicationServiceProvider;
         private IDictionary<string, string> _EnvironmentVariables;
     }
 }

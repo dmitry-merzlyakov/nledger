@@ -26,7 +26,8 @@ namespace NLedger.Tests.Utility
         {
             using (var outWriter = new StringWriter())
             {
-                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(consoleError: outWriter));
+                MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                    (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(consoleError: outWriter)));
 
                 ErrorContext.Current.WriteError("error-text");
                 outWriter.Flush();
@@ -40,7 +41,8 @@ namespace NLedger.Tests.Utility
         {
             using (var outWriter = new StringWriter())
             {
-                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(consoleOutput: outWriter));
+                MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                    (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(consoleOutput: outWriter)));
 
                 ErrorContext.Current.WriteError("");
                 outWriter.Flush();
@@ -54,7 +56,8 @@ namespace NLedger.Tests.Utility
         {
             using (var outWriter = new StringWriter())
             {
-                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(consoleError: outWriter));
+                MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                    (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(consoleError: outWriter)));
 
                 ErrorContext.Current.WriteError(new Exception("exception-text"));
                 outWriter.Flush();
@@ -68,7 +71,8 @@ namespace NLedger.Tests.Utility
         {
             using (var outWriter = new StringWriter())
             {
-                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(consoleError: outWriter));
+                MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                    (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(consoleError: outWriter)));
 
                 ErrorContext.Current.WriteWarning("warning-text");
                 outWriter.Flush();

@@ -17,24 +17,30 @@ using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
 {
+    /// <summary>
+    /// Service API session object that represent parsed ledger journal.
+    /// </summary>
     public class ServiceSession : IDisposable
     {
-        public ServiceSession(MainApplicationContext mainApplicationContext, IEnumerable<string> args, string inputText)
+        public ServiceSession(ServiceEngine serviceEngine, IEnumerable<string> args, string inputText)
         {
-            if (mainApplicationContext == null)
-                throw new ArgumentNullException(nameof(mainApplicationContext));
+            if (serviceEngine == null)
+                throw new ArgumentNullException(nameof(serviceEngine));
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
-            MainApplicationContext = mainApplicationContext;
+            ServiceEngine = serviceEngine;
             InputText = inputText ?? String.Empty;
 
-            InitializeSession(args);
+            using (new ScopeTimeTracker(time => ExecutionTime = time))
+                MainApplicationContext = InitializeSession(args);
         }
 
+        public ServiceEngine ServiceEngine { get; }
         public MainApplicationContext MainApplicationContext { get; }
         public GlobalScope GlobalScope { get; private set; }
         public int Status { get; private set; } = 1;
+        public TimeSpan ExecutionTime { get; private set; }
 
         public string InputText { get; private set; }
         public string OutputText { get; private set; }
@@ -61,18 +67,17 @@ namespace NLedger.Utility.ServiceAPI
             CloseSession();
         }
 
-        private void InitializeSession(IEnumerable<string> args)
+        private MainApplicationContext InitializeSession(IEnumerable<string> args)
         {
-            using (MainApplicationContext.AcquireCurrentThread())
+            using (var memoryStreamManager = new MemoryStreamManager(InputText))
             {
-                using (var memoryStreamManager = new MemoryStreamManager(InputText))
+                var context = ServiceEngine.CreateContext(memoryStreamManager);
+                using (context.AcquireCurrentThread())
                 {
-                    MainApplicationContext.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
-
                     GlobalScope.HandleDebugOptions(args);
                     Logger.Current.Info(() => LedgerSessionStarting);
 
-                    GlobalScope = new GlobalScope(MainApplicationContext.EnvironmentVariables);
+                    GlobalScope = new GlobalScope(context.EnvironmentVariables);
                     GlobalScope.Session.FlushOnNextDataFile = true;
 
                     try
@@ -95,6 +100,7 @@ namespace NLedger.Utility.ServiceAPI
 
                     OutputText = memoryStreamManager.GetOutputText();
                     ErrorText = memoryStreamManager.GetErrorText();
+                    return context;
                 }
             }
         }

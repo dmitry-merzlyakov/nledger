@@ -110,10 +110,10 @@ namespace NLedger.IntegrationTests
                         {
                             using (var errWriter = new StringWriter())
                             {
-                                var context = new MainApplicationContext();
+                                var appServiceProvider = new ApplicationServiceProvider(virtualConsoleProviderFactory: () => new TestConsoleProvider(inReader, outWriter, errWriter));
+                                var context = new MainApplicationContext(appServiceProvider);
                                 context.IsAtty = false; // Simulating pipe redirection in original tests
                                 context.TimeZone = PreferredTimeZone; // Either "Central Standard Time" for Windows or "America/Chicago" for other systems
-                                context.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
                                 context.SetEnvironmentVariables(envs);
                                 var main = new Main(context);
 
