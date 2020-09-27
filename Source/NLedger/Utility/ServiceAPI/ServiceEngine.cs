@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
@@ -43,12 +44,12 @@ namespace NLedger.Utility.ServiceAPI
         /// <returns></returns>
         public ServiceSession CreateSession(string args, string inputText = null)
         {
-            return new ServiceSession(this, CommandLine.PreprocessSingleQuotes(args), inputText);
+            return CreatingSession(args, inputText, CancellationToken.None);
         }
 
-        public Task<ServiceSession> CreateSessionAsync(string args, string inputText)
+        public Task<ServiceSession> CreateSessionAsync(string args, string inputText = null, CancellationToken token = default(CancellationToken))
         {
-            return Task.Run(() => CreateSession(args, inputText));
+            return Task.Run(() => CreatingSession(args, inputText, token));
         }
 
         public virtual MainApplicationContext CreateContext(MemoryStreamManager memoryStreamManager)
@@ -80,5 +81,11 @@ namespace NLedger.Utility.ServiceAPI
 
             return new ApplicationServiceProvider(virtualConsoleProviderFactory: () => new VirtualConsoleProvider(memoryStreamManager.ConsoleInput, memoryStreamManager.ConsoleOutput, memoryStreamManager.ConsoleError));
         }
+
+        private ServiceSession CreatingSession(string args, string inputText, CancellationToken token)
+        {
+            return new ServiceSession(this, CommandLine.PreprocessSingleQuotes(args), inputText, token);
+        }
+
     }
 }

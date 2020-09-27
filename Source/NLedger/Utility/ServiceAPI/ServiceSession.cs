@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
@@ -22,7 +23,7 @@ namespace NLedger.Utility.ServiceAPI
     /// </summary>
     public class ServiceSession : IDisposable
     {
-        public ServiceSession(ServiceEngine serviceEngine, IEnumerable<string> args, string inputText)
+        public ServiceSession(ServiceEngine serviceEngine, IEnumerable<string> args, string inputText, CancellationToken token)
         {
             if (serviceEngine == null)
                 throw new ArgumentNullException(nameof(serviceEngine));
@@ -33,7 +34,7 @@ namespace NLedger.Utility.ServiceAPI
             InputText = inputText ?? String.Empty;
 
             using (new ScopeTimeTracker(time => ExecutionTime = time))
-                MainApplicationContext = InitializeSession(args);
+                MainApplicationContext = InitializeSession(args, token);
         }
 
         public ServiceEngine ServiceEngine { get; }
@@ -51,15 +52,12 @@ namespace NLedger.Utility.ServiceAPI
 
         public ServiceResponse ExecuteCommand(string command)
         {
-            if (!IsActive)
-                throw new InvalidOperationException("Session is not active");
-
-            return new ServiceResponse(this, command);
+            return ExecutingCommand(command, CancellationToken.None);
         }
 
-        public Task<ServiceResponse> ExecuteCommandAsync(string command)
+        public Task<ServiceResponse> ExecuteCommandAsync(string command, CancellationToken token = default(CancellationToken))
         {
-            return Task.Run(() => ExecuteCommand(command));
+            return Task.Run(() => ExecutingCommand(command, token));
         }
 
         public void Dispose()
@@ -67,11 +65,12 @@ namespace NLedger.Utility.ServiceAPI
             CloseSession();
         }
 
-        private MainApplicationContext InitializeSession(IEnumerable<string> args)
+        private MainApplicationContext InitializeSession(IEnumerable<string> args, CancellationToken token)
         {
             using (var memoryStreamManager = new MemoryStreamManager(InputText))
             {
                 var context = ServiceEngine.CreateContext(memoryStreamManager);
+                token.Register(() => context.CancellationSignal = CaughtSignalEnum.INTERRUPTED);
                 using (context.AcquireCurrentThread())
                 {
                     GlobalScope.HandleDebugOptions(args);
@@ -103,6 +102,14 @@ namespace NLedger.Utility.ServiceAPI
                     return context;
                 }
             }
+        }
+
+        private ServiceResponse ExecutingCommand(string command, CancellationToken token)
+        {
+            if (!IsActive)
+                throw new InvalidOperationException("Session is not active");
+
+            return new ServiceResponse(this, command, token);
         }
 
         private void CloseSession()
