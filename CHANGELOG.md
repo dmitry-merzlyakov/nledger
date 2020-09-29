@@ -1,3 +1,36 @@
+## 0.8 (2020-09-29)
+
+### Release Information
+
+- Upgrade to Ledger 3.2.1 (May 2020)
+- Support .Net Core and multi-platform capabilities 
+- Added development API for embedding NLedger functionality into third-party software
+
+### Features
+
+- NLedger code base and functional tests are upgraded to Ledger 3.2.1 (commit 56c42e11; 5/18/2020)
+- NLedger is migrated to .Net SDK-style project format; updated project dependencies (build script)
+- Unit tests are migrated from MSTest to xUnits
+- Multi-target builds (generating NLedger.dll for .Net Framework 4.5 and .Net Standard2.0; CLI executable - .Net Framework 4.5 and .Net Core 3.1).
+  All binaries are verified with unit tests and Ledger testing framework
+- Multi-platform builds (compilation, unit and integration testing on Windows, Linux ans OSX); added auxiliary quick-start tools
+- Created a development API for embedding NLedger functionality into third-party applications (thread-safe isolated application service model)
+- Published NLedger NuGet package
+
+### Known Issues
+
+Listed in ProductInfo.xml
+
+### Bug Fixing
+
+- Fixed NLedger GH#7 (Error in Calculation)
+- Addressed NLedger GH#2 (Core double entry components in nLedger) by new NLedger Service API
+- Fixed a problem with "--account=code" balance option in REPL mode
+
+### Breaking Changes
+
+- Since NLedger is migrated to .Net SDK-style project format, the minimal required version of Visual Studio is 2017; required version of .Net SDK is 3.1
+
 ## 0.7 (2018-08-12)
 
 ### Release Information
@@ -85,4 +118,4 @@ that will be addressed by further releases:
 
 *None* at the moment of the first public release.
 
-(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
