@@ -11,7 +11,7 @@ it describes installation process, special configuration options and the use of 
 
 ## System Requirements
 
-NLedger is a .Net console application so basic requirements are very simple; you have have either .Net Framework or .Net Core installed on your machine:
+NLedger is a .Net console application so basic requirements are very simple; you have to have either .Net Framework or .Net Core installed on your machine:
 
 - [.Net Framework 4.5 or higher](https://dotnet.microsoft.com/download/dotnet-framework) (for .Net Framework version of NLedger)
 - [.Net Core SDK or Runtime 3.1 or higher](https://dotnet.microsoft.com/download/dotnet-core/3.1) (for .Net Core version)
@@ -291,7 +291,7 @@ otherwise.*
 ### Creating Tests
 
 You can create own test files according to recommendations in Ledger documentation. Created file with .test extension
-should be put into *test* folder (or any its subfolder). The testing toolkit rescans the content of the test folder
+should be put into *test* folder (or any its sub-folder). The testing toolkit re-scans the content of the test folder
 every time so your file is immediately available.
 
 If you already have your own set of test files, you can put them to the test folder too.
