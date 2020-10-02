@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NLedger.Utility.ServiceAPI
@@ -22,7 +23,7 @@ namespace NLedger.Utility.ServiceAPI
     /// </summary>
     public class ServiceResponse
     {
-        public ServiceResponse(ServiceSession serviceSession, string command)
+        public ServiceResponse(ServiceSession serviceSession, string command, CancellationToken token)
         {
             if (serviceSession == null)
                 throw new ArgumentNullException(nameof(serviceSession));
@@ -31,7 +32,7 @@ namespace NLedger.Utility.ServiceAPI
 
             ServiceSession = serviceSession;
             using (new ScopeTimeTracker(time => ExecutionTime = time))
-                MainApplicationContext = InitializeResponse(command);
+                MainApplicationContext = InitializeResponse(command, token);
         }
 
         public ServiceSession ServiceSession { get; }
@@ -43,7 +44,7 @@ namespace NLedger.Utility.ServiceAPI
         public string OutputText { get; private set; }
         public string ErrorText { get; private set; }
 
-        private MainApplicationContext InitializeResponse(string command)
+        private MainApplicationContext InitializeResponse(string command, CancellationToken token)
         {
             // [DM] This is a quick workaround to fix multithreading issues caused by original non-thread-safe legder code.
             // When ExecuteCommandWrapper is executing, it changes the state of GlobalScope object, it can also change the state of 
@@ -55,6 +56,7 @@ namespace NLedger.Utility.ServiceAPI
                 using (var memoryStreamManager = new MemoryStreamManager())
                 {
                     var context = ServiceSession.ServiceEngine.CloneContext(ServiceSession.MainApplicationContext, memoryStreamManager);
+                    token.Register(() => context.CancellationSignal = CaughtSignalEnum.INTERRUPTED);
                     context.Logger = new Logger();
                     context.ErrorContext = new ErrorContext();
 
