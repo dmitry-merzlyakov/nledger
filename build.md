@@ -17,7 +17,9 @@ so they passed all unit and integration tests.
 
 ### Where to get NLedger NuGet package
 
-Primarily, NLedger NuGet package is available in the public NuGet repository. It is periodically updated with every new NLedger release (starting with version 0.8).
+Primarily, NLedger NuGet package is available [here](https://www.nuget.org/packages/NLedger/) in the public NuGet repository. It is periodically updated with every new NLedger release (starting with version 0.8).
+
+>Note: you need to check `Include Prerelease` checkbox in NuGet Package Manager to include NLedger into search results (because it is in pre-release status yet).
 
 If you want to get the latest CI package, you can download it [here](https://github.com/dmitry-merzlyakov/nledger/blob/next-dev/_CI.BuildLog.md). 
 If you are not sure how to install a local NuGet package file, you can check the answers to this question: [How do I install a NuGet package .nupkg file locally?](https://stackoverflow.com/questions/10240029/how-do-i-install-a-nuget-package-nupkg-file-locally).

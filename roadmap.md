@@ -66,6 +66,7 @@ This is a roadmap for development of next NLedger releases.
   solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
 - Code completion: add localization capabilities for error and warning messages; 
   verify and process Ledger methods *gettext_*, *throw_*;
+- Code completion: complete well-formatted code documentation, enable generating XML documentation file and include into NuGet package.
 
 ## NLedger 1.0
 
