@@ -202,8 +202,8 @@ There are several options; you may follow any of listed below.
 
 1. Go to *nledger/* folder
 2. Execute: 
-    - On Windows: `powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -noNLTests`
-    - On Linux or OSX: `pwsh -file ./get-nledger-up.ps1 -noNLTests`
+    - `pwsh -file ./get-nledger-up.ps1 -noNLTests`
+    - On Windows, you might need to type: `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh`
 
 > Note: the switch -noNLTests disables integration tests but you can run with them.
 
@@ -233,8 +233,8 @@ NLedger contributes all the original Ledger tests and a special software compone
 
 1. Navigate to *nledger/* folder
 2. Execute: 
-    - On Windows: `powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -testConsole`
-    - On Linux or OSX: `pwsh -file ./get-nledger-tools.ps1 -testConsole`
+    - `pwsh -file ./get-nledger-tools.ps1 -testConsole`
+    - Remember that you might need to type `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh` on Windows
 3. Follow instructions
 
 On Windows, you can also just run the file *nledger\Contrib\NLTestToolkit\NLTest.cmd*; it opens the testing toolkit console as well.
@@ -277,9 +277,9 @@ You can perform these actions automatically by the following command:
 
 1. Navigate to *nledger/* folder
 2. Execute: 
-    - On Windows: `powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -install`
-    - On Linux or OSX: `pwsh -file ./get-nledger-tools.ps1 -install`
-
+    - `pwsh -file ./get-nledger-tools.ps1 -install`
+    - Remember that you might need to type `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh` on Windows
+    
 Notes:
 - Switch `-installPreferCore` installs .Net Core binaries if you have files for both platforms (otherwise, it prefers .Net Framework)
 - Switch `-installConsole` opens a console where you can troubleshoot issues with installing

@@ -43,19 +43,11 @@ This option works on Windows, Linux and OSX. It includes:
 
 Prerequisites: .Net Core SDK 3.1, Powershell, Git command line tool
 
-#### Installing on Windows
+#### Installing (Windows, Linux and OSX)
 
-In a command line window, navigate to a folder that is appropriate to contain NLedger binary files and execute the following commands:
-
-```
-git clone https://github.com/dmitry-merzlyakov/nledger
-cd nledger
-powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -install
-```
-
-#### Installing on Linux or OSX
-
-In a terminal window, execute the following commands:
+1. Open command line (or terminal) window
+2. On Windows, navigate to a folder that is appropriate to contain NLedger binary files. On Linux and OSX, your home folder should be acceptable
+3. Execute the following commands:
 
 ```
 git clone https://github.com/dmitry-merzlyakov/nledger
@@ -63,19 +55,21 @@ cd nledger
 pwsh -file ./nledger/get-nledger-up.ps1 -install
 ```
 
+On Windows, depending on your Powershell version, the last command might be:
+
+```
+powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -install
+```
+
 #### Uninstalling NLedger
 
 Uninstalling includes removing NLedger from PATH variable and deleting a short alias. It does not remove `nledger` folder with source code and binary files; if you should do it yourself.
 
-On Windows - open a command line window, navigate to the folder containing NLedger and execute:
-```
-powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -uninstall
-```
-
-On Linux or OSX - open a terminal window, navigate to the folder containing NLedger and execute:
+Open a terminal window, navigate to the folder containing NLedger and execute:
 ```
 pwsh -file ./get-nledger-tools.ps1 -uninstall
 ```
+Remember that you might need to type `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh` for old Powershell versions on Windows.
 
 ### Installing from MSI package
 
