@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Utility;
@@ -72,12 +72,12 @@ namespace NLedger.Abstracts.Impl
                 var path = index > 0 ? pagerPath.Substring(0, index) : pagerPath;
 
                 Logger.Current.Debug("pager", () => String.Format("Looking for a pager by path {0}; arguments {1}", path, args));
-                var exePath = FileSystem.GetExecutablePath(path);
+                var exePath = NLedger.Utility.PlatformHelper.IsWindows() ? FileSystem.GetExecutablePath(path) : path;
                 if (String.IsNullOrEmpty(exePath))
                     throw new InvalidOperationException(String.Format("Application '{0}' (arguments: '{1}') not found", path, args));
 
                 Logger.Current.Debug("pager", () => String.Format("Found path {0}", exePath));
-                MainApplicationContext.Current.ProcessManager.Execute(exePath, args, null, outputText, noTimeout: true);
+                MainApplicationContext.Current.ApplicationServiceProvider.ProcessManager.Execute(exePath, args, null, outputText, noTimeout: true);
             }
             catch (Exception ex)
             {

@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Iterators;
 using System;
@@ -14,39 +13,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Iterators
 {
-    [TestClass]
     public class BasicAccountsIteratorTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void BasicAccountsIterator_Constructor_RequiresAnAccount()
         {
             Account account = new Account(null, "test-account");
             BasicAccountsIterator iterator = new BasicAccountsIterator(account);
-            Assert.AreEqual(account, iterator.Account);
+            Assert.Equal(account, iterator.Account);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void BasicAccountsIterator_Get_FailsForNullAccount()
         {
             BasicAccountsIterator iterator = new BasicAccountsIterator(null);
-            List<Account> result = iterator.Get().ToList();
+            Assert.Throws<ArgumentNullException>(() => iterator.Get().ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void BasicAccountsIterator_Get_ReturnsSingleItemForSingleAccount()
         {
             Account account = new Account(null, "test-account");
             BasicAccountsIterator iterator = new BasicAccountsIterator(account);
             List<Account> result = iterator.Get().ToList();
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(account, result[0]);
+            Assert.Single(result);
+            Assert.Equal(account, result[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void BasicAccountsIterator_Get_ReturnsAllAccountsInTree()
         {
             Account account1 = new Account();
@@ -58,13 +56,13 @@ namespace NLedger.Tests.Iterators
             BasicAccountsIterator iterator = new BasicAccountsIterator(account1);
             List<Account> result = iterator.Get().ToList();
 
-            Assert.AreEqual(3, result.Count);
-            Assert.AreEqual(account1, result[0]);
-            Assert.AreEqual(account11, result[1]);
-            Assert.AreEqual(account12, result[2]);
+            Assert.Equal(3, result.Count);
+            Assert.Equal(account1, result[0]);
+            Assert.Equal(account11, result[1]);
+            Assert.Equal(account12, result[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void BasicAccountsIterator_Get_ReturnsAllAccountsInThreeLevelTree()
         {
             Account account1 = new Account();
@@ -80,12 +78,12 @@ namespace NLedger.Tests.Iterators
             BasicAccountsIterator iterator = new BasicAccountsIterator(account1);
             List<Account> result = iterator.Get().ToList();
 
-            Assert.AreEqual(5, result.Count);
-            Assert.AreEqual(account1, result[0]);
-            Assert.AreEqual(account11, result[1]);
-            Assert.AreEqual(account111, result[2]);
-            Assert.AreEqual(account12, result[3]);
-            Assert.AreEqual(account121, result[4]);
+            Assert.Equal(5, result.Count);
+            Assert.Equal(account1, result[0]);
+            Assert.Equal(account11, result[1]);
+            Assert.Equal(account111, result[2]);
+            Assert.Equal(account12, result[3]);
+            Assert.Equal(account121, result[4]);
         }
 
     }

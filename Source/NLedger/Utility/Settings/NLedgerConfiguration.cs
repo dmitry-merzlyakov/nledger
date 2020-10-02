@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Abstracts.Impl;
@@ -59,19 +59,21 @@ namespace NLedger.Utility.Settings
         /// <summary>
         /// Popupates the main application context with effective settings for a console application
         /// </summary>
-        public void ConfigureConsole(MainApplicationContext context)
+        public MainApplicationContext CreateConsoleApplicationContext()
         {
-            context.IsAtty = IsAtty.Value;
-            context.TimeZone = TimeZoneId.Value;
-
             Console.OutputEncoding = OutputEncoding.Value;
             if (AnsiTerminalEmulation.Value)
                 AnsiTextWriter.Attach();
 
-            context.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(Console.In, Console.Out, Console.Error));
-            context.DefaultPager = DefaultPager.Value;
+            var context = new MainApplicationContext()
+            {
+                IsAtty = IsAtty.Value,
+                TimeZone = TimeZoneId.Value,
+                DefaultPager = DefaultPager.Value
+            };
 
             context.SetEnvironmentVariables(SettingsContainer.VarSettings.EnvironmentVariables);
+            return context;
         }
 
         private T AddDefinition<T>(T definition) where T: ISettingDefinition

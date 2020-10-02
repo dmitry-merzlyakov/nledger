@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -174,7 +174,7 @@ namespace NLedger.Scopus
 
         public string ShowVersionInfo()
         {
-            return String.Format(ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH);
+            return String.Format(ShowVersionInfoTemplate, VersionInfo.NLedgerVersion, VersionInfo.Ledger_VERSION_MAJOR, VersionInfo.Ledger_VERSION_MINOR, VersionInfo.Ledger_VERSION_PATCH, VersionInfo.Ledger_VERSION_DATE);
         }
 
         public static void HandleDebugOptions(IEnumerable<string> args)
@@ -318,7 +318,7 @@ namespace NLedger.Scopus
 
         public void VisitManPage()
         {
-            if (!MainApplicationContext.Current.ManPageProvider.Show())
+            if (!MainApplicationContext.Current.ApplicationServiceProvider.ManPageProvider.Show())
                 throw new LogicError("Failed to fork child process");
         }
 
@@ -537,7 +537,7 @@ namespace NLedger.Scopus
             VersionHandler = Options.Add(new Option(OptionVersion, (o, w) =>
             {
                 VirtualConsole.Output.WriteLine(ShowVersionInfo());
-                throw new CountError(0); // exit immediately
+                throw new CountError(0, String.Empty); // exit immediately
             }));
 
             Options.AddLookupOpt(OptionArgsOnly);
@@ -576,9 +576,9 @@ namespace NLedger.Scopus
 
         public const string ShowVersionInfoTemplate = 
 @"NLedger {0}, the command-line accounting tool.
-Ported to .Net platform from Ledger {1}.{2}.{3}
+Ported to .Net platform from Ledger {1}.{2}.{3}-{4}
 
-Copyright (c) 2003-2017, John Wiegley.  All rights reserved.
+Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 
 This program is made available under the terms of the BSD Public License.
 See LICENSE file included with the distribution for details and disclaimer.";

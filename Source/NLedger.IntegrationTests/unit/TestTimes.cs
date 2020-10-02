@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Times;
 using NLedger.Utility;
 using System;
@@ -14,30 +13,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.IntegrationTests.unit
 {
     /// <summary>
     /// Ported from t_times.cc
     /// </summary>
-    [TestClass]
-    public class TestTimes
+    public class TestTimes : IDisposable
     {
-        [TestInitialize]
-        public void Initialize()
+        public TestTimes()
         {
-            MainApplicationContext.Initialize();
+            Initialize();
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
+            MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             TimesCommon.Current.TimesInitialize();
         }
 
-        [TestCleanup]
-        public void Cleanup()
+        private void Cleanup()
         {
-            MainApplicationContext.Cleanup();
+            MainContextAcquirer.Dispose();
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
+
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Times_TestConstructors()
         {
             DateTime now = new DateTime(1970, 1, 1);
@@ -81,21 +90,21 @@ namespace NLedger.IntegrationTests.unit
             //d15 = d3;
             // #endif
 
-            Assert.IsTrue(d0.IsNotADate());
-            Assert.IsTrue(!d1.IsNotADate());
-            Assert.IsTrue(!d4.IsNotADate());
+            Assert.True(d0.IsNotADate());
+            Assert.True(!d1.IsNotADate());
+            Assert.True(!d4.IsNotADate());
 
-            Assert.IsTrue(TimesCommon.Current.CurrentDate > d1);
-            Assert.IsTrue(TimesCommon.Current.CurrentDate > d4);
+            Assert.True(TimesCommon.Current.CurrentDate > d1);
+            Assert.True(TimesCommon.Current.CurrentDate > d4);
 
             // #if 0
             //Assert.AreEqual(d3, d15);
             // #endif
 
-            Assert.AreEqual(d4, d6);
-            Assert.AreEqual(d4, d8);
-            Assert.AreEqual(d5, d7);
-            Assert.AreEqual(d5, d9);
+            Assert.Equal(d4, d6);
+            Assert.Equal(d4, d8);
+            Assert.Equal(d5, d7);
+            Assert.Equal(d5, d9);
 
             // #if 0
             /*

@@ -1,0 +1,43 @@
+= expr 'account =~ /Accounts:Client/ and has_tag("Payments") and has_tag("Credit") and amount < 1000'
+  (Sample:Fees)  -0.5 GBP
+
+2020-06-01  *  (4284af3d-dc3d-4b83-a3c0-f87f013f06f3) BITFINEX LTD-MA
+  ; :Credit:Payments:
+  Accounts:Client:9cc2fdda06e04c29a40071  35.00 GBP
+  Accounts:External:bfc20917a2bd4ca18fb259
+
+2020-06-01  *  (6c4f357e-fda6-4d1e-af66-5e26b0eb529e) BITFINEX LTD-MA
+  ; :Credit:Payments:
+  Accounts:Client:9cc2fdda06e04c29a40071  100.00 GBP
+  Accounts:External:ed536d8eb7374e8da3439b
+
+2020-06-01  *  (097f40d7-2f4c-44e1-944c-accf732e21ca) BITFINEX LTD-MA
+  ; :Credit:Payments:
+  Accounts:Client:9cc2fdda06e04c29a40071  50.00 GBP
+  Accounts:External:67690e9002de45f7bfcea1
+
+2020-06-01  *  (c9a9213a-a5e4-4035-92ab-fd71703ab480) BITFINEX LTD-MA
+  ; :Credit:Payments:
+  Accounts:Client:9cc2fdda06e04c29a40071  50.00 GBP
+  Accounts:External:ed536d8eb7374e8da3439b
+
+test bal
+                   0  Accounts
+          235.00 GBP    Client:9cc2fdda06e04c29a40071
+         -235.00 GBP    External
+          -50.00 GBP      67690e9002de45f7bfcea1
+          -35.00 GBP      bfc20917a2bd4ca18fb259
+         -150.00 GBP      ed536d8eb7374e8da3439b
+           -2.00 GBP  Sample:Fees
+--------------------
+           -2.00 GBP
+end test
+
+test equity
+2020/06/01 Opening Balances
+    Accounts:Client:9cc2fdda06e04c29a40071  235.00 GBP
+    Accounts:External:67690e9002de45f7bfcea1  -50.00 GBP
+    Accounts:External:bfc20917a2bd4ca18fb259  -35.00 GBP
+    Accounts:External:ed536d8eb7374e8da3439b  -150.00 GBP
+    (Sample:Fees)                          -2.00 GBP
+end test

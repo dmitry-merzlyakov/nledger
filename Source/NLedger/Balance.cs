@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -21,6 +21,67 @@ namespace NLedger
 {
     public class Balance : IEquatable<Balance>
     {
+        public static Balance AverageLotPrices(Balance bal)
+        {
+            // First, we split the balance into multiple balances by underlying
+            // commodity.
+            IDictionary<string, Tuple<Amount, Annotation>> bycomm = new Dictionary<string, Tuple<Amount, Annotation>>();
+
+            foreach (var pair in bal.Amounts)
+            {
+                string sym = pair.Key.Symbol;
+                Amount quant = new Amount(pair.Value).StripAnnotations(new AnnotationKeepDetails());
+
+                Tuple<Amount,Annotation> bycommItem;
+                if (!bycomm.TryGetValue(sym, out bycommItem))
+                {
+                    bycommItem = new Tuple<Amount, Annotation>(quant, new Annotation());
+                    bycomm.Add(sym, bycommItem);
+                }
+                else
+                {
+                    bycommItem.Item1.InPlaceAdd(quant);
+                }
+
+                if (pair.Key.IsAnnotated)
+                {
+                    AnnotatedCommodity acomm = (AnnotatedCommodity)pair.Key;
+                    Annotation ann = bycommItem.Item2;
+
+                    if ((bool)acomm.Details.Price)
+                    {
+                        if ((bool)ann.Price)
+                            ann.Price = ann.Price + (acomm.Details.Price * quant);
+                        else
+                            ann.Price = acomm.Details.Price * quant;
+                    }
+
+                    if (acomm.Details.Date.HasValue)
+                        if (!ann.Date.HasValue || acomm.Details.Date < ann.Date)
+                            ann.Date = acomm.Details.Date;
+                }
+            }
+
+            Balance result = new Balance();
+
+            foreach(var pair in bycomm)
+            {
+                Amount amt = pair.Value.Item1;
+                if (!amt.IsRealZero)
+                {
+                    if ((bool)pair.Value.Item2.Price)
+                        pair.Value.Item2.Price = pair.Value.Item2.Price / amt;
+
+                    Commodity acomm = CommodityPool.Current.FindOrCreate(amt.Commodity, pair.Value.Item2);
+                    amt.SetCommodity(acomm);
+
+                    result += amt;
+                }
+            }
+
+            return result;
+        }
+
         public static explicit operator bool(Balance balance)
         {
             return !IsNull(balance) && balance.IsNonZero;
@@ -205,6 +266,19 @@ namespace NLedger
                 else
                     throw new InvalidOperationException("Multiple amounts");
             }
+        }
+
+        /// <summary>
+        /// Ported from: amount_t to_amount()
+        /// </summary>
+        public Amount ToAmount()
+        {
+            if (IsEmpty)
+                throw new BalanceError(BalanceError.ErrorMessageCannotConvertAnEmptyBalanceToAnAmount);
+            else if (Amounts.Count == 1)
+                return Amounts.Values.First();
+            else
+                throw new BalanceError(BalanceError.ErrorMessageCannotConvertABalanceWithMultipleCommoditiesToAnAmount);
         }
 
         /// <summary>
@@ -504,12 +578,27 @@ namespace NLedger
             return null;
         }
 
-      /**
-       * Iteration primitives.  `map_sorted_amounts' allows one to visit
-       * each amount in balance in the proper order for displaying to the
-       * user.  Mostly used by `print' and other routinse where the sort
-       * order of the amounts' commodities is significant.
-       */
+        /**
+         * Given a balance, insert a commodity-wise sort of the amounts into the
+         * given amounts_array.
+         */
+        /// <summary>
+        /// Ported from void balance_t::sorted_amounts(amounts_array& sorted) const
+        /// </summary>
+        public List<Amount> SortedAmounts()
+        {
+            return Amounts.Values.
+                // [DM] Enumerable.OrderBy is a stable sort that preserve original positions for equal items
+                OrderBy(amt => amt, new BalanceCompareByCommodityComparison()).
+                ToList();
+        }
+
+        /**
+         * Iteration primitives.  `map_sorted_amounts' allows one to visit
+         * each amount in balance in the proper order for displaying to the
+         * user.  Mostly used by `print' and other routinse where the sort
+         * order of the amounts' commodities is significant.
+         */
         public void MapSortedAmounts(Action<Amount> fn)
         {
             if (Amounts.Any())
@@ -522,11 +611,7 @@ namespace NLedger
                 }
                 else
                 {
-                    List<Amount> sorted = Amounts.Values.
-                        Where(amt => (bool)amt).
-                        // [DM] Enumerable.OrderBy is a stable sort that preserve original positions for equal items
-                        OrderBy(amt => amt, new BalanceCompareByCommodityComparison()).
-                        ToList();
+                    List<Amount> sorted = SortedAmounts();
                     sorted.ForEach(amt => fn(amt));
                 }
             }
@@ -623,6 +708,15 @@ namespace NLedger
         public override string ToString()
         {
             return Print(12);
+        }
+
+        /// <summary>
+        /// Ported from operator string() / string to_string()
+        /// </summary>
+        /// <returns></returns>
+        public string AsString()
+        {
+            return Print();
         }
 
         private class PrintAmountFromBalance

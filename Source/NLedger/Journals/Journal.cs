@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -53,12 +53,8 @@ namespace NLedger.Journals
 
         public bool NoAliases { get; set; }
         public bool RecursiveAliases { get; set; }
-        public bool ForceChecking { get; set; }
-        public bool FixedAccounts { get; set; }
-        public bool FixedCommodities { get; set; }
         public bool DayBreak { get; set; }
         public bool CheckPayees { get; set; }
-        public bool FixedPayees { get; set; }
         public JournalCheckingStyleEnum CheckingStyle { get; set; }
         public Expr ValueExpr { get; set; }
 
@@ -78,7 +74,6 @@ namespace NLedger.Journals
         public IList<JournalFileInfo> Sources { get; private set; }
         public ISet<string> KnownTags { get; private set; }
         public ISet<string> KnownPayees { get; private set; }
-        public bool FixedMetadata { get; private set; }
         public IMultiMap<string, CheckExprPair> TagCheckExprsMap { get; private set; }
 
         /// <summary>
@@ -96,12 +91,6 @@ namespace NLedger.Journals
                 if (!KnownPayees.Contains(name))
                 {
                     if (xact == null)
-                    {
-                        if (ForceChecking)
-                            FixedPayees = true;
-                        KnownPayees.Add(name);
-                    }
-                    else if (!FixedPayees && xact.State != ItemStateEnum.Uncleared)
                     {
                         KnownPayees.Add(name);
                     }
@@ -128,6 +117,9 @@ namespace NLedger.Journals
             return payee ?? name;
         }
 
+        /// <summary>
+        /// Ported from account_t * journal_t::register_account(const string& name,
+        /// </summary>
         public Account RegisterAccount(string name, Post post, Account masterAccount = null)
         {
             // If there are any account aliases, substitute before creating an account object.
@@ -139,7 +131,7 @@ namespace NLedger.Journals
 
             // If the account name being registered is "Unknown", check whether
             // the payee indicates an account that should be used.
-            if (result.Name == Account.UnknownName && post != null)
+            if (result.Name == Account.UnknownName && post != null && post.Xact != null)
             {
                 Tuple<Mask, Account> tuple = PayeesForUnknownAccounts.FirstOrDefault(t => t.Item1.Match(post.Xact.Payee));
                 if (tuple != null)
@@ -153,12 +145,6 @@ namespace NLedger.Journals
                 if (!result.IsKnownAccount)
                 {
                     if (post == null)
-                    {
-                        if (ForceChecking)
-                            FixedAccounts = true;
-                        result.IsKnownAccount = true;
-                    } 
-                    else if (!FixedAccounts && post.State != ItemStateEnum.Uncleared)
                     {
                         result.IsKnownAccount = true;
                     } 
@@ -176,6 +162,9 @@ namespace NLedger.Journals
             return result;
         }
 
+        /// <summary>
+        /// Ported from void journal_t::register_commodity(commodity_t& comm,
+        /// </summary>
         public void RegisterCommodity(Commodity commodity, Post post = null)
         {
             if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING || CheckingStyle == JournalCheckingStyleEnum.CHECK_ERROR)
@@ -183,13 +172,6 @@ namespace NLedger.Journals
                 if (!commodity.Flags.HasFlag(CommodityFlagsEnum.COMMODITY_KNOWN))
                 {
                     if (post == null)  // Porting note: it is equal "context.which() == 0" assuming that we never deal with xact
-                    {
-                        if (ForceChecking)
-                            FixedCommodities = true;
-                        commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;
-                    }
-                    else if (!FixedCommodities &&
-                        (post != null && post.State != ItemStateEnum.Uncleared)) // Porting note: it is equal "context.which() == 2" assuming that we never deal with xact
                     {
                         commodity.Flags |= CommodityFlagsEnum.COMMODITY_KNOWN;
                     }
@@ -343,7 +325,7 @@ namespace NLedger.Journals
             Logger.Current.TraceContext(TimerName.ParsingTotal, 1)?.Finish();
 
             if (contextStack.GetCurrent().Errors > 0)
-                throw new CountError(contextStack.GetCurrent().Errors);
+                throw new CountError(contextStack.GetCurrent().Errors, contextStack.GetCurrent().Last);
 
             return contextStack.GetCurrent().Count;
         }
@@ -457,6 +439,9 @@ namespace NLedger.Journals
             }
         }
 
+        /// <summary>
+        /// Porte from void journal_t::register_metadata(const string& key
+        /// </summary>
         public void RegisterMetadata(string key, Value value, Item context)
         {
             if (CheckingStyle == JournalCheckingStyleEnum.CHECK_WARNING || CheckingStyle == JournalCheckingStyleEnum.CHECK_ERROR)
@@ -464,12 +449,6 @@ namespace NLedger.Journals
                 if (!KnownTags.Contains(key))
                 {
                     if (context == null)
-                    {
-                        if (ForceChecking)
-                            FixedMetadata = true;
-                        KnownTags.Add(key);
-                    }
-                    else if (!FixedMetadata && context != null && context.State != ItemStateEnum.Uncleared)
                     {
                         KnownTags.Add(key);
                     }

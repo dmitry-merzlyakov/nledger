@@ -29,13 +29,14 @@ function help {
   Write-Console "{c:yellow}show-details{c:darkyellow} [setting_name -allValues -showPermitted]{c:gray} - shows detail information about all NLedger settings."
   Write-Console "{c:yellow}set-setting settingName settingValue {c:darkyellow}[-app -common -user]{c:gray} - sets a setting."
   Write-Console "{c:yellow}remove-setting settingName {c:darkyellow}[-app -common -user]{c:gray} - removes a setting."
+  Write-Console "{c:yellow}set-platform {c:darkyellow}[-core]{c:gray} - selects an app binary platform (.Net Framework or .Net Core)."
   Write-Console "{c:yellow}help{c:gray} - shows this text."
   Write-Console "{c:yellow}exit{c:gray} - closes this console."
   Write-Console ""
   Write-Console "{c:gray}Note: you can get further information by executing {c:yellow}get-help [command] -Detailed{c:gray}."
   Write-Console "{c:gray}For example, {c:darkgray}get-help show{c:gray} explains every command option and provides examples."
   Write-Console ""
-  Write-Console "{c:gray}Note: if you want to modify settings in app config file (NLedger-cli.exe.config),"
+  Write-Console "{c:gray}Note: if you want to modify settings in app config file (e.g. NLedger-cli.exe.config),"
   Write-Console "{c:gray}you must have administrative priviledges. Run this console as an administrator."
   Write-Console ""
 }
@@ -210,7 +211,7 @@ function show-details {
     if ($_.Description) { Write-Console "{c:gray}Description:     {c:white}$($_.Description)" }
     if ($_.Category)    { Write-Console "{c:gray}Category:        {c:white}$($_.Category)" }
     Write-Console "{c:gray}Value Type:      {c:white}$($_.SettingType)"
-    if ($showPermitted -and $_.PossibleValues) {
+    if ($showPermitted -and $($_.PossibleValues)) {
         Write-Console -NoNewLine "{c:gray}Permitted:       "
         Write-Columns ($_.PossibleValues | Sort-Object) -leftMargin 17 -rightBoundary 88
     }
@@ -322,5 +323,32 @@ function remove-setting {
   PrintStatusResponse $private:response | Out-Null
 }
 
+<#
+.SYNOPSIS
+    Selects an application binary platform.
+.DESCRIPTION
+    If the current deployment contains binary files for both platforms (.Net Framework and .Net Core),
+    this function allows to select which application configuration file will be modified (for -app scope).
+    Prefers .Net Framework by default. This function has no effect if there is core-only deployment.
+.PARAMETER core
+    .Net Core application configuration file will be modified if this switch is selected.
+.EXAMPLE
+    Modify .Net Core app configuration file
+    C:\PS>  set-platform -core
+.EXAMPLE
+    Modify .Net Framework app configuration file (if available)
+    C:\PS> set-platform
+.NOTES
+    Author: Dmitry Merzlyakov
+    Date:   September 9, 2020    
+#>
+function set-platform {
+    [CmdletBinding()]
+    Param([Switch][bool]$core = $false)
+
+    $private:response = SetPlatform -preferCore:$core
+    PrintStatusResponse $private:response | Out-Null
+}
+  
 help 
 

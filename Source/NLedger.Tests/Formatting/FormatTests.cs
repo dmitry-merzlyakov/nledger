@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Formatting;
 using NLedger.Scopus;
@@ -15,13 +14,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Formatting
 {
-    [TestClass]
     public class FormatTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Format_IntegrationTest_AccountLineFormat()
         {
             Report report = new Report(new Session());
@@ -33,22 +32,22 @@ namespace NLedger.Tests.Formatting
             BindScope boundScope = new BindScope(report, account);
             string result = accountLineFormat.Calc(boundScope);
 
-            Assert.AreEqual("                   0  test-account", result);
+            Assert.Equal("                   0  test-account", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Format_Truncate_ReturnsOriginalStringIfWidthIsZero()
         {
             string ustr = "some-string";
-            Assert.AreEqual(ustr, Format.Truncate(ustr, width: 0));
+            Assert.Equal(ustr, Format.Truncate(ustr, width: 0));
         }
 
-        [TestMethod]
+        [Fact]
         public void Format_Truncate_ReturnsOriginalStringIfItIsLessOrEqualThanWidth()
         {
             string ustr = "some-string";
-            Assert.AreEqual(ustr, Format.Truncate(ustr, width: ustr.Length));
-            Assert.AreEqual(ustr, Format.Truncate(ustr, width: ustr.Length + 1));
+            Assert.Equal(ustr, Format.Truncate(ustr, width: ustr.Length));
+            Assert.Equal(ustr, Format.Truncate(ustr, width: ustr.Length + 1));
         }
 
     }

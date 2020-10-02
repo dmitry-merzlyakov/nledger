@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts;
 using NLedger.Utility;
 using System;
@@ -16,15 +15,26 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Xunit;
+
+// [DM] Disable parallelism for xUnits tests since NLedger code has thread-specific dependencies (MainApplicationContext needs to be initialized for every thread)
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace NLedger.IntegrationTests
 {
     public sealed class TestRunner
     {
+        public static readonly string WindowsPreferredTimeZone = "Central Standard Time";
+        public static readonly string LinuxPreferredTimeZone = "America/Chicago";
+        public static TimeZoneInfo PreferredTimeZone = FindTimeZone(WindowsPreferredTimeZone) ?? FindTimeZone(LinuxPreferredTimeZone);
+
         public TestRunner(string fileName)
         {
             if (String.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException("fileName");
+
+            if (PreferredTimeZone == null)
+                throw new InvalidOperationException($"Cannot find a preferred time zone; neither {WindowsPreferredTimeZone} nor {LinuxPreferredTimeZone} found.");
 
             FileName = Path.GetFullPath(fileName);
             TestCases = ParseTestFile(File.ReadAllText(fileName));
@@ -100,11 +110,12 @@ namespace NLedger.IntegrationTests
                         {
                             using (var errWriter = new StringWriter())
                             {
-                                var main = new Main();
-                                MainApplicationContext.Current.IsAtty = false; // Simulating pipe redirection in original tests
-                                MainApplicationContext.Current.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); // Equals to TZ=America/Chicago
-                                MainApplicationContext.Current.SetVirtualConsoleProvider(() => new TestConsoleProvider(inReader, outWriter, errWriter));
-                                MainApplicationContext.Current.SetEnvironmentVariables(envs);
+                                var appServiceProvider = new ApplicationServiceProvider(virtualConsoleProviderFactory: () => new TestConsoleProvider(inReader, outWriter, errWriter));
+                                var context = new MainApplicationContext(appServiceProvider);
+                                context.IsAtty = false; // Simulating pipe redirection in original tests
+                                context.TimeZone = PreferredTimeZone; // Either "Central Standard Time" for Windows or "America/Chicago" for other systems
+                                context.SetEnvironmentVariables(envs);
+                                var main = new Main(context);
 
                                 var exitCode = main.Execute(args);
 
@@ -120,17 +131,17 @@ namespace NLedger.IntegrationTests
                                 var normalizedExpectedErr = NormalizeOutput(testCase.ExpectedError);
                                 var normalizedErr = ignoreStdErr ? "" : NormalizeOutput(err);
 
-                                Assert.AreEqual(normalizedExpectedOutput, normalizedOutput, $"Produced output does not match expected one ({DescribeDifference(normalizedExpectedOutput, normalizedOutput)})");
-                                Assert.AreEqual(normalizedExpectedErr, normalizedErr, $"Produced error stream does not match expected one ({DescribeDifference(normalizedExpectedErr, normalizedErr)})");
+                                Assert.True(normalizedExpectedOutput == normalizedOutput, $"Produced output does not match expected one ({DescribeDifference(normalizedExpectedOutput, normalizedOutput)})");
+                                Assert.True(normalizedExpectedErr == normalizedErr, $"Produced error stream does not match expected one ({DescribeDifference(normalizedExpectedErr, normalizedErr)})");
 
-                                Assert.AreEqual(expectedExitCode, exitCode, "Unexpected exit code");
+                                Assert.True(expectedExitCode == exitCode, "Unexpected exit code");
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Assert.Fail($"Test case failed with runtime error: {ex.Message}");
+                    Assert.True(false, $"Test case failed with runtime error: {ex.Message}");
                 }
             }
         }
@@ -216,7 +227,7 @@ namespace NLedger.IntegrationTests
                                 {
                                     var idx = match.Groups["path"].Index;
                                     var len = match.Groups["path"].Length;
-                                    line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + "\\");
+                                    line = line.Remove(idx, len).Insert(idx, Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar);
                                 }
 
                                 if (directToErr)
@@ -269,6 +280,11 @@ namespace NLedger.IntegrationTests
                 len = s.Length - pos;
 
             return s.Substring(pos, len);
+        }
+
+        private static TimeZoneInfo FindTimeZone (string id)
+        {
+            return TimeZoneInfo.GetSystemTimeZones().SingleOrDefault(t => t.Id == id);
         }
 
         private class TestConsoleProvider : IVirtualConsoleProvider

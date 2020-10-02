@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace NLedger.Abstracts.Impl
 {
@@ -45,7 +46,7 @@ namespace NLedger.Abstracts.Impl
             return File.OpenText(path);
         }
 
-        public FileStream OpenRead(string path)
+        public Stream OpenRead(string path)
         {
             return File.OpenRead(path);
         }
@@ -88,6 +89,11 @@ namespace NLedger.Abstracts.Impl
         public string GetFullPath(string path)
         {
             return Path.GetFullPath(path);
+        }
+
+        public string GetFolderPath(SpecialFolder folder)
+        {
+            return Environment.GetFolderPath(folder);
         }
 
     }

@@ -26,49 +26,55 @@ This is a roadmap for development of next NLedger releases.
 
 ## NLedger 0.8
 
-**Address complicated issues that require big code changes but have minor effect 
-on general functionality: date parsing, pager, localization, decimal limitations.**
+**Support third-party software development, technology modernization and code completion**
 
-- Update the source code and tests to the latest Ledger version (branch NEXT);
+- [Complete] Update the source code and tests to the latest Ledger version (done, updated to 3.2.1);
+- [Complete] Enhancement: present a development API for embedding NLedger functionality into third-party applications (Service API). Includes:
+  - abstraction and virtualization level (virtual file system, console, environment and devices);
+  - extendable ANSI preprocessor to encapsulate colorization;
+  - extendable configuration;
+  - application service model (engine host, session and request object management);
+  - isolated thread-safe model with cancellation support;
+- [Complete] Publish NLedger in NuGet repository;
+- [Complete] Technology modernization: support Support .Net SDK. Includes:
+  - migration to SDK-style projects;
+  - migration from MSTest to xUnits;
+  - generating and verification .Net Framework 4.5, .Net Standard 2.0 and .Net Core 3.1 binaries;
+  - multi-platform capabilities: build, testing and functioning on Windows, Linux and OSX;
+- [Complete] Bug fixing (GH#2, GH#7);
+
+## NLedger 0.9
+
+**Extending functional and data integration API; two-way integration with other language environments; code completion**
+
+- Enhancement (Service API): add support of semantical tokenization for NLedger output;
+- Enhancement (Service API): add auxiliary classes that help to build textual Ledger commands programmatically;
+- Enhancement (Data API): add language and data integration capabilities:
+  - Create data transfer objects that enable communication with NLedger domain model and methods (reflecting ledger's python integration model);
+    Make that Data API available as part of Service API session object;
+  - Create an abstract integration provider that presents a two-way integration 
+    (calling NLedger methods from external code and calling external methods from NLedger - by means of tokens 'python', 'import' and etc)
+  - Implement Python integration provider;
+  - Implement Powershell integration provider;
+  - Validate .Net integration capabilities by means of the integration provider;
+- Code completion: enable Ledger tests that require Python integration;
 - Bug fixing: solve issues with .Net date parser error messages; 
   consider creating an own date parser; enable corresponded Ledger unit and integration tests;
 - Bug fixing: solve issues with file names in error messages (absolute vs relative); 
   simplify corresponded Ledger integration tests;
 - Code completion: add integrated pager; add complete support of external pagers;
   solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
-- Code completion: add localization for errors and messages; 
-  verify and process method *gettext_*, *throw_*;
-
-## NLedger 0.9
-
-**Big enhancements: connector library and seamless integration with other language environments.**
-
-- Enhancement: create a adapting library (*connector*) that allows seamless integration
-  between external applications and NLedger core functions;
-  - add virtualization of the file system;
-  - encapsulate environment configuration;
-  - add generic processor for colorization tokens;
-  - add a wrapper class for NLedger commands and arguments;
-  - add an engine factory and host to manage life cycles of NLedger objects;
-  - implement single-domain and single-thread life cycles;
-  - implement single and multi-command modes (to simulate Ledger integrative mode);
-  - verify multi-threading and async calls; verify static members in NLedger code;
-  - add support for STOP signal in NLedger code; 
-  - simple API and data transfer objects to communicate with NLedger domain model and methods;
-- Code completion: consider adding support of Python integration and other languages;
-  - encapsulate code that requires Python integration to wrappers;
-  - implement two-way Python integration by means of Iron Python;
-  - enable Ledger integration tests that require Python;
-  - generalize integration API and enable a way to integrate with other languages (like PowerShell environment);
-- Build: publish NLedger in NuGet repository;
+- Code completion: add localization capabilities for error and warning messages; 
+  verify and process Ledger methods *gettext_*, *throw_*;
+- Code completion: complete well-formatted code documentation, enable generating XML documentation file and include into NuGet package.
 
 ## NLedger 1.0
 
-**Code optimization and stabilization**
+**Bug fixing, code optimization and stabilization**
 
 - Update the source code and tests to the latest Ledger version (branch NEXT);
 - Code optimization (analyze efficient of *lookup* implementation and other critical places);
 - General performance analyzing and optimization;
 - Code stabilization and bug fixing;
 
-(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

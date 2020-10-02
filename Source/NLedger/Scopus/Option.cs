@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -43,6 +43,9 @@ namespace NLedger.Scopus
         /// </summary>
         public static Tuple<ExprOp,bool> FindOption(Scope scope, string name)
         {
+            if (name != null && name.Length > 127)
+                throw new OptionError(String.Format(OptionError.ErrorMessage_IllegalOption, name));
+
             name = name.Replace('-', '_') + '_';
             ExprOp exprOp = scope.Lookup(SymbolKindEnum.OPTION, name);
             if (exprOp != null)
@@ -112,7 +115,7 @@ namespace NLedger.Scopus
                 if (!String.IsNullOrEmpty(name) && name.StartsWith("-"))
                     throw new Exception(String.Format("While parsing option '{0}'", name));
                 else
-                    throw new Exception(String.Format("While parsing environent variable '{0}'", name));
+                    throw new Exception(String.Format("While parsing environment variable '{0}'", name));
             }
         }
 

@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utils;
 using System;
 using System.Collections.Generic;
@@ -16,14 +15,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utils
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class TimerContextTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void TimerContext_Constructor_PopulatesProperties()
         {
             Logger logger = new Logger();
@@ -32,25 +31,25 @@ namespace NLedger.Tests.Utils
 
             TimerContext context = new TimerContext("some-name", logger, level);
 
-            Assert.AreEqual(logger, context.Logger);
-            Assert.AreEqual(name, context.TimerName);
-            Assert.AreEqual(level, context.LogLevel);
-            Assert.IsNull(context.TimerMessage);
-            Assert.AreEqual(-1, context.GetElapsedTime());  // Indicates that the timer is not started
+            Assert.Equal(logger, context.Logger);
+            Assert.Equal(name, context.TimerName);
+            Assert.Equal(level, context.LogLevel);
+            Assert.Null(context.TimerMessage);
+            Assert.Equal(-1, context.GetElapsedTime());  // Indicates that the timer is not started
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Message_PopulatesTimerMessage()
         {
             TimerContext context = new TimerContext("some-name", new Logger(), LogLevelEnum.LOG_DEBUG);
 
             var result = context.Message("some-message");
 
-            Assert.AreEqual(context, result);
-            Assert.AreEqual("some-message", context.TimerMessage);
+            Assert.Equal(context, result);
+            Assert.Equal("some-message", context.TimerMessage);
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Start_RunsTimer()
         {
             TimerContext context = new TimerContext("some-name", new Logger(), LogLevelEnum.LOG_DEBUG);
@@ -58,11 +57,11 @@ namespace NLedger.Tests.Utils
             var result = context.Start();
             Thread.Sleep(5);
 
-            Assert.AreEqual(context, result);
-            Assert.IsTrue(context.GetElapsedTime() > 0);  // Indicates that the timer has been started
+            Assert.Equal(context, result);
+            Assert.True(context.GetElapsedTime() > 0);  // Indicates that the timer has been started
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Start_ContinuesTiming()
         {
             TimerContext context = new TimerContext("some-name", new Logger(), LogLevelEnum.LOG_DEBUG);
@@ -77,11 +76,11 @@ namespace NLedger.Tests.Utils
             context.Stop();
             var secondTime = context.GetElapsedTime();
 
-            Assert.IsTrue(firstTime > 0);
-            Assert.IsTrue(secondTime > firstTime);
+            Assert.True(firstTime > 0);
+            Assert.True(secondTime > firstTime);
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Stop_StopsTiming()
         {
             TimerContext context = new TimerContext("some-name", new Logger(), LogLevelEnum.LOG_DEBUG);
@@ -93,11 +92,11 @@ namespace NLedger.Tests.Utils
             Thread.Sleep(5);
             var secondTime = context.GetElapsedTime();
 
-            Assert.IsTrue(firstTime > 0);
-            Assert.IsTrue(secondTime == firstTime);
+            Assert.True(firstTime > 0);
+            Assert.True(secondTime == firstTime);
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Finish_DoesNothingIfTimerHasNotBeenStarted()
         {
             var writer = new StringWriter();
@@ -107,11 +106,11 @@ namespace NLedger.Tests.Utils
             context.Finish();
             writer.Flush();
 
-            Assert.AreEqual(-1, context.GetElapsedTime());
-            Assert.AreEqual(0, writer.GetStringBuilder().Length);
+            Assert.Equal(-1, context.GetElapsedTime());
+            Assert.Equal(0, writer.GetStringBuilder().Length);
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Finish_WritesMessageWithNoParenthesis()
         {
             var writer = new StringWriter();
@@ -126,10 +125,10 @@ namespace NLedger.Tests.Utils
             var time = context.GetElapsedTime();
             var expectedMessage = String.Format("[DEBUG] msg1: {0}ms", time);
 
-            Assert.AreEqual(expectedMessage, writer.GetStringBuilder().ToString().Substring(9).TrimEnd());
+            Assert.Equal(expectedMessage, writer.GetStringBuilder().ToString().Substring(9).TrimEnd());
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Finish_WritesMessageWithParenthesis()
         {
             var writer = new StringWriter();
@@ -144,10 +143,10 @@ namespace NLedger.Tests.Utils
             var time = context.GetElapsedTime();
             var expectedMessage = String.Format("[INFO]  msg1 ({0}ms)", time);
 
-            Assert.AreEqual(expectedMessage, writer.GetStringBuilder().ToString().Substring(9).TrimEnd());
+            Assert.Equal(expectedMessage, writer.GetStringBuilder().ToString().Substring(9).TrimEnd());
         }
 
-        [TestMethod]
+        [Fact]
         public void TimerContext_Finish_RemovesTimes()
         {
             Logger logger = new Logger();
@@ -159,8 +158,8 @@ namespace NLedger.Tests.Utils
 
             var context3 = logger.GetTimer("some-name", LogLevelEnum.LOG_INFO);
 
-            Assert.AreEqual(context1, context2);
-            Assert.AreNotEqual(context1, context3); // context3 is a new timer instance; previous was removed by Finish
+            Assert.Equal(context1, context2);
+            Assert.NotEqual(context1, context3); // context3 is a new timer instance; previous was removed by Finish
         }
 
     }

@@ -1,25 +1,24 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Graph
 {
-    [TestClass]
     public class ShortestPathSearcherTests
     {
-        [TestMethod]
+        [Fact]
         public void ShortestPathSearcher_Integration_DefaultAggregativeWeight()
         {
             string vertexA = "A", vertexB = "B", vertexC = "C", vertexD = "D";
@@ -38,19 +37,19 @@ namespace NLedger.Tests.Utility.Graph
             ShortestPathSearcher<string, int> searcher = new ShortestPathSearcher<string, int>(graph, vertexA, vertexD, (i) => i);
             IEnumerable<EdgeDescriptor<string, int>> path = searcher.FindShortestPath();
 
-            Assert.IsNotNull(path);
-            Assert.AreEqual(2, path.Count());
+            Assert.NotNull(path);
+            Assert.Equal(2, path.Count());
             EdgeDescriptor<string, int> firstDesc = path.First();
-            Assert.AreEqual("B", firstDesc.Vertex1);
-            Assert.AreEqual("A", firstDesc.Vertex2);
-            Assert.AreEqual(5, firstDesc.Edge);
+            Assert.Equal("B", firstDesc.Vertex1);
+            Assert.Equal("A", firstDesc.Vertex2);
+            Assert.Equal(5, firstDesc.Edge);
             EdgeDescriptor<string, int> lastDesc = path.Last();
-            Assert.AreEqual("B", lastDesc.Vertex1);
-            Assert.AreEqual("D", lastDesc.Vertex2);
-            Assert.AreEqual(10, lastDesc.Edge);            
+            Assert.Equal("B", lastDesc.Vertex1);
+            Assert.Equal("D", lastDesc.Vertex2);
+            Assert.Equal(10, lastDesc.Edge);            
         }
 
-        [TestMethod]
+        [Fact]
         public void ShortestPathSearcher_Integration_CumulativeWeight()
         {
             string vertexA = "A", vertexB = "B", vertexC = "C";
@@ -70,16 +69,16 @@ namespace NLedger.Tests.Utility.Graph
             };
             IEnumerable<EdgeDescriptor<string, int>> path = searcher.FindShortestPath();
 
-            Assert.IsNotNull(path);
-            Assert.AreEqual(2, path.Count());
+            Assert.NotNull(path);
+            Assert.Equal(2, path.Count());
             EdgeDescriptor<string, int> edge1 = path.First();
-            Assert.AreEqual("A", edge1.Vertex1);
-            Assert.AreEqual("B", edge1.Vertex2);
-            Assert.AreEqual(2, edge1.Edge);
+            Assert.Equal("A", edge1.Vertex1);
+            Assert.Equal("B", edge1.Vertex2);
+            Assert.Equal(2, edge1.Edge);
             EdgeDescriptor<string, int> edge2 = path.Last();
-            Assert.AreEqual("A", edge2.Vertex1);
-            Assert.AreEqual("C", edge2.Vertex2);
-            Assert.AreEqual(3, edge2.Edge);
+            Assert.Equal("A", edge2.Vertex1);
+            Assert.Equal("C", edge2.Vertex2);
+            Assert.Equal(3, edge2.Edge);
         }
 
     }

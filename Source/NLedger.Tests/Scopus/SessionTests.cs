@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Abstracts.Impl;
 using NLedger.Accounts;
 using NLedger.Amounts;
@@ -24,88 +23,88 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Scopus
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class SessionTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Session_Constructor_SetsDefaultProperties()
         {
             Session session = new Session();
 
-            Assert.IsNotNull(session.ParsingContext);
+            Assert.NotNull(session.ParsingContext);
 
-            Assert.IsNotNull(session.CheckPayeesHandler);
-            Assert.IsNotNull(session.DayBreakHandler);
-            Assert.IsNotNull(session.DownloadHandler);
-            Assert.IsNotNull(session.DecimalCommaHandler);
-            Assert.IsNotNull(session.TimeColonHandler);
-            Assert.IsNotNull(session.PriceExpHandler);
-            Assert.IsNotNull(session.FileHandler);
-            Assert.IsNotNull(session.InputDateFormatHandler);
-            Assert.IsNotNull(session.ExplicitHandler);
-            Assert.IsNotNull(session.MasterAccountHandler);
-            Assert.IsNotNull(session.PedanticHandler);
-            Assert.IsNotNull(session.PermissiveHandler);
-            Assert.IsNotNull(session.PriceDbHandler);
-            Assert.IsNotNull(session.StrictHandler);
-            Assert.IsNotNull(session.ValueExprHandler);
-            Assert.IsNotNull(session.RecursiveAliasesHandler);
-            Assert.IsNotNull(session.NoAliasesHandler);
+            Assert.NotNull(session.CheckPayeesHandler);
+            Assert.NotNull(session.DayBreakHandler);
+            Assert.NotNull(session.DownloadHandler);
+            Assert.NotNull(session.DecimalCommaHandler);
+            Assert.NotNull(session.TimeColonHandler);
+            Assert.NotNull(session.PriceExpHandler);
+            Assert.NotNull(session.FileHandler);
+            Assert.NotNull(session.InputDateFormatHandler);
+            Assert.NotNull(session.ExplicitHandler);
+            Assert.NotNull(session.MasterAccountHandler);
+            Assert.NotNull(session.PedanticHandler);
+            Assert.NotNull(session.PermissiveHandler);
+            Assert.NotNull(session.PriceDbHandler);
+            Assert.NotNull(session.StrictHandler);
+            Assert.NotNull(session.ValueExprHandler);
+            Assert.NotNull(session.RecursiveAliasesHandler);
+            Assert.NotNull(session.NoAliasesHandler);
 
-            Assert.IsNotNull(session.Journal);
+            Assert.NotNull(session.Journal);
 
-            Assert.AreEqual(FileSystem.CurrentPath(), session.ParsingContext.GetCurrent().CurrentPath);
+            Assert.Equal(FileSystem.CurrentPath(), session.ParsingContext.GetCurrent().CurrentPath);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_Description_ReturnsCurrentSessionKey()
         {
             Session session = new Session();
-            Assert.AreEqual(Session.CurrentSessionKey, session.Description);
+            Assert.Equal(Session.CurrentSessionKey, session.Description);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ParseError))]
+        [Fact]
         public void Session_ReadData_UsesDefaultLedgerFileNameIfNoFilesSpecifiedAndFilesBecauseOfNoFile()
         {
             Session session = new Session();
-            session.ReadData(null);
+            Assert.Throws<ParseError>(() => session.ReadData(null));
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_ReadData_UsesInputStreamIfFileNameIsMinus()
         {
             var input = new System.IO.StringReader(Session_ReadJournalFromString_Example);
-            MainApplicationContext.Current.SetVirtualConsoleProvider(() => new VirtualConsoleProvider(input));
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (virtualConsoleProviderFactory: () => new VirtualConsoleProvider(input)));
 
             Scope.DefaultScope = new EmptyScope();
             Session session = new Session();
             session.FileHandler.DataFiles.Add("-");
             int xacts = session.ReadData(null);
-            Assert.AreEqual(1, xacts);
+            Assert.Equal(1, xacts);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_ReadJournalFromString_ParsesJournalComingFromString()
         {
             Scope.DefaultScope = new EmptyScope();
             Session session = new Session();
             session.CloseJournalFiles();
 
-            Assert.AreEqual(1, session.ParsingContext.Count);
+            Assert.Equal(1, session.ParsingContext.Count);
             Journal journal = session.ReadJournalFromString(Session_ReadJournalFromString_Example);
-            Assert.IsNotNull(journal);
-            Assert.AreEqual(1, session.ParsingContext.Count);
+            Assert.NotNull(journal);
+            Assert.Equal(1, session.ParsingContext.Count);
 
-            Assert.IsNotNull(journal.Master.FindAccount("Income", false));
-            Assert.IsNotNull(journal.Master.FindAccount("Assets:Checking", false));
+            Assert.NotNull(journal.Master.FindAccount("Income", false));
+            Assert.NotNull(journal.Master.FindAccount("Assets:Checking", false));
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_CloseJournalFiles_ReInitializesCommodityPool()
         {
             Session session = new Session();
@@ -115,11 +114,11 @@ namespace NLedger.Tests.Scopus
 
             session.CloseJournalFiles();
 
-            Assert.AreNotEqual(journal1, session.Journal);
-            Assert.AreNotEqual(pool1, CommodityPool.Current);
+            Assert.NotEqual(journal1, session.Journal);
+            Assert.NotEqual(pool1, CommodityPool.Current);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnAccount_FindsAccountIfFirstArgIsString()
         {
             Session session = new Session();
@@ -130,10 +129,10 @@ namespace NLedger.Tests.Scopus
             scope1.PushBack(val);
 
             var result = session.FnAccount(scope1).AsScope;
-            Assert.AreEqual(result, account);
+            Assert.Equal(result, account);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnAccount_FindsAccountByMaskIfFirstArgIsMask()
         {
             Session session = new Session();
@@ -144,10 +143,10 @@ namespace NLedger.Tests.Scopus
             scope1.PushBack(val);
 
             var result = session.FnAccount(scope1).AsScope;
-            Assert.AreEqual(result, account);
+            Assert.Equal(result, account);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnMin_ReturnsMinArgument()
         {
             Session session = new Session();
@@ -158,15 +157,15 @@ namespace NLedger.Tests.Scopus
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushBack(minVal);
             scope1.PushBack(maxVal);
-            Assert.AreEqual(minVal, session.FnMin(scope1));
+            Assert.Equal(minVal, session.FnMin(scope1));
 
             CallScope scope2 = new CallScope(new EmptyScope());
             scope2.PushBack(maxVal);
             scope2.PushBack(minVal);
-            Assert.AreEqual(minVal, session.FnMin(scope2));
+            Assert.Equal(minVal, session.FnMin(scope2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnMax_ReturnsMaxArgument()
         {
             Session session = new Session();
@@ -177,15 +176,15 @@ namespace NLedger.Tests.Scopus
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushBack(minVal);
             scope1.PushBack(maxVal);
-            Assert.AreEqual(maxVal, session.FnMax(scope1));
+            Assert.Equal(maxVal, session.FnMax(scope1));
 
             CallScope scope2 = new CallScope(new EmptyScope());
             scope2.PushBack(maxVal);
             scope2.PushBack(minVal);
-            Assert.AreEqual(maxVal, session.FnMax(scope2));
+            Assert.Equal(maxVal, session.FnMax(scope2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnInt_ReturnsFirstArgumentAsLong()
         {
             Session session = new Session();
@@ -193,10 +192,10 @@ namespace NLedger.Tests.Scopus
 
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushBack(val);
-            Assert.AreEqual(234, session.FnInt(scope1).AsLong);
+            Assert.Equal(234, session.FnInt(scope1).AsLong);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnStr_ReturnsFirstArgumentAsString()
         {
             Session session = new Session();
@@ -204,10 +203,10 @@ namespace NLedger.Tests.Scopus
 
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushBack(val);
-            Assert.AreEqual(23, session.FnStr(scope1).AsAmount.Quantity.ToLong());
+            Assert.Equal(23, session.FnStr(scope1).AsAmount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnLotPrice_ReturnsPriceFromFirstArgAmouunt()
         {
             Session session = new Session();
@@ -216,7 +215,7 @@ namespace NLedger.Tests.Scopus
             CallScope scope1 = new CallScope(new EmptyScope());
             //scope1.PushBack(Value.Get(false));  // first argument
             scope1.PushBack(Value.Get(amount1));
-            Assert.AreEqual(Value.Empty, session.FnLotPrice(scope1));
+            Assert.Equal(Value.Empty, session.FnLotPrice(scope1));
 
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("base"));
             Amount price = new Amount(5);
@@ -226,10 +225,10 @@ namespace NLedger.Tests.Scopus
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
-            Assert.AreEqual(price, session.FnLotPrice(scope2).AsAmount);
+            Assert.Equal(price, session.FnLotPrice(scope2).AsAmount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnLotDate_ReturnsDateFromFirstArgAmount()
         {
             Session session = new Session();
@@ -238,7 +237,7 @@ namespace NLedger.Tests.Scopus
             CallScope scope1 = new CallScope(new EmptyScope());
             //scope1.PushBack(Value.Get(false));  // first argument
             scope1.PushBack(Value.Get(amount1));
-            Assert.AreEqual(Value.Empty, session.FnLotDate(scope1));
+            Assert.Equal(Value.Empty, session.FnLotDate(scope1));
 
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("base"));
             Date date = (Date)DateTime.Now.Date;
@@ -248,10 +247,10 @@ namespace NLedger.Tests.Scopus
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
-            Assert.AreEqual(date, session.FnLotDate(scope2).AsDate);
+            Assert.Equal(date, session.FnLotDate(scope2).AsDate);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_FnLotTag_ReturnsDateFromFirstArgAmouunt()
         {
             Session session = new Session();
@@ -260,7 +259,7 @@ namespace NLedger.Tests.Scopus
             CallScope scope1 = new CallScope(new EmptyScope());
             //scope1.PushBack(Value.Get(false));  // first argument
             scope1.PushBack(Value.Get(amount1));
-            Assert.AreEqual(Value.Empty, session.FnLotTag(scope1));
+            Assert.Equal(Value.Empty, session.FnLotTag(scope1));
 
             Commodity commodity = new Commodity(CommodityPool.Current, new CommodityBase("base"));
             string tag = "my-tag";
@@ -270,77 +269,77 @@ namespace NLedger.Tests.Scopus
             CallScope scope2 = new CallScope(new EmptyScope());
             //scope2.PushBack(Value.Get(false));  // first argument
             scope2.PushBack(Value.Get(amount2));
-            Assert.AreEqual(tag, session.FnLotTag(scope2).AsString);
+            Assert.Equal(tag, session.FnLotTag(scope2).AsString);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_LookupOption_ReturnsOptionsByNames()
         {
             Session session = new Session();
 
-            Assert.AreEqual(session.CheckPayeesHandler, session.LookupOption("check-payees"));
-            Assert.AreEqual(session.DayBreakHandler, session.LookupOption("day-break"));
-            Assert.AreEqual(session.DownloadHandler, session.LookupOption("download"));
-            Assert.AreEqual(session.DecimalCommaHandler, session.LookupOption("decimal-comma"));
-            Assert.AreEqual(session.TimeColonHandler, session.LookupOption("time-colon"));
-            Assert.AreEqual(session.PriceExpHandler, session.LookupOption("price-exp"));
-            Assert.AreEqual(session.FileHandler, session.LookupOption("file"));
-            Assert.AreEqual(session.InputDateFormatHandler, session.LookupOption("input-date-format"));
-            Assert.AreEqual(session.ExplicitHandler, session.LookupOption("explicit"));
-            Assert.AreEqual(session.MasterAccountHandler, session.LookupOption("master-account"));
-            Assert.AreEqual(session.PedanticHandler, session.LookupOption("pedantic"));
-            Assert.AreEqual(session.PermissiveHandler, session.LookupOption("permissive"));
-            Assert.AreEqual(session.PriceDbHandler, session.LookupOption("price-db"));
-            Assert.AreEqual(session.StrictHandler, session.LookupOption("strict"));
-            Assert.AreEqual(session.ValueExprHandler, session.LookupOption("value-expr"));
-            Assert.AreEqual(session.RecursiveAliasesHandler, session.LookupOption("recursive-aliases"));
-            Assert.AreEqual(session.NoAliasesHandler, session.LookupOption("no-aliases"));
+            Assert.Equal(session.CheckPayeesHandler, session.LookupOption("check-payees"));
+            Assert.Equal(session.DayBreakHandler, session.LookupOption("day-break"));
+            Assert.Equal(session.DownloadHandler, session.LookupOption("download"));
+            Assert.Equal(session.DecimalCommaHandler, session.LookupOption("decimal-comma"));
+            Assert.Equal(session.TimeColonHandler, session.LookupOption("time-colon"));
+            Assert.Equal(session.PriceExpHandler, session.LookupOption("price-exp"));
+            Assert.Equal(session.FileHandler, session.LookupOption("file"));
+            Assert.Equal(session.InputDateFormatHandler, session.LookupOption("input-date-format"));
+            Assert.Equal(session.ExplicitHandler, session.LookupOption("explicit"));
+            Assert.Equal(session.MasterAccountHandler, session.LookupOption("master-account"));
+            Assert.Equal(session.PedanticHandler, session.LookupOption("pedantic"));
+            Assert.Equal(session.PermissiveHandler, session.LookupOption("permissive"));
+            Assert.Equal(session.PriceDbHandler, session.LookupOption("price-db"));
+            Assert.Equal(session.StrictHandler, session.LookupOption("strict"));
+            Assert.Equal(session.ValueExprHandler, session.LookupOption("value-expr"));
+            Assert.Equal(session.RecursiveAliasesHandler, session.LookupOption("recursive-aliases"));
+            Assert.Equal(session.NoAliasesHandler, session.LookupOption("no-aliases"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_Lookup_LooksForHandlers()
         {
             Session session = new Session();
 
             ExprOp checkPayeesOp = session.Lookup(SymbolKindEnum.OPTION, "check-payees");
-            Assert.IsNotNull(checkPayeesOp);
-            Assert.IsTrue(checkPayeesOp.IsFunction);
-            Assert.AreEqual(OpKindEnum.FUNCTION, checkPayeesOp.Kind);
-            Assert.IsNotNull(checkPayeesOp.AsFunction);
+            Assert.NotNull(checkPayeesOp);
+            Assert.True(checkPayeesOp.IsFunction);
+            Assert.Equal(OpKindEnum.FUNCTION, checkPayeesOp.Kind);
+            Assert.NotNull(checkPayeesOp.AsFunction);
             // Check that the function is callable
             CallScope callScope = new CallScope(new EmptyScope());
             callScope.PushBack(Value.Get("str"));
             checkPayeesOp.AsFunction(callScope);
-            Assert.IsTrue(session.CheckPayeesHandler.Handled);
+            Assert.True(session.CheckPayeesHandler.Handled);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_Lookup_LooksForFunctors()
         {
             Session session = new Session();
             ExprOp minFunc = session.Lookup(SymbolKindEnum.FUNCTION, "min");
-            Assert.IsNotNull(minFunc);
-            Assert.IsTrue(minFunc.IsFunction);
-            Assert.AreEqual(OpKindEnum.FUNCTION, minFunc.Kind);
-            Assert.IsNotNull(minFunc.AsFunction);
+            Assert.NotNull(minFunc);
+            Assert.True(minFunc.IsFunction);
+            Assert.Equal(OpKindEnum.FUNCTION, minFunc.Kind);
+            Assert.NotNull(minFunc.AsFunction);
             // Check that the function is callable
             CallScope callScope = new CallScope(new EmptyScope());
             callScope.PushBack(Value.Get("1"));
             callScope.PushBack(Value.Get("2"));
             string result = minFunc.AsFunction(callScope).AsString;
-            Assert.AreEqual("1", result);
+            Assert.Equal("1", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Session_ReportOptions_ReturnsCompositeReportForAllOptions()
         {
             Session session = new Session();
             string reportOptions = session.ReportOptions();
-            Assert.AreEqual("", reportOptions);  // None of options were handled yet
+            Assert.Equal("", reportOptions);  // None of options were handled yet
 
             session.CheckPayeesHandler.On("whence");
             reportOptions = session.ReportOptions();
-            Assert.AreEqual(Session_ReportOptions_Example, reportOptions.TrimEnd());
+            Assert.Equal(Session_ReportOptions_Example, reportOptions.TrimEnd());
         }
 
         private const string Session_ReportOptions_Example = "            check-payees                                             whence";

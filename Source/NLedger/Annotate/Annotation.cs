@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -172,6 +172,9 @@ namespace NLedger.Annotate
                 Logger.Current.Debug("amount.commodities", () => String.Format("Parsed commodity annotations:\r\n{0}", this));
         }
 
+        /// <summary>
+        /// Ported from bool operator==(const annotation_t& rhs)
+        /// </summary>
         public bool Equals(Annotation other)
         {
             return other != null &&
@@ -204,7 +207,7 @@ namespace NLedger.Annotate
                 sb.AppendFormat(" {{{0}{1}}}", IsPriceFixated ? "=" : "", keepBase ? Price : Price.Unreduced());
 
             if (Date.HasValue && (!noComputedAnnotations || !IsDateCalculated))
-                sb.AppendFormat(" [{0}]", TimesCommon.Current.FormatDate(Date.Value, FormatTypeEnum.FMT_PRINTED));
+                sb.AppendFormat(" [{0}]", TimesCommon.Current.FormatDate(Date.Value, FormatTypeEnum.FMT_WRITTEN));
 
             if (!String.IsNullOrEmpty(Tag) && (!noComputedAnnotations || !IsTagCalculated))
                 sb.AppendFormat(" ({0})", Tag);

@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Commodities;
 using NLedger.Values;
@@ -15,61 +14,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Values
 {
-    [TestClass]
     public class ValueStorageTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void ValueStorageExtensions_Create_CreatesStorageInstancesByTypes()
         {
             IValueStorage value;
 
             value = ValueStorageExtensions.Create(true);
-            Assert.IsTrue(value is BooleanValueStorage);
-            Assert.AreEqual(true, value.AsBoolean);
+            Assert.True(value is BooleanValueStorage);
+            Assert.True(value.AsBoolean);
 
             value = ValueStorageExtensions.Create(new DateTime(2010, 10, 10));
-            Assert.IsTrue(value is DateTimeValueStorage);
-            Assert.AreEqual(new DateTime(2010, 10, 10), value.AsDateTime);
+            Assert.True(value is DateTimeValueStorage);
+            Assert.Equal(new DateTime(2010, 10, 10), value.AsDateTime);
 
             value = ValueStorageExtensions.Create((int)100);
-            Assert.IsTrue(value is IntegerValueStorage);
-            Assert.AreEqual(100, value.AsLong);
+            Assert.True(value is IntegerValueStorage);
+            Assert.Equal(100, value.AsLong);
 
             value = ValueStorageExtensions.Create((long)100);
-            Assert.IsTrue(value is IntegerValueStorage);
-            Assert.AreEqual(100, value.AsLong);
+            Assert.True(value is IntegerValueStorage);
+            Assert.Equal(100, value.AsLong);
 
             Amount amount = new Amount(200);
             value = ValueStorageExtensions.Create(amount);
-            Assert.IsTrue(value is AmountValueStorage);
-            Assert.AreEqual(amount, value.AsAmount);
+            Assert.True(value is AmountValueStorage);
+            Assert.Equal(amount, value.AsAmount);
 
             Balance balance = new Balance(amount);
             value = ValueStorageExtensions.Create(balance);
-            Assert.IsTrue(value is BalanceValueStorage);
-            Assert.AreEqual(balance, value.AsBalance);
+            Assert.True(value is BalanceValueStorage);
+            Assert.Equal(balance, value.AsBalance);
 
             string s = "test-string";
             value = ValueStorageExtensions.Create(s);
-            Assert.IsTrue(value is StringValueStorage);
-            Assert.AreEqual(s, value.AsString);
+            Assert.True(value is StringValueStorage);
+            Assert.Equal(s, value.AsString);
 
             Mask regex = new Mask(".");
             value = ValueStorageExtensions.Create(regex);
-            Assert.IsTrue(value is MaskValueStorage);
-            Assert.AreEqual(regex, value.AsMask);
+            Assert.True(value is MaskValueStorage);
+            Assert.Equal(regex, value.AsMask);
 
             IList<Value> values = new List<Value>();
             value = ValueStorageExtensions.Create(values);
-            Assert.IsTrue(value is SequenceValueStorage);
-            Assert.AreEqual(values.Count, value.AsSequence.Count);
+            Assert.True(value is SequenceValueStorage);
+            Assert.Equal(values.Count, value.AsSequence.Count);
         }
 
         /* Added Any storage
-        [TestMethod]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void ValueStorageExtensions_Create_FailsForUnexpectedTypes()
         {
@@ -77,83 +76,83 @@ namespace NLedger.Tests.Values
         }
          */
 
-        [TestMethod]
+        [Fact]
         public void BooleanValueStorage_Constructor_PopulatesTypeAndValue()
         {
             BooleanValueStorage storage = new BooleanValueStorage(false);
-            Assert.AreEqual(ValueTypeEnum.Boolean, storage.Type);
-            Assert.IsFalse(storage.Val);
+            Assert.Equal(ValueTypeEnum.Boolean, storage.Type);
+            Assert.False(storage.Val);
 
             storage = new BooleanValueStorage(true);
-            Assert.AreEqual(ValueTypeEnum.Boolean, storage.Type);
-            Assert.IsTrue(storage.Val);
+            Assert.Equal(ValueTypeEnum.Boolean, storage.Type);
+            Assert.True(storage.Val);
         }
 
-        [TestMethod]
+        [Fact]
         public void BooleanValueStorage_AsString_ReturnsTrueOrFalse()
         {
-            Assert.AreEqual("false", new BooleanValueStorage(false).AsString);
-            Assert.AreEqual("true", new BooleanValueStorage(true).AsString);
+            Assert.Equal("false", new BooleanValueStorage(false).AsString);
+            Assert.Equal("true", new BooleanValueStorage(true).AsString);
         }
 
-        [TestMethod]
+        [Fact]
         public void DateTimeValueStorage_Constructor_PopulatesTypeAndValue()
         {
             DateTime date = DateTime.UtcNow;
             DateTimeValueStorage storage = new DateTimeValueStorage(date);
-            Assert.AreEqual(ValueTypeEnum.DateTime, storage.Type);
-            Assert.AreEqual(date, storage.Val);
+            Assert.Equal(ValueTypeEnum.DateTime, storage.Type);
+            Assert.Equal(date, storage.Val);
         }
 
-        [TestMethod]
+        [Fact]
         public void DateTimeValueStorage_AsLong_ReturnsTicks()
         {
             DateTime date = DateTime.UtcNow;
             DateTimeValueStorage storage = new DateTimeValueStorage(date);
-            Assert.AreEqual(date.Ticks, storage.AsLong);
+            Assert.Equal(date.Ticks, storage.AsLong);
         }
 
-        [TestMethod]
+        [Fact]
         public void DateTimeValueStorage_AsAmount_ReturnsTicks()
         {
             DateTime date = DateTime.UtcNow;
             DateTimeValueStorage storage = new DateTimeValueStorage(date);
-            Assert.AreEqual(date.Ticks, storage.AsAmount.Quantity.ToLong());
+            Assert.Equal(date.Ticks, storage.AsAmount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void DateTimeValueStorage_Add_SupportsIntegerAndAmount()
         {
             DateTime date = new DateTime(2015, 10, 10);
             DateTimeValueStorage storage1 = new DateTimeValueStorage(date);
             IntegerValueStorage storage2 = new IntegerValueStorage(1000);
-            Assert.AreEqual(date.AddSeconds(1000).Ticks, storage1.Add(storage2).AsLong);
+            Assert.Equal(date.AddSeconds(1000).Ticks, storage1.Add(storage2).AsLong);
 
             storage1 = new DateTimeValueStorage(date);
             AmountValueStorage storage3 = new AmountValueStorage(new Amount(2000));
-            Assert.AreEqual(date.AddSeconds(2000).Ticks, storage1.Add(storage3).AsLong);
+            Assert.Equal(date.AddSeconds(2000).Ticks, storage1.Add(storage3).AsLong);
         }
 
-        [TestMethod]
+        [Fact]
         public void IntegerValueStorage_Add_AddsTwoIntegers()
         {
             IntegerValueStorage storage1 = new IntegerValueStorage(100);
             IntegerValueStorage storage2 = new IntegerValueStorage(200);
-            Assert.AreEqual(300, storage1.Add(storage2).AsLong);
+            Assert.Equal(300, storage1.Add(storage2).AsLong);
         }
 
-        [TestMethod]
+        [Fact]
         public void IntegerValueStorage_Add_AddsAmountWithoutCommodityAndChangesToAmount()
         {
             IntegerValueStorage storage1 = new IntegerValueStorage(100);
             AmountValueStorage storage2 = new AmountValueStorage(new Amount(200));
 
             IValueStorage result = storage1.Add(storage2);
-            Assert.AreEqual(300, result.AsLong);
-            Assert.AreEqual(ValueTypeEnum.Amount, result.Type);
+            Assert.Equal(300, result.AsLong);
+            Assert.Equal(ValueTypeEnum.Amount, result.Type);
         }
 
-        [TestMethod]
+        [Fact]
         public void IntegerValueStorage_Add_AddsAmountWithCommodityAndChangesToBalance()
         {
             string commodityName = "test-commodity";
@@ -163,10 +162,10 @@ namespace NLedger.Tests.Values
             AmountValueStorage storage2 = new AmountValueStorage(new Amount(200, commodity));
 
             IValueStorage result = storage1.Add(storage2);
-            Assert.AreEqual(ValueTypeEnum.Balance, result.Type);
+            Assert.Equal(ValueTypeEnum.Balance, result.Type);
         }
 
-        [TestMethod]
+        [Fact]
         public void ValueStorageExtensions_CreateFromObject_ClonesAmounts()
         {
             Amount amount = new Amount(10);
@@ -175,11 +174,11 @@ namespace NLedger.Tests.Values
             Amount newAmount = storage.AsAmount;
             newAmount.Multiply(new Amount(15));
 
-            Assert.AreEqual(150, newAmount.Quantity.ToLong());
-            Assert.AreEqual(10, amount.Quantity.ToLong());
+            Assert.Equal(150, newAmount.Quantity.ToLong());
+            Assert.Equal(10, amount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void ValueStorageExtensions_CreateFromObject_ClonesBalances()
         {
             Balance balance = new Balance();
@@ -188,11 +187,11 @@ namespace NLedger.Tests.Values
             Balance newBalance = storage.AsBalance;
             newBalance.Add(new Amount(15));
 
-            Assert.AreEqual(1, newBalance.Amounts.Count());
-            Assert.AreEqual(0, balance.Amounts.Count());
+            Assert.Single(newBalance.Amounts);
+            Assert.Empty(balance.Amounts);
         }
 
-        [TestMethod]
+        [Fact]
         public void ValueStorageExtensions_CreateFromObject_ClonesSequences()
         {
             IList<Value> sequence = new List<Value>();
@@ -201,11 +200,11 @@ namespace NLedger.Tests.Values
             IList<Value> newSequence = storage.AsSequence;
             newSequence.Add(Value.One);
 
-            Assert.AreEqual(1, newSequence.Count());
-            Assert.AreEqual(0, sequence.Count());
+            Assert.Single(newSequence);
+            Assert.Empty(sequence);
         }
 
-        [TestMethod]
+        [Fact]
         public void SequenceValueStorage_Negate_CallsNegatedForChildren()
         {
             Amount amount = new Amount(100);
@@ -217,26 +216,26 @@ namespace NLedger.Tests.Values
 
             Amount newAmount = storage.AsSequence.First().AsAmount;
 
-            Assert.AreEqual(-100, newAmount.Quantity.ToLong());
-            Assert.AreEqual(100, amount.Quantity.ToLong());
+            Assert.Equal(-100, newAmount.Quantity.ToLong());
+            Assert.Equal(100, amount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void SequenceValueStorage_Create_SupportsNullableDateTime()
         {
             DateTime? date = DateTime.Now;
             var storage = ValueStorageExtensions.CreateFromObject(date);
-            Assert.IsTrue(storage.Type == ValueTypeEnum.DateTime);
-            Assert.AreEqual(date.Value, storage.AsDateTime);
+            Assert.True(storage.Type == ValueTypeEnum.DateTime);
+            Assert.Equal(date.Value, storage.AsDateTime);
         }
 
-        [TestMethod]
+        [Fact]
         public void Value_Get_SupportsEmptyNullableDateTime1()
         {
             DateTime? date = null;
             var val = Value.Get(date);
-            Assert.IsTrue(Value.IsNullOrEmpty(val));
-            Assert.IsTrue(val.Type == ValueTypeEnum.Void);
+            Assert.True(Value.IsNullOrEmpty(val));
+            Assert.True(val.Type == ValueTypeEnum.Void);
         }
 
 

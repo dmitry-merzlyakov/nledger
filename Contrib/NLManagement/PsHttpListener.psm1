@@ -55,6 +55,7 @@ function ProcessRequest {
             Write-Verbose "Pattern '$($private:act.pattern)' matches given URL"
             $Global:ActionParams = $Matches
             $private:response = $private:act.action.Invoke()
+            Write-Verbose "Invoke response: $private:response"
             WriteResponse $context $private:response | Out-Null
             Write-Verbose "Request is properly handled"
             return

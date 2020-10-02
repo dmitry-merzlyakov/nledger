@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Iterators;
 using NLedger.Scopus;
 using NLedger.Times;
@@ -17,19 +16,19 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Iterators
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon | ContextInit.SaveCultureInfo)]
     public class GeneratePostsIteratorTests : TestFixture
     {
-        public override void CustomTestInitialize()
+        protected override void CustomTestInitialize()
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_Constructor_PopulatesProperties()
         {
             Session session = new Session();
@@ -38,117 +37,117 @@ namespace NLedger.Tests.Iterators
 
             GeneratePostsIterator genPosts = new GeneratePostsIterator(session, seed, quantity);
 
-            Assert.AreEqual(session, genPosts.Session);
-            Assert.AreEqual(seed, genPosts.Seed);
-            Assert.AreEqual(quantity, genPosts.Quantity);
+            Assert.Equal(session, genPosts.Session);
+            Assert.Equal(seed, genPosts.Seed);
+            Assert.Equal(quantity, genPosts.Quantity);
 
-            Assert.IsNotNull(genPosts.StrLenGen);
-            Assert.IsNotNull(genPosts.ThreeGen);
-            Assert.IsNotNull(genPosts.SixGen);
-            Assert.IsNotNull(genPosts.UpcharGen);
-            Assert.IsNotNull(genPosts.DowncharGen);
-            Assert.IsNotNull(genPosts.NumcharGen);
-            Assert.IsNotNull(genPosts.TruthGen);
-            Assert.IsNotNull(genPosts.NegNumberGen);
-            Assert.IsNotNull(genPosts.PosNumberGen);
-            Assert.IsNotNull(genPosts.YearGen);
-            Assert.IsNotNull(genPosts.MonGen);
-            Assert.IsNotNull(genPosts.DayGen);
+            Assert.NotNull(genPosts.StrLenGen);
+            Assert.NotNull(genPosts.ThreeGen);
+            Assert.NotNull(genPosts.SixGen);
+            Assert.NotNull(genPosts.UpcharGen);
+            Assert.NotNull(genPosts.DowncharGen);
+            Assert.NotNull(genPosts.NumcharGen);
+            Assert.NotNull(genPosts.TruthGen);
+            Assert.NotNull(genPosts.NegNumberGen);
+            Assert.NotNull(genPosts.PosNumberGen);
+            Assert.NotNull(genPosts.YearGen);
+            Assert.NotNull(genPosts.MonGen);
+            Assert.NotNull(genPosts.DayGen);
 
-            Assert.AreEqual(new DateTime(2288, 2, 19), genPosts.NextDate);
-            Assert.AreEqual(new DateTime(2261, 5, 27), genPosts.NextAuxDate);
+            Assert.Equal(new DateTime(2288, 2, 19), genPosts.NextDate);
+            Assert.Equal(new DateTime(2261, 5, 27), genPosts.NextAuxDate);
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateString_CreatesStringWithSpecifiedLength()
         {
             int length = 77;
             GeneratePostsIterator genPosts = new GeneratePostsIterator(new Session(), /* seed */ 100);
             string result = genPosts.GenerateString(length);
-            Assert.AreEqual(length, result.Length);
+            Assert.Equal(length, result.Length);
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateString_CreatesStringWithLettersOnlyIfOnlyAlpha()
         {
             int length = 77;
             GeneratePostsIterator genPosts = new GeneratePostsIterator(new Session(), /* seed */ 100);
             string result = genPosts.GenerateString(length, true);
-            Assert.IsTrue(result.All(c => Char.IsLetter(c)));
+            Assert.True(result.All(c => Char.IsLetter(c)));
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateAccount_CreatesAccounNameWithPossibleBrackets()
         {
             // Round brackets
             StringBuilder sb1 = new StringBuilder();
             GeneratePostsIterator genPosts1 = new GeneratePostsIterator(new Session(), 200);
             bool mustBalance1 = genPosts1.GenerateAccount(sb1);
-            Assert.AreEqual("(Q 93:5xq2y5BjY:81:VN n76SLNFXOfO)", sb1.ToString());
-            Assert.IsFalse(mustBalance1);
+            Assert.Equal("(Q 93:5xq2y5BjY:81:VN n76SLNFXOfO)", sb1.ToString());
+            Assert.False(mustBalance1);
 
             // Square brackets
             StringBuilder sb2 = new StringBuilder();
             GeneratePostsIterator genPosts2 = new GeneratePostsIterator(new Session(), 300);
             bool mustBalance2 = genPosts2.GenerateAccount(sb2);
-            Assert.AreEqual("[Rz4sMk4kvVe53HOGo:i3 0y0hQI rxU2kb9oMO]", sb2.ToString());
-            Assert.IsTrue(mustBalance2);
+            Assert.Equal("[Rz4sMk4kvVe53HOGo:i3 0y0hQI rxU2kb9oMO]", sb2.ToString());
+            Assert.True(mustBalance2);
 
             // No brackets
             StringBuilder sb3 = new StringBuilder();
             GeneratePostsIterator genPosts3 = new GeneratePostsIterator(new Session(), 500);
             bool mustBalance3 = genPosts3.GenerateAccount(sb3);
-            Assert.AreEqual("rpBXV13cM:4m", sb3.ToString());
-            Assert.IsTrue(mustBalance3);
+            Assert.Equal("rpBXV13cM:4m", sb3.ToString());
+            Assert.True(mustBalance3);
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateAccount_CreatesAccounNameWithoutBrackets()
         {
             StringBuilder sb1 = new StringBuilder();
             GeneratePostsIterator genPosts1 = new GeneratePostsIterator(new Session(), 200);
             bool mustBalance1 = genPosts1.GenerateAccount(sb1, true);
-            Assert.AreEqual("x3:5xq2y5BjY:81:VN n7", sb1.ToString());
-            Assert.IsTrue(mustBalance1);
+            Assert.Equal("x3:5xq2y5BjY:81:VN n7", sb1.ToString());
+            Assert.True(mustBalance1);
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateCommodity_ReturnsACommodityCode()
         {
             GeneratePostsIterator genPosts = new GeneratePostsIterator(new Session(), 200);
-            Assert.AreEqual("QdzT", genPosts.GenerateCommodity());
-            Assert.AreEqual("EuA", genPosts.GenerateCommodity());
-            Assert.AreEqual("M", genPosts.GenerateCommodity());
-            Assert.AreEqual("nHx", genPosts.GenerateCommodity());
-            Assert.AreEqual("pqG", genPosts.GenerateCommodity());
-            Assert.AreEqual("yl", genPosts.GenerateCommodity());
-            Assert.AreEqual("axBgKs", genPosts.GenerateCommodity());
+            Assert.Equal("QdzT", genPosts.GenerateCommodity());
+            Assert.Equal("EuA", genPosts.GenerateCommodity());
+            Assert.Equal("M", genPosts.GenerateCommodity());
+            Assert.Equal("nHx", genPosts.GenerateCommodity());
+            Assert.Equal("pqG", genPosts.GenerateCommodity());
+            Assert.Equal("yl", genPosts.GenerateCommodity());
+            Assert.Equal("axBgKs", genPosts.GenerateCommodity());
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateCommodity_ExcludeHidesParticularCommodity()
         {
             GeneratePostsIterator genPosts = new GeneratePostsIterator(new Session(), 200);
-            Assert.AreEqual("EuA", genPosts.GenerateCommodity("QdzT"));
-            Assert.AreEqual("nHx", genPosts.GenerateCommodity("M"));
-            Assert.AreEqual("yl", genPosts.GenerateCommodity("pqG"));
+            Assert.Equal("EuA", genPosts.GenerateCommodity("QdzT"));
+            Assert.Equal("nHx", genPosts.GenerateCommodity("M"));
+            Assert.Equal("yl", genPosts.GenerateCommodity("pqG"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_GenerateAmount_CreatesAmount()
         {
             StringBuilder sb = new StringBuilder();
             GeneratePostsIterator genPosts = new GeneratePostsIterator(new Session(), 200);
-            Assert.AreEqual("QdzTx 3011.54570292427", genPosts.GenerateAmount(sb));
+            Assert.Equal("QdzTx 3011.54570292427", genPosts.GenerateAmount(sb));
         }
 
-        [TestMethod]
+        [Fact]
         public void GeneratePostsIterator_Get_ReturnsCollectionOfGeneratedPosts()
         {
             StringBuilder sb = new StringBuilder();
             GeneratePostsIterator genPosts = new GeneratePostsIterator(new Session(), 400, 100);
             var posts = genPosts.Get();
-            Assert.AreEqual(100, posts.Count());
+            Assert.Equal(100, posts.Count());
         }
     }
 }

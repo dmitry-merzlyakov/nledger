@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -16,21 +16,21 @@ using System.Threading.Tasks;
 
 namespace NLedger
 {
-    public class Temporaries
+    public class Temporaries : IDisposable
     {
         public Xact LastXact
         {
-            get { return XactTemps != null ? XactTemps.Last() : null; }
+            get { return XactTemps != null ? XactTemps.LastOrDefault() : null; }
         }
 
         public Post LastPost
         {
-            get { return PostTemps != null ? PostTemps.Last() : null; }
+            get { return PostTemps != null ? PostTemps.LastOrDefault() : null; }
         }
 
         public Account LastAccount
         {
-            get { return AcctTemps != null ? AcctTemps.Last() : null; }
+            get { return AcctTemps != null ? AcctTemps.LastOrDefault() : null; }
         }
 
         public Xact CopyXact(Xact origin)
@@ -64,9 +64,8 @@ namespace NLedger
             if (PostTemps == null)
                 PostTemps = new List<Post>();
 
-            PostTemps.Add(origin);
-
             Post temp = new Post(origin);
+            PostTemps.Add(temp);
             temp.Flags |= SupportsFlagsEnum.ITEM_TEMP;
 
             if (account != null)
@@ -104,6 +103,7 @@ namespace NLedger
                 AcctTemps = new List<Account>();
 
             Account temp = new Account(parent, name);
+            AcctTemps.Add(temp);
             temp.IsTempAccount = true;
 
             if (parent != null)
@@ -139,6 +139,14 @@ namespace NLedger
                 }
                 AcctTemps.Clear();
             }
+        }
+
+        /// <summary>
+        /// Ported from ~temporaries_t()
+        /// </summary>
+        public void Dispose()
+        {
+            Clear();
         }
 
         private IList<Xact> XactTemps { get; set; }

@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Amounts;
 using NLedger.Values;
@@ -15,143 +14,143 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Accounts
 {
-    [TestClass]
     public class AccountTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Account_Tests_DefaultContructorCreatesARootAccount()
         {
             Account account = new Account();
-            Assert.IsNull(account.Parent);
-            Assert.IsTrue(string.IsNullOrEmpty(account.Name));
+            Assert.Null(account.Parent);
+            Assert.True(string.IsNullOrEmpty(account.Name));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_RootAccountHasEmptyNameAndFullName()
         {
             Account account = new Account();
-            Assert.IsTrue(string.IsNullOrEmpty(account.Name));
-            Assert.IsTrue(string.IsNullOrEmpty(account.FullName));
+            Assert.True(string.IsNullOrEmpty(account.Name));
+            Assert.True(string.IsNullOrEmpty(account.FullName));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_RootAccountCanHaveName()
         {
             Account account = new Account(null, "root");
-            Assert.AreEqual("root", account.Name);
-            Assert.AreEqual("root", account.FullName);
+            Assert.Equal("root", account.Name);
+            Assert.Equal("root", account.FullName);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FullNameConcantenatesAllParentNames()
         {
             Account root = new Account(null, "root");
             Account branch = new Account(root, "branch");
             Account leaf = new Account(branch, "leaf");
-            Assert.AreEqual("root", root.FullName);
-            Assert.AreEqual("root:branch", branch.FullName);
-            Assert.AreEqual("root:branch:leaf", leaf.FullName);
+            Assert.Equal("root", root.FullName);
+            Assert.Equal("root:branch", branch.FullName);
+            Assert.Equal("root:branch:leaf", leaf.FullName);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FullNameIgnoresEmptyParentNames()
         {
             Account root = new Account(null, "root");
             Account branch = new Account(root, "");
             Account leaf = new Account(branch, "leaf");
-            Assert.AreEqual("root", root.FullName);
-            Assert.AreEqual("root:", branch.FullName);
-            Assert.AreEqual("root:leaf", leaf.FullName);
+            Assert.Equal("root", root.FullName);
+            Assert.Equal("root:", branch.FullName);
+            Assert.Equal("root:leaf", leaf.FullName);
 
             Account parent = new Account(null, "");
             Account child = new Account(parent, "child");
-            Assert.AreEqual("child", child.FullName);
+            Assert.Equal("child", child.FullName);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FindAccountAddsChildAccount()
         {
             Account root = new Account();
             Account child = root.FindAccount("child");
-            Assert.IsNotNull(child);
-            Assert.AreEqual("child", child.Name);
-            Assert.IsTrue(root.Accounts.ContainsKey("child"));
-            Assert.AreEqual(child, root.Accounts["child"]);
+            Assert.NotNull(child);
+            Assert.Equal("child", child.Name);
+            Assert.True(root.Accounts.ContainsKey("child"));
+            Assert.Equal(child, root.Accounts["child"]);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FindAccountUsesExistingChildAccount()
         {
             Account root = new Account();
             Account child = root.FindAccount("child");
             Account child2 = root.FindAccount("child");
-            Assert.AreEqual(child, child2);
-            Assert.AreEqual(1, root.Accounts.Count);
+            Assert.Equal(child, child2);
+            Assert.Equal(1, root.Accounts.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FindAccountCreatesTree()
         {
             Account root = new Account();
             Account child3 = root.FindAccount("child:child2:child3");
-            Assert.IsNotNull(child3);
-            Assert.AreEqual("child3", child3.Name);
+            Assert.NotNull(child3);
+            Assert.Equal("child3", child3.Name);
 
             Account child = root.Accounts["child"];
-            Assert.IsNotNull(child);
-            Assert.AreEqual("child", child.Name);
+            Assert.NotNull(child);
+            Assert.Equal("child", child.Name);
 
             Account child2 = child.Accounts["child2"];
-            Assert.IsNotNull(child2);
-            Assert.AreEqual("child2", child2.Name);
+            Assert.NotNull(child2);
+            Assert.Equal("child2", child2.Name);
 
             Account _child3 = child2.Accounts["child3"];
-            Assert.IsNotNull(_child3);
-            Assert.AreEqual(_child3, child3);
+            Assert.NotNull(_child3);
+            Assert.Equal(_child3, child3);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FindAccountDoesNotCreateIfNoAutoCreate()
         {
             Account root = new Account();
 
             Account child1 = root.FindAccount("child1", false);
-            Assert.IsNull(child1);
+            Assert.Null(child1);
 
             Account child2 = root.FindAccount("child2", true);
-            Assert.IsNotNull(child2);
+            Assert.NotNull(child2);
 
             Account child3 = root.FindAccount("child3");  // Default is True
-            Assert.IsNotNull(child3);
+            Assert.NotNull(child3);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Tests_FindAccountCopiesOptionsToCreatedAccount()
         {
             Account root = new Account() { IsGeneratedAccount = true, IsTempAccount = true };
 
             Account child = root.FindAccount("child");
-            Assert.IsTrue(child.IsGeneratedAccount);
-            Assert.IsTrue(child.IsTempAccount);
+            Assert.True(child.IsGeneratedAccount);
+            Assert.True(child.IsTempAccount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Amount_ReturnsVoidIfNoXDataOrNotVisited()
         {
             Account account = new Account();
             Value value = account.Amount();  // No XData
-            Assert.IsTrue(Value.IsNullOrEmpty(value));
+            Assert.True(Value.IsNullOrEmpty(value));
 
             account = new Account();
             account.XData.Visited = false;
             value = account.Amount();  // Not Visited
-            Assert.IsTrue(Value.IsNullOrEmpty(value));
+            Assert.True(Value.IsNullOrEmpty(value));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Amount_SummarizesVisitedPosts()
         {
             Account account = new Account();
@@ -170,16 +169,16 @@ namespace NLedger.Tests.Accounts
                        
             Value value = account.Amount();
 
-            Assert.IsFalse(Value.IsNullOrEmpty(value));
-            Assert.AreEqual(30, value.AsLong);
-            Assert.AreEqual(30, account.XData.SelfDetails.Total.AsLong);
+            Assert.False(Value.IsNullOrEmpty(value));
+            Assert.Equal(30, value.AsLong);
+            Assert.Equal(30, account.XData.SelfDetails.Total.AsLong);
 
-            Assert.IsTrue(post1.XData.Considered);
-            Assert.IsTrue(post2.XData.Considered);
-            Assert.AreEqual(2, account.XData.SelfDetails.LastPost);
+            Assert.True(post1.XData.Considered);
+            Assert.True(post2.XData.Considered);
+            Assert.Equal(2, account.XData.SelfDetails.LastPost);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Amount_SummarizesVisitedReportedPosts()
         {
             Account account = new Account();
@@ -198,16 +197,16 @@ namespace NLedger.Tests.Accounts
 
             Value value = account.Amount();
 
-            Assert.IsFalse(Value.IsNullOrEmpty(value));
-            Assert.AreEqual(30, value.AsLong);
-            Assert.AreEqual(30, account.XData.SelfDetails.Total.AsLong);
+            Assert.False(Value.IsNullOrEmpty(value));
+            Assert.Equal(30, value.AsLong);
+            Assert.Equal(30, account.XData.SelfDetails.Total.AsLong);
 
-            Assert.IsTrue(post1.XData.Considered);
-            Assert.IsTrue(post2.XData.Considered);
-            Assert.AreEqual(2, account.XData.SelfDetails.LastReportedPost);
+            Assert.True(post1.XData.Considered);
+            Assert.True(post2.XData.Considered);
+            Assert.Equal(2, account.XData.SelfDetails.LastReportedPost);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Amount_ContinuesSummmarizingFromLastPosition()
         {
             Account account = new Account();
@@ -234,43 +233,43 @@ namespace NLedger.Tests.Accounts
 
             value = account.Amount(); // Next call
 
-            Assert.IsFalse(Value.IsNullOrEmpty(value));
-            Assert.AreEqual(60, value.AsLong);
-            Assert.AreEqual(60, account.XData.SelfDetails.Total.AsLong);
+            Assert.False(Value.IsNullOrEmpty(value));
+            Assert.Equal(60, value.AsLong);
+            Assert.Equal(60, account.XData.SelfDetails.Total.AsLong);
 
-            Assert.IsTrue(post1.XData.Considered);
-            Assert.IsTrue(post2.XData.Considered);
-            Assert.IsTrue(post3.XData.Considered);
-            Assert.AreEqual(3, account.XData.SelfDetails.LastPost);
+            Assert.True(post1.XData.Considered);
+            Assert.True(post2.XData.Considered);
+            Assert.True(post3.XData.Considered);
+            Assert.Equal(3, account.XData.SelfDetails.LastPost);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Description_ReturnsFullNameWithPrefix()
         {
             Account account = new Account(null, "root");
             Account account1 = new Account(account, "child");
-            Assert.AreEqual("account root", account.Description);
-            Assert.AreEqual("account root:child", account1.Description);
+            Assert.Equal("account root", account.Description);
+            Assert.Equal("account root:child", account1.Description);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_FindAccountRe_LooksForAccountsByRegex()
         {
             Account account = new Account(null, "root");
             Account account1 = account.FindAccount("child");
 
             Account result = account.FindAccountRe("child");
-            Assert.AreEqual(result, account1);
+            Assert.Equal(result, account1);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_FindAccountRe_ReturnsNullIfCannotFind()
         {
             Account account = new Account(null, "root");
-            Assert.IsNull(account.FindAccountRe("child"));
+            Assert.Null(account.FindAccountRe("child"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_AddPost_AddsPostToPostsCollection()
         {
             Account account = new Account();
@@ -279,10 +278,10 @@ namespace NLedger.Tests.Accounts
             account.AddPost(post);
 
             Post result = account.Posts.First();
-            Assert.AreEqual(result, post);
+            Assert.Equal(result, post);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_AddPost_UpdatesPostXData()
         {
             Account account = new Account();
@@ -294,30 +293,30 @@ namespace NLedger.Tests.Accounts
 
             account.AddPost(post);
 
-            Assert.IsFalse(account.XData.SelfDetails.Gathered);
-            Assert.IsFalse(account.XData.SelfDetails.Calculated);
-            Assert.IsFalse(account.XData.FamilyDetails.Gathered);
-            Assert.IsFalse(account.XData.FamilyDetails.Calculated);
+            Assert.False(account.XData.SelfDetails.Gathered);
+            Assert.False(account.XData.SelfDetails.Calculated);
+            Assert.False(account.XData.FamilyDetails.Gathered);
+            Assert.False(account.XData.FamilyDetails.Calculated);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_AddDeferredPosts_PopulatesDeferredPosts()
         {
             Account account = new Account();
-            Assert.IsNull(account.DeferredPosts);
+            Assert.Null(account.DeferredPosts);
             account.AddDeferredPosts("uuid", new Post());
-            Assert.IsNotNull(account.DeferredPosts);
+            Assert.NotNull(account.DeferredPosts);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_AddDeferredPosts_AddsUUID()
         {
             Account account = new Account();
             account.AddDeferredPosts("1234", new Post());
-            Assert.AreEqual("1234", account.DeferredPosts.First().Key);
+            Assert.Equal("1234", account.DeferredPosts.First().Key);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_AddDeferredPosts_AddsPostToUUID()
         {
             Post post1 = new Post();
@@ -329,23 +328,23 @@ namespace NLedger.Tests.Accounts
             account.AddDeferredPosts("uuid2", post2);
             account.AddDeferredPosts("uuid2", post3);
 
-            Assert.AreEqual(2, account.DeferredPosts.Count);
-            Assert.AreEqual(1, account.DeferredPosts["uuid1"].Count);
-            Assert.AreEqual(2, account.DeferredPosts["uuid2"].Count);
-            Assert.AreEqual(post1, account.DeferredPosts["uuid1"].First());
-            Assert.AreEqual(post2, account.DeferredPosts["uuid2"].First());
-            Assert.AreEqual(post3, account.DeferredPosts["uuid2"].Last());
+            Assert.Equal(2, account.DeferredPosts.Count);
+            Assert.Equal(1, account.DeferredPosts["uuid1"].Count);
+            Assert.Equal(2, account.DeferredPosts["uuid2"].Count);
+            Assert.Equal(post1, account.DeferredPosts["uuid1"].First());
+            Assert.Equal(post2, account.DeferredPosts["uuid2"].First());
+            Assert.Equal(post3, account.DeferredPosts["uuid2"].Last());
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_ApplyDeferredPosts_DoesNothingIfNoDeferredPosts()
         {
             Account account = new Account();
             account.ApplyDeferredPosts();
-            Assert.IsNull(account.DeferredPosts);
+            Assert.Null(account.DeferredPosts);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_ApplyDeferredPosts_AddsAllDeferredPostsToItsAccountsAndClearsList()
         {
             Account account1 = new Account();
@@ -360,14 +359,14 @@ namespace NLedger.Tests.Accounts
 
             account.ApplyDeferredPosts();
 
-            Assert.AreEqual(3, account1.Posts.Count);
-            Assert.AreEqual(post1, account1.Posts[0]);
-            Assert.AreEqual(post2, account1.Posts[1]);
-            Assert.AreEqual(post3, account1.Posts[2]);
-            Assert.IsNull(account.DeferredPosts);
+            Assert.Equal(3, account1.Posts.Count);
+            Assert.Equal(post1, account1.Posts[0]);
+            Assert.Equal(post2, account1.Posts[1]);
+            Assert.Equal(post3, account1.Posts[2]);
+            Assert.Null(account.DeferredPosts);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_ApplyDeferredPosts_HandlesChildAccounts()
         {
             Account accountToAccumulate = new Account();
@@ -384,14 +383,14 @@ namespace NLedger.Tests.Accounts
 
             accountRoot.ApplyDeferredPosts();
 
-            Assert.AreEqual(3, accountToAccumulate.Posts.Count);
-            Assert.AreEqual(post1, accountToAccumulate.Posts[0]);
-            Assert.AreEqual(post2, accountToAccumulate.Posts[1]);
-            Assert.AreEqual(post3, accountToAccumulate.Posts[2]);
-            Assert.IsNull(accountChild.DeferredPosts);
+            Assert.Equal(3, accountToAccumulate.Posts.Count);
+            Assert.Equal(post1, accountToAccumulate.Posts[0]);
+            Assert.Equal(post2, accountToAccumulate.Posts[1]);
+            Assert.Equal(post3, accountToAccumulate.Posts[2]);
+            Assert.Null(accountChild.DeferredPosts);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_ClearXData_ClearsXDataForThisAndChildAccounts()
         {
             Account accountRoot = new Account(null, "root");
@@ -402,18 +401,18 @@ namespace NLedger.Tests.Accounts
 
             accountRoot.ClearXData();
 
-            Assert.IsFalse(accountRoot.HasXData);
-            Assert.IsFalse(accountChild.HasXData);
+            Assert.False(accountRoot.HasXData);
+            Assert.False(accountChild.HasXData);
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_GetDeferredPosts_ReturnsNullIsNoPosts()
         {
             Account account = new Account(null, "root");
-            Assert.IsNull(account.GetDeferredPosts("uuid1"));
+            Assert.Null(account.GetDeferredPosts("uuid1"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_GetDeferredPosts_ReturnsDeferredPostsForUUID()
         {
             Account account1 = new Account();
@@ -429,21 +428,21 @@ namespace NLedger.Tests.Accounts
             var uuid1Posts = account.GetDeferredPosts("uuid1");
             var uuid2Posts = account.GetDeferredPosts("uuid2");
 
-            Assert.AreEqual(1, uuid1Posts.Count());
-            Assert.AreEqual(2, uuid2Posts.Count());
-            Assert.AreEqual(post1, uuid1Posts.ElementAt(0));
-            Assert.AreEqual(post2, uuid2Posts.ElementAt(0));
-            Assert.AreEqual(post3, uuid2Posts.ElementAt(1));
+            Assert.Single(uuid1Posts);
+            Assert.Equal(2, uuid2Posts.Count());
+            Assert.Equal(post1, uuid1Posts.ElementAt(0));
+            Assert.Equal(post2, uuid2Posts.ElementAt(0));
+            Assert.Equal(post3, uuid2Posts.ElementAt(1));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_GetDeferredPosts_DoesNothingIsNoPosts()
         {
             Account account = new Account(null, "root");
             account.DeleteDeferredPosts("uuid1");
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_GetDeferredPosts_RemovesDeferredPostsForUUID()
         {
             Account account1 = new Account();
@@ -458,59 +457,59 @@ namespace NLedger.Tests.Accounts
 
             account.DeleteDeferredPosts("uuid2");
 
-            Assert.AreEqual(1, account.DeferredPosts.Count);
-            Assert.AreEqual(post1, account.DeferredPosts["uuid1"].First());
+            Assert.Equal(1, account.DeferredPosts.Count);
+            Assert.Equal(post1, account.DeferredPosts["uuid1"].First());
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_HasXFlags_ReturnsFalseIfNoXData()
         {
             Account account = new Account();
-            Assert.IsFalse(account.HasXData);
-            Assert.IsFalse(account.HasXFlags(d => d.Visited));
+            Assert.False(account.HasXData);
+            Assert.False(account.HasXFlags(d => d.Visited));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_HasXFlags_ProcessesXDataIfItExists()
         {
             Account account = new Account();
             account.XData.Visited = true;
-            Assert.IsTrue(account.HasXFlags(d => d.Visited));
+            Assert.True(account.HasXFlags(d => d.Visited));
             account.XData.Visited = false;
-            Assert.IsFalse(account.HasXFlags(d => d.Visited));
+            Assert.False(account.HasXFlags(d => d.Visited));
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Valid_DetectsToBigDepth()
         {
             Account account = new Account();
             for(var i=0;i<256;i++)
                 account = new Account(account, "acc");
 
-            Assert.AreEqual(256, account.Depth);
-            Assert.IsTrue(account.Valid());
+            Assert.Equal(256, account.Depth);
+            Assert.True(account.Valid());
 
             account = new Account(account, "acc");
 
-            Assert.AreEqual(257, account.Depth);
-            Assert.IsFalse(account.Valid());
+            Assert.Equal(257, account.Depth);
+            Assert.False(account.Valid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Valid_DetectsSelfLoops()
         {
             Account account = new Account();
-            Assert.IsTrue(account.Valid());
+            Assert.True(account.Valid());
 
             account.Accounts.Add("wrong-self-loop", account);
-            Assert.IsFalse(account.Valid());
+            Assert.False(account.Valid());
         }
 
-        [TestMethod]
+        [Fact]
         public void Account_Valid_DetectsInvalidChidren()
         {
             Account account = new Account();
-            Assert.IsTrue(account.Valid());
+            Assert.True(account.Valid());
 
             Account childAcc = account;
             for (var i = 0; i < 256; i++)
@@ -518,13 +517,13 @@ namespace NLedger.Tests.Accounts
                 childAcc = new Account(childAcc, "acc");
                 childAcc.Parent.Accounts.Add("child", childAcc);
             }
-            Assert.IsTrue(account.Valid());
+            Assert.True(account.Valid());
 
             childAcc = new Account(childAcc, "acc");
             childAcc.Parent.Accounts.Add("child", childAcc);
 
-            Assert.IsFalse(account.Valid());
-            Assert.IsFalse(childAcc.Valid());
+            Assert.False(account.Valid());
+            Assert.False(childAcc.Valid());
         }
 
     }

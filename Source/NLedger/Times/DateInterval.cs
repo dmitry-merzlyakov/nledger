@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Utility;
@@ -125,7 +125,7 @@ namespace NLedger.Times
                     Logger.Current.Debug("times.interval", () => String.Format("stabilize: aligning with a duration: {0}", Duration));
 
                     // The interval object has not been seeded with a start date yet, so
-                    // find the nearest period before on on date which fits, if possible.
+                    // find the nearest period before or on date which fits, if possible.
                     //
                     // Find an efficient starting point for the upcoming while loop.  We
                     // want a date early enough that the range will be correct, but late

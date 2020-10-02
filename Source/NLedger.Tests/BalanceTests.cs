@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Commodities;
 using System;
@@ -14,84 +13,84 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests
 {
-    [TestClass]
     public class BalanceTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void Balance_IsEmpty_IndicatesThatBalanceHasNoAmounts()
         {
             Balance balance = new Balance();
-            Assert.IsTrue(balance.IsEmpty);
+            Assert.True(balance.IsEmpty);
 
             balance.Add(new Amount(1));
-            Assert.IsFalse(balance.IsEmpty);
+            Assert.False(balance.IsEmpty);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsSingleAmount_IndicatesThatBalanceHasOneAmounts()
         {
             Balance balance = new Balance();
-            Assert.IsFalse(balance.IsSingleAmount);
+            Assert.False(balance.IsSingleAmount);
 
             balance.Add(new Amount(1));
-            Assert.IsTrue(balance.IsSingleAmount);
+            Assert.True(balance.IsSingleAmount);
 
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             balance.Add(new Amount(1, comm));
-            Assert.IsFalse(balance.IsSingleAmount);
+            Assert.False(balance.IsSingleAmount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsRealZero_IndicatesThatBalanceIsEmptyOrHasAllEmptyAmounts()
         {
             Balance balance = new Balance();
-            Assert.IsTrue(balance.IsRealZero);
+            Assert.True(balance.IsRealZero);
 
             balance.Add(new Amount(0));
-            Assert.IsTrue(balance.IsRealZero);
+            Assert.True(balance.IsRealZero);
 
             balance.Add(new Amount(1));
-            Assert.IsFalse(balance.IsRealZero);
+            Assert.False(balance.IsRealZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_SingleAmount_RetursSingleAmountIfItIsReallySingle()
         {
             Amount amount = new Amount(1);
             Balance balance = new Balance(amount);
-            Assert.AreEqual(amount, balance.SingleAmount);
+            Assert.Equal(amount, balance.SingleAmount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Add_IgnoresZeroAmounts()
         {
             Balance balance = new Balance();
             balance.Add(new Amount(0));
-            Assert.IsTrue(balance.IsEmpty);
+            Assert.True(balance.IsEmpty);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Add_AddsNonZeroAmounts()
         {
             Balance balance = new Balance();
             balance.Add(new Amount(1));
-            Assert.IsTrue(balance.IsSingleAmount);
+            Assert.True(balance.IsSingleAmount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Add_IncorporatesAmountsWithTheSameCommodity()
         {
             Balance balance = new Balance();
             balance.Add(new Amount(1));
             balance.Add(new Amount(2));
-            Assert.IsTrue(balance.IsSingleAmount);
-            Assert.AreEqual(3, balance.SingleAmount.Quantity.ToLong());
+            Assert.True(balance.IsSingleAmount);
+            Assert.Equal(3, balance.SingleAmount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Add_CopiesAddedAmounts()
         {
             Commodity comm1 = new Commodity(CommodityPool.Current, new CommodityBase("comm1"));
@@ -107,57 +106,57 @@ namespace NLedger.Tests
             amount1.InPlaceAdd(new Amount(10));
             amount2.InPlaceAdd(new Amount(10));
 
-            Assert.AreEqual(1, balance.Amounts.ElementAt(0).Value.Quantity.ToLong());
-            Assert.AreEqual(2, balance.Amounts.ElementAt(1).Value.Quantity.ToLong());
-            Assert.AreEqual(11, amount1.Quantity.ToLong());
-            Assert.AreEqual(12, amount2.Quantity.ToLong());
+            Assert.Equal(1, balance.Amounts.ElementAt(0).Value.Quantity.ToLong());
+            Assert.Equal(2, balance.Amounts.ElementAt(1).Value.Quantity.ToLong());
+            Assert.Equal(11, amount1.Quantity.ToLong());
+            Assert.Equal(12, amount2.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Subtract_IgnoresZeroAmounts()
         {
             Balance balance = new Balance();
             balance.Subtract(new Amount(0));
-            Assert.IsTrue(balance.IsEmpty);
+            Assert.True(balance.IsEmpty);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Subtract_SubtractsAnExistingAmount()
         {
             Balance balance = new Balance();
             balance.Add(new Amount(5));
             balance.Subtract(new Amount(2));
-            Assert.IsTrue(balance.IsSingleAmount);
-            Assert.AreEqual(3, balance.SingleAmount.Quantity.ToLong());
+            Assert.True(balance.IsSingleAmount);
+            Assert.Equal(3, balance.SingleAmount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Subtract_RemovesZeroResults()
         {
             Balance balance = new Balance();
             balance.Add(new Amount(5));
             balance.Subtract(new Amount(5));
-            Assert.IsTrue(balance.IsEmpty);
+            Assert.True(balance.IsEmpty);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Subtract_AddsInvertedAmount()
         {
             Balance balance = new Balance();
             balance.Subtract(new Amount(5));
-            Assert.IsTrue(balance.IsSingleAmount);
-            Assert.AreEqual(-5, balance.SingleAmount.Quantity.ToLong());
+            Assert.True(balance.IsSingleAmount);
+            Assert.Equal(-5, balance.SingleAmount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_CommodityAmount_EmptyBalanceReturnsNullForGivenCommodity()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
             Balance balance = new Balance();
-            Assert.IsNull(balance.CommodityAmount(comm));
+            Assert.Null(balance.CommodityAmount(comm));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_CommodityAmount_LooksForAddedAmountWithTheSameCommodity()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
@@ -165,10 +164,10 @@ namespace NLedger.Tests
             balance.Add(new Amount(5, comm));
 
             Amount amount = balance.CommodityAmount(comm);
-            Assert.AreEqual(5, amount.Quantity.ToLong());
+            Assert.Equal(5, amount.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_CommodityAmount_ReturnsExistingSingleCommodity()
         {
             Commodity comm = new Commodity(CommodityPool.Current, new CommodityBase("comm"));
@@ -176,36 +175,35 @@ namespace NLedger.Tests
             balance.Add(new Amount(5, comm));
 
             Amount amount = balance.CommodityAmount();
-            Assert.AreEqual(5, amount.Quantity.ToLong());
+            Assert.Equal(5, amount.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Multiply_RequiresAmounObject()
         {
             Balance balance = new Balance();
-            balance.Multiply(new Amount()); // Non-initialized amount
+            Assert.Throws<BalanceError>(() => balance.Multiply(new Amount())); // Non-initialized amount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Multiply_ReturnsCurrentBalanceIfItIsZero()
         {
             Balance balance = new Balance();
-            Assert.IsTrue(balance.IsRealZero);
+            Assert.True(balance.IsRealZero);
             Balance result = balance.Multiply(new Amount(10));
-            Assert.AreEqual(result, balance);
+            Assert.Equal(result, balance);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Multiply_ReturnsNewEmptyBalanceIfAmountIsZero()
         {
             Balance balance = new Balance(new Amount(10));  // Non-empty balance
             Balance result = balance.Multiply(new Amount(0));
-            Assert.AreNotEqual(result, balance);
-            Assert.IsTrue(result.IsRealZero);
+            Assert.NotEqual(result, balance);
+            Assert.True(result.IsRealZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Multiply_MultipliesAmountsIfGivenAmountHasNoCommodity()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -217,12 +215,11 @@ namespace NLedger.Tests
 
             Balance result = balance.Multiply(new Amount(5));
 
-            Assert.AreEqual(50, balance.Amounts.First().Value.Quantity.ToLong());
-            Assert.AreEqual(100, balance.Amounts.Last().Value.Quantity.ToLong());
+            Assert.Equal(50, balance.Amounts.First().Value.Quantity.ToLong());
+            Assert.Equal(100, balance.Amounts.Last().Value.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Multiply_ExpectsTheSameCommodityForSingleAmountBalance()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -231,11 +228,10 @@ namespace NLedger.Tests
             Balance balance = new Balance();
             balance.Add(new Amount(10, commodity1));
 
-            Balance result = balance.Multiply(new Amount(10, commodity2));
+            Assert.Throws<BalanceError>(() => balance.Multiply(new Amount(10, commodity2)));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Multiply_RequiresNoCommoditiesForAmountIfBalanceIsMultiAmount()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -245,10 +241,10 @@ namespace NLedger.Tests
             balance.Add(new Amount(10, commodity1));
             balance.Add(new Amount(10, commodity2));
 
-            Balance result = balance.Multiply(new Amount(10, commodity2));
+            Assert.Throws<BalanceError>(() => balance.Multiply(new Amount(10, commodity2)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Multiply_MultipliesSingleAmountBalance()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -259,35 +255,33 @@ namespace NLedger.Tests
 
             Balance result = balance.Multiply(new Amount(10, commodity1));
 
-            Assert.AreEqual(300, balance.Amounts.First().Value.Quantity.ToLong());
+            Assert.Equal(300, balance.Amounts.First().Value.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Divide_RequiresAmounObject()
         {
             Balance balance = new Balance();
-            balance.Divide(new Amount()); // Non-initialized amount
+            Assert.Throws<BalanceError>(() => balance.Divide(new Amount())); // Non-initialized amount
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Divide_ReturnsCurrentBalanceIfItIsZero()
         {
             Balance balance = new Balance();
-            Assert.IsTrue(balance.IsRealZero);
+            Assert.True(balance.IsRealZero);
             Balance result = balance.Divide(new Amount(10));
-            Assert.AreEqual(result, balance);
+            Assert.Equal(result, balance);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Divide_ReturnsExceptionIfAmountIsZero()
         {
             Balance balance = new Balance(new Amount(10));  // Non-empty balance
-            Balance result = balance.Divide(new Amount(0));
+            Assert.Throws<BalanceError>(() => balance.Divide(new Amount(0)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Divide_MultipliesAmountsIfGivenAmountHasNoCommodity()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -299,12 +293,11 @@ namespace NLedger.Tests
 
             Balance result = balance.Divide(new Amount(5));
 
-            Assert.AreEqual(2, balance.Amounts.First().Value.Quantity.ToLong());
-            Assert.AreEqual(4, balance.Amounts.Last().Value.Quantity.ToLong());
+            Assert.Equal(2, balance.Amounts.First().Value.Quantity.ToLong());
+            Assert.Equal(4, balance.Amounts.Last().Value.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Divide_ExpectsTheSameCommodityForSingleAmountBalance()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -313,11 +306,10 @@ namespace NLedger.Tests
             Balance balance = new Balance();
             balance.Add(new Amount(10, commodity1));
 
-            Balance result = balance.Divide(new Amount(10, commodity2));
+            Assert.Throws<BalanceError>(() => balance.Divide(new Amount(10, commodity2)));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_Divide_RequiresNoCommoditiesForAmountIfBalanceIsMultiAmount()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -327,10 +319,10 @@ namespace NLedger.Tests
             balance.Add(new Amount(10, commodity1));
             balance.Add(new Amount(10, commodity2));
 
-            Balance result = balance.Divide(new Amount(10, commodity2));
+            Assert.Throws<BalanceError>(() => balance.Divide(new Amount(10, commodity2)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Divide_DividessSingleAmountBalance()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -341,23 +333,22 @@ namespace NLedger.Tests
 
             Balance result = balance.Divide(new Amount(10, commodity1));
 
-            Assert.AreEqual(3, balance.Amounts.First().Value.Quantity.ToLong());
+            Assert.Equal(3, balance.Amounts.First().Value.Quantity.ToLong());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalanceError))]
+        [Fact]
         public void Balance_EqualsAmount_RequiresNonEmptyAmount()
         {
-            new Balance().Equals(new Amount());
+            Assert.Throws<BalanceError>(() => new Balance().Equals(new Amount()));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_EqualsAmount_ReturnsIsEmptyIfAmountIsZero()
         {
-            Assert.IsTrue(new Balance().Equals(new Amount(0)));
+            Assert.True(new Balance().Equals(new Amount(0)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_EqualsAmount_ReturnsFalseIfBalanceIsMultiAmount()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -366,10 +357,10 @@ namespace NLedger.Tests
             balance.Add(new Amount(10, commodity1));
             balance.Add(new Amount(20, commodity1));
 
-            Assert.IsFalse(balance.Equals(new Amount(10)));
+            Assert.False(balance.Equals(new Amount(10)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_EqualsAmount_ComparesSingleAmountWithAmount()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -378,10 +369,10 @@ namespace NLedger.Tests
             balance.Add(new Amount(10, commodity1));
             balance.Add(new Amount(20, commodity1));
 
-            Assert.IsTrue(balance.Equals(new Amount(30, commodity1)));
+            Assert.True(balance.Equals(new Amount(30, commodity1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_EqualsBalance_ComparesBalanceAmountsToBeEqual()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -394,10 +385,10 @@ namespace NLedger.Tests
             balance2.Add(new Amount(10, commodity1));
             balance2.Add(new Amount(20, commodity1));
 
-            Assert.IsTrue(balance1.Equals(balance2));
+            Assert.True(balance1.Equals(balance2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsLessThan_ComparesAllAmounts()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -407,11 +398,11 @@ namespace NLedger.Tests
             balance.Add(new Amount(10, commodity1));
             balance.Add(new Amount(20, commodity2));
 
-            Assert.IsTrue(balance.IsLessThan(new Amount(30)));
-            Assert.IsFalse(balance.IsLessThan(new Amount(10)));
+            Assert.True(balance.IsLessThan(new Amount(30)));
+            Assert.False(balance.IsLessThan(new Amount(10)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsGreaterThan_ComparesAllAmounts()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -421,11 +412,11 @@ namespace NLedger.Tests
             balance.Add(new Amount(10, commodity1));
             balance.Add(new Amount(20, commodity2));
 
-            Assert.IsFalse(balance.IsGreaterThan(new Amount(30)));
-            Assert.IsTrue(balance.IsGreaterThan(new Amount(10)));
+            Assert.False(balance.IsGreaterThan(new Amount(30)));
+            Assert.True(balance.IsGreaterThan(new Amount(10)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Constructor_ClonesAmounts()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -442,16 +433,16 @@ namespace NLedger.Tests
             clonedBalance.Amounts.ElementAt(0).Value.Multiply(new Amount(5));
             clonedBalance.Amounts.ElementAt(1).Value.Multiply(new Amount(7));
 
-            Assert.AreEqual(2, clonedBalance.Amounts.Count());
-            Assert.AreEqual(1000, clonedBalance.Amounts.ElementAt(0).Value.Quantity.ToLong());
-            Assert.AreEqual(2100, clonedBalance.Amounts.ElementAt(1).Value.Quantity.ToLong());
+            Assert.Equal(2, clonedBalance.Amounts.Count());
+            Assert.Equal(1000, clonedBalance.Amounts.ElementAt(0).Value.Quantity.ToLong());
+            Assert.Equal(2100, clonedBalance.Amounts.ElementAt(1).Value.Quantity.ToLong());
 
-            Assert.AreEqual(2, balance.Amounts.Count());
-            Assert.AreEqual(200, balance.Amounts.ElementAt(0).Value.Quantity.ToLong());
-            Assert.AreEqual(300, balance.Amounts.ElementAt(1).Value.Quantity.ToLong());
+            Assert.Equal(2, balance.Amounts.Count());
+            Assert.Equal(200, balance.Amounts.ElementAt(0).Value.Quantity.ToLong());
+            Assert.Equal(300, balance.Amounts.ElementAt(1).Value.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Add_Balance_AddsAllAmounts()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -481,12 +472,12 @@ namespace NLedger.Tests
 
             // Assert
 
-            Assert.AreEqual(2, balance1.Amounts.Count());
-            Assert.AreEqual(600, balance1.Amounts.ElementAt(0).Value.Quantity.ToLong());
-            Assert.AreEqual(800, balance1.Amounts.ElementAt(1).Value.Quantity.ToLong());
+            Assert.Equal(2, balance1.Amounts.Count());
+            Assert.Equal(600, balance1.Amounts.ElementAt(0).Value.Quantity.ToLong());
+            Assert.Equal(800, balance1.Amounts.ElementAt(1).Value.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Subtract_Balance_SubtractsAllAmounts()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("base-1"));
@@ -516,30 +507,30 @@ namespace NLedger.Tests
 
             // Assert
 
-            Assert.AreEqual(2, balance1.Amounts.Count());
-            Assert.AreEqual(150, balance1.Amounts.ElementAt(0).Value.Quantity.ToLong());
-            Assert.AreEqual(230, balance1.Amounts.ElementAt(1).Value.Quantity.ToLong());
+            Assert.Equal(2, balance1.Amounts.Count());
+            Assert.Equal(150, balance1.Amounts.ElementAt(0).Value.Quantity.ToLong());
+            Assert.Equal(230, balance1.Amounts.ElementAt(1).Value.Quantity.ToLong());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Print_PerformsLeftJustificationInCaseOfNo_AMOUNT_PRINT_RIGHT_JUSTIFY()
         {
             Balance balance = new Balance();
             balance.Add((Amount)1);
             var result = balance.Print(10);
-            Assert.AreEqual("1         ", result);
+            Assert.Equal("1         ", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Print_PerformsRightJustificationInCaseOf_AMOUNT_PRINT_RIGHT_JUSTIFY()
         {
             Balance balance = new Balance();
             balance.Add((Amount)1);
             var result = balance.Print(10, 10, AmountPrintEnum.AMOUNT_PRINT_RIGHT_JUSTIFY);
-            Assert.AreEqual("         1", result);
+            Assert.Equal("         1", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_ToString_CallsPrint()
         {
             Commodity commodity1 = new Commodity(CommodityPool.Current, new CommodityBase("balToStrA"));
@@ -549,18 +540,18 @@ namespace NLedger.Tests
             balance.Add(new Amount(Quantity.Parse("1.22"), commodity1));
             balance.Add(new Amount(Quantity.Parse("2.44"), commodity2));
 
-            Assert.AreEqual("balToStrA1  \r\nbalToStrB2", balance.ToString());
+            Assert.Equal("balToStrA1  \nbalToStrB2", balance.ToString().RemoveCarriageReturns());
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsNonZero_ReturnsFalseIfEmpty()
         {
             Balance balance = new Balance();
-            Assert.IsTrue(balance.IsEmpty);
-            Assert.IsFalse(balance.IsNonZero);
+            Assert.True(balance.IsEmpty);
+            Assert.False(balance.IsNonZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsNonZero_ReturnsFalseIfAllAmountsAreZero()
         {
             Commodity commodityA = new Commodity(CommodityPool.Current, new CommodityBase("balNZeroA"));
@@ -574,14 +565,14 @@ namespace NLedger.Tests
             balance.Add(amountA);
             balance.Add(amountB);
 
-            Assert.IsFalse(amountA.IsNonZero);
-            Assert.IsFalse(amountB.IsNonZero);
-            Assert.IsFalse(balance.IsEmpty);
+            Assert.False(amountA.IsNonZero);
+            Assert.False(amountB.IsNonZero);
+            Assert.False(balance.IsEmpty);
 
-            Assert.IsFalse(balance.IsNonZero);
+            Assert.False(balance.IsNonZero);
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_IsNonZero_ReturnsTrueIfOneOfAmountsIsNonZero()
         {
             Commodity commodityA = new Commodity(CommodityPool.Current, new CommodityBase("balNZeroA"));
@@ -595,26 +586,26 @@ namespace NLedger.Tests
             balance.Add(amountA);
             balance.Add(amountB);
 
-            Assert.IsFalse(amountA.IsNonZero);
-            Assert.IsTrue(amountB.IsNonZero);  // Here you are
-            Assert.IsFalse(balance.IsEmpty);
+            Assert.False(amountA.IsNonZero);
+            Assert.True(amountB.IsNonZero);  // Here you are
+            Assert.False(balance.IsEmpty);
 
-            Assert.IsTrue(balance.IsNonZero);  // Results in True
+            Assert.True(balance.IsNonZero);  // Results in True
         }
 
-        [TestMethod]
+        [Fact]
         public void Balance_Valid_ReturnsFalseIfAmountIsNotValid()
         {
             Balance balance = new Balance();
-            Assert.IsTrue(balance.Valid());
+            Assert.True(balance.Valid());
 
             Amount amount = new Amount(10);
             var quantity = amount.Quantity.SetPrecision(2048);
             amount = new Amount(quantity, null);
             balance.Add(amount);
 
-            Assert.IsFalse(amount.Valid());
-            Assert.IsFalse(balance.Valid());
+            Assert.False(amount.Valid());
+            Assert.False(balance.Valid());
         }
     }
 }

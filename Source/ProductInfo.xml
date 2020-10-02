@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProductInfo>
   <General>
-	<Version>0.7</Version>
-	<Stage>Public Beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
+	<Version>0.8</Version>
+	<Patch>0</Patch>
+	<Stage>beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
     <!-- This is a reference to a snapshot of the original source code that has been ported. -->
     <OriginalSource>
         <Repository>https://github.com/ledger/ledger</Repository>
-        <Branch>NEXT</Branch>
-        <Commit>fd486a59</Commit>  <!-- The date of the latest commit was 4/9/2018 10:09:04 AM -->
+        <Branch>MASTER</Branch>
+        <Commit>56c42e11</Commit>  <!-- Release 3.2.1; 5/18/2020 8:30:10 AM -->
     </OriginalSource>
   </General>
   <AssemblyInfo>
     <!-- Product info -->
     <AssemblyTitle>NLedger</AssemblyTitle>
-    <AssemblyDescription>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</AssemblyDescription>
-    <AssemblyProduct>NLedger, the double-entry accounting tool</AssemblyProduct>
-    <AssemblyCopyright>Copyright &#169; 2015-{{Year}}, Dmitry Merzlyakov</AssemblyCopyright>
-    <AssemblyCompany>Dmitry Merzlyakov</AssemblyCompany>
+    <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
+    <Product>NLedger, the double-entry accounting tool</Product>
+    <Copyright>Copyright &#169; 2015-{{Year}}, Dmitry Merzlyakov</Copyright>
+    <Company>Dmitry Merzlyakov</Company>
     <!-- Version information -->
-    <AssemblyVersion>{{Version}}.*</AssemblyVersion>					<!-- Auto-generate the build and release numbers -->
-    <AssemblyFileVersion remove="true" />					<!-- Remove this attribue to make AssemblyVersion visible on the file details tab -->
-    <AssemblyInformationalVersion>{{Version}} {{Stage}}</AssemblyInformationalVersion>
+    <VersionPrefix>{{Version}}.{{Patch}}</VersionPrefix>
+    <VersionSuffix>{{Stage}}</VersionSuffix>
   </AssemblyInfo>
+  <BuildVersionAutoGeneration>
+    <!-- Version auto-generation -->
+    <BasePatchDate>2020/01/01</BasePatchDate>  <!-- Build number is generated as a difference (in minutes divided 20) between current date/time and BasePatchDate. -->
+  </BuildVersionAutoGeneration>
   <SourceLicensing>
     <FileHeader>
         // **********************************************************************************
@@ -43,7 +47,8 @@
     <Item code="fix-path-normalization" category="known-bug" description="Path.GetFullPath() is not equal replacement for 'path temp.normalize();' the former always returns an absolute rooted path though the latter - the normalized." />
     <Item code="memory-tracing" category="functional" description="Add functions similar to memory tracing" />
     <Item code="localization" category="functional" description="Add functions similar to textdomain" />
-    <Item code="fix-demo-Val-7792" category="known-bug" description="Demo example causes RTE - ledger --file drewr3.dat --forecast &quot;T&gt;{\$-500.00}&quot; register ^assets ^liabilities" />
+    <Item code="fix-demo-Val-7840" category="known-bug" description="Demo example causes RTE - ledger --file drewr3.dat --forecast &quot;T&gt;{\$-500.00}&quot; register ^assets ^liabilities" />
     <Item code="fix-demo-B4DFB9F" category="known-bug" description="Demo example causes RTE - ledger -f expr.dat --format &quot;%(account) %(roundto(amount, 1))\n&quot;" />
+    <Item code="ledger-master-ab4198a5" category="unnecessary" description="Ledger Master commit ab4198a5 is omitted since .Net Commodity class already implements comparison rules" />
   </DeferredImprovements>
 </ProductInfo>

@@ -1,6 +1,7 @@
-﻿= food
-    (Budget:$account)                10
-
-2012-03-10 KFC
+﻿2012-03-10 KFC
     Expenses:Food                $20.00
-    Assets:Cash
+    Foo                        $1000.00
+    Bar                       $-1000.00
+    Assets:Cash                 $-20.00
+    Foo                        $1000.00
+    Bar                       $-1000.00

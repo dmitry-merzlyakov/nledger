@@ -13,7 +13,8 @@
     <!-- Path to ProductInfo file -->
     <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
     <!-- Paths to test project assemblies separated by spaces -->
-    <TestAssemblies>$(SourceRoot)NLedger.Tests\bin\Release\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\NLedger.IntegrationTests.dll</TestAssemblies>
+    <TestAssembliesFramework>$(SourceRoot)NLedger.Tests\bin\Release\net452\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\net452\NLedger.IntegrationTests.dll</TestAssembliesFramework>
+    <TestAssembliesCore>$(SourceRoot)NLedger.Tests\bin\Release\netcoreapp3.1\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\netcoreapp3.1\NLedger.IntegrationTests.dll</TestAssembliesCore>
 
     <!-- Output file structure -->
 
@@ -31,8 +32,14 @@
     
     <!-- Indicates whether current process has elevated permissions. If yes - IntegrationTests calls NGen to create a native image -->
     <Elevated Condition=" '$(Elevated)'=='' ">False</Elevated>
-    
-  
+
+    <!-- Auto-generated build version parameters; they are populated by CheckLicensing target -->
+    <ProductVersion></ProductVersion>			<!-- x.x         -->
+    <VersionPrefix></VersionPrefix>			<!-- x.x.x       -->
+    <SourceRevisionId></SourceRevisionId>               <!-- git commit  -->
+    <VersionSuffix></VersionSuffix>                     <!-- beta/rc/etc         -->
+    <BuildNumber></BuildNumber>                         <!-- Build autoincrement -->
+
 </PropertyGroup>
 
   <Target Name="All">
@@ -42,16 +49,19 @@
     <CallTarget Targets="IntegrationTests" />
     <CallTarget Targets="Package" />
     <CallTarget Targets="MSI" />
+    <CallTarget Targets="Nuget" />
   </Target>
 
-  <Target Name="Build" DependsOnTargets="CheckLicensing">
+  <Target Name="Build" DependsOnTargets="GetProductVersion;CheckLicensing">
     <Message Text="Target : Build (building source code)"/>
-    <MSBuild Projects="$(SourceRoot)NLedger.sln" Properties="Configuration=Release" />    
+    <Exec Command="dotnet restore" WorkingDirectory="$(SourceRoot)" />
+    <MSBuild Projects="$(SourceRoot)NLedger.sln" Properties="Configuration=Release;VersionPrefix=$(VersionPrefix).$(BuildNumber);SourceRevisionId=$(SourceRevisionId)" />
   </Target>
 
   <Target Name="CodeTests" DependsOnTargets="Build;CheckOutputDir">
     <Message Text="Target : CodeTests (executing all unit tests defined in code)"/>
-    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssemblies) /Logger:trx" />
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesFramework) /Logger:trx" />
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesCore) /Logger:trx" />
     <!-- Copy trx files (s) to output folder -->
     <CreateItem Include="$(TestResultsDir)**\*.*">
       <Output TaskParameter="Include" ItemName="TestResultsFiles" />
@@ -66,10 +76,19 @@
     <!-- Prepare a folder for package binaries -->
     <RemoveDir Directories="$(PackageDir)"/>
     <MakeDir Directories="$(PackageDir)"/>
-    <!-- Add binaries -->
-    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\NLedger.dll" DestinationFiles="$(PackageDir)NLedger.dll"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\NLedger-cli.exe" DestinationFiles="$(PackageDir)NLedger-cli.exe"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)NLedger-cli.exe.config"  />
+    <!-- Add binaries (.Net Framework) -->
+    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\net45\NLedger.dll" DestinationFiles="$(PackageDir)bin\net45\NLedger.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe.config"  />
+    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net45\ledger.1.html"  />
+    <!-- Add binaries (.Net Core) -->
+    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\netstandard2.0\NLedger.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.dll.config" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.dll.config"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.deps.json" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.deps.json"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.runtimeconfig.json" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"  />
+    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\ledger.1.html"  />
     <!-- Add Contrib files -->
     <CreateItem Include="$(ProjectRoot)Contrib\**\*.*">
       <Output TaskParameter="Include" ItemName="ContribFiles" />
@@ -88,14 +107,15 @@
   <Target Name="IntegrationTests" DependsOnTargets="Release">
     <Message Text="Target : IntegrationTests (executing all Ledger tests in NLTest Toolkit)"/>
     <!-- Call NGEN to create a native image to speed up the tests. Requires elevated permissions -->
-    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -addPath:$False -addAlias:$False" />
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Add-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
     <!-- Run all integration tests -->
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -htmlReport -reportFileName &quot;$(OutputDir)NLTest.LastTestResults&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\net45\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetFramework.LastTestResults&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetCore.LastTestResults&quot;" />
     <!-- Remove the native image from the cache -->
-    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(PackageDir)Install\NLedger.Install.ps1&quot; -uninstall -addPath:$False -addAlias:$False" />
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Remove-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
   </Target>
 
-  <Target Name="Package" DependsOnTargets="GetProductVersion;Release">
+  <Target Name="Package" DependsOnTargets="Release">
     <Message Text="Target : Package (creating a zip package)"/>
     <Delete Files="$(OutputDir)NLedger-v$(ProductVersion).zip" />
     <ZipDir ZipFileName="$(OutputDir)NLedger-v$(ProductVersion).zip" DirectoryName="$(PackageDir).." />
@@ -109,6 +129,12 @@
     <Copy SourceFiles="$(BuildDir)NLedgerWix\bin\Release\en-us\NLedger.msi" DestinationFiles="$(OutputDir)NLedger-v$(ProductVersion).msi"  />
   </Target>
 
+  <Target Name="Nuget" DependsOnTargets="Build">
+    <Message Text="Target : Create NuGet package"/>
+    <Exec Command="dotnet pack --configuration Release --no-build" WorkingDirectory="$(SourceRoot)" />
+    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\NLedger.$(VersionPrefix)-$(VersionSuffix).nupkg" DestinationFiles="$(OutputDir)NLedger.$(VersionPrefix)-$(VersionSuffix).nupkg" />
+  </Target>
+
   <!-- Technical task - check output folder -->
   <Target Name="CheckOutputDir">
     <Message Text="Create output folder if it does not exist" />
@@ -119,7 +145,7 @@
   <Target Name="CheckLicensing">
     <Message Text="Checking version and licensing info in all source code files" />
     <Message Text="NOTE: if this task fails, execute ProductInfoUpdate.cmd to actualize data and observe modifications in a source control system." />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted &quot;$(BuildDir)ProductInfoUpdate.ps1&quot; -verify" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(BuildDir)ProductInfo.psm1 ; Test-VersionInfoAndLicenseNotes&quot;" />
   </Target>
 
   <!-- Technical task - checking the content of Wix configuration files -->
@@ -131,10 +157,29 @@
   
   <!-- Technical task: getting a product version from Product Info file -->
   <Target Name="GetProductVersion">
-    <XmlPeek XmlInputPath="$(ProductInfoPath)" Query="/ProductInfo/General/Version/text()">
-      <Output TaskParameter="Result" PropertyName="ProductVersion" />
-    </XmlPeek>
-    <Message Text="Found product version: $(ProductVersion)" />
+    <Message Text="Get version information from VersionInfo.xml" />
+    <PropertyGroup>
+       <OutputOfProductInfoUpdate></OutputOfProductInfoUpdate>
+    </PropertyGroup>
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(BuildDir)ProductInfo.psm1 ; Get-VersionInfoArray&quot;" ConsoleToMSBuild="true" >
+        <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfProductInfoUpdate" />
+    </Exec>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[0])">
+        <Output PropertyName="VersionPrefix" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[1])">
+        <Output PropertyName="SourceRevisionId" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[2])">
+        <Output PropertyName="VersionSuffix" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[3])">
+        <Output PropertyName="BuildNumber" TaskParameter="Value"/>
+    </CreateProperty>
+    <CreateProperty Value="$(OutputOfProductInfoUpdate.Split(';')[4])">
+        <Output PropertyName="ProductVersion" TaskParameter="Value"/>
+    </CreateProperty>
+    <Message Text="Received version info: ProductVersion='$(ProductVersion)'; VersionPrefix='$(VersionPrefix)'; SourceRevisionId='$(SourceRevisionId)'; VersionSuffix='$(VersionSuffix)'; BuildNumber='$(BuildNumber)'"/>
   </Target>
 
   <!-- Technical task: create a zip file -->

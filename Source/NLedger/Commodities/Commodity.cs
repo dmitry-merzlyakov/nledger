@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -28,7 +28,11 @@ namespace NLedger.Commodities
     public class Commodity : IComparable<Commodity>, IEquatable<Commodity>, IComparable
     {
         #region DefaultCommodityComparer
-        /* DM: migrated test "cmd-org.test" revealed an issue with class balance_t.
+        /* DM: update 2020/3/13 after upgrade to ledger/next/1d8f8833 (Switch amounts_map to std::unordered_map).
+         * Though the original commit switches balnace amounts to unordered map, .Net code still need special control
+         * for default ordering of commodities. The previous considerations still make sence: changing SortedDictionary to Dictionary
+         * leads to failed tests (cmd-pricemap.test, regress\7C44010B.test) because of differences in hashing between .Net Dictionary and the unordered_map.
+         * DM: migrated test "cmd-org.test" revealed an issue with class balance_t.
          * In partucular, its member "amounts" (typedef std::map<commodity_t *, amount_t> amounts_map)
          * does not specify any comparison rules (there is no third generic type in the template), 
          * so std::map uses a default comparer (std:less<K>). It compares commodity instances by means of operator "<" - __x < __y.
@@ -39,7 +43,7 @@ namespace NLedger.Commodities
         */
         private static long GlobalCommodityAllocationCounter = 0;
         private long CommodityAllocationNumber = ++GlobalCommodityAllocationCounter;
-        public static readonly DefaultCommodityComparer DefaultComparer = new DefaultCommodityComparer();
+        public static readonly IComparer<Commodity> DefaultComparer = new DefaultCommodityComparer();
         public class DefaultCommodityComparer : IComparer<Commodity>
         {
             public int Compare(Commodity x, Commodity y)
@@ -74,10 +78,12 @@ namespace NLedger.Commodities
         private static CommodityDefaults _Defaults;
         #endregion
 
+        public static readonly string DebugCommodityCompare = "commodity.compare";
+
         /// <summary>
         /// Ported from bool commodity_t::compare_by_commodity::operator()
         /// </summary>
-        public static bool CompareByCommodity(Amount left, Amount right)
+        public static int CompareByCommodity(Amount left, Amount right)
         {
             if (left == null)
                 throw new ArgumentNullException("left");
@@ -87,75 +93,154 @@ namespace NLedger.Commodities
             Commodity leftComm = left.Commodity;
             Commodity rightComm = right.Commodity;
 
-            Logger.Current.Debug("commodity.compare", () => String.Format(" left symbol ({0})", leftComm));
-            Logger.Current.Debug("commodity.compare", () => String.Format("right symbol ({0})", rightComm));
+            Logger.Current.Debug(DebugCommodityCompare, () => String.Format(" left symbol ({0})", leftComm));
+            Logger.Current.Debug(DebugCommodityCompare, () => String.Format("right symbol ({0})", rightComm));
 
             if (leftComm.BaseSymbol != rightComm.BaseSymbol)
-                return String.Compare(leftComm.BaseSymbol, rightComm.BaseSymbol, StringComparison.Ordinal) < 0;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "symbol is <");
+                return String.Compare(leftComm.BaseSymbol, rightComm.BaseSymbol, StringComparison.Ordinal);
+            }
 
-            if (!leftComm.IsAnnotated)
-                return rightComm.IsAnnotated;
-            if (!rightComm.IsAnnotated)
-                return !leftComm.IsAnnotated;
+            if (!leftComm.IsAnnotated && rightComm.IsAnnotated)
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "left has no annotation, right does");
+                return -1;
+            }
+            else if (leftComm.IsAnnotated && !rightComm.IsAnnotated)
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "right has no annotation, left does");
+                return 1;
+            }
+            else if (!leftComm.IsAnnotated && !rightComm.IsAnnotated)
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "there are no annotations, commodities match");
+                return 0;
+            }
 
             AnnotatedCommodity aLeftComm = (AnnotatedCommodity)leftComm;
             AnnotatedCommodity aRightComm = (AnnotatedCommodity)rightComm;
 
             if (aLeftComm.Details.Price == null && aRightComm.Details.Price != null)
-                return true;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "left has no price, right does");
+                return -1;
+            }
             if (aLeftComm.Details.Price != null && aRightComm.Details.Price == null)
-                return false;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "right has no price, left does");
+                return 1;
+            }
 
             if (aLeftComm.Details.Price != null && aRightComm.Details.Price != null)
             {
                 Amount leftPrice = aLeftComm.Details.Price;
                 Amount rightPrice = aRightComm.Details.Price;
 
-                if (leftPrice.Commodity == rightPrice.Commodity)
-                {
-                    return leftPrice.IsLessThan(rightPrice);
-                }
-                else
+                if (leftPrice.Commodity != rightPrice.Commodity)
                 {
                     // Since we have two different amounts, there's really no way
                     // to establish a true sorting order; we'll just do it based
                     // on the numerical values.
                     leftPrice = new Amount(leftPrice.Quantity, null);
                     rightPrice = new Amount(rightPrice.Quantity, null);
-                    return leftPrice.IsLessThan(rightPrice);
+                    Logger.Current.Debug(DebugCommodityCompare, () => "both have price, commodities don't match, recursing");
+                    int cmp2 = CompareByCommodity(leftPrice, rightPrice);
+                    if (cmp2 != 0)
+                    {
+                        Logger.Current.Debug(DebugCommodityCompare, () => "recursion found a disparity");
+                        return cmp2;
+                    }
+                }
+                else
+                {
+                    if (leftPrice.IsLessThan(rightPrice))
+                    {
+                        Logger.Current.Debug(DebugCommodityCompare, () => "left price is less");
+                        return -1;
+                    }
+                    else if(leftPrice.IsGreaterThan(rightPrice))
+                    {
+                        Logger.Current.Debug(DebugCommodityCompare, () => "left price is more");
+                        return 1;
+                    }
                 }
             }
 
             if (aLeftComm.Details.Date == null && aRightComm.Details.Date != null)
-                return true;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "left has no date, right does");
+                return -1;
+            }
             if (aLeftComm.Details.Date != null && aRightComm.Details.Date == null)
-                return false;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "right has no date, left does");
+                return 1;
+            }
 
             if (aLeftComm.Details.Date != null && aRightComm.Details.Date != null)
-                return aLeftComm.Details.Date.Value < aRightComm.Details.Date.Value;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "both have dates, comparing on difference");
+                TimeSpan diff = aLeftComm.Details.Date.Value - aRightComm.Details.Date.Value;
+                if (diff.Ticks < 0)
+                {
+                    Logger.Current.Debug(DebugCommodityCompare, () => "dates differ");
+                    return -1;
+                }
+                if (diff.Ticks > 0)
+                {
+                    Logger.Current.Debug(DebugCommodityCompare, () => "dates differ");
+                    return 1;
+                }
+            }
 
             if (String.IsNullOrEmpty(aLeftComm.Details.Tag) && !String.IsNullOrEmpty(aRightComm.Details.Tag))
-                return true;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "left has no tag, right does");
+                return -1;
+            }
             if (!String.IsNullOrEmpty(aLeftComm.Details.Tag) && String.IsNullOrEmpty(aRightComm.Details.Tag))
-                return false;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "right has no tag, left does");
+                return 1;
+            }
 
             if (!String.IsNullOrEmpty(aLeftComm.Details.Tag) && !String.IsNullOrEmpty(aRightComm.Details.Tag))
-                return aLeftComm.Details.Tag.CompareTo(aRightComm.Details.Tag) < 0;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "both have tags, comparing lexically");
+                return aLeftComm.Details.Tag.CompareTo(aRightComm.Details.Tag);
+            }
 
             if (aLeftComm.Details.ValueExpr == null && aLeftComm.Details.ValueExpr != null)
-                return true;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "left has no value expr, right does");
+                return -1;
+            }
             if (aLeftComm.Details.ValueExpr != null && aLeftComm.Details.ValueExpr == null)
-                return true;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "right has no value expr, left does");
+                return 1;
+            }
 
             if (aLeftComm.Details.ValueExpr != null && aLeftComm.Details.ValueExpr != null)
-                return aLeftComm.Details.ValueExpr.Text.CompareTo(aLeftComm.Details.ValueExpr.Text) < 0;
+            {
+                Logger.Current.Debug(DebugCommodityCompare, () => "both have value exprs, comparing text reprs");
+                return aLeftComm.Details.ValueExpr.Text.CompareTo(aLeftComm.Details.ValueExpr.Text);
+            }
 
-            throw new InvalidOperationException("Unexpected end of method");
+            Logger.Current.Debug(DebugCommodityCompare, () => "the two are incomparable, which should never happen");
+
+            // assert(false);
+            // return -1;
+
+            // [DM] It is an important difference between ledger and nledger code: we need to return "0" here for equal annotated commodities.
+            // Otherwise, stable sort in OrderBy will not work.
+            return 0;
         }
 
         public static Comparison<Amount> CompareByCommodityComparison = (x, y) => 
         {
-            return CompareByCommodity(x,y) ? -1 : (CompareByCommodity(y, x) ? 1 : 0);
+            return CompareByCommodity(x,y);
         };
 
         public static bool operator == (Commodity commLeft, Commodity commRight)

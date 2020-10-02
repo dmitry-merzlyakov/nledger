@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Accounts;
 using NLedger.Items;
 using NLedger.Times;
@@ -17,40 +16,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Accounts
 {
-    [TestClass]
     [TestFixtureInit(ContextInit.InitMainApplicationContext | ContextInit.InitTimesCommon)]
     public class AccountXDataDetailsTests : TestFixture
     {
-        [TestMethod]
+        [Fact]
         public void AccountXDataDetails_Contructor_ProducesEmptyValues()
         {
             AccountXDataDetails details = new AccountXDataDetails();
 
-            Assert.IsTrue(Value.IsNullOrEmpty(details.Total));
-            Assert.IsFalse(details.Calculated);
-            Assert.IsFalse(details.Gathered);
-            Assert.AreEqual(0, details.PostsCount);
-            Assert.AreEqual(0, details.PostsVirtualsCount);
-            Assert.AreEqual(0, details.PostsClearedCount);
-            Assert.AreEqual(0, details.PostsLast7Count);
-            Assert.AreEqual(0, details.PostsLast30Count);
-            Assert.AreEqual(0, details.PostsThisMountCount);
-            Assert.AreEqual(default(Date), details.EarliestPost);
-            Assert.AreEqual(default(Date), details.EarliestClearedPost);
-            Assert.AreEqual(default(Date), details.LatestPost);
-            Assert.AreEqual(default(Date), details.LatestClearedPost);
-            Assert.AreEqual(default(DateTime), details.EarliestCheckin);
-            Assert.AreEqual(default(DateTime), details.LatestCheckout);
-            Assert.IsFalse(details.LatestCheckoutCleared);
-            Assert.AreEqual(0, details.Filenames.Count());
-            Assert.AreEqual(0, details.AccountsReferenced.Count());
-            Assert.AreEqual(0, details.PayeesReferenced.Count());
+            Assert.True(Value.IsNullOrEmpty(details.Total));
+            Assert.False(details.Calculated);
+            Assert.False(details.Gathered);
+            Assert.Equal(0, details.PostsCount);
+            Assert.Equal(0, details.PostsVirtualsCount);
+            Assert.Equal(0, details.PostsClearedCount);
+            Assert.Equal(0, details.PostsLast7Count);
+            Assert.Equal(0, details.PostsLast30Count);
+            Assert.Equal(0, details.PostsThisMountCount);
+            Assert.Equal(default(Date), details.EarliestPost);
+            Assert.Equal(default(Date), details.EarliestClearedPost);
+            Assert.Equal(default(Date), details.LatestPost);
+            Assert.Equal(default(Date), details.LatestClearedPost);
+            Assert.Equal(default(DateTime), details.EarliestCheckin);
+            Assert.Equal(default(DateTime), details.LatestCheckout);
+            Assert.False(details.LatestCheckoutCleared);
+            Assert.Empty(details.Filenames);
+            Assert.Empty(details.AccountsReferenced);
+            Assert.Empty(details.PayeesReferenced);
         }
 
-        [TestMethod]
+        [Fact]
         public void AccountXDataDetails_Update_IncreasesCounters()
         {
             DateTime currentDate = new DateTime(2015, 1, 31);
@@ -72,21 +71,21 @@ namespace NLedger.Tests.Accounts
             AccountXDataDetails details = new AccountXDataDetails();
             details.Update(post);
 
-            Assert.AreEqual(1, details.PostsCount);
-            Assert.AreEqual(1, details.PostsVirtualsCount);
-            Assert.AreEqual(1, details.PostsThisMountCount);
-            Assert.AreEqual(1, details.PostsLast30Count);
-            Assert.AreEqual(1, details.PostsLast7Count);
-            Assert.AreEqual(postDate, details.EarliestPost);
-            Assert.AreEqual(postDate, details.LatestPost);
-            Assert.AreEqual(checkinDate, details.EarliestCheckin);
-            Assert.AreEqual(checkoutDate, details.LatestCheckout);
-            Assert.AreEqual(1, details.PostsClearedCount);
-            Assert.AreEqual(postDate, details.EarliestClearedPost);
-            Assert.AreEqual(postDate, details.LatestClearedPost);
+            Assert.Equal(1, details.PostsCount);
+            Assert.Equal(1, details.PostsVirtualsCount);
+            Assert.Equal(1, details.PostsThisMountCount);
+            Assert.Equal(1, details.PostsLast30Count);
+            Assert.Equal(1, details.PostsLast7Count);
+            Assert.Equal(postDate, details.EarliestPost);
+            Assert.Equal(postDate, details.LatestPost);
+            Assert.Equal(checkinDate, details.EarliestCheckin);
+            Assert.Equal(checkoutDate, details.LatestCheckout);
+            Assert.Equal(1, details.PostsClearedCount);
+            Assert.Equal(postDate, details.EarliestClearedPost);
+            Assert.Equal(postDate, details.LatestClearedPost);
         }
 
-        [TestMethod]
+        [Fact]
         public void AccountXDataDetails_Update_IncreasesCountersAndGathersPosts()
         {
             DateTime currentDate = new DateTime(2015, 1, 31);
@@ -105,12 +104,12 @@ namespace NLedger.Tests.Accounts
             AccountXDataDetails details = new AccountXDataDetails();
             details.Update(post, true);
 
-            Assert.AreEqual("path-name", details.Filenames.First());
-            Assert.AreEqual("account-name", details.AccountsReferenced.First());
-            Assert.AreEqual("payee-name", details.PayeesReferenced.First());
+            Assert.Equal("path-name", details.Filenames.First());
+            Assert.Equal("account-name", details.AccountsReferenced.First());
+            Assert.Equal("payee-name", details.PayeesReferenced.First());
         }
 
-        [TestMethod]
+        [Fact]
         public void AccountXDataDetails_Add_AddsTwoDetails()
         {
             DateTime currentDate = new DateTime(2015, 1, 31);
@@ -132,23 +131,23 @@ namespace NLedger.Tests.Accounts
 
             AccountXDataDetails details = details2.Add(details1);
 
-            Assert.AreEqual(5, details.PostsCount);
-            Assert.AreEqual(5, details.PostsVirtualsCount);
-            Assert.AreEqual(5, details.PostsClearedCount);
-            Assert.AreEqual(5, details.PostsLast7Count);
-            Assert.AreEqual(5, details.PostsLast30Count);
-            Assert.AreEqual(5, details.PostsThisMountCount);
-            Assert.AreEqual(postDate, details.EarliestPost);
-            Assert.AreEqual(postDate, details.EarliestClearedPost);
-            Assert.AreEqual(postDate, details.LatestPost);
-            Assert.AreEqual(postDate, details.LatestClearedPost);
+            Assert.Equal(5, details.PostsCount);
+            Assert.Equal(5, details.PostsVirtualsCount);
+            Assert.Equal(5, details.PostsClearedCount);
+            Assert.Equal(5, details.PostsLast7Count);
+            Assert.Equal(5, details.PostsLast30Count);
+            Assert.Equal(5, details.PostsThisMountCount);
+            Assert.Equal(postDate, details.EarliestPost);
+            Assert.Equal(postDate, details.EarliestClearedPost);
+            Assert.Equal(postDate, details.LatestPost);
+            Assert.Equal(postDate, details.LatestClearedPost);
 
-            Assert.AreEqual(5, details.Filenames.Count());
-            Assert.AreEqual(5, details.AccountsReferenced.Count());
-            Assert.AreEqual(5, details.PayeesReferenced.Count());
+            Assert.Equal(5, details.Filenames.Count());
+            Assert.Equal(5, details.AccountsReferenced.Count());
+            Assert.Equal(5, details.PayeesReferenced.Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void AccountXDataDetails_Update_UsesPostGetDate()
         {
             Date date = (Date)DateTime.Now.Date;
@@ -158,9 +157,9 @@ namespace NLedger.Tests.Accounts
             AccountXDataDetails details = new AccountXDataDetails();
             details.Update(post);
 
-            Assert.IsNull(post.Date);
-            Assert.AreEqual(date, post.GetDate());
-            Assert.AreEqual(date, details.LatestPost);
+            Assert.Null(post.Date);
+            Assert.Equal(date, post.GetDate());
+            Assert.Equal(date, details.LatestPost);
         }
 
         private Post CreatePost(Date postDate, DateTime checkinDate, DateTime checkoutDate, string pathName, string accountName, string payeeName)

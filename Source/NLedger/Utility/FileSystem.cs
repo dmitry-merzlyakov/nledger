@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Abstracts;
@@ -146,12 +146,12 @@ namespace NLedger.Utility
 
         public static string HomePath()
         {
-            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            return FileSystemProvider.GetFolderPath(Environment.SpecialFolder.UserProfile);
         }
 
         public static string HomePath(string fileName)
         {
-            return FileSystemProvider.PathCombine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
+            return FileSystemProvider.PathCombine(FileSystemProvider.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
         }
 
         public static string ExpandPath(string pathName)
@@ -169,7 +169,7 @@ namespace NLedger.Utility
             else
             {
                 string user = pos == -1 ? pathName.Substring(1) : pathName.Substring(1, pos - 1);
-                pfx = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), user); 
+                pfx = Path.Combine(FileSystemProvider.GetFolderPath(Environment.SpecialFolder.ApplicationData), user); 
             }
 
             if (String.IsNullOrEmpty(pfx))
@@ -279,7 +279,7 @@ namespace NLedger.Utility
 
         private static IFileSystemProvider FileSystemProvider
         {
-            get { return MainApplicationContext.Current.FileSystemProvider; }
+            get { return MainApplicationContext.Current.ApplicationServiceProvider.FileSystemProvider; }
         }
 
         private static readonly string DirectorySeparatorChar = new string(new char[] { Path.DirectorySeparatorChar });

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <!-- 
-Copyright (C) 2003-2018, John Wiegley.  All rights reserved.
+Copyright (C) 2003-2019, John Wiegley.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -32,8 +32,9 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  -->
-<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 6.5, http://www.gnu.org/software/texinfo/ -->
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Ledger: Command-Line Accounting</title>
 
 <meta name="description" content="Ledger: Command-Line Accounting">
@@ -41,7 +42,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="makeinfo">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link href="#Top" rel="start" title="Top">
 <link href="#Concepts-Index" rel="index" title="Concepts Index">
 <link href="#SEC_Contents" rel="contents" title="Table of Contents">
@@ -49,16 +49,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <style type="text/css">
 <!--
 a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+blockquote.smallindentedblock {margin-right: 0em; font-size: smaller}
 blockquote.smallquotation {font-size: smaller}
 div.display {margin-left: 3.2em}
 div.example {margin-left: 3.2em}
-div.indentedblock {margin-left: 3.2em}
 div.lisp {margin-left: 3.2em}
 div.smalldisplay {margin-left: 3.2em}
 div.smallexample {margin-left: 3.2em}
-div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
 div.smalllisp {margin-left: 3.2em}
-kbd {font-style:oblique}
+kbd {font-style: oblique}
 pre.display {font-family: inherit}
 pre.format {font-family: inherit}
 pre.menu-comment {font-family: serif}
@@ -67,10 +67,9 @@ pre.smalldisplay {font-family: inherit; font-size: smaller}
 pre.smallexample {font-size: smaller}
 pre.smallformat {font-family: inherit; font-size: smaller}
 pre.smalllisp {font-size: smaller}
-span.nocodebreak {white-space:nowrap}
-span.nolinebreak {white-space:nowrap}
-span.roman {font-family:serif; font-weight:normal}
-span.sansserif {font-family:sans-serif; font-weight:normal}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
 ul.no-bullet {list-style: none}
 -->
 /* Left and content pane */
@@ -252,7 +251,6 @@ function callConsole(cmd) {
     }
   };
   xhttp.open("GET", cmd, true);
-  xhttp.setRequestHeader("Pragma","no-cache");
   xhttp.send();
 }
 
@@ -343,7 +341,7 @@ window.onunload = function(event) { callConsole('shutdown'); }
 </script>
 </head>
 
-<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<body lang="en">
 <div id="ddActions" class="dropdown-content">
 <a id="actRun" onclick="runAction(this)" >Run Command</a>
 <a id="actCopy" onclick="runCopy(this)">Copy Command</a>
@@ -396,177 +394,178 @@ window.onunload = function(event) { callConsole('shutdown'); }
 <div id="li_396F24E_input" data-testid='396F24E' data-testkind='input' onclick='scrTo(this)'>ledger --no-total bal not ^Assets --file 396F24E.dat</div>
 <div id="li_396F24E_command" data-testid='396F24E' data-testkind='command' onclick='scrTo(this)'>ledger --no-total bal not ^Assets --file 396F24E.dat</div>
 <div id="li_2F1CB75_command" data-testid='2F1CB75' data-testkind='command' onclick='scrTo(this)'>ledger --real --no-total bal --file 2F1CB75.dat</div>
-<div id="li_Val-1421_validate-data" data-testid='Val-1421' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1421.dat</div>
+<div id="li_Val-1422_validate-data" data-testid='Val-1422' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1422.dat</div>
 <div id="li_AD068BA_input" data-testid='AD068BA' data-testkind='input' onclick='scrTo(this)'>ledger --payee=code -P reg ^Assets --file AD068BA.dat</div>
 <div id="li_AD068BA_command" data-testid='AD068BA' data-testkind='command' onclick='scrTo(this)'>ledger --payee=code -P reg ^Assets --file AD068BA.dat</div>
 <div id="li_E30B2FC_command" data-testid='E30B2FC' data-testkind='command' onclick='scrTo(this)'>ledger --payee=code -P reg ^Expenses and code School --file E30B2FC.dat</div>
-<div id="li_Val-1538_validate-data" data-testid='Val-1538' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1538.dat</div>
-<div id="li_Val-1550_validate-data" data-testid='Val-1550' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1550.dat</div>
-<div id="li_Val-1592_validate-data" data-testid='Val-1592' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1592.dat</div>
-<div id="li_Val-1636_validate-data" data-testid='Val-1636' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1636.dat</div>
-<div id="li_Val-1654_validate-data" data-testid='Val-1654' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1654.dat</div>
-<div id="li_Val-1669_validate-data" data-testid='Val-1669' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1669.dat</div>
+<div id="li_Val-1539_validate-data" data-testid='Val-1539' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1539.dat</div>
+<div id="li_Val-1551_validate-data" data-testid='Val-1551' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1551.dat</div>
+<div id="li_Val-1593_validate-data" data-testid='Val-1593' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1593.dat</div>
+<div id="li_Val-1637_validate-data" data-testid='Val-1637' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1637.dat</div>
+<div id="li_Val-1655_validate-data" data-testid='Val-1655' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1655.dat</div>
+<div id="li_Val-1670_validate-data" data-testid='Val-1670' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1670.dat</div>
 <div id="li_82150D9_input" data-testid='82150D9' data-testkind='input' onclick='scrTo(this)'>ledger -f example.dat bal</div>
 <div id="li_82150D9_command" data-testid='82150D9' data-testkind='command' onclick='scrTo(this)'>ledger -f example.dat bal</div>
-<div id="li_Val-1768_validate-data" data-testid='Val-1768' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1768.dat</div>
-<div id="li_Val-1788_validate-data" data-testid='Val-1788' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1788.dat</div>
-<div id="li_Val-1798_validate-data" data-testid='Val-1798' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1798.dat</div>
-<div id="li_Val-1834_validate-data" data-testid='Val-1834' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1834.dat</div>
-<div id="li_Val-1848_validate-data" data-testid='Val-1848' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1848.dat</div>
-<div id="li_Val-1861_validate-data" data-testid='Val-1861' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1861.dat</div>
-<div id="li_Val-1922_validate-data" data-testid='Val-1922' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1922.dat</div>
-<div id="li_Val-1929_validate-data" data-testid='Val-1929' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1929.dat</div>
-<div id="li_Val-1937_validate-data" data-testid='Val-1937' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1937.dat</div>
-<div id="li_Val-1944_validate-data" data-testid='Val-1944' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1944.dat</div>
-<div id="li_Val-1952_validate-data" data-testid='Val-1952' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1952.dat</div>
-<div id="li_Val-1960_validate-data" data-testid='Val-1960' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1960.dat</div>
+<div id="li_Val-1769_validate-data" data-testid='Val-1769' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1769.dat</div>
+<div id="li_Val-1789_validate-data" data-testid='Val-1789' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1789.dat</div>
+<div id="li_Val-1799_validate-data" data-testid='Val-1799' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1799.dat</div>
+<div id="li_Val-1835_validate-data" data-testid='Val-1835' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1835.dat</div>
+<div id="li_Val-1849_validate-data" data-testid='Val-1849' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1849.dat</div>
+<div id="li_Val-1862_validate-data" data-testid='Val-1862' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1862.dat</div>
+<div id="li_Val-1923_validate-data" data-testid='Val-1923' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1923.dat</div>
+<div id="li_Val-1930_validate-data" data-testid='Val-1930' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1930.dat</div>
+<div id="li_Val-1938_validate-data" data-testid='Val-1938' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1938.dat</div>
+<div id="li_Val-1945_validate-data" data-testid='Val-1945' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1945.dat</div>
+<div id="li_Val-1953_validate-data" data-testid='Val-1953' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1953.dat</div>
+<div id="li_Val-1961_validate-data" data-testid='Val-1961' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-1961.dat</div>
 <div id="li_814A366_input" data-testid='814A366' data-testkind='input' onclick='scrTo(this)'>ledger reg -V food --file 814A366.dat</div>
 <div id="li_814A366_command" data-testid='814A366' data-testkind='command' onclick='scrTo(this)'>ledger reg -V food --file 814A366.dat</div>
-<div id="li_Val-2043_validate-data" data-testid='Val-2043' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2043.dat</div>
-<div id="li_Val-2061_validate-command" data-testid='Val-2061' data-testkind='validate-command' onclick='scrTo(this)'>ledger accounts &gt;&gt; Accounts.dat --file sample.dat</div>
-<div id="li_Val-2193_validate-data" data-testid='Val-2193' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2193.dat</div>
-<div id="li_Val-2217_validate-data" data-testid='Val-2217' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2217.dat</div>
-<div id="li_Val-2247_validate-data" data-testid='Val-2247' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2247.dat</div>
+<div id="li_Val-2044_validate-data" data-testid='Val-2044' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2044.dat</div>
+<div id="li_Val-2062_validate-command" data-testid='Val-2062' data-testkind='validate-command' onclick='scrTo(this)'>ledger accounts &gt;&gt; Accounts.dat --file sample.dat</div>
+<div id="li_Val-2194_validate-data" data-testid='Val-2194' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2194.dat</div>
+<div id="li_Val-2218_validate-data" data-testid='Val-2218' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2218.dat</div>
+<div id="li_Val-2248_validate-data" data-testid='Val-2248' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2248.dat</div>
+<div id="li_Val-2270_validate-data" data-testid='Val-2270' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2270.dat</div>
+<div id="li_Val-2284_validate-data" data-testid='Val-2284' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2284.dat</div>
 <div id="li_94A99E8_input" data-testid='94A99E8' data-testkind='input' onclick='scrTo(this)'>ledger bal --no-total ^Exp --file 94A99E8.dat</div>
 <div id="li_94A99E8_command" data-testid='94A99E8' data-testkind='command' onclick='scrTo(this)'>ledger bal --no-total ^Exp --file 94A99E8.dat</div>
 <div id="li_83E1FB3_input" data-testid='83E1FB3' data-testkind='input' onclick='scrTo(this)'>ledger balance --no-total --recursive-aliases ^Exp --file 83E1FB3.dat</div>
 <div id="li_83E1FB3_command" data-testid='83E1FB3' data-testkind='command' onclick='scrTo(this)'>ledger balance --no-total --recursive-aliases ^Exp --file 83E1FB3.dat</div>
-<div id="li_Val-2337_validate-data" data-testid='Val-2337' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2337.dat</div>
-<div id="li_Val-2358_validate-data" data-testid='Val-2358' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2358.dat</div>
-<div id="li_Val-2391_validate-data" data-testid='Val-2391' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2391.dat</div>
-<div id="li_Val-2400_validate-data" data-testid='Val-2400' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2400.dat</div>
-<div id="li_Val-2426_validate-data" data-testid='Val-2426' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2426.dat</div>
-<div id="li_Val-2456_validate-data" data-testid='Val-2456' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2456.dat</div>
-<div id="li_Val-2470_validate-data" data-testid='Val-2470' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2470.dat</div>
-<div id="li_Val-2504_validate-data" data-testid='Val-2504' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2504.dat</div>
-<div id="li_Val-2513_validate-data" data-testid='Val-2513' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2513.dat</div>
-<div id="li_Val-2520_validate-data" data-testid='Val-2520' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2520.dat</div>
-<div id="li_Val-2534_validate-data" data-testid='Val-2534' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2534.dat</div>
-<div id="li_Val-2559_validate-data" data-testid='Val-2559' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2559.dat</div>
-<div id="li_Val-2592_validate-data" data-testid='Val-2592' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2592.dat</div>
-<div id="li_Val-2601_validate-data" data-testid='Val-2601' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2601.dat</div>
-<div id="li_Val-2656_validate-data" data-testid='Val-2656' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2656.dat</div>
-<div id="li_Val-2671_validate-data" data-testid='Val-2671' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2671.dat</div>
-<div id="li_Val-2681_validate-data" data-testid='Val-2681' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2681.dat</div>
-<div id="li_Val-2816_validate-data" data-testid='Val-2816' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2816.dat</div>
-<div id="li_Val-2828_validate-data" data-testid='Val-2828' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2828.dat</div>
-<div id="li_Val-2842_validate-data" data-testid='Val-2842' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2842.dat</div>
-<div id="li_Val-2854_validate-data" data-testid='Val-2854' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2854.dat</div>
-<div id="li_Val-2866_validate-data" data-testid='Val-2866' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2866.dat</div>
-<div id="li_Val-2884_validate-data" data-testid='Val-2884' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2884.dat</div>
-<div id="li_Val-2903_validate-data" data-testid='Val-2903' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2903.dat</div>
-<div id="li_Val-2919_validate-data" data-testid='Val-2919' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2919.dat</div>
-<div id="li_Val-2928_validate-data" data-testid='Val-2928' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2928.dat</div>
-<div id="li_Val-2919_validate-data" data-testid='Val-2919' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2919.dat</div>
-<div id="li_Val-2955_validate-data" data-testid='Val-2955' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2955.dat</div>
-<div id="li_Val-2965_validate-data" data-testid='Val-2965' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2965.dat</div>
-<div id="li_Val-2978_validate-data" data-testid='Val-2978' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2978.dat</div>
-<div id="li_Val-2988_validate-data" data-testid='Val-2988' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2988.dat</div>
-<div id="li_Val-3005_validate-data" data-testid='Val-3005' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3005.dat</div>
-<div id="li_Val-3043_validate-data" data-testid='Val-3043' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3043.dat</div>
-<div id="li_Val-3052_validate-data" data-testid='Val-3052' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3052.dat</div>
+<div id="li_Val-2373_validate-data" data-testid='Val-2373' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2373.dat</div>
+<div id="li_Val-2394_validate-data" data-testid='Val-2394' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2394.dat</div>
+<div id="li_Val-2427_validate-data" data-testid='Val-2427' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2427.dat</div>
+<div id="li_Val-2436_validate-data" data-testid='Val-2436' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2436.dat</div>
+<div id="li_Val-2466_validate-data" data-testid='Val-2466' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2466.dat</div>
+<div id="li_Val-2503_validate-data" data-testid='Val-2503' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2503.dat</div>
+<div id="li_Val-2512_validate-data" data-testid='Val-2512' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2512.dat</div>
+<div id="li_Val-2519_validate-data" data-testid='Val-2519' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2519.dat</div>
+<div id="li_Val-2533_validate-data" data-testid='Val-2533' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2533.dat</div>
+<div id="li_Val-2558_validate-data" data-testid='Val-2558' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2558.dat</div>
+<div id="li_Val-2591_validate-data" data-testid='Val-2591' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2591.dat</div>
+<div id="li_Val-2600_validate-data" data-testid='Val-2600' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2600.dat</div>
+<div id="li_Val-2655_validate-data" data-testid='Val-2655' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2655.dat</div>
+<div id="li_Val-2670_validate-data" data-testid='Val-2670' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2670.dat</div>
+<div id="li_Val-2680_validate-data" data-testid='Val-2680' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2680.dat</div>
+<div id="li_Val-2815_validate-data" data-testid='Val-2815' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2815.dat</div>
+<div id="li_Val-2827_validate-data" data-testid='Val-2827' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2827.dat</div>
+<div id="li_Val-2841_validate-data" data-testid='Val-2841' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2841.dat</div>
+<div id="li_Val-2853_validate-data" data-testid='Val-2853' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2853.dat</div>
+<div id="li_Val-2865_validate-data" data-testid='Val-2865' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2865.dat</div>
+<div id="li_Val-2883_validate-data" data-testid='Val-2883' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2883.dat</div>
+<div id="li_Val-2902_validate-data" data-testid='Val-2902' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2902.dat</div>
+<div id="li_Val-2945_validate-data" data-testid='Val-2945' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2945.dat</div>
+<div id="li_Val-2927_validate-data" data-testid='Val-2927' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2927.dat</div>
+<div id="li_Val-2945_validate-data" data-testid='Val-2945' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2945.dat</div>
+<div id="li_Val-2954_validate-data" data-testid='Val-2954' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2954.dat</div>
+<div id="li_Val-2964_validate-data" data-testid='Val-2964' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2964.dat</div>
+<div id="li_Val-2977_validate-data" data-testid='Val-2977' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2977.dat</div>
+<div id="li_Val-2987_validate-data" data-testid='Val-2987' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-2987.dat</div>
+<div id="li_Val-3004_validate-data" data-testid='Val-3004' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3004.dat</div>
+<div id="li_Val-3042_validate-data" data-testid='Val-3042' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3042.dat</div>
+<div id="li_Val-3051_validate-data" data-testid='Val-3051' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3051.dat</div>
 <div id="li_9B43E57_input" data-testid='9B43E57' data-testkind='input' onclick='scrTo(this)'>ledger reg --file 9B43E57.dat</div>
 <div id="li_9B43E57_command" data-testid='9B43E57' data-testkind='command' onclick='scrTo(this)'>ledger reg --file 9B43E57.dat</div>
-<div id="li_Val-3115_validate-data" data-testid='Val-3115' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3115.dat</div>
-<div id="li_Val-3129_validate-data" data-testid='Val-3129' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3129.dat</div>
-<div id="li_Val-3170_validate-data" data-testid='Val-3170' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3170.dat</div>
-<div id="li_Val-3181_validate-data" data-testid='Val-3181' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3181.dat</div>
-<div id="li_Val-3196_validate-data" data-testid='Val-3196' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3196.dat</div>
-<div id="li_Val-3257_validate-data" data-testid='Val-3257' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3257.dat</div>
-<div id="li_Val-3303_validate-data" data-testid='Val-3303' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3303.dat</div>
-<div id="li_Val-3319_validate-data" data-testid='Val-3319' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3319.dat</div>
-<div id="li_Val-3328_validate-data" data-testid='Val-3328' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3328.dat</div>
-<div id="li_Val-3394_validate-data" data-testid='Val-3394' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3394.dat</div>
-<div id="li_Val-3373_validate-data" data-testid='Val-3373' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3373.dat</div>
-<div id="li_Val-3386_validate-data" data-testid='Val-3386' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3386.dat</div>
-<div id="li_Val-3394_validate-data" data-testid='Val-3394' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3394.dat</div>
-<div id="li_Val-3409_validate-data" data-testid='Val-3409' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3409.dat</div>
-<div id="li_Val-3328_validate-data" data-testid='Val-3328' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3328.dat</div>
-<div id="li_Val-3442_validate-data" data-testid='Val-3442' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3442.dat</div>
-<div id="li_Val-3451_validate-data" data-testid='Val-3451' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3451.dat</div>
+<div id="li_Val-3121_validate-data" data-testid='Val-3121' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3121.dat</div>
+<div id="li_Val-3135_validate-data" data-testid='Val-3135' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3135.dat</div>
+<div id="li_Val-3176_validate-data" data-testid='Val-3176' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3176.dat</div>
+<div id="li_Val-3187_validate-data" data-testid='Val-3187' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3187.dat</div>
+<div id="li_Val-3202_validate-data" data-testid='Val-3202' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3202.dat</div>
+<div id="li_Val-3302_validate-data" data-testid='Val-3302' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3302.dat</div>
+<div id="li_Val-3348_validate-data" data-testid='Val-3348' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3348.dat</div>
+<div id="li_Val-3364_validate-data" data-testid='Val-3364' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3364.dat</div>
+<div id="li_Val-3472_validate-data" data-testid='Val-3472' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3472.dat</div>
+<div id="li_Val-3439_validate-data" data-testid='Val-3439' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3439.dat</div>
+<div id="li_Val-3418_validate-data" data-testid='Val-3418' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3418.dat</div>
+<div id="li_Val-3431_validate-data" data-testid='Val-3431' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3431.dat</div>
+<div id="li_Val-3439_validate-data" data-testid='Val-3439' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3439.dat</div>
+<div id="li_Val-3454_validate-data" data-testid='Val-3454' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3454.dat</div>
+<div id="li_Val-3472_validate-data" data-testid='Val-3472' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3472.dat</div>
 <div id="li_Val-3487_validate-data" data-testid='Val-3487' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3487.dat</div>
-<div id="li_Val-3504_validate-data" data-testid='Val-3504' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3504.dat</div>
-<div id="li_Val-3657_validate-data" data-testid='Val-3657' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3657.dat</div>
-<div id="li_Val-3663_validate-data" data-testid='Val-3663' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3663.dat</div>
-<div id="li_Val-3718_validate-data" data-testid='Val-3718' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3718.dat</div>
-<div id="li_Val-3726_validate-data" data-testid='Val-3726' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3726.dat</div>
-<div id="li_Val-3735_validate-data" data-testid='Val-3735' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3735.dat</div>
-<div id="li_Val-3772_validate-data" data-testid='Val-3772' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3772.dat</div>
-<div id="li_Val-3784_validate-data" data-testid='Val-3784' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3784.dat</div>
-<div id="li_Val-3802_validate-data" data-testid='Val-3802' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3802.dat</div>
-<div id="li_Val-3813_validate-data" data-testid='Val-3813' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3813.dat</div>
+<div id="li_Val-3496_validate-data" data-testid='Val-3496' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3496.dat</div>
+<div id="li_Val-3532_validate-data" data-testid='Val-3532' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3532.dat</div>
+<div id="li_Val-3549_validate-data" data-testid='Val-3549' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3549.dat</div>
+<div id="li_Val-3702_validate-data" data-testid='Val-3702' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3702.dat</div>
+<div id="li_Val-3708_validate-data" data-testid='Val-3708' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3708.dat</div>
+<div id="li_Val-3763_validate-data" data-testid='Val-3763' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3763.dat</div>
+<div id="li_Val-3771_validate-data" data-testid='Val-3771' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3771.dat</div>
+<div id="li_Val-3780_validate-data" data-testid='Val-3780' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3780.dat</div>
+<div id="li_Val-3817_validate-data" data-testid='Val-3817' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3817.dat</div>
 <div id="li_Val-3829_validate-data" data-testid='Val-3829' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3829.dat</div>
-<div id="li_Val-3840_validate-data" data-testid='Val-3840' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3840.dat</div>
-<div id="li_Val-3854_validate-data" data-testid='Val-3854' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3854.dat</div>
-<div id="li_Val-3866_validate-data" data-testid='Val-3866' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3866.dat</div>
-<div id="li_Val-3880_validate-data" data-testid='Val-3880' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3880.dat</div>
-<div id="li_Val-3892_validate-data" data-testid='Val-3892' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3892.dat</div>
-<div id="li_Val-3928_validate-data" data-testid='Val-3928' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3928.dat</div>
-<div id="li_Val-3936_validate-data" data-testid='Val-3936' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3936.dat</div>
-<div id="li_Val-3945_validate-data" data-testid='Val-3945' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3945.dat</div>
-<div id="li_Val-3953_validate-command" data-testid='Val-3953' data-testkind='validate-command' onclick='scrTo(this)'>ledger --begin 2008/01/01 --end 2008/01/14 bal Income --file sample.dat</div>
-<div id="li_Val-3960_validate-command" data-testid='Val-3960' data-testkind='validate-command' onclick='scrTo(this)'>ledger --effective --begin 2008/01/01 --end 2008/01/14 bal Income --file sample.dat</div>
+<div id="li_Val-3847_validate-data" data-testid='Val-3847' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3847.dat</div>
+<div id="li_Val-3858_validate-data" data-testid='Val-3858' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3858.dat</div>
+<div id="li_Val-3874_validate-data" data-testid='Val-3874' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3874.dat</div>
+<div id="li_Val-3885_validate-data" data-testid='Val-3885' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3885.dat</div>
+<div id="li_Val-3894_validate-data" data-testid='Val-3894' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3894.dat</div>
+<div id="li_Val-3905_validate-data" data-testid='Val-3905' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3905.dat</div>
+<div id="li_Val-3917_validate-data" data-testid='Val-3917' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3917.dat</div>
+<div id="li_Val-3931_validate-data" data-testid='Val-3931' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3931.dat</div>
+<div id="li_Val-3943_validate-data" data-testid='Val-3943' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3943.dat</div>
+<div id="li_Val-3979_validate-data" data-testid='Val-3979' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3979.dat</div>
+<div id="li_Val-3987_validate-data" data-testid='Val-3987' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3987.dat</div>
+<div id="li_Val-3996_validate-data" data-testid='Val-3996' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-3996.dat</div>
+<div id="li_Val-4004_validate-command" data-testid='Val-4004' data-testkind='validate-command' onclick='scrTo(this)'>ledger --begin 2008/01/01 --end 2008/01/14 bal Income --file sample.dat</div>
+<div id="li_Val-4011_validate-command" data-testid='Val-4011' data-testkind='validate-command' onclick='scrTo(this)'>ledger --effective --begin 2008/01/01 --end 2008/01/14 bal Income --file sample.dat</div>
 <div id="li_6453542_input" data-testid='6453542' data-testkind='input' onclick='scrTo(this)'>ledger --effective register Groceries --file 6453542.dat</div>
 <div id="li_6453542_command" data-testid='6453542' data-testkind='command' onclick='scrTo(this)'>ledger --effective register Groceries --file 6453542.dat</div>
 <div id="li_C371854_input" data-testid='C371854' data-testkind='input' onclick='scrTo(this)'>ledger balance Liabilities:Huquq --file C371854.dat</div>
 <div id="li_C371854_input" data-testid='C371854' data-testkind='input' onclick='scrTo(this)'>ledger balance Liabilities:Huquq --file C371854.dat</div>
-<div id="li_Val-4059_validate-data" data-testid='Val-4059' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-4059.dat</div>
+<div id="li_Val-4110_validate-data" data-testid='Val-4110' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-4110.dat</div>
 <div id="li_C371854_command" data-testid='C371854' data-testkind='command' onclick='scrTo(this)'>ledger balance Liabilities:Huquq --file C371854.dat</div>
-<div id="li_Val-4102_validate-data" data-testid='Val-4102' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-4102.dat</div>
+<div id="li_Val-4153_validate-data" data-testid='Val-4153' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-4153.dat</div>
 <div id="li_1D00D56_command" data-testid='1D00D56' data-testkind='command' onclick='scrTo(this)'>ledger balance -f drewr3.dat</div>
 <div id="li_06B2AD4_command" data-testid='06B2AD4' data-testkind='command' onclick='scrTo(this)'>ledger balance -f drewr3.dat Auto MasterCard</div>
 <div id="li_B0468E1_command" data-testid='B0468E1' data-testkind='command' onclick='scrTo(this)'>ledger balance -f drewr3.dat Income</div>
 <div id="li_EAE389F_command" data-testid='EAE389F' data-testkind='command' onclick='scrTo(this)'>ledger balance -f drewr3.dat ^Bo</div>
 <div id="li_E2AF6AD_command" data-testid='E2AF6AD' data-testkind='command' onclick='scrTo(this)'>ledger balance -f drewr3.dat Bo</div>
-<div id="li_Val-4240_validate-command" data-testid='Val-4240' data-testkind='validate-command' onclick='scrTo(this)'>ledger balance Auto:Fuel and Chevron --file sample.dat</div>
-<div id="li_Val-4244_validate-command" data-testid='Val-4244' data-testkind='validate-command' onclick='scrTo(this)'>ledger balance --limit &#39;account=~/Fuel/&#39; and &#39;payee=~/Chev/&#39; --file sample.dat</div>
-<div id="li_Val-4258_validate-command" data-testid='Val-4258' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal Expenses and not (Expenses:Drinks or Expenses:Candy or Expenses:Gifts) --file sample.dat</div>
-<div id="li_Val-4275_validate-command" data-testid='Val-4275' data-testkind='validate-command' onclick='scrTo(this)'>ledger -b &quot;last oct&quot; -S T bal ^expenses --file sample.dat</div>
-<div id="li_Val-4298_validate-command" data-testid='Val-4298' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M --period-sort &quot;(amount)&quot; reg ^expenses --file sample.dat</div>
-<div id="li_Val-4306_validate-command" data-testid='Val-4306' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M --period-sort &quot;(amount)&quot; -r reg ^expenses --file sample.dat</div>
-<div id="li_Val-4316_validate-command" data-testid='Val-4316' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M -r --display &#39;account=~/mastercard/&#39; reg ^expenses --file sample.dat</div>
-<div id="li_Val-4327_validate-command" data-testid='Val-4327' data-testkind='validate-command' onclick='scrTo(this)'>ledger -s -r --display &quot;account=~/mastercard/&quot; reg ^expenses --file sample.dat</div>
+<div id="li_Val-4291_validate-command" data-testid='Val-4291' data-testkind='validate-command' onclick='scrTo(this)'>ledger balance Auto:Fuel and Chevron --file sample.dat</div>
+<div id="li_Val-4295_validate-command" data-testid='Val-4295' data-testkind='validate-command' onclick='scrTo(this)'>ledger balance --limit &#39;account=~/Fuel/&#39; and &#39;payee=~/Chev/&#39; --file sample.dat</div>
+<div id="li_Val-4309_validate-command" data-testid='Val-4309' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal Expenses and not (Expenses:Drinks or Expenses:Candy or Expenses:Gifts) --file sample.dat</div>
+<div id="li_Val-4327_validate-command" data-testid='Val-4327' data-testkind='validate-command' onclick='scrTo(this)'>ledger -b &quot;last oct&quot; -S T bal ^expenses --file sample.dat</div>
+<div id="li_Val-4350_validate-command" data-testid='Val-4350' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M --period-sort &quot;(amount)&quot; reg ^expenses --file sample.dat</div>
+<div id="li_Val-4358_validate-command" data-testid='Val-4358' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M --period-sort &quot;(amount)&quot; -r reg ^expenses --file sample.dat</div>
+<div id="li_Val-4368_validate-command" data-testid='Val-4368' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M -r --display &#39;account=~/mastercard/&#39; reg ^expenses --file sample.dat</div>
+<div id="li_Val-4379_validate-command" data-testid='Val-4379' data-testkind='validate-command' onclick='scrTo(this)'>ledger -s -r --display &quot;account=~/mastercard/&quot; reg ^expenses --file sample.dat</div>
 <div id="li_582C8C2_input" data-testid='582C8C2' data-testkind='input' onclick='scrTo(this)'>ledger bal Allocation --current --format &quot;        %-17((depth_spacer)+(partial_account))        %10(percent(market(display_total), market(parent.total)))        %16(market(display_total))\n%/&quot; --file 582C8C2.dat</div>
 <div id="li_582C8C2_command" data-testid='582C8C2' data-testkind='command' onclick='scrTo(this)'>ledger bal Allocation --current --format &quot;        %-17((depth_spacer)+(partial_account))        %10(percent(market(display_total), market(parent.total)))        %16(market(display_total))\n%/&quot; --file 582C8C2.dat</div>
-<div id="li_Val-4767_validate-data" data-testid='Val-4767' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-4767.dat</div>
+<div id="li_Val-4819_validate-data" data-testid='Val-4819' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-4819.dat</div>
 <div id="li_03ACB97_input" data-testid='03ACB97' data-testkind='input' onclick='scrTo(this)'>ledger xact 2004/4/9 viva food 11 tips 2.50 --file 03ACB97.dat</div>
 <div id="li_03ACB97_command" data-testid='03ACB97' data-testkind='command' onclick='scrTo(this)'>ledger xact 2004/4/9 viva food 11 tips 2.50 --file 03ACB97.dat</div>
-<div id="li_Val-5510_validate-command" data-testid='Val-5510' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal rent food movies payee freddie --file sample.dat</div>
-<div id="li_Val-5517_validate-command" data-testid='Val-5517' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal rent food movies @freddie --file sample.dat</div>
+<div id="li_Val-5558_validate-command" data-testid='Val-5558' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal rent food movies payee freddie --file sample.dat</div>
+<div id="li_Val-5565_validate-command" data-testid='Val-5565' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal rent food movies @freddie --file sample.dat</div>
 <div id="li_A9349E4_command" data-testid='A9349E4' data-testkind='command' onclick='scrTo(this)'>ledger --options bal --cleared --file A9349E4.dat</div>
 <div id="li_A76BB56_command" data-testid='A76BB56' data-testkind='command' onclick='scrTo(this)'>ledger -f drewr3.dat bal --no-total --master-account HUMBUG</div>
-<div id="li_Val-6242_validate-command" data-testid='Val-6242' data-testkind='validate-command' onclick='scrTo(this)'>ledger reg Expenses --begin Dec --bold-if &quot;amount&gt;100&quot; --file sample.dat</div>
-<div id="li_Val-6448_validate-command" data-testid='Val-6448' data-testkind='validate-command' onclick='scrTo(this)'>ledger reg Expenses --dow --collapse --file sample.dat</div>
-<div id="li_Val-6528_validate-command" data-testid='Val-6528' data-testkind='validate-command' onclick='scrTo(this)'>ledger reg Expenses --group-by &quot;payee&quot; --group-title-format &quot;------------------------ %-20(value) ---------------------\n&quot; --file sample.dat</div>
-<div id="li_Val-6560_validate-data" data-testid='Val-6560' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-6560.dat</div>
-<div id="li_Val-6682_validate-command" data-testid='Val-6682' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal Fuel --pivot &quot;Car&quot; --period &quot;this year&quot; --file sample.dat</div>
-<div id="li_Val-6906_validate-data" data-testid='Val-6906' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-6906.dat</div>
-<div id="li_Val-6963_validate-command" data-testid='Val-6963' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M --period-sort total reg ^Expenses --file sample.dat</div>
+<div id="li_Val-6290_validate-command" data-testid='Val-6290' data-testkind='validate-command' onclick='scrTo(this)'>ledger reg Expenses --begin Dec --bold-if &quot;amount&gt;100&quot; --file sample.dat</div>
+<div id="li_Val-6496_validate-command" data-testid='Val-6496' data-testkind='validate-command' onclick='scrTo(this)'>ledger reg Expenses --dow --collapse --file sample.dat</div>
+<div id="li_Val-6576_validate-command" data-testid='Val-6576' data-testkind='validate-command' onclick='scrTo(this)'>ledger reg Expenses --group-by &quot;payee&quot; --group-title-format &quot;------------------------ %-20(value) ---------------------\n&quot; --file sample.dat</div>
+<div id="li_Val-6608_validate-data" data-testid='Val-6608' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-6608.dat</div>
+<div id="li_Val-6730_validate-command" data-testid='Val-6730' data-testkind='validate-command' onclick='scrTo(this)'>ledger bal Fuel --pivot &quot;Car&quot; --period &quot;this year&quot; --file sample.dat</div>
+<div id="li_Val-6954_validate-data" data-testid='Val-6954' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-6954.dat</div>
+<div id="li_Val-7011_validate-command" data-testid='Val-7011' data-testkind='validate-command' onclick='scrTo(this)'>ledger -M --period-sort total reg ^Expenses --file sample.dat</div>
 <div id="li_94C5675_input" data-testid='94C5675' data-testkind='input' onclick='scrTo(this)'>ledger -f 94C5675.dat -r register food</div>
 <div id="li_94C5675_command" data-testid='94C5675' data-testkind='command' onclick='scrTo(this)'>ledger -f 94C5675.dat -r register food</div>
-<div id="li_Val-7209_validate-command" data-testid='Val-7209' data-testkind='validate-command' onclick='scrTo(this)'>ledger -d &quot;d&gt;=[last month]&quot; reg checking --file sample.dat</div>
-<div id="li_Val-7217_validate-command" data-testid='Val-7217' data-testkind='validate-command' onclick='scrTo(this)'>ledger -p &quot;last month&quot; reg checking --file sample.dat</div>
-<div id="li_Val-7373_validate-data" data-testid='Val-7373' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7373.dat</div>
-<div id="li_Val-7459_validate-data" data-testid='Val-7459' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7459.dat</div>
-<div id="li_Val-7473_validate-data" data-testid='Val-7473' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7473.dat</div>
-<div id="li_Val-7485_validate-data" data-testid='Val-7485' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7485.dat</div>
-<div id="li_Val-7497_validate-data" data-testid='Val-7497' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7497.dat</div>
-<div id="li_Val-7511_validate-data" data-testid='Val-7511' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7511.dat</div>
+<div id="li_Val-7257_validate-command" data-testid='Val-7257' data-testkind='validate-command' onclick='scrTo(this)'>ledger -d &quot;d&gt;=[last month]&quot; reg checking --file sample.dat</div>
+<div id="li_Val-7265_validate-command" data-testid='Val-7265' data-testkind='validate-command' onclick='scrTo(this)'>ledger -p &quot;last month&quot; reg checking --file sample.dat</div>
+<div id="li_Val-7421_validate-data" data-testid='Val-7421' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7421.dat</div>
+<div id="li_Val-7507_validate-data" data-testid='Val-7507' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7507.dat</div>
+<div id="li_Val-7521_validate-data" data-testid='Val-7521' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7521.dat</div>
 <div id="li_Val-7533_validate-data" data-testid='Val-7533' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7533.dat</div>
-<div id="li_Val-7731_validate-data" data-testid='Val-7731' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7731.dat</div>
-<div id="li_Val-7752_validate-command" data-testid='Val-7752' data-testkind='validate-command' onclick='scrTo(this)'>ledger -p &quot;this year&quot; --monthly --average balance ^expenses --file sample.dat</div>
-<div id="li_Val-7762_validate-command" data-testid='Val-7762' data-testkind='validate-command' onclick='scrTo(this)'>ledger --monthly register ^expenses --file sample.dat</div>
-<div id="li_Val-7768_validate-command" data-testid='Val-7768' data-testkind='validate-command' onclick='scrTo(this)'>ledger --budget --monthly register ^expenses --file sample.dat</div>
-<div id="li_Val-7777_validate-command" data-testid='Val-7777' data-testkind='validate-command' onclick='scrTo(this)'>ledger --unbudgeted --monthly register ^expenses --file sample.dat</div>
-<div id="li_Val-7803_validate-command" data-testid='Val-7803' data-testkind='validate-command' onclick='scrTo(this)'>ledger --forecast &quot;d&lt;[2010]&quot; bal ^assets ^liabilities --file sample.dat</div>
-<div id="li_Val-7814_validate-data" data-testid='Val-7814' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7814.dat</div>
-<div id="li_Val-7885_validate-command" data-testid='Val-7885' data-testkind='validate-command' onclick='scrTo(this)'>ledger -d &quot;d&gt;[this month]&quot; register checking --file sample.dat</div>
-<div id="li_Val-7894_validate-command" data-testid='Val-7894' data-testkind='validate-command' onclick='scrTo(this)'>ledger -b &quot;this month&quot; register checking --file sample.dat</div>
-<div id="li_Val-8131_validate-data" data-testid='Val-8131' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8131.dat</div>
-<div id="li_Val-8115_validate-data" data-testid='Val-8115' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8115.dat</div>
-<div id="li_Val-8131_validate-data" data-testid='Val-8131' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8131.dat</div>
-<div id="li_Val-8137_validate-data" data-testid='Val-8137' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8137.dat</div>
-<div id="li_Val-8143_validate-data" data-testid='Val-8143' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8143.dat</div>
+<div id="li_Val-7545_validate-data" data-testid='Val-7545' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7545.dat</div>
+<div id="li_Val-7559_validate-data" data-testid='Val-7559' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7559.dat</div>
+<div id="li_Val-7581_validate-data" data-testid='Val-7581' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7581.dat</div>
+<div id="li_Val-7779_validate-data" data-testid='Val-7779' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7779.dat</div>
+<div id="li_Val-7800_validate-command" data-testid='Val-7800' data-testkind='validate-command' onclick='scrTo(this)'>ledger -p &quot;this year&quot; --monthly --average register ^expenses --file sample.dat</div>
+<div id="li_Val-7810_validate-command" data-testid='Val-7810' data-testkind='validate-command' onclick='scrTo(this)'>ledger --monthly register ^expenses --file sample.dat</div>
+<div id="li_Val-7816_validate-command" data-testid='Val-7816' data-testkind='validate-command' onclick='scrTo(this)'>ledger --budget --monthly register ^expenses --file sample.dat</div>
+<div id="li_Val-7825_validate-command" data-testid='Val-7825' data-testkind='validate-command' onclick='scrTo(this)'>ledger --unbudgeted --monthly register ^expenses --file sample.dat</div>
+<div id="li_Val-7851_validate-command" data-testid='Val-7851' data-testkind='validate-command' onclick='scrTo(this)'>ledger --forecast &quot;d&lt;[2010]&quot; bal ^assets ^liabilities --file sample.dat</div>
+<div id="li_Val-7862_validate-data" data-testid='Val-7862' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-7862.dat</div>
+<div id="li_Val-7933_validate-command" data-testid='Val-7933' data-testkind='validate-command' onclick='scrTo(this)'>ledger -d &quot;d&gt;[this month]&quot; register checking --file sample.dat</div>
+<div id="li_Val-7942_validate-command" data-testid='Val-7942' data-testkind='validate-command' onclick='scrTo(this)'>ledger -b &quot;this month&quot; register checking --file sample.dat</div>
+<div id="li_Val-8184_validate-data" data-testid='Val-8184' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8184.dat</div>
+<div id="li_Val-8168_validate-data" data-testid='Val-8168' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8168.dat</div>
+<div id="li_Val-8184_validate-data" data-testid='Val-8184' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8184.dat</div>
+<div id="li_Val-8190_validate-data" data-testid='Val-8190' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8190.dat</div>
+<div id="li_Val-8196_validate-data" data-testid='Val-8196' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-8196.dat</div>
 <div id="li_3406FC1_input" data-testid='3406FC1' data-testkind='input' onclick='scrTo(this)'>ledger -f expr.dat --format &quot;%(account) %(abs(amount))\n&quot; reg assets</div>
 <div id="li_3406FC1_command" data-testid='3406FC1' data-testkind='command' onclick='scrTo(this)'>ledger -f expr.dat --format &quot;%(account) %(abs(amount))\n&quot; reg assets</div>
 <div id="li_4D836EE_command" data-testid='4D836EE' data-testkind='command' onclick='scrTo(this)'>ledger -f expr.dat --format &quot;%(ansify_if(account, blue, options.color))\n&quot; reg</div>
@@ -594,25 +593,25 @@ window.onunload = function(event) { callConsole('shutdown'); }
 <div id="li_29A70DD_command" data-testid='29A70DD' data-testkind='command' onclick='scrTo(this)'>ledger -f expr.dat --format &quot;%A\n&quot; reg</div>
 <div id="li_E6DC93A_command" data-testid='E6DC93A' data-testkind='command' onclick='scrTo(this)'>ledger -f expr.dat --format &quot;%N\n&quot; reg assets</div>
 <div id="li_E80897D_command" data-testid='E80897D' data-testkind='command' onclick='scrTo(this)'>ledger -f expr.dat --format &quot;%P\n%/%A\n&quot; reg</div>
-<div id="li_Val-9174_validate-data" data-testid='Val-9174' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9174.dat</div>
-<div id="li_Val-9185_validate-data" data-testid='Val-9185' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9185.dat</div>
-<div id="li_Val-9193_validate-data" data-testid='Val-9193' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9193.dat</div>
-<div id="li_Val-9535_validate-data" data-testid='Val-9535' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9535.dat</div>
-<div id="li_Val-9559_validate-data" data-testid='Val-9559' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9559.dat</div>
-<div id="li_Val-9607_validate-data" data-testid='Val-9607' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9607.dat</div>
-<div id="li_Val-9714_validate-data" data-testid='Val-9714' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9714.dat</div>
-<div id="li_Val-9725_validate-data" data-testid='Val-9725' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9725.dat</div>
-<div id="li_Val-9736_validate-data" data-testid='Val-9736' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9736.dat</div>
-<div id="li_Val-9746_validate-data" data-testid='Val-9746' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9746.dat</div>
-<div id="li_Val-9769_validate-data" data-testid='Val-9769' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9769.dat</div>
-<div id="li_Val-9965_validate-command" data-testid='Val-9965' data-testkind='validate-command' onclick='scrTo(this)'>ledger query &quot;/Book/&quot; --file sample.dat</div>
-<div id="li_Val-10100_validate-data" data-testid='Val-10100' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-10100.dat</div>
-<div id="li_Val-10206_validate-data" data-testid='Val-10206' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-10206.dat</div>
-<div id="li_Val-10301_validate-command" data-testid='Val-10301' data-testkind='validate-command' onclick='scrTo(this)'>ledger --group-by &quot;tag(&#39;trip&#39;)&quot; bal --file sample.dat</div>
-<div id="li_Val-10310_validate-command" data-testid='Val-10310' data-testkind='validate-command' onclick='scrTo(this)'>ledger cleared VWCU NFCU Tithe Misentry --file sample.dat</div>
-<div id="li_Val-10313_validate-command" data-testid='Val-10313' data-testkind='validate-command' onclick='scrTo(this)'>ledger register Joint --uncleared --file sample.dat</div>
-<div id="li_Val-10316_validate-command" data-testid='Val-10316' data-testkind='validate-command' onclick='scrTo(this)'>ledger register Checking --sort d -d &quot;d&gt;[2011/04/01]&quot; until 2011/05/25 --file sample.dat</div>
-<div id="li_Val-10323_validate-data" data-testid='Val-10323' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-10323.dat</div>
+<div id="li_Val-9240_validate-data" data-testid='Val-9240' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9240.dat</div>
+<div id="li_Val-9251_validate-data" data-testid='Val-9251' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9251.dat</div>
+<div id="li_Val-9259_validate-data" data-testid='Val-9259' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9259.dat</div>
+<div id="li_Val-9601_validate-data" data-testid='Val-9601' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9601.dat</div>
+<div id="li_Val-9625_validate-data" data-testid='Val-9625' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9625.dat</div>
+<div id="li_Val-9673_validate-data" data-testid='Val-9673' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9673.dat</div>
+<div id="li_Val-9780_validate-data" data-testid='Val-9780' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9780.dat</div>
+<div id="li_Val-9791_validate-data" data-testid='Val-9791' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9791.dat</div>
+<div id="li_Val-9802_validate-data" data-testid='Val-9802' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9802.dat</div>
+<div id="li_Val-9812_validate-data" data-testid='Val-9812' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9812.dat</div>
+<div id="li_Val-9835_validate-data" data-testid='Val-9835' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-9835.dat</div>
+<div id="li_Val-10031_validate-command" data-testid='Val-10031' data-testkind='validate-command' onclick='scrTo(this)'>ledger query &quot;/Book/&quot; --file sample.dat</div>
+<div id="li_Val-10166_validate-data" data-testid='Val-10166' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-10166.dat</div>
+<div id="li_Val-10272_validate-data" data-testid='Val-10272' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-10272.dat</div>
+<div id="li_Val-10367_validate-command" data-testid='Val-10367' data-testkind='validate-command' onclick='scrTo(this)'>ledger --group-by &quot;tag(&#39;trip&#39;)&quot; bal --file sample.dat</div>
+<div id="li_Val-10376_validate-command" data-testid='Val-10376' data-testkind='validate-command' onclick='scrTo(this)'>ledger cleared VWCU NFCU Tithe Misentry --file sample.dat</div>
+<div id="li_Val-10379_validate-command" data-testid='Val-10379' data-testkind='validate-command' onclick='scrTo(this)'>ledger register Joint --uncleared --file sample.dat</div>
+<div id="li_Val-10382_validate-command" data-testid='Val-10382' data-testkind='validate-command' onclick='scrTo(this)'>ledger register Checking --sort d -d &quot;d&gt;[2011/04/01]&quot; until 2011/05/25 --file sample.dat</div>
+<div id="li_Val-10389_validate-data" data-testid='Val-10389' data-testkind='validate-data' onclick='scrTo(this)'>ledger bal --file Val-10389.dat</div>
 
 </div>
 <div class="contentPane">
@@ -729,7 +728,10 @@ All data files are located in <span class="introAct">NLedger\Sandbox</span> that
     <li><a name="toc-Expression-amounts-1" href="#Expression-amounts">5.9 Expression amounts</a></li>
     <li><a name="toc-Balance-verification-1" href="#Balance-verification">5.10 Balance verification</a>
     <ul class="no-bullet">
-      <li><a name="toc-Balance-assertions-1" href="#Balance-assertions">5.10.1 Balance assertions</a></li>
+      <li><a name="toc-Balance-assertions-1" href="#Balance-assertions">5.10.1 Balance assertions</a>
+      <ul class="no-bullet">
+        <li><a name="toc-Special-assertion-value-0" href="#Special-assertion-value-0">5.10.1.1 Special assertion value 0</a></li>
+      </ul></li>
       <li><a name="toc-Balance-assignments-1" href="#Balance-assignments">5.10.2 Balance assignments</a></li>
       <li><a name="toc-Resetting-a-balance-1" href="#Resetting-a-balance">5.10.3 Resetting a balance</a></li>
       <li><a name="toc-Balancing-transactions-1" href="#Balancing-transactions">5.10.4 Balancing transactions</a></li>
@@ -1222,14 +1224,14 @@ acprep script, that does a lot of the footwork:
 
 <p>See the &lsquo;help&lsquo; subcommand to &lsquo;acprep&lsquo;, which explains some of its many
 options.  You can run &lsquo;make check&lsquo; to confirm the result, and &lsquo;make
-install&lsquo; to install.  If these intructions do not work for you can check the
-&lsquo;INSTALL.md&lsquo; in the source directory for more up do date build instructions.
+install&lsquo; to install.  If these instructions do not work for you, you can check the
+&lsquo;INSTALL.md&lsquo; in the source directory for more up to date build instructions.
 </p>
 <hr>
 <a name="Getting-help"></a>
 <div class="header">
 <p>
-Previous: <a href="#Building-the-program" accesskey="p" rel="prev">Building the program</a>, Up: <a href="#Introduction-to-Ledger" accesskey="u" rel="up">Introduction to Ledger</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concepts-Index" title="Index" rel="index">Index</a>]</p>
+Next: <a href="#Third_002dParty-Ledger-Tutorials" accesskey="n" rel="next">Third-Party Ledger Tutorials</a>, Previous: <a href="#Building-the-program" accesskey="p" rel="prev">Building the program</a>, Up: <a href="#Introduction-to-Ledger" accesskey="u" rel="up">Introduction to Ledger</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concepts-Index" title="Index" rel="index">Index</a>]</p>
 </div>
 <a name="Getting-help-1"></a>
 <h3 class="section">1.3 Getting help</h3>
@@ -1261,14 +1263,14 @@ Previous: <a href="#Getting-help" accesskey="p" rel="prev">Getting help</a>, Up:
 Some have documented how they use Ledger&rsquo;s features to solve their
 accounting problems.
 </p>
-<p>Once such tutorial, specifically designed for non-profit charities that seek
+<p>One such tutorial, specifically designed for non-profit charities that seek
 to use Ledger, can be found at
-<a href="https://k.sfconservancy.org/npo-ledger-cli">https://k.sfconservancy.org/npo-ledger-cli</a> (with a copy on GitHub also
+<a href="https://k.sfconservancy.org/NPO-Accounting/npo-ledger-cli">https://k.sfconservancy.org/NPO-Accounting/npo-ledger-cli</a> (with a copy on GitHub also
 available at <a href="https://github.com/conservancy/npo-ledger-cli/">https://github.com/conservancy/npo-ledger-cli/</a>).  If
 you&rsquo;re looking for information about how to use Ledger&rsquo;s tagging system to
 handle invoicing, track expenses by program targets, and other such concepts,
 you might find the tutorial useful.  (Some of the auditor reporting scripts
-that relate to the aformentioned Ledger setup can be found
+that relate to the aforementioned Ledger setup can be found
 <var>contrib/non-profit-audit-reports/</var> in Ledger&rsquo;s own source repository.)
 </p>
 <hr>
@@ -2345,10 +2347,11 @@ account:
     (Funds:School)                   $-100.00
 </pre></div>
 
-<p>When reports are generated, by default they&rsquo;ll appear in terms of the
-funds.  In this case, you will likely want to mask out your
-&lsquo;<samp>Assets</samp>&rsquo; account, because otherwise the balance won&rsquo;t make much
-sense:
+<p>The use of round brackets creates a virtual posting without ensuring
+a balance to zero. When reports are generated, by default they&rsquo;ll
+appear in terms of the funds. In this case, you will likely want to
+mask out your &lsquo;<samp>Assets</samp>&rsquo; account, because otherwise the balance
+won&rsquo;t make much sense:
 </p>
 <div class="smallexample">
 <pre class='smallexample executable command'><button onclick='openActions(this)' id='btn_396F24E_command' data-testid='396F24E' data-testkind='command' class='dropbtn'>Action</button>$ ledger --no-total bal not ^Assets
@@ -2380,7 +2383,7 @@ the real accounts:
 list them as you would normally, for example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1421_validate-data' data-testid='Val-1421' data-testkind='validate-data' class='dropbtn'>Action</button>2004/03/25 Payment for books (paid from Checking)
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1422_validate-data' data-testid='Val-1422' data-testkind='validate-data' class='dropbtn'>Action</button>2004/03/25 Payment for books (paid from Checking)
     Expenses:Books                    $100.00
     Assets:Checking                   $-50.00
     Liabilities:Credit Card           $-50.00
@@ -2514,7 +2517,7 @@ Next: <a href="#Starting-up" accesskey="n" rel="next">Starting up</a>, Previous:
 posting, with the addition of a check number:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1538_validate-data' data-testid='Val-1538' data-testkind='validate-data' class='dropbtn'>Action</button>9/29 (1023) Pacific Bell
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1539_validate-data' data-testid='Val-1539' data-testkind='validate-data' class='dropbtn'>Action</button>9/29 (1023) Pacific Bell
     Expenses:Utilities:Phone                   $23.00
     Assets:Checking                           $-23.00
 </pre></div>
@@ -2526,7 +2529,7 @@ smart about many things, you don&rsquo;t need to specify the balanced
 amount, if it is the same as the first line:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1550_validate-data' data-testid='Val-1550' data-testkind='validate-data' class='dropbtn'>Action</button>9/29 (1023) Pacific Bell
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1551_validate-data' data-testid='Val-1551' data-testkind='validate-data' class='dropbtn'>Action</button>9/29 (1023) Pacific Bell
     Expenses:Utilities:Phone                   $23.00
     Assets:Checking
 </pre></div>
@@ -2573,7 +2576,7 @@ beginning of 2011 as the date to start tracking finances with ledger,
 your opening balance entry could look like this:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1592_validate-data' data-testid='Val-1592' data-testkind='validate-data' class='dropbtn'>Action</button>2011/01/01 * Opening Balance
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1593_validate-data' data-testid='Val-1593' data-testkind='validate-data' class='dropbtn'>Action</button>2011/01/01 * Opening Balance
     Assets:Joint Checking                   $800.14
     Assets:Other Checking                    $63.44
     Assets:Savings                         $2805.54
@@ -2623,7 +2626,7 @@ desire.  For example, if you want to keep specific track of how much
 you spend on burgers and fries, you could have the following:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1636_validate-data' data-testid='Val-1636' data-testkind='validate-data' class='dropbtn'>Action</button>Expenses:Food:Hamburgers and Fries
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1637_validate-data' data-testid='Val-1637' data-testkind='validate-data' class='dropbtn'>Action</button>Expenses:Food:Hamburgers and Fries
 </pre></div>
 
 <hr>
@@ -2647,7 +2650,7 @@ beginning of a line: &lsquo;<samp>#</samp>&rsquo;, &lsquo;<samp>|</samp>&rsquo;,
 comment</code>.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1654_validate-data' data-testid='Val-1654' data-testkind='validate-data' class='dropbtn'>Action</button>; This is a single line comment,
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1655_validate-data' data-testid='Val-1655' data-testkind='validate-data' class='dropbtn'>Action</button>; This is a single line comment,
 #  and this,
 %   and this,
 |    and this,
@@ -2662,7 +2665,7 @@ end comment
 <p>There are several forms of comments within a transaction, for example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1669_validate-data' data-testid='Val-1669' data-testkind='validate-data' class='dropbtn'>Action</button>; this is a global comment that is not applied to a specific transaction
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1670_validate-data' data-testid='Val-1670' data-testkind='validate-data' class='dropbtn'>Action</button>; this is a global comment that is not applied to a specific transaction
 ; it can start with any of the five characters but is not included in the
 ; output from 'print' or 'output'
 
@@ -2774,7 +2777,7 @@ However, if you include white-space or numeric characters, the
 commodity name must be enclosed in double quotes &lsquo;<samp>&quot;</samp>&rsquo;:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1768_validate-data' data-testid='Val-1768' data-testkind='validate-data' class='dropbtn'>Action</button>1999/06/09 ! Achat
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1769_validate-data' data-testid='Val-1769' data-testkind='validate-data' class='dropbtn'>Action</button>1999/06/09 ! Achat
     Actif:SG PEE STK         49.957 &quot;Arcancia Équilibre 454&quot;
     Actif:SG PEE STK      $-234.90
 
@@ -2800,7 +2803,7 @@ unit you made the purchase in ($ for AAPL).  Yes, the typical
 convention is as follows:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1788_validate-data' data-testid='Val-1788' data-testkind='validate-data' class='dropbtn'>Action</button>2004/05/01 Stock purchase
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1789_validate-data' data-testid='Val-1789' data-testkind='validate-data' class='dropbtn'>Action</button>2004/05/01 Stock purchase
     Assets:Broker                     50 AAPL @ $30.00
     Expenses:Broker:Commissions        $19.95
     Assets:Broker                  $-1,519.95
@@ -2810,7 +2813,7 @@ convention is as follows:
 both liquid and commodity assets.  Now, on the day of the sale:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1798_validate-data' data-testid='Val-1798' data-testkind='validate-data' class='dropbtn'>Action</button>2005/08/01 Stock sale
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1799_validate-data' data-testid='Val-1799' data-testkind='validate-data' class='dropbtn'>Action</button>2005/08/01 Stock sale
     Assets:Broker                    -50 AAPL {$30.00} @ $50.00
     Expenses:Broker:Commissions        $19.95
     Income:Capital Gains           $-1,000.00
@@ -2851,7 +2854,7 @@ reported in terms of today&rsquo;s price.
 <p>This is supported as follows:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1834_validate-data' data-testid='Val-1834' data-testkind='validate-data' class='dropbtn'>Action</button>2009/01/01 Shell
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1835_validate-data' data-testid='Val-1835' data-testkind='validate-data' class='dropbtn'>Action</button>2009/01/01 Shell
     Expenses:Gasoline             11 GAL {=$2.299}
     Assets:Checking
 </pre></div>
@@ -2865,7 +2868,7 @@ in one of two ways, both equivalent (note the lack of the equal sign
 compared to the transaction above):
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1848_validate-data' data-testid='Val-1848' data-testkind='validate-data' class='dropbtn'>Action</button>2009/01/01 Shell
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1849_validate-data' data-testid='Val-1849' data-testkind='validate-data' class='dropbtn'>Action</button>2009/01/01 Shell
     Expenses:Gasoline             11 GAL {$2.299}
     Assets:Checking
 
@@ -2878,7 +2881,7 @@ compared to the transaction above):
 both exist, you ask?  To support things like this:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1861_validate-data' data-testid='Val-1861' data-testkind='validate-data' class='dropbtn'>Action</button>2009/01/01 Shell
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1862_validate-data' data-testid='Val-1862' data-testkind='validate-data' class='dropbtn'>Action</button>2009/01/01 Shell
     Expenses:Gasoline             11 GAL {=$2.299} @ $2.30
     Assets:Checking
 </pre></div>
@@ -2947,14 +2950,14 @@ that value is always used, regardless of the commodity, the date, or
 the desired target commodity.  For example,
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1922_validate-data' data-testid='Val-1922' data-testkind='validate-data' class='dropbtn'>Action</button>define myfunc_seven(s, d, t) = 7 EUR
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1923_validate-data' data-testid='Val-1923' data-testkind='validate-data' class='dropbtn'>Action</button>define myfunc_seven(s, d, t) = 7 EUR
 </pre></div>
 
 <p>In order to specify a fixed price, but still valuate that price into
 the target commodity, use something like this:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1929_validate-data' data-testid='Val-1929' data-testkind='validate-data' class='dropbtn'>Action</button>define myfunc_five(s, d, t) = market(5 EUR, d, t)
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1930_validate-data' data-testid='Val-1930' data-testkind='validate-data' class='dropbtn'>Action</button>define myfunc_five(s, d, t) = market(5 EUR, d, t)
 </pre></div>
 
 <p>The <code>value</code> directive sets the valuation used for all commodities
@@ -2962,14 +2965,14 @@ used in the rest of the data stream.  This is the fallback, if nothing
 more specific is found.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1937_validate-data' data-testid='Val-1937' data-testkind='validate-data' class='dropbtn'>Action</button>value myfunc_seven
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1938_validate-data' data-testid='Val-1938' data-testkind='validate-data' class='dropbtn'>Action</button>value myfunc_seven
 </pre></div>
 
 <p>You can set a specific valuation function on a per-commodity basis.
 Instead of defining a function, you can also pass a lambda.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1944_validate-data' data-testid='Val-1944' data-testkind='validate-data' class='dropbtn'>Action</button>commodity $
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1945_validate-data' data-testid='Val-1945' data-testkind='validate-data' class='dropbtn'>Action</button>commodity $
     value s, d, t -&gt; 6 EUR
 </pre></div>
 
@@ -2977,7 +2980,7 @@ Instead of defining a function, you can also pass a lambda.
 commodities transferred to that account.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1952_validate-data' data-testid='Val-1952' data-testkind='validate-data' class='dropbtn'>Action</button>account Expenses:Food5
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1953_validate-data' data-testid='Val-1953' data-testkind='validate-data' class='dropbtn'>Action</button>account Expenses:Food5
     value myfunc_five
 </pre></div>
 
@@ -2985,7 +2988,7 @@ commodities transferred to that account.
 function on a transaction-wide or per-posting basis.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1960_validate-data' data-testid='Val-1960' data-testkind='validate-data' class='dropbtn'>Action</button>= @XACT and Food
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-1961_validate-data' data-testid='Val-1961' data-testkind='validate-data' class='dropbtn'>Action</button>= @XACT and Food
     ; Value:: 8 EUR
     (Equity)                     $1
 
@@ -3074,7 +3077,7 @@ payees.  For simplicity, create a separate text file and define accounts
 and payees like
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2043_validate-data' data-testid='Val-2043' data-testkind='validate-data' class='dropbtn'>Action</button>account Expenses
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2044_validate-data' data-testid='Val-2044' data-testkind='validate-data' class='dropbtn'>Action</button>account Expenses
 account Expenses:Utilities
 </pre></div>
 
@@ -3092,7 +3095,7 @@ Warning: &quot;FinanceData/Master.dat&quot;, line 15: Unknown account 'Allocatio
 <code>accounts</code> command to get started:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-2061_validate-command' data-testid='Val-2061' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger accounts &gt;&gt; Accounts.dat
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-2062_validate-command' data-testid='Val-2062' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger accounts &gt;&gt; Accounts.dat
 </pre></div>
 
 <p>You will have to edit this file to add the <code>account</code> directive in
@@ -3247,7 +3250,7 @@ they immediately follow the account directive and if they begin with
 whitespace:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2193_validate-data' data-testid='Val-2193' data-testkind='validate-data' class='dropbtn'>Action</button>account Expenses:Food
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2194_validate-data' data-testid='Val-2194' data-testkind='validate-data' class='dropbtn'>Action</button>account Expenses:Food
     note This account is all about the chicken!
     alias food
     payee ^(KFC|Popeyes)$
@@ -3271,7 +3274,7 @@ encountered and an account within its transaction ends in the name
 &quot;Unknown&quot;.  Example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2217_validate-data' data-testid='Val-2217' data-testkind='validate-data' class='dropbtn'>Action</button>2012-02-27 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2218_validate-data' data-testid='Val-2218' data-testkind='validate-data' class='dropbtn'>Action</button>2012-02-27 KFC
     Expenses:Unknown      $10.00  ; Read now as &quot;Expenses:Food&quot;
     Assets:Cash
 </pre></div>
@@ -3301,7 +3304,7 @@ out large groups of transactions without manually editing them using
 the account directive.  For example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2247_validate-data' data-testid='Val-2247' data-testkind='validate-data' class='dropbtn'>Action</button>apply account Personal
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2248_validate-data' data-testid='Val-2248' data-testkind='validate-data' class='dropbtn'>Action</button>apply account Personal
 2011/11/15  Supermarket
     Expenses:Groceries      $ 50.00
     Assets:Checking
@@ -3311,6 +3314,40 @@ the account directive.  For example:
 &lsquo;<samp>Personal:Expenses:Groceries</samp>&rsquo; and &lsquo;<samp>Personal:Assets:Checking</samp>&rsquo;
 until an &lsquo;<samp>end apply account</samp>&rsquo; directive was found.
 </p>
+</dd>
+<dt><code>apply fixed</code></dt>
+<dd><a name="index-fixed"></a>
+<a name="index-fixated-prices"></a>
+
+<p>A fixed block is used to set fixated prices (see <a href="#Fixated-prices-and-costs">Fixated prices and costs</a>) for a series of transactions.  It&rsquo;s purely a typing saver, for
+use when entering many transactions with fixated prices.
+</p>
+<p>Thus, the following:
+</p>
+<div class="smallexample">
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2270_validate-data' data-testid='Val-2270' data-testkind='validate-data' class='dropbtn'>Action</button>apply fixed CAD $0.90
+2012-04-10 Lunch in Canada
+    Assets:Wallet            -15.50 CAD
+    Expenses:Food            15.50 CAD
+
+2012-04-11 Second day Dinner in Canada
+    Assets:Wallet            -25.75 CAD
+    Expenses:Food            25.75 CAD
+end apply fixed
+</pre></div>
+
+<p>is equivalent to this:
+</p>
+<div class="smallexample">
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2284_validate-data' data-testid='Val-2284' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 Lunch in Canada
+    Assets:Wallet            -15.50 CAD {=$0.90}
+    Expenses:Food            15.50 CAD  {=$0.90}
+
+2012-04-11 Second day Dinner in Canada
+    Assets:Wallet            -25.75 CAD  {=$0.90}
+    Expenses:Food            25.75 CAD   {=$0.90}
+</pre></div>
+
 </dd>
 <dt><code>alias</code></dt>
 <dd><a name="index-alias"></a>
@@ -3390,7 +3427,7 @@ will automatically be balanced against the <code>bucket</code> account.
 The following example sets &lsquo;<samp>Assets:Checking</samp>&rsquo; as the bucket:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2337_validate-data' data-testid='Val-2337' data-testkind='validate-data' class='dropbtn'>Action</button>bucket Assets:Checking
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2373_validate-data' data-testid='Val-2373' data-testkind='validate-data' class='dropbtn'>Action</button>bucket Assets:Checking
 2011/01/25 Tom's Used Cars
     Expenses:Auto                    $ 5,500.00
 
@@ -3411,7 +3448,7 @@ The following example sets &lsquo;<samp>Assets:Checking</samp>&rsquo; as the buc
 account.  For example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2358_validate-data' data-testid='Val-2358' data-testkind='validate-data' class='dropbtn'>Action</button>capture  Expenses:Deductible:Medical  Medical
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2394_validate-data' data-testid='Val-2394' data-testkind='validate-data' class='dropbtn'>Action</button>capture  Expenses:Deductible:Medical  Medical
 </pre></div>
 
 <p>Would cause any posting with &lsquo;<samp>Medical</samp>&rsquo; in its name to be replaced
@@ -3445,7 +3482,7 @@ run.
 <samp>--strict</samp> or <samp>--pedantic</samp> is used (see below).
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2391_validate-data' data-testid='Val-2391' data-testkind='validate-data' class='dropbtn'>Action</button>commodity $
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2427_validate-data' data-testid='Val-2427' data-testkind='validate-data' class='dropbtn'>Action</button>commodity $
 commodity CAD
 </pre></div>
 
@@ -3454,10 +3491,11 @@ sub-directives, if they immediately follow the commodity directive
 and&mdash;if they are on successive lines&mdash;begin with whitespace:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2400_validate-data' data-testid='Val-2400' data-testkind='validate-data' class='dropbtn'>Action</button>commodity $
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2436_validate-data' data-testid='Val-2436' data-testkind='validate-data' class='dropbtn'>Action</button>commodity $
    note American Dollars
    format $1,000.00
    nomarket
+   alias USD
    default
 </pre></div>
 
@@ -3472,6 +3510,9 @@ provide the &ldquo;canonical&rdquo; representation.
 <p>The <code>nomarket</code> sub-directive states that the commodity&rsquo;s price
 should never be auto-downloaded.
 </p>
+<p>The <code>alias</code> sub-directive states that any commodity matching this
+symbol is to use the commodity declared in this block.
+</p>
 <p>The <code>default</code> sub-directive marks this as the &ldquo;default&rdquo; commodity.
 </p>
 </dd>
@@ -3480,7 +3521,7 @@ should never be auto-downloaded.
 <p>Allows you to define value expressions for future use.  For example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2426_validate-data' data-testid='Val-2426' data-testkind='validate-data' class='dropbtn'>Action</button>define var_name=$100
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2466_validate-data' data-testid='Val-2466' data-testkind='validate-data' class='dropbtn'>Action</button>define var_name=$100
 
 2011/12/01 Test
     Expenses  (var_name*4)
@@ -3499,51 +3540,11 @@ should never be auto-downloaded.
 <dd><a name="index-expr"></a>
 
 </dd>
-<dt><code>fixed</code></dt>
-<dd><a name="index-fixed"></a>
-<a name="index-fixated-prices"></a>
-
-<p>A fixed block is used to set fixated prices (see <a href="#Fixated-prices-and-costs">Fixated prices and costs</a>) for a series of transactions.  It&rsquo;s purely a typing saver, for
-use when entering many transactions with fixated prices.
-</p>
-<p>Thus, the following:
-</p>
-<div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2456_validate-data' data-testid='Val-2456' data-testkind='validate-data' class='dropbtn'>Action</button>fixed CAD $0.90
-2012-04-10 Lunch in Canada
-    Assets:Wallet            -15.50 CAD
-    Expenses:Food            15.50 CAD
-
-2012-04-11 Second day Dinner in Canada
-    Assets:Wallet            -25.75 CAD
-    Expenses:Food            25.75 CAD
-endfixed CAD
-</pre></div>
-
-<p>is equivalent to this:
-</p>
-<div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2470_validate-data' data-testid='Val-2470' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 Lunch in Canada
-    Assets:Wallet            -15.50 CAD {=$0.90}
-    Expenses:Food            15.50 CAD  {=$0.90}
-
-2012-04-11 Second day Dinner in Canada
-    Assets:Wallet            -25.75 CAD  {=$0.90}
-    Expenses:Food            25.75 CAD   {=$0.90}
-</pre></div>
-
-<p>Note that ending a <code>fixed</code> is done differently than other
-directives, as <code>fixed</code> is closed with an <code>endfixed</code> (i.e.,
-there is <em>no space</em> between <code>end</code> and <code>fixed</code>).
-</p>
-<p>For the moment, users may wish to study
-<a href="http://bugs.ledger-cli.org/show_bug.cgi?id=789">Bug Report 789</a>
-before using the <code>fixed</code> directive in production.
-</p>
-</dd>
 <dt><code>include</code></dt>
 <dd><a name="index-include"></a>
-<p>Include the stated file as if it were part of the current file.
+<p>Include the stated file as if it were part of the current file.  The file
+name can contain a wildcard (&lsquo;<samp>*</samp>&rsquo;) to refer to multiple files (e.g.
+&lsquo;<samp>bank/*.ledger</samp>&rsquo;).
 </p>
 </dd>
 <dt><code>payee</code></dt>
@@ -3556,7 +3557,7 @@ immediately follow the payee directive and&mdash;if it is on a successive
 line&mdash;begins with whitespace:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2504_validate-data' data-testid='Val-2504' data-testkind='validate-data' class='dropbtn'>Action</button>payee KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2503_validate-data' data-testid='Val-2503' data-testkind='validate-data' class='dropbtn'>Action</button>payee KFC
     alias KENTUCKY FRIED CHICKEN
     uuid 2a2e21d434356f886c84371eebac6e44f1337fda
 </pre></div>
@@ -3565,14 +3566,14 @@ line&mdash;begins with whitespace:
 a parsed payee, the declared payee name is substituted:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2513_validate-data' data-testid='Val-2513' data-testkind='validate-data' class='dropbtn'>Action</button>2012-02-27 KENTUCKY FRIED CHICKEN  ; will be read as being 'KFC'
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2512_validate-data' data-testid='Val-2512' data-testkind='validate-data' class='dropbtn'>Action</button>2012-02-27 KENTUCKY FRIED CHICKEN  ; will be read as being 'KFC'
 </pre></div>
 
 <p>The <code>uuid</code> sub-directive specifies that a transaction with exactly
 the uuid given should have the declared payee name substituted:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2520_validate-data' data-testid='Val-2520' data-testkind='validate-data' class='dropbtn'>Action</button>2014-05-13 UNHELPFUL PAYEE  ; will be read as being 'KFC'
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2519_validate-data' data-testid='Val-2519' data-testkind='validate-data' class='dropbtn'>Action</button>2014-05-13 UNHELPFUL PAYEE  ; will be read as being 'KFC'
     ; UUID: 2a2e21d434356f886c84371eebac6e44f1337fda
 </pre></div>
 
@@ -3586,7 +3587,7 @@ the uuid given should have the declared payee name substituted:
 tag to all.  Tags can have values and may be nested.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2534_validate-data' data-testid='Val-2534' data-testkind='validate-data' class='dropbtn'>Action</button>apply tag hastag
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2533_validate-data' data-testid='Val-2533' data-testkind='validate-data' class='dropbtn'>Action</button>apply tag hastag
 apply tag nestedtag: true
 
 2011/01/25 Tom's Used Cars
@@ -3610,7 +3611,7 @@ end apply tag
 <p>is the equivalent of:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2559_validate-data' data-testid='Val-2559' data-testkind='validate-data' class='dropbtn'>Action</button>2011/01/25 Tom's Used Cars
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2558_validate-data' data-testid='Val-2558' data-testkind='validate-data' class='dropbtn'>Action</button>2011/01/25 Tom's Used Cars
     ; :hastag:
     ; nestedtag: true
     Expenses:Auto                    $ 5,500.00
@@ -3639,7 +3640,7 @@ end apply tag
 <samp>--pedantic</samp> is used (see below).
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2592_validate-data' data-testid='Val-2592' data-testkind='validate-data' class='dropbtn'>Action</button>tag Receipt
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2591_validate-data' data-testid='Val-2591' data-testkind='validate-data' class='dropbtn'>Action</button>tag Receipt
 tag CSV
 </pre></div>
 
@@ -3648,7 +3649,7 @@ immediately follow the tag directive and&mdash;if on a successive
 line&mdash;begin with whitespace:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2601_validate-data' data-testid='Val-2601' data-testkind='validate-data' class='dropbtn'>Action</button>tag Receipt
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2600_validate-data' data-testid='Val-2600' data-testkind='validate-data' class='dropbtn'>Action</button>tag Receipt
   check value =~ /pattern/
   assert value != &quot;foobar&quot;
 </pre></div>
@@ -3704,7 +3705,7 @@ that these pricing options be set in the price database file, which
 defaults to <samp>~/.pricedb</samp>.  The syntax for this command is:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2656_validate-data' data-testid='Val-2656' data-testkind='validate-data' class='dropbtn'>Action</button>N SYMBOL
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2655_validate-data' data-testid='Val-2655' data-testkind='validate-data' class='dropbtn'>Action</button>N SYMBOL
 </pre></div>
 
 </dd>
@@ -3720,7 +3721,7 @@ to set US dollars as the default commodity, while also setting the
 thousands flag and decimal flag for that commodity, use:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2671_validate-data' data-testid='Val-2671' data-testkind='validate-data' class='dropbtn'>Action</button>D $1,000.00
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2670_validate-data' data-testid='Val-2670' data-testkind='validate-data' class='dropbtn'>Action</button>D $1,000.00
 </pre></div>
 
 </dd>
@@ -3731,7 +3732,7 @@ be equivalent to the second amount.  The first amount should use the
 decimal precision desired during reporting:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2681_validate-data' data-testid='Val-2681' data-testkind='validate-data' class='dropbtn'>Action</button>C 1.00 Kb = 1024 bytes
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2680_validate-data' data-testid='Val-2680' data-testkind='validate-data' class='dropbtn'>Action</button>C 1.00 Kb = 1024 bytes
 </pre></div>
 
 </dd>
@@ -3913,7 +3914,7 @@ Next: <a href="#Eliding-amounts" accesskey="n" rel="next">Eliding amounts</a>, P
 <p>The most basic form of transaction is:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2816_validate-data' data-testid='Val-2816' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2815_validate-data' data-testid='Val-2815' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Assets:Cash                 $-20.00
 </pre></div>
@@ -3925,7 +3926,7 @@ posting specifies what action is taken related to that account.
 <p>A transaction can have any number of postings:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2828_validate-data' data-testid='Val-2828' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2827_validate-data' data-testid='Val-2827' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Assets:Cash                 $-10.00
     Liabilities:Credit          $-10.00
@@ -3945,7 +3946,7 @@ That is, if exactly one posting has no amount specified, Ledger will
 infer the inverse of the other postings&rsquo; amounts:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2842_validate-data' data-testid='Val-2842' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2841_validate-data' data-testid='Val-2841' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Assets:Cash                 $-10.00
     Liabilities:Credit                   ; same as specifying $-10
@@ -3956,7 +3957,7 @@ empty posting N times and fill in the negated values of the various
 commodities:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2854_validate-data' data-testid='Val-2854' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2853_validate-data' data-testid='Val-2853' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Expenses:Tips                 $2.00
     Assets:Cash              EUR -10.00
@@ -3967,7 +3968,7 @@ commodities:
 <p>This transaction is identical to writing:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2866_validate-data' data-testid='Val-2866' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2865_validate-data' data-testid='Val-2865' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Expenses:Tips                 $2.00
     Assets:Cash              EUR -10.00
@@ -3991,7 +3992,7 @@ Next: <a href="#Codes" accesskey="n" rel="next">Codes</a>, Previous: <a href="#E
 primary date with an equals sign:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2884_validate-data' data-testid='Val-2884' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10=2012-03-08 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2883_validate-data' data-testid='Val-2883' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10=2012-03-08 KFC
     Expenses:Food                $20.00
     Assets:Cash                 $-20.00
 </pre></div>
@@ -4016,7 +4017,7 @@ codes like DEP, XFER, etc., as well as check numbers.  This is to give
 you a place to put those codes:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2903_validate-data' data-testid='Val-2903' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 (#100) KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2902_validate-data' data-testid='Val-2902' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 (#100) KFC
     Expenses:Food                $20.00
     Assets:Checking
 </pre></div>
@@ -4035,10 +4036,10 @@ Next: <a href="#Transaction-notes" accesskey="n" rel="next">Transaction notes</a
 
 <p>A transaction can have a &ldquo;state&rdquo;: cleared, pending, or uncleared.  The
 default is uncleared.  To mark a transaction cleared, put an asterisk
-&lsquo;<samp>*</samp>&rsquo; before the payee, after the date or code:
+&lsquo;<samp>*</samp>&rsquo; after the date, before the code or payee:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2919_validate-data' data-testid='Val-2919' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2945_validate-data' data-testid='Val-2945' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
 </pre></div>
@@ -4046,7 +4047,7 @@ default is uncleared.  To mark a transaction cleared, put an asterisk
 <p>To mark it pending, use a &lsquo;<samp>!</samp>&rsquo;:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2928_validate-data' data-testid='Val-2928' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 ! KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2927_validate-data' data-testid='Val-2927' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 ! KFC
     Expenses:Food                $20.00
     Assets:Cash
 </pre></div>
@@ -4064,7 +4065,7 @@ a reconciliation.
 clearing all of its postings.  That is:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2919_validate-data' data-testid='Val-2919' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2945_validate-data' data-testid='Val-2945' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
 </pre></div>
@@ -4072,7 +4073,7 @@ clearing all of its postings.  That is:
 <p>Is the same as writing:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2955_validate-data' data-testid='Val-2955' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2954_validate-data' data-testid='Val-2954' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     * Expenses:Food                $20.00
     * Assets:Cash
 </pre></div>
@@ -4081,7 +4082,7 @@ clearing all of its postings.  That is:
 &ldquo;side&rdquo; of the transaction has cleared, but the other hasn&rsquo;t yet:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2965_validate-data' data-testid='Val-2965' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2964_validate-data' data-testid='Val-2964' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Liabilities:Credit            $100.00
     * Assets:Checking
 </pre></div>
@@ -4100,7 +4101,7 @@ and a tab), which Ledger calls a &ldquo;hard separator&rdquo;, you may
 introduce a note about the transaction using the &lsquo;<samp>;</samp>&rsquo; character:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2978_validate-data' data-testid='Val-2978' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC                ; yum, chicken...
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2977_validate-data' data-testid='Val-2977' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC                ; yum, chicken...
     Expenses:Food                $20.00
     Assets:Cash
 </pre></div>
@@ -4109,7 +4110,7 @@ introduce a note about the transaction using the &lsquo;<samp>;</samp>&rsquo; ch
 with whitespace:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2988_validate-data' data-testid='Val-2988' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC                ; yum, chicken...
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-2987_validate-data' data-testid='Val-2987' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC                ; yum, chicken...
     ; and more notes...
     Expenses:Food                $20.00
     Assets:Cash
@@ -4126,7 +4127,7 @@ a note belongs only to one posting, place it after a hard separator
 after the amount, or on its own line preceded by whitespace:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3005_validate-data' data-testid='Val-3005' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3004_validate-data' data-testid='Val-3004' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00  ; posting #1 note
     Assets:Cash
       ; posting #2 note, extra indentation is optional
@@ -4170,7 +4171,7 @@ Next: <a href="#Metadata-values" accesskey="n" rel="next">Metadata values</a>, P
 colons inside a comment:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3043_validate-data' data-testid='Val-3043' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3042_validate-data' data-testid='Val-3042' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
       ; :TAG:
@@ -4179,7 +4180,7 @@ colons inside a comment:
 <p>You can gang up multiple tags by sharing colons:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3052_validate-data' data-testid='Val-3052' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3051_validate-data' data-testid='Val-3051' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
       ; :TAG1:TAG2:TAG3:
@@ -4241,6 +4242,13 @@ below:
 <p>This shows that they are all in the same transaction (which is why the
 date is not repeated), but they have different payees now.
 </p>
+<p>If using the <samp>--strict</samp> or <samp>--pedantic</samp> options, you must
+declare this tag to avoid warnings and errors.
+</p>
+<p>The payee name used with the tag is not enforced by the
+<samp>--check-payees</samp> option, due to a bug:
+<a href="https://github.com/ledger/ledger/issues/556">https://github.com/ledger/ledger/issues/556</a>.
+</p>
 <hr>
 <a name="Metadata-values"></a>
 <div class="header">
@@ -4255,7 +4263,7 @@ the value can be any string of characters.  Whitespace is needed after
 the colon, and cannot appear in the Key:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3115_validate-data' data-testid='Val-3115' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3121_validate-data' data-testid='Val-3121' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
       ; MyTag: This is just a bogus value for MyTag
@@ -4275,7 +4283,7 @@ expression and stored internally as a value rather than as a string.
 For example, although I can specify a date textually like so:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3129_validate-data' data-testid='Val-3129' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3135_validate-data' data-testid='Val-3135' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
       ; AuxDate: 2012/02/30
@@ -4320,7 +4328,7 @@ reports using <samp>--real</samp>.
 parentheses:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3170_validate-data' data-testid='Val-3170' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3176_validate-data' data-testid='Val-3176' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
     (Budget:Food)               $-20.00
@@ -4331,7 +4339,7 @@ against one or more other virtual postings by using brackets (which
 look &ldquo;harder&rdquo;) rather than parentheses:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3181_validate-data' data-testid='Val-3181' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3187_validate-data' data-testid='Val-3187' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
     [Budget:Food]               $-20.00
@@ -4347,12 +4355,12 @@ Next: <a href="#Balance-verification" accesskey="n" rel="next">Balance verificat
 <a name="Expression-amounts-1"></a>
 <h3 class="section">5.9 Expression amounts</h3>
 
-<p>An amount is usually a numerical figure with an (optional) commodity,
-but it can also be any value expression.  To indicate this, surround
-the amount expression with parentheses:
+<p>An amount is a numerical figure with a commodity, but it can also be
+any value expression.  To indicate this, surround the amount
+expression with parentheses:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3196_validate-data' data-testid='Val-3196' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3202_validate-data' data-testid='Val-3202' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 * KFC
     Expenses:Food      ($10.00 + $20.00)  ; Ledger adds it up for you
     Assets:Cash
 </pre></div>
@@ -4406,6 +4414,46 @@ Next: <a href="#Balance-assignments" accesskey="n" rel="next">Balance assignment
 <p>This simply asserts that after subtracting $20.00 from Assets:Cash,
 that the resulting total matches $500.00.  If not, it is an error.
 </p>
+<p>The assertion has an effect only on the specified commodity. If an account has
+multiple commodities, then only the one asserted is verified:
+</p>
+<div class="smallexample">
+<pre class="smallexample">2012-03-10 KFC New York
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00 = $500.00
+
+2012-03-11 KFC Montreal
+    Expenses:Food                 15.00 CAD
+    Assets:Cash                  -15.00 CAD = $500.00
+</pre></div>
+
+<p>In this case, the amount in USD of cash (which has not changed) is validated.
+Nothing is asserted about the current amount of Canadian dollars in &lsquo;<samp>Asset:Cash</samp>&rsquo;.
+</p>
+<a name="Special-assertion-value-0"></a>
+<h4 class="subsubsection">5.10.1.1 Special assertion value 0</h4>
+
+<p>The only value that can be asserted without a commodity is &lsquo;<samp>0</samp>&rsquo;.
+This results in a cross-commodities assertion, which makes it possible to
+assert that an account is totally empty.
+</p>
+<div class="smallexample">
+<pre class="smallexample">2012-03-09 Fill Wallet
+    Revenue                      $20.00
+    Revenue                       15.00 CAD
+    Assets:Cash
+
+2012-03-10 KFC New York
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00
+
+2012-03-11 KFC Montreal
+    Expenses:Food                 15.00 CAD
+    Assets:Cash                  -15.00 CAD = 0
+</pre></div>
+
+<p>The last transaction will assert that we are out of cash of any sort.
+</p>
 <hr>
 <a name="Balance-assignments"></a>
 <div class="header">
@@ -4441,7 +4489,7 @@ balance no longer matches your bank balance.  You can create an
 adjustment transaction using balance assignments:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3257_validate-data' data-testid='Val-3257' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 Adjustment
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3302_validate-data' data-testid='Val-3302' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 Adjustment
     Assets:Cash                         = $500.00
     Equity:Adjustments
 </pre></div>
@@ -4499,7 +4547,7 @@ for you, and can use it during reporting in various ways.  Here&rsquo;s an
 example of a stock purchase:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3303_validate-data' data-testid='Val-3303' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3348_validate-data' data-testid='Val-3348' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL
     Assets:Brokerage:Cash       $-500.00
 </pre></div>
@@ -4521,7 +4569,7 @@ Next: <a href="#Posting-cost-expressions" accesskey="n" rel="next">Posting cost 
 after the amount or amount expression:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3319_validate-data' data-testid='Val-3319' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3364_validate-data' data-testid='Val-3364' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL @ $50.00
     Assets:Brokerage:Cash       $-500.00
 </pre></div>
@@ -4530,7 +4578,7 @@ after the amount or amount expression:
 from the first posting&rsquo;s cost, you can elide the other amount:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3328_validate-data' data-testid='Val-3328' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3472_validate-data' data-testid='Val-3472' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL @ $50.00
     Assets:Brokerage:Cash
 </pre></div>
@@ -4580,7 +4628,7 @@ Next: <a href="#Total-posting-costs" accesskey="n" rel="next">Total posting cost
 expressions:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3394_validate-data' data-testid='Val-3394' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3439_validate-data' data-testid='Val-3439' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL @ ($500.00 / 10)
     Assets:Brokerage:Cash
 </pre></div>
@@ -4588,7 +4636,7 @@ expressions:
 <p>You can even have both:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3373_validate-data' data-testid='Val-3373' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3418_validate-data' data-testid='Val-3418' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             (5 AAPL * 2) @ ($500.00 / 10)
     Assets:Brokerage:Cash
 </pre></div>
@@ -4607,7 +4655,7 @@ Next: <a href="#Virtual-posting-costs" accesskey="n" rel="next">Virtual posting 
 like to specify the total cost instead, use &lsquo;<samp>@@</samp>&rsquo;:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3386_validate-data' data-testid='Val-3386' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3431_validate-data' data-testid='Val-3431' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL @@ $500.00
     Assets:Brokerage:Cash
 </pre></div>
@@ -4615,7 +4663,7 @@ like to specify the total cost instead, use &lsquo;<samp>@@</samp>&rsquo;:
 <p>Ledger reads this as if you had written:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3394_validate-data' data-testid='Val-3394' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3439_validate-data' data-testid='Val-3439' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL @ ($500.00 / 10)
     Assets:Brokerage:Cash
 </pre></div>
@@ -4636,7 +4684,7 @@ happening in the case of an exceptional transaction, surround the
 &lsquo;<samp>@</samp>&rsquo; or &lsquo;<samp>@@</samp>&rsquo; with parentheses:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3409_validate-data' data-testid='Val-3409' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Brother
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3454_validate-data' data-testid='Val-3454' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Brother
     Assets:Brokerage            1000 AAPL (@) $1
     Income:Gifts Received
 </pre></div>
@@ -4660,7 +4708,7 @@ to show these hidden price figures.
 <p>For example, consider the stock sale given above:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3328_validate-data' data-testid='Val-3328' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3472_validate-data' data-testid='Val-3472' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 My Broker
     Assets:Brokerage             10 AAPL @ $50.00
     Assets:Brokerage:Cash
 </pre></div>
@@ -4675,7 +4723,7 @@ $50.00 was the price of that exchange.
 example, you might write this:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3442_validate-data' data-testid='Val-3442' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3487_validate-data' data-testid='Val-3487' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
     Assets:Brokerage:Cash
     Assets:Brokerage            -10 AAPL @ $75.00
 </pre></div>
@@ -4684,7 +4732,7 @@ example, you might write this:
 gains on the sale?  It could be done with a virtual posting:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3451_validate-data' data-testid='Val-3451' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3496_validate-data' data-testid='Val-3496' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
     Assets:Brokerage:Cash
     Assets:Brokerage            -10 AAPL @ $75.00
     (Income:Capital Gains)      $-250.00
@@ -4727,7 +4775,7 @@ per-share price in doubled braces.  This goes well with total costs,
 but is not required to be used with them:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3487_validate-data' data-testid='Val-3487' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3532_validate-data' data-testid='Val-3532' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
     Assets:Brokerage:Cash       $750.00
     Assets:Brokerage            -10 AAPL {{$500.00}} @@ $750.00
     Income:Capital Gains       $-250.00
@@ -4744,18 +4792,18 @@ double braces price form is a shorthand only.
 <p>Plus, it comes with dangers.  This works fine:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3504_validate-data' data-testid='Val-3504' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3549_validate-data' data-testid='Val-3549' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
     Assets:Brokerage            10 AAPL @ $50.00
     Assets:Brokerage:Cash      $-500.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} @@ $375.00
     Income:Capital Gains       $-125.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4768,12 +4816,12 @@ double braces price form is a shorthand only.
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {{$500.00}} @ $375.00
+    Assets:Brokerage            -5 AAPL {{$500.00}} @@ $375.00
     Income:Capital Gains       $-125.00
 
 2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {{$500.00}} @ $375.00
+    Assets:Brokerage            -5 AAPL {{$500.00}} @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4867,7 +4915,7 @@ expressions):
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4890,7 +4938,7 @@ indicate a virtual cost:
 <div class="smallexample">
 <pre class="smallexample">2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
-    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] (Oh my!) @ $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] (Oh my!) @@ $375.00
     Income:Capital Gains       $-125.00
 </pre></div>
 
@@ -4926,13 +4974,13 @@ name, or a lambda expression.  Here&rsquo;s a function that yields the price
 as $10 in whatever commodity is being requested:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3657_validate-data' data-testid='Val-3657' data-testkind='validate-data' class='dropbtn'>Action</button>define ten_dollars(s, date, t) = market($10, date, t)
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3702_validate-data' data-testid='Val-3702' data-testkind='validate-data' class='dropbtn'>Action</button>define ten_dollars(s, date, t) = market($10, date, t)
 </pre></div>
 
 <p>I can now use that in a lot value expression as follows:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3663_validate-data' data-testid='Val-3663' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3708_validate-data' data-testid='Val-3708' data-testkind='validate-data' class='dropbtn'>Action</button>2012-04-10 My Broker
     Assets:Brokerage:Cash       $375.00
     Assets:Brokerage            -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00
     Income:Capital Gains       $-125.00
@@ -4992,7 +5040,7 @@ same query syntax as the Ledger command-line.
 <p>Consider this posting:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3718_validate-data' data-testid='Val-3718' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3763_validate-data' data-testid='Val-3763' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Assets:Cash
 </pre></div>
@@ -5000,7 +5048,7 @@ same query syntax as the Ledger command-line.
 <p>If I write this automated transaction before it in the file:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3726_validate-data' data-testid='Val-3726' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3771_validate-data' data-testid='Val-3771' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
     Foo                          $50.00
     Bar                         $-50.00
 </pre></div>
@@ -5009,7 +5057,7 @@ same query syntax as the Ledger command-line.
 written this:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3735_validate-data' data-testid='Val-3735' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3780_validate-data' data-testid='Val-3780' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Foo                          $50.00
     Bar                         $-50.00
@@ -5061,7 +5109,7 @@ Next: <a href="#Accessing-the-matching-posting_0027s-amount" accesskey="n" rel="
 posting&rsquo;s cost.  For example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3772_validate-data' data-testid='Val-3772' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3817_validate-data' data-testid='Val-3817' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
     Foo                           50.00
     Bar                          -50.00
 
@@ -5073,7 +5121,7 @@ posting&rsquo;s cost.  For example:
 <p>Then the latter transaction turns into this during parsing:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3784_validate-data' data-testid='Val-3784' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3829_validate-data' data-testid='Val-3829' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     Foo                        $1000.00
     Bar                       $-1000.00
@@ -5097,7 +5145,7 @@ posting.  For example, you can refer to that posting&rsquo;s amount using
 the &ldquo;amount&rdquo; value expression variable:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3802_validate-data' data-testid='Val-3802' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3847_validate-data' data-testid='Val-3847' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
     (Foo)                  (amount * 2)  ; same as just &quot;2&quot; in this case
 
 2012-03-10 KFC
@@ -5108,7 +5156,7 @@ the &ldquo;amount&rdquo; value expression variable:
 <p>This becomes:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3813_validate-data' data-testid='Val-3813' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3858_validate-data' data-testid='Val-3858' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     (Foo)                        $40.00
     Assets:Cash                 $-20.00
@@ -5130,7 +5178,7 @@ done by using the string &lsquo;<samp>$account</samp>&rsquo;, anywhere within th
 account part of the automated posting:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3829_validate-data' data-testid='Val-3829' data-testkind='validate-data' class='dropbtn'>Action</button>= food
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3874_validate-data' data-testid='Val-3874' data-testkind='validate-data' class='dropbtn'>Action</button>= food
     (Budget:$account)                10
 
 2012-03-10 KFC
@@ -5141,10 +5189,16 @@ account part of the automated posting:
 <p>Becomes:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3840_validate-data' data-testid='Val-3840' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3885_validate-data' data-testid='Val-3885' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     (Budget:Expenses:Food)      $200.00
     Assets:Cash                 $-20.00
+</pre></div>
+
+<p>Keep in mind that if you are using <samp>--strict</samp> or <samp>--pedantic</samp> you will have to explicitly define an account &lsquo;<samp>$account</samp>&rsquo; to avoid errors.
+</p>
+<div class="smallexample">
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3894_validate-data' data-testid='Val-3894' data-testkind='validate-data' class='dropbtn'>Action</button>account $account
 </pre></div>
 
 <hr>
@@ -5161,7 +5215,7 @@ copied (along with any metadata) to every posting that matches the
 predicate:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3854_validate-data' data-testid='Val-3854' data-testkind='validate-data' class='dropbtn'>Action</button>= food
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3905_validate-data' data-testid='Val-3905' data-testkind='validate-data' class='dropbtn'>Action</button>= food
     ; Foo: Bar
     (Budget:$account)                10
 
@@ -5173,7 +5227,7 @@ predicate:
 <p>Becomes:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3866_validate-data' data-testid='Val-3866' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3917_validate-data' data-testid='Val-3917' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
       ; Foo: Bar
     (Budget:Expenses:Food)      $200.00
@@ -5193,7 +5247,7 @@ Next: <a href="#State-flags" accesskey="n" rel="next">State flags</a>, Previous:
 carried to the generated posting within the matched transaction:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3880_validate-data' data-testid='Val-3880' data-testkind='validate-data' class='dropbtn'>Action</button>= food
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3931_validate-data' data-testid='Val-3931' data-testkind='validate-data' class='dropbtn'>Action</button>= food
     (Budget:$account)                10
       ; Foo: Bar
 
@@ -5205,7 +5259,7 @@ carried to the generated posting within the matched transaction:
 <p>Becomes:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3892_validate-data' data-testid='Val-3892' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3943_validate-data' data-testid='Val-3943' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-10 KFC
     Expenses:Food                $20.00
     (Budget:Expenses:Food)      $200.00
       ; Foo: Bar
@@ -5253,7 +5307,7 @@ something like
 <a name="index-effective-date-of-invoice"></a>
 
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3928_validate-data' data-testid='Val-3928' data-testkind='validate-data' class='dropbtn'>Action</button>2008/01/01=2008/01/14 Client invoice  ;  estimated date you'll be paid
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3979_validate-data' data-testid='Val-3979' data-testkind='validate-data' class='dropbtn'>Action</button>2008/01/01=2008/01/14 Client invoice  ;  estimated date you'll be paid
     Assets:Accounts Receivable            $100.00
     Income: Client name
 </pre></div>
@@ -5261,7 +5315,7 @@ something like
 <p>Then, when you receive the payment, you change it to
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3936_validate-data' data-testid='Val-3936' data-testkind='validate-data' class='dropbtn'>Action</button>2008/01/01=2008/01/15 Client invoice ;  actual date money received
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3987_validate-data' data-testid='Val-3987' data-testkind='validate-data' class='dropbtn'>Action</button>2008/01/01=2008/01/15 Client invoice ;  actual date money received
     Assets:Accounts Receivable            $100.00
     Income: Client name
 </pre></div>
@@ -5269,7 +5323,7 @@ something like
 <p>and add something like
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3945_validate-data' data-testid='Val-3945' data-testkind='validate-data' class='dropbtn'>Action</button>2008/01/15 Client payment
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-3996_validate-data' data-testid='Val-3996' data-testkind='validate-data' class='dropbtn'>Action</button>2008/01/15 Client payment
     Assets:Checking                       $100.00
     Assets:Accounts Receivable
 </pre></div>
@@ -5277,13 +5331,13 @@ something like
 <p>Now
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-3953_validate-command' data-testid='Val-3953' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --begin 2008/01/01 --end 2008/01/14 bal Income
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4004_validate-command' data-testid='Val-4004' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --begin 2008/01/01 --end 2008/01/14 bal Income
 </pre></div>
 
 <p>gives you your accrued income in the first two weeks of the year, and
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-3960_validate-command' data-testid='Val-3960' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --effective --begin 2008/01/01 --end 2008/01/14 bal Income
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4011_validate-command' data-testid='Val-4011' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --effective --begin 2008/01/01 --end 2008/01/14 bal Income
 </pre></div>
 
 <p>gives you your cash basis income in the same two weeks.
@@ -5392,7 +5446,7 @@ When ready to pay, just write a check to cover the amount shown in
 &lsquo;<samp>Liabilities:Huququ'llah</samp>&rsquo;.  That transaction would look like:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-4059_validate-data' data-testid='Val-4059' data-testkind='validate-data' class='dropbtn'>Action</button>2003/01/01 (101) Baha'i Huqúqu'lláh Trust
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-4110_validate-data' data-testid='Val-4110' data-testkind='validate-data' class='dropbtn'>Action</button>2003/01/01 (101) Baha'i Huqúqu'lláh Trust
     Liabilities:Huququ'llah          $1,000.00
     Assets:Checking
 </pre></div>
@@ -5433,7 +5487,7 @@ matched your automated transaction&rsquo;s value expression.  To do this, use
 the special account name &lsquo;<samp>$account</samp>&rsquo;:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-4102_validate-data' data-testid='Val-4102' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Some:Long:Account:Name/
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-4153_validate-data' data-testid='Val-4153' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Some:Long:Account:Name/
     [$account]  -0.10
     [Savings]    0.10
 </pre></div>
@@ -5597,11 +5651,11 @@ which there are none.
 account on a particular payee, the following are equivalent:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4240_validate-command' data-testid='Val-4240' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger balance Auto:Fuel and Chevron
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4291_validate-command' data-testid='Val-4291' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger balance Auto:Fuel and Chevron
 </pre></div>
 
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4244_validate-command' data-testid='Val-4244' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger balance --limit 'account=~/Fuel/' and 'payee=~/Chev/'
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4295_validate-command' data-testid='Val-4295' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger balance --limit 'account=~/Fuel/' and 'payee=~/Chev/'
 </pre></div>
 
 <p>will show you the amount expended on gasoline at Chevron.  The second
@@ -5614,7 +5668,7 @@ possibilities.
 exclude multiple accounts with parentheses:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4258_validate-command' data-testid='Val-4258' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal Expenses and not (Expenses:Drinks or Expenses:Candy or Expenses:Gifts)
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4309_validate-command' data-testid='Val-4309' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal Expenses and not (Expenses:Drinks or Expenses:Candy or Expenses:Gifts)
 </pre></div>
 
 <hr>
@@ -5626,9 +5680,10 @@ Previous: <a href="#Controlling-the-Accounts-and-Payees" accesskey="p" rel="prev
 <a name="Controlling-Formatting-1"></a>
 <h4 class="subsection">6.2.2 Controlling Formatting</h4>
 
-<p>These examples all use the default formatting for the balance
-report.  Customizing the formatting can easily allowing to see only what
-you want, or interface Ledger with other programs.
+<p>These examples all use the default formatting for the balance report.
+Customizing the formatting allows you to see only what you want, or
+interface Ledger with other programs.  For examples and details,
+see <a href="#Format-Strings">Format Strings</a> and <a href="#Asset-Allocation">Asset Allocation</a>.
 </p>
 <hr>
 <a name="Typical-queries"></a>
@@ -5643,7 +5698,7 @@ Next: <a href="#Advanced-Reports" accesskey="n" rel="next">Advanced Reports</a>,
 October, sorted by total:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4275_validate-command' data-testid='Val-4275' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -b &quot;last oct&quot; -S T bal ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4327_validate-command' data-testid='Val-4327' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -b &quot;last oct&quot; -S T bal ^expenses
 </pre></div>
 
 <p>From left to right the options mean: Show transactions since last
@@ -5673,7 +5728,7 @@ Previous: <a href="#Typical-queries" accesskey="p" rel="prev">Typical queries</a
 month&rsquo;s expenses sorted by the amount:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4298_validate-command' data-testid='Val-4298' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M --period-sort &quot;(amount)&quot; reg ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4350_validate-command' data-testid='Val-4350' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M --period-sort &quot;(amount)&quot; reg ^expenses
 </pre></div>
 
 <p>Now, you might wonder where the money came from to pay for these things.
@@ -5681,7 +5736,7 @@ To see that report, add <samp>--related (-r)</samp>, which shows the
 &ldquo;related account&rdquo; postings:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4306_validate-command' data-testid='Val-4306' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M --period-sort &quot;(amount)&quot; -r reg ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4358_validate-command' data-testid='Val-4358' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M --period-sort &quot;(amount)&quot; -r reg ^expenses
 </pre></div>
 
 <p>But maybe this prints too much information.  You might just want to
@@ -5691,7 +5746,7 @@ calculated must match &lsquo;<samp>^expenses</samp>&rsquo;, while the postings
 displayed must match &lsquo;<samp>mastercard</samp>&rsquo;.  The command would be:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4316_validate-command' data-testid='Val-4316' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M -r --display 'account=~/mastercard/' reg ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4368_validate-command' data-testid='Val-4368' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M -r --display 'account=~/mastercard/' reg ^expenses
 </pre></div>
 
 <p>This query says: Report monthly subtotals; report the &ldquo;related
@@ -5702,7 +5757,7 @@ postings matching &lsquo;<samp>^expenses</samp>&rsquo;.
 <p>This works just as well for reporting the overall total, too:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4327_validate-command' data-testid='Val-4327' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -s -r --display &quot;account=~/mastercard/&quot; reg ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-4379_validate-command' data-testid='Val-4379' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -s -r --display &quot;account=~/mastercard/&quot; reg ^expenses
 </pre></div>
 
 <p>The <samp>--subtotal (-s)</samp> option subtotals all postings, just as
@@ -6238,7 +6293,7 @@ you can use the account and its <code>payee</code> directive to specify the
 account.  I use it like this, for example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-4767_validate-data' data-testid='Val-4767' data-testkind='validate-data' class='dropbtn'>Action</button>payee Aldi
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-4819_validate-data' data-testid='Val-4819' data-testkind='validate-data' class='dropbtn'>Action</button>payee Aldi
     alias ^ALDI SUED SAGT DANKE
 account Aufwand:Einkauf:Lebensmittel
     payee ^(Aldi|Alnatura|Kaufland|REWE)$
@@ -6282,10 +6337,6 @@ Next: <a href="#Org-mode-with-Babel" accesskey="n" rel="next">Org mode with Babe
 <h4 class="subsection">7.2.3 Emacs <code>org</code> Mode</h4>
 <a name="index-org"></a>
 
-<p>The <code>org</code> command produces a journal file suitable for use in
-the Emacs Org mode.  More details on using Org mode can be found at
-<a href="http://www.orgmode.org">http://www.orgmode.org</a>.
-</p>
 <p>Org mode has a sub-system known as Babel which allows for literate
 programming.  This allows you to mix text and code within the same
 document and automatically execute code which may generate results
@@ -7141,13 +7192,13 @@ totals for rent, food and movies, but only those whose payee matches
 Freddie:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-5510_validate-command' data-testid='Val-5510' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal rent food movies payee freddie
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-5558_validate-command' data-testid='Val-5558' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal rent food movies payee freddie
 </pre></div>
 
 <p>or
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-5517_validate-command' data-testid='Val-5517' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal rent food movies @freddie
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-5565_validate-command' data-testid='Val-5565' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal rent food movies @freddie
 </pre></div>
 
 <p>There are many, many command options available with the <samp>ledger</samp>
@@ -8428,7 +8479,7 @@ that date will be ignored.
 (see <a href="#Value-Expressions">Value Expressions</a>).
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6242_validate-command' data-testid='Val-6242' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger reg Expenses --begin Dec --bold-if &quot;amount&gt;100&quot;
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6290_validate-command' data-testid='Val-6290' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger reg Expenses --begin Dec --bold-if &quot;amount&gt;100&quot;
 </pre></div>
 
 <p>list all transactions since the beginning of December and print in
@@ -8712,7 +8763,7 @@ calculations occur.
 <dd><p>Group transactions by the day of the week.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6448_validate-command' data-testid='Val-6448' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger reg Expenses --dow --collapse
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6496_validate-command' data-testid='Val-6496' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger reg Expenses --dow --collapse
 </pre></div>
 
 <p>Will print all Expenses totaled for each day of the week.
@@ -8847,7 +8898,7 @@ a grouped report.  Only has an effect with a <samp>--group-by
 <var>EXPR</var></samp> register report.
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6528_validate-command' data-testid='Val-6528' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger reg Expenses --group-by &quot;payee&quot; --group-title-format &quot;------------------------ %-20(value) ---------------------\n&quot;
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6576_validate-command' data-testid='Val-6576' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger reg Expenses --group-by &quot;payee&quot; --group-title-format &quot;------------------------ %-20(value) ---------------------\n&quot;
 </pre></div>
 <div class="smallexample">
 <pre class="smallexample">------------------------ 7-Eleven             ---------------------
@@ -8895,7 +8946,7 @@ what amount a transaction should be, but the actual transaction has the
 wrong value you can use metadata to specify the expected amount:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-6560_validate-data' data-testid='Val-6560' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-12  Paycheck
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-6608_validate-data' data-testid='Val-6608' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-12  Paycheck
     Income  $-990;  Expected:: $-1000.00
     Checking
 </pre></div>
@@ -9111,7 +9162,7 @@ identifying which car the purchase was for &lsquo;<samp>; Car: Prius</samp>&rsqu
 command:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6682_validate-command' data-testid='Val-6682' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal Fuel --pivot &quot;Car&quot; --period &quot;this year&quot;
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6730_validate-command' data-testid='Val-6730' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger bal Fuel --pivot &quot;Car&quot; --period &quot;this year&quot;
 </pre></div>
 <div class="smallexample">
 <pre class="smallexample">           $ 3491.26  Car
@@ -9511,7 +9562,7 @@ on the command-line, but put each option on its own line.  Here is an
 example init file:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-6906_validate-data' data-testid='Val-6906' data-testkind='validate-data' class='dropbtn'>Action</button>--price-db ~/finance/.pricedb
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-6954_validate-data' data-testid='Val-6954' data-testkind='validate-data' class='dropbtn'>Action</button>--price-db ~/finance/.pricedb
 --wide
 ; ~/.ledgerrc ends here
 </pre></div>
@@ -9600,7 +9651,7 @@ monthly expenses, in order to view the highest expense categories at
 the top of each month:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-6963_validate-command' data-testid='Val-6963' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M --period-sort total reg ^Expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7011_validate-command' data-testid='Val-7011' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -M --period-sort total reg ^Expenses
 </pre></div>
 
 </dd>
@@ -9946,7 +9997,7 @@ useful for seeing last month&rsquo;s checking postings, against a running
 balance which includes all posting values:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7209_validate-command' data-testid='Val-7209' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -d &quot;d&gt;=[last month]&quot; reg checking
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7257_validate-command' data-testid='Val-7257' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -d &quot;d&gt;=[last month]&quot; reg checking
 </pre></div>
 
 <p>The output from this command is very different from the following,
@@ -9954,7 +10005,7 @@ whose running total includes only postings from the last month
 onward:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7217_validate-command' data-testid='Val-7217' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -p &quot;last month&quot; reg checking
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7265_validate-command' data-testid='Val-7265' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -p &quot;last month&quot; reg checking
 </pre></div>
 
 <p>Which is more useful depends on what you&rsquo;re looking to know: the total
@@ -10152,7 +10203,7 @@ quotes for a specific commodity, for example.  This is done by adding a
 line like the following:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7373_validate-data' data-testid='Val-7373' data-testkind='validate-data' class='dropbtn'>Action</button>; Don't download quotes for the dollar, or timelog values
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7421_validate-data' data-testid='Val-7421' data-testkind='validate-data' class='dropbtn'>Action</button>; Don't download quotes for the dollar, or timelog values
 N $
 N h
 </pre></div>
@@ -10269,7 +10320,7 @@ a default, as if you&rsquo;d specified a global, automated transaction as
 follows:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7459_validate-data' data-testid='Val-7459' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7507_validate-data' data-testid='Val-7507' data-testkind='validate-data' class='dropbtn'>Action</button>= expr true
     ; VALUE:: market(amount, date, exchange)
 </pre></div>
 
@@ -10283,7 +10334,7 @@ follows:
 old European currencies in terms of the Euro after a certain date:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7473_validate-data' data-testid='Val-7473' data-testkind='validate-data' class='dropbtn'>Action</button>= expr commodity == &quot;DM&quot;
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7521_validate-data' data-testid='Val-7521' data-testkind='validate-data' class='dropbtn'>Action</button>= expr commodity == &quot;DM&quot;
     ; VALUE:: date &lt; [Jun 2008] ? market(amount, date, exchange) : 1.44 EUR
 </pre></div>
 
@@ -10295,7 +10346,7 @@ past June 2008, use a fixed price for converting Deutsch Mark to Euro.
 they cannot have a different future value:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7485_validate-data' data-testid='Val-7485' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Expenses:/
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7533_validate-data' data-testid='Val-7533' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Expenses:/
     ; VALUE:: market(amount, post.date, exchange)
 </pre></div>
 
@@ -10307,7 +10358,7 @@ the value of <samp>--now <var>DATE</var></samp> (defaults to today).
 specific time period:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7497_validate-data' data-testid='Val-7497' data-testkind='validate-data' class='dropbtn'>Action</button>= expr commodity == &quot;miles&quot; and date &gt;= [2007] and date &lt; [2008]
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7545_validate-data' data-testid='Val-7545' data-testkind='validate-data' class='dropbtn'>Action</button>= expr commodity == &quot;miles&quot; and date &gt;= [2007] and date &lt; [2008]
     ; VALUE:: market($1.05, date, exchange)
 </pre></div>
 
@@ -10321,7 +10372,7 @@ posting or transaction, by overriding these general defaults using
 specific meta-data:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7511_validate-data' data-testid='Val-7511' data-testkind='validate-data' class='dropbtn'>Action</button>2010-12-26 Example
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7559_validate-data' data-testid='Val-7559' data-testkind='validate-data' class='dropbtn'>Action</button>2010-12-26 Example
     Expenses:Food                $20
     ; Just to be silly, always valuate *these* $20 as 30 DM, no matter what
     ; the user asks for with -V or -X
@@ -10341,7 +10392,7 @@ EUR</samp>&rsquo;, except for certain accounts or postings which should always b
 valuated in another currency.  For example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7533_validate-data' data-testid='Val-7533' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Assets:Brokerage:CAD$/
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7581_validate-data' data-testid='Val-7581' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Assets:Brokerage:CAD$/
     ; Always report the value of commodities in this account in
     ; terms of present day dollars, despite what was asked for
     ; on the command-line VALUE:: market(amount, date, &lsquo;<samp>$</samp>&rsquo;)
@@ -10563,7 +10614,7 @@ that it begins with a tilde and has a period expression in place of a
 payee.  For example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7731_validate-data' data-testid='Val-7731' data-testkind='validate-data' class='dropbtn'>Action</button>~ Monthly
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7779_validate-data' data-testid='Val-7779' data-testkind='validate-data' class='dropbtn'>Action</button>~ Monthly
     Expenses:Rent               $500.00
     Expenses:Food               $450.00
     Expenses:Auto:Gas           $120.00
@@ -10584,7 +10635,7 @@ as one typical yearly expense.  For help on finding out what your
 average monthly expenses are for any category, use a command like:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7752_validate-command' data-testid='Val-7752' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -p &quot;this year&quot; --monthly --average balance ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7800_validate-command' data-testid='Val-7800' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -p &quot;this year&quot; --monthly --average register ^expenses
 </pre></div>
 
 <p>The reported totals are the current year&rsquo;s average for each account.
@@ -10594,13 +10645,13 @@ as easy as adding <samp>--budget</samp> to the command-line.  For example,
 a typical monthly expense report would be:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7762_validate-command' data-testid='Val-7762' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --monthly register ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7810_validate-command' data-testid='Val-7810' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --monthly register ^expenses
 </pre></div>
 
 <p>To see the same report balanced against your budget, use:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7768_validate-command' data-testid='Val-7768' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --budget --monthly register ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7816_validate-command' data-testid='Val-7816' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --budget --monthly register ^expenses
 </pre></div>
 
 <p>A budget report includes only those accounts that appear in the budget.
@@ -10609,7 +10660,7 @@ To see all expenses balanced against the budget, use
 using <samp>--unbudgeted</samp>:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7777_validate-command' data-testid='Val-7777' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --unbudgeted --monthly register ^expenses
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7825_validate-command' data-testid='Val-7825' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --unbudgeted --monthly register ^expenses
 </pre></div>
 
 <p>You can also use these flags with the <code>balance</code> command.
@@ -10641,7 +10692,7 @@ inform you what the total afterwards would be.
 but by date only, and not against the running total:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7803_validate-command' data-testid='Val-7803' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --forecast &quot;d&lt;[2010]&quot; bal ^assets ^liabilities
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7851_validate-command' data-testid='Val-7851' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --forecast &quot;d&lt;[2010]&quot; bal ^assets ^liabilities
 </pre></div>
 
 <hr>
@@ -10657,7 +10708,7 @@ Next: <a href="#Value-Expressions" accesskey="n" rel="next">Value Expressions</a
 <a name="timelog"></a><p>Ledger directly supports &ldquo;timelog&rdquo; entries, which have this form:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7814_validate-data' data-testid='Val-7814' data-testkind='validate-data' class='dropbtn'>Action</button>i 2013/03/28 22:13:00 ACCOUNT[  PAYEE]
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-7862_validate-data' data-testid='Val-7862' data-testkind='validate-data' class='dropbtn'>Action</button>i 2013/03/28 22:13:00 ACCOUNT[  PAYEE]
 o 2013/03/29 03:39:00
 </pre></div>
 
@@ -10719,7 +10770,7 @@ command shows only transactions from the beginning of the current month,
 while still calculating the running balance based on all transactions:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7885_validate-command' data-testid='Val-7885' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -d &quot;d&gt;[this month]&quot; register checking
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7933_validate-command' data-testid='Val-7933' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -d &quot;d&gt;[this month]&quot; register checking
 </pre></div>
 
 <p>The advantage of this command&rsquo;s complexity is that it prints the
@@ -10728,7 +10779,7 @@ following, simpler command is similar, but totals only the displayed
 postings:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7894_validate-command' data-testid='Val-7894' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -b &quot;this month&quot; register checking
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-7942_validate-command' data-testid='Val-7942' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger -b &quot;this month&quot; register checking
 </pre></div>
 
 <table class="menu" border="0" cellspacing="0">
@@ -10912,7 +10963,7 @@ Next: <a href="#Complex-expressions" accesskey="n" rel="next">Complex expression
 <a name="Operators-1"></a>
 <h3 class="section">11.3 Operators</h3>
 
-<p>The binary and ternary operators, in order of precedence, are:
+<p>The operators, in order of precedence, are:
 </p>
 <ol>
 <li> <code>* /</code>
@@ -10937,7 +10988,7 @@ Next: <a href="#Binary-Operators" accesskey="n" rel="next">Binary Operators</a>,
 <a name="Unary-Operators-1"></a>
 <h4 class="subsection">11.3.1 Unary Operators</h4>
 
-<p><code>not</code>
+<p><code>not</code> (<code>!</code>)
 <code>neg</code>
 </p>
 <hr>
@@ -11000,8 +11051,14 @@ posting.
 </p>
 </dd>
 <dt><code>%/REGEX/</code></dt>
-<dt><code>tag(REGEX)</code></dt>
-<dd><p>A regular expression that matches against a transaction&rsquo;s tags.
+<dt><code>expr has_tag(/REGEX/)</code></dt>
+<dt><code>expr has_tag('TAG')</code></dt>
+<dd><p>A regular expression (REGEX) or string (TAG) that checks for the tags of
+a transaction.
+</p>
+</dd>
+<dt><code>tag(REGEX) =~ /REGEX/</code></dt>
+<dd><p>A regular expression that matches a transaction&rsquo;s tags against its values.
 </p>
 </dd>
 <dt><code>expr date =~ /REGEX/</code></dt>
@@ -11016,7 +11073,7 @@ or comment field.  For example, <code>ledger reg &quot;expr&quot; &quot;comment 
 /landline/&quot;</code> will match:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8131_validate-data' data-testid='Val-8131' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8184_validate-data' data-testid='Val-8184' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill
     Assets:Checking                           $50.00
     Expenses:Phone                           $-50.00  ; landline bill
 </pre></div>
@@ -11024,7 +11081,7 @@ or comment field.  For example, <code>ledger reg &quot;expr&quot; &quot;comment 
 <p>but will not match:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8115_validate-data' data-testid='Val-8115' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill  ; landline bill
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8168_validate-data' data-testid='Val-8168' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill  ; landline bill
     ; landline bill
     Assets:Checking                           $50.00
     Expenses:Phone                           $-50.00
@@ -11041,19 +11098,19 @@ individual postings.  Thus, &lsquo;<samp>ledger reg &quot;expr&quot; &quot;note 
 will match both all the three examples below:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8131_validate-data' data-testid='Val-8131' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8184_validate-data' data-testid='Val-8184' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill
     Assets:Checking                           $50.00
     Expenses:Phone                           $-50.00  ; landline bill
 </pre></div>
 
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8137_validate-data' data-testid='Val-8137' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill  ; landline bill
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8190_validate-data' data-testid='Val-8190' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill  ; landline bill
     Assets:Checking                           $50.00
     Expenses:Phone                           $-50.00
 </pre></div>
 
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8143_validate-data' data-testid='Val-8143' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-8196_validate-data' data-testid='Val-8196' data-testkind='validate-data' class='dropbtn'>Action</button>2014/1/29  Phone bill
     ; landline bill
     Assets:Checking                           $50.00
     Expenses:Phone                           $-50.00
@@ -11075,6 +11132,21 @@ posting.
 <dt><code>expr code =~ /REGEX/</code></dt>
 <dd><p>A regular expression that matches against the transaction code (the
 text that occurs between parentheses before the payee).
+</p>
+</dd>
+<dt><code>expr any(KEYWORD =~ /REGEX/)</code></dt>
+<dd><p>The <code>any</code> keyword is used to specify that at least one posting of
+the transaction must match the expression in brackets.  For example,
+&lsquo;<samp>ledger -f d reg expr &quot;any(account =~ /Assets:/)&quot;</samp>&rsquo; can be used to
+display all transactions which involve at least one &lsquo;<samp>Assets:</samp>&rsquo;
+account.
+</p>
+</dd>
+<dt><code>expr all(KEYWORD =~ /REGEX/)</code></dt>
+<dd><p>The <code>all</code> keyword is used to specify that all postings of a
+transactions must match the expression in brackets.  For example,
+&lsquo;<samp>ledger -f d reg expr &quot;all(account =~ /Assets:/)&quot;</samp>&rsquo; can be used to
+display all transactions where all accounts are &lsquo;<samp>Assets:</samp>&rsquo;.
 </p>
 </dd>
 </dl>
@@ -12301,7 +12373,7 @@ what you get from a traversal like the above, and represent exactly what
 was seen in the data file.  Consider this journal:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9174_validate-data' data-testid='Val-9174' data-testkind='validate-data' class='dropbtn'>Action</button>= true
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9240_validate-data' data-testid='Val-9240' data-testkind='validate-data' class='dropbtn'>Action</button>= true
     (Assets:Cash)    $100
 
 2012-03-01 KFC
@@ -12312,7 +12384,7 @@ was seen in the data file.  Consider this journal:
 <p>In this case, the <em>raw</em> regular transaction in this file is:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9185_validate-data' data-testid='Val-9185' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-01 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9251_validate-data' data-testid='Val-9251' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-01 KFC
     Expenses:Food    $100
     Assets:Credit
 </pre></div>
@@ -12320,7 +12392,7 @@ was seen in the data file.  Consider this journal:
 <p>While the <em>cooked</em> form is:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9193_validate-data' data-testid='Val-9193' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-01 KFC
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9259_validate-data' data-testid='Val-9259' data-testkind='validate-data' class='dropbtn'>Action</button>2012-03-01 KFC
     Expenses:Food    $100
     Assets:Credit   $-100
     (Assets:Cash)    $100
@@ -12701,7 +12773,7 @@ one <em>account</em> to another.  Here is an example of the simplest of
 journal files:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9535_validate-data' data-testid='Val-9535' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Just an example
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9601_validate-data' data-testid='Val-9601' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Just an example
     Expenses:Some:Account                $100.00
     Income:Another:Account
 </pre></div>
@@ -12724,7 +12796,7 @@ as the destination, and the final as the source.  Thus, the amount of
 the first posting is typically positive.  Consider:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9559_validate-data' data-testid='Val-9559' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 An income transaction
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9625_validate-data' data-testid='Val-9625' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 An income transaction
     Assets:Checking       $1,000.00
     Income:Salary
 
@@ -12796,7 +12868,7 @@ Next: <a href="#Commoditized-Amounts" accesskey="n" rel="next">Commoditized Amou
 <p>In the simplest form, bare decimal numbers are accepted:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9607_validate-data' data-testid='Val-9607' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 An income transaction
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9673_validate-data' data-testid='Val-9673' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 An income transaction
     Assets:Checking        1000.00
     Income:Salary
 </pre></div>
@@ -12915,7 +12987,7 @@ was in one commodity, and the amount received was another?  There are
 two main ways to express this:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9714_validate-data' data-testid='Val-9714' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9780_validate-data' data-testid='Val-9780' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
     Assets:My Larder           100 apples
     Assets:Checking                -$20.00
 </pre></div>
@@ -12926,7 +12998,7 @@ implied cost for you.  You can also make the cost explicit using a
 <em>cost amount</em>:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9725_validate-data' data-testid='Val-9725' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9791_validate-data' data-testid='Val-9791' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
     Assets:My Larder           100 apples @ $0.200000
     Assets:Checking
 </pre></div>
@@ -12937,7 +13009,7 @@ decimal places has no effect on how dollar amounts are displayed in
 the final report.  You can also specify the <em>total cost</em>:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9736_validate-data' data-testid='Val-9736' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9802_validate-data' data-testid='Val-9802' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
     Assets:My Larder           100 apples @@ $20
     Assets:Checking
 </pre></div>
@@ -12947,7 +13019,7 @@ preferred, but the second two are necessary when more than two
 postings are involved:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9746_validate-data' data-testid='Val-9746' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9812_validate-data' data-testid='Val-9812' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Farmer's Market
     Assets:My Larder           100 apples        @ $0.200000
     Assets:My Larder           100 pineapples    @ $0.33
     Assets:My Larder           100 &quot;crab apples&quot; @ $0.04
@@ -12976,7 +13048,7 @@ above, dollars are the primary commodity.  This is decided by Ledger
 based on the placement of the commodity in the transaction:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9769_validate-data' data-testid='Val-9769' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Sample Transaction
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-9835_validate-data' data-testid='Val-9835' data-testkind='validate-data' class='dropbtn'>Action</button>2010/05/31 Sample Transaction
     Expenses               100 secondary
     Assets                  -50 primary
 
@@ -13253,7 +13325,7 @@ END_REACHED: &lt;EOF&gt;
 the following model transaction:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-9965_validate-command' data-testid='Val-9965' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger query &quot;/Book/&quot;
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10031_validate-command' data-testid='Val-10031' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger query &quot;/Book/&quot;
 </pre></div>
 <div class="smallexample">
 <pre class="smallexample">--- Input arguments ---
@@ -13432,7 +13504,7 @@ it as command-line arguments for ledger, the text enclosed in <code>test</code>
 and <code>end test</code> is expected output, for example:
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-10100_validate-data' data-testid='Val-10100' data-testkind='validate-data' class='dropbtn'>Action</button>; This is the journal data
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-10166_validate-data' data-testid='Val-10166' data-testkind='validate-data' class='dropbtn'>Action</button>; This is the journal data
 year 2014
 12/24 (C0d3) Santa Claus
   Assets:Bank         ¤ -150,00
@@ -13545,7 +13617,7 @@ ledger.  It is called <samp>drewr3.dat</samp> and exhibits many ledger
 features, include automatic and virtual transactions,
 </p>
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-10206_validate-data' data-testid='Val-10206' data-testkind='validate-data' class='dropbtn'>Action</button>; -*- ledger -*-
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-10272_validate-data' data-testid='Val-10272' data-testkind='validate-data' class='dropbtn'>Action</button>; -*- ledger -*-
 
 = /^Income/
   (Liabilities:Tithe)                    0.12
@@ -13661,16 +13733,16 @@ Next: <a href="#Ledger-Files" accesskey="n" rel="next">Ledger Files</a>, Previou
 
 
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10301_validate-command' data-testid='Val-10301' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --group-by &quot;tag('trip')&quot; bal
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10367_validate-command' data-testid='Val-10367' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger --group-by &quot;tag('trip')&quot; bal
 </pre></div>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10310_validate-command' data-testid='Val-10310' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger cleared VWCU NFCU Tithe Misentry
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10376_validate-command' data-testid='Val-10376' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger cleared VWCU NFCU Tithe Misentry
 </pre></div>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10313_validate-command' data-testid='Val-10313' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger register Joint --uncleared
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10379_validate-command' data-testid='Val-10379' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger register Joint --uncleared
 </pre></div>
 <div class="smallexample">
-<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10316_validate-command' data-testid='Val-10316' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger register Checking --sort d -d 'd&gt;[2011/04/01]' until 2011/05/25
+<pre class='smallexample executable validate-command'><button onclick='openActions(this)' id='btn_Val-10382_validate-command' data-testid='Val-10382' data-testkind='validate-command' class='dropbtn'>Action</button>$ ledger register Checking --sort d -d 'd&gt;[2011/04/01]' until 2011/05/25
 </pre></div>
 
 <hr>
@@ -13683,7 +13755,7 @@ Previous: <a href="#Invoking-Ledger" accesskey="p" rel="prev">Invoking Ledger</a
 <h4 class="subsection">B.1.2 Ledger Files</h4>
 
 <div class="smallexample">
-<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-10323_validate-data' data-testid='Val-10323' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Income:Taxable/
+<pre class='smallexample executable validate-data'><button onclick='openActions(this)' id='btn_Val-10389_validate-data' data-testid='Val-10389' data-testkind='validate-data' class='dropbtn'>Action</button>= /^Income:Taxable/
   (Liabilities:Tithe Owed)    -0.1
 = /Noah/
   (Liabilities:Tithe Owed)    -0.1

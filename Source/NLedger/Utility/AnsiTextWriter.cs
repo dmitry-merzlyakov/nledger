@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -15,7 +15,78 @@ using System.Threading.Tasks;
 
 namespace NLedger.Utility
 {
-    public sealed class AnsiTextWriter : TextWriter
+    public sealed class AnsiTextWriter : BaseAnsiTextWriter
+    {
+        public static void Attach()
+        {
+            Console.SetOut(new AnsiTextWriter(Console.Out));
+            Console.SetError(new AnsiTextWriter(Console.Error));
+        }
+
+        public static void Detach()
+        {
+            AnsiTextWriter ansiTextWriter = Console.Out as AnsiTextWriter;
+            if (ansiTextWriter != null)
+                Console.SetOut(ansiTextWriter.ConsoleOut);
+
+            ansiTextWriter = Console.Error as AnsiTextWriter;
+            if (ansiTextWriter != null)
+                Console.SetError(ansiTextWriter.ConsoleOut);
+        }
+
+        public AnsiTextWriter(TextWriter consoleOut)
+            : base (consoleOut)
+        { }
+
+        protected override void ConfigureActions()
+        {
+            Parser.AddAction(new AnsiCsiAction(NormalColor, () => Console.ResetColor()));
+
+            Parser.AddAction(new AnsiCsiAction(ForegroundBold, () =>
+            {
+                if ((int)Console.ForegroundColor < 8)
+                    Console.ForegroundColor = Console.ForegroundColor + 8;
+            }));
+
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBlack, () => Console.BackgroundColor = ConsoleColor.Black));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorRed, () => Console.BackgroundColor = ConsoleColor.DarkRed));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorGreen, () => Console.BackgroundColor = ConsoleColor.DarkGreen));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorYellow, () => Console.BackgroundColor = ConsoleColor.DarkYellow));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBlue, () => Console.BackgroundColor = ConsoleColor.DarkBlue));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorMagenta, () => Console.BackgroundColor = ConsoleColor.DarkMagenta));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorCyan, () => Console.BackgroundColor = ConsoleColor.DarkCyan));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorWhite, () => Console.BackgroundColor = ConsoleColor.DarkGray));
+
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldBlack, () => Console.BackgroundColor = ConsoleColor.Gray));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldRed, () => Console.BackgroundColor = ConsoleColor.Red));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldGreen, () => Console.BackgroundColor = ConsoleColor.Green));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldYellow, () => Console.BackgroundColor = ConsoleColor.Yellow));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldBlue, () => Console.BackgroundColor = ConsoleColor.Blue));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldMagenta, () => Console.BackgroundColor = ConsoleColor.Magenta));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldCyan, () => Console.BackgroundColor = ConsoleColor.Cyan));
+            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldWhite, () => Console.BackgroundColor = ConsoleColor.White));
+
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBlack, () => Console.ForegroundColor = ConsoleColor.Black));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorRed, () => Console.ForegroundColor = ConsoleColor.DarkRed));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorGreen, () => Console.ForegroundColor = ConsoleColor.DarkGreen));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorYellow, () => Console.ForegroundColor = ConsoleColor.DarkYellow));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBlue, () => Console.ForegroundColor = ConsoleColor.DarkBlue));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorMagenta, () => Console.ForegroundColor = ConsoleColor.DarkMagenta));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorCyan, () => Console.ForegroundColor = ConsoleColor.DarkCyan));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorWhite, () => Console.ForegroundColor = ConsoleColor.DarkGray));
+
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldBlack, () => Console.ForegroundColor = ConsoleColor.Gray));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldRed, () => Console.ForegroundColor = ConsoleColor.Red));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldGreen, () => Console.ForegroundColor = ConsoleColor.Green));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldYellow, () => Console.ForegroundColor = ConsoleColor.Yellow));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldBlue, () => Console.ForegroundColor = ConsoleColor.Blue));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldMagenta, () => Console.ForegroundColor = ConsoleColor.Magenta));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldCyan, () => Console.ForegroundColor = ConsoleColor.Cyan));
+            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldWhite, () => Console.ForegroundColor = ConsoleColor.White));
+        }
+    }
+
+    public abstract class BaseAnsiTextWriter : TextWriter
     {
         public const char Esc = (char)27;
         public const char Csi = '[';
@@ -63,24 +134,7 @@ namespace NLedger.Utility
         public static readonly string ForegroundColorBoldWhite = "" + Esc + Csi + "37;1m";
         #endregion
 
-        public static void Attach()
-        {
-            Console.SetOut(new AnsiTextWriter(Console.Out));
-            Console.SetError(new AnsiTextWriter(Console.Error));
-        }
-
-        public static void Detach()
-        {
-            AnsiTextWriter ansiTextWriter = Console.Out as AnsiTextWriter;
-            if (ansiTextWriter != null)
-                Console.SetOut(ansiTextWriter.ConsoleOut);
-
-            ansiTextWriter = Console.Error as AnsiTextWriter;
-            if (ansiTextWriter != null)
-                Console.SetError(ansiTextWriter.ConsoleOut);
-        }
-
-        public AnsiTextWriter(TextWriter consoleOut)
+        public BaseAnsiTextWriter(TextWriter consoleOut)
         {
             if (consoleOut == null)
                 throw new ArgumentNullException("consoleOut");
@@ -90,7 +144,7 @@ namespace NLedger.Utility
             ConsoleOut = consoleOut;
         }
 
-        public TextWriter ConsoleOut { get; private set; }
+        public TextWriter ConsoleOut { get; }
 
         public override Encoding Encoding
         {
@@ -121,54 +175,9 @@ namespace NLedger.Utility
             }
         }
 
-        private void ConfigureActions()
-        {
-            Parser.AddAction(new AnsiCsiAction(NormalColor, () => Console.ResetColor()));
+        protected abstract void ConfigureActions();
 
-            Parser.AddAction(new AnsiCsiAction(ForegroundBold, () =>
-            {
-                if ((int)Console.ForegroundColor < 8)
-                    Console.ForegroundColor = Console.ForegroundColor + 8;
-            }));
-
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBlack, () => Console.BackgroundColor = ConsoleColor.Black));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorRed, () => Console.BackgroundColor = ConsoleColor.DarkRed));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorGreen, () => Console.BackgroundColor = ConsoleColor.DarkGreen));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorYellow, () => Console.BackgroundColor = ConsoleColor.DarkYellow));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBlue, () => Console.BackgroundColor = ConsoleColor.DarkBlue));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorMagenta, () => Console.BackgroundColor = ConsoleColor.DarkMagenta));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorCyan, () => Console.BackgroundColor = ConsoleColor.DarkCyan));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorWhite, () => Console.BackgroundColor = ConsoleColor.DarkGray));
-
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldBlack, () => Console.BackgroundColor = ConsoleColor.Gray));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldRed, () => Console.BackgroundColor = ConsoleColor.Red));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldGreen, () => Console.BackgroundColor = ConsoleColor.Green));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldYellow, () => Console.BackgroundColor = ConsoleColor.Yellow));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldBlue, () => Console.BackgroundColor = ConsoleColor.Blue));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldMagenta, () => Console.BackgroundColor = ConsoleColor.Magenta));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldCyan, () => Console.BackgroundColor = ConsoleColor.Cyan));
-            Parser.AddAction(new AnsiCsiAction(BackgroundColorBoldWhite, () => Console.BackgroundColor = ConsoleColor.White));
-
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBlack, () => Console.ForegroundColor = ConsoleColor.Black));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorRed, () => Console.ForegroundColor = ConsoleColor.DarkRed));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorGreen, () => Console.ForegroundColor = ConsoleColor.DarkGreen));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorYellow, () => Console.ForegroundColor = ConsoleColor.DarkYellow));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBlue, () => Console.ForegroundColor = ConsoleColor.DarkBlue));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorMagenta, () => Console.ForegroundColor = ConsoleColor.DarkMagenta));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorCyan, () => Console.ForegroundColor = ConsoleColor.DarkCyan));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorWhite, () => Console.ForegroundColor = ConsoleColor.DarkGray));
-
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldBlack, () => Console.ForegroundColor = ConsoleColor.Gray));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldRed, () => Console.ForegroundColor = ConsoleColor.Red));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldGreen, () => Console.ForegroundColor = ConsoleColor.Green));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldYellow, () => Console.ForegroundColor = ConsoleColor.Yellow));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldBlue, () => Console.ForegroundColor = ConsoleColor.Blue));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldMagenta, () => Console.ForegroundColor = ConsoleColor.Magenta));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldCyan, () => Console.ForegroundColor = ConsoleColor.Cyan));
-            Parser.AddAction(new AnsiCsiAction(ForegroundColorBoldWhite, () => Console.ForegroundColor = ConsoleColor.White));
-        }
-
-        private class AnsiCsiAction
+        public class AnsiCsiAction
         {
             public AnsiCsiAction(string ansiCsiSequence, Action action)
             {
@@ -185,7 +194,7 @@ namespace NLedger.Utility
             public Action Action { get; private set; }
         }
 
-        private class AnsiCsiParserNode
+        public class AnsiCsiParserNode
         {
             public AnsiCsiParserNode(char ch)
             {
@@ -218,7 +227,7 @@ namespace NLedger.Utility
             private readonly IDictionary<Char, AnsiCsiParserNode> Nodes = new Dictionary<Char, AnsiCsiParserNode>();
         }
 
-        private class AnsiCsiParser
+        public class AnsiCsiParser
         {
             public AnsiCsiParser()
             {
@@ -280,6 +289,6 @@ namespace NLedger.Utility
             }
         }
 
-        private AnsiCsiParser Parser = new AnsiCsiParser();
+        protected readonly AnsiCsiParser Parser = new AnsiCsiParser();
     }
 }

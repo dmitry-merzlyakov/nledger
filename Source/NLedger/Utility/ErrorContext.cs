@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -82,7 +82,7 @@ namespace NLedger.Utility
             if (len == 0 || String.IsNullOrEmpty(file))
                 return "<no source context>";
 
-            if (len < 0 || len > 8192)
+            if (len <= 0 || len >= 65536)
                 throw new InvalidOperationException("len");
 
             var buf = FileSystem.GetStringFromFile(file, pos, len).TrimEnd();

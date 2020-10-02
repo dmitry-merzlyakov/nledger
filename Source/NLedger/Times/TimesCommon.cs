@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -64,7 +64,6 @@ namespace NLedger.Times
             get { return DateTime.UtcNow; }
         }
 
-        public DateIO InputDateIO { get; private set; }
         public DateTimeIO InputDateTimeIO { get; private set; }
         public DateTimeIO TimelogDateTimeIO { get; private set; }
         public IList<DateIO> Readers { get; private set; }
@@ -128,7 +127,8 @@ namespace NLedger.Times
         /// </summary>
         public Date ParseDateMaskRoutine(string dateStr, DateIO io, out DateTraits traits)
         {
-            Validator.Verify(() => dateStr.Length < 127);
+            if (dateStr != null && dateStr.Length > 127)
+                throw new DateError(String.Format(DateError.ErrorMessageInvalidDate, dateStr));
 
             string buf = dateStr;
             if (ConvertSeparatorsToSlashes)
@@ -176,13 +176,6 @@ namespace NLedger.Times
         /// </summary>
         public Date ParseDateMask(string dateStr, out DateTraits traits)
         {
-            if (InputDateIO != null)
-            {
-                Date when = ParseDateMaskRoutine(dateStr, InputDateIO, out traits);
-                if (!when.IsNotADate())
-                    return when;
-            }
-
             foreach(DateIO reader in Readers)
             {
                 Date when = ParseDateMaskRoutine(dateStr, reader, out traits);
@@ -207,6 +200,9 @@ namespace NLedger.Times
         /// </summary>
         public DateTime ParseDateTime(string str)
         {
+            if (str == null || str.Length > 127)
+                throw new DateError(String.Format("Invalid date: {0}", str));
+
             string buf = str;
             buf = buf.Replace('.', '/').Replace('-', '/');
 
@@ -276,11 +272,13 @@ namespace NLedger.Times
 
         public void SetDateFormat(string format)
         {
+            WrittenDateIO.SetFormat(format);
             PrintedDateIO.SetFormat(format);
         }
 
         public void SetDateTimeFormat(string format)
         {
+            WrittenDateTimeIO.SetFormat(format);
             PrintedDateTimeIO.SetFormat(format);
         }
 

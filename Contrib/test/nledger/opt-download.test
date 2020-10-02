@@ -12,7 +12,7 @@ test bal -V
             $-100.00
 end test
 
-#>setvar GETQUOTEPATH=.\test\nledger\
+#>setvar GETQUOTEPATH=./test/nledger/
 test bal -V --download
                    0  Assets
              $200.00    Brokerage
@@ -21,8 +21,8 @@ test bal -V --download
                    0
 end test
 
-#>setvar GETQUOTEPATH=.\test\nledger\
-test bal -V --download --price-db .\test\nledger\pricedb.dat
+#>setvar GETQUOTEPATH=./test/nledger/
+test bal -V --download --price-db ./test/nledger/pricedb.dat
                    0  Assets
              $200.00    Brokerage
             $-200.00    Checking

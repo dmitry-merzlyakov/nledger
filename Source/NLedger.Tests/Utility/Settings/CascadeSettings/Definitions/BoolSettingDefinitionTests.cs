@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Definitions;
 using System;
@@ -14,53 +13,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.Tests.Utility.Settings.CascadeSettings.Definitions
 {
-    [TestClass]
     public class BoolSettingDefinitionTests
     {
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BoolSettingDefinition_Constructor_PopulatesProperties()
         {
             var definition = new BoolSettingDefinition("test", "desc", true, SettingScopeEnum.Application);
-            Assert.AreEqual("test", definition.Name);
-            Assert.AreEqual("desc", definition.Description);
-            Assert.AreEqual("True", definition.DefaultValue);
-            Assert.AreEqual(SettingScopeEnum.Application, definition.Scope);
+            Assert.Equal("test", definition.Name);
+            Assert.Equal("desc", definition.Description);
+            Assert.Equal("True", definition.DefaultValue);
+            Assert.Equal(SettingScopeEnum.Application, definition.Scope);
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BoolSettingDefinition_GetValues_ReturnsAvailableValues()
         {
             var definition = new BoolSettingDefinition("test", "desc", false);
             var values = definition.GetValues();
-            Assert.IsNotNull(values);
-            Assert.AreEqual(2, values.Count());
-            Assert.AreEqual("False", values.ElementAt(0));
-            Assert.AreEqual("True", values.ElementAt(1));
+            Assert.NotNull(values);
+            Assert.Equal(2, values.Count());
+            Assert.Equal("False", values.ElementAt(0));
+            Assert.Equal("True", values.ElementAt(1));
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BoolSettingDefinition_ConvertFromString_PerformsValidConversions()
         {
             var definition = new BoolSettingDefinition("test", "desc", false);
-            Assert.IsFalse(definition.ConvertFromString("false"));
-            Assert.IsFalse(definition.ConvertFromString("FALSE"));
-            Assert.IsTrue(definition.ConvertFromString("true"));
-            Assert.IsTrue(definition.ConvertFromString("TRUE"));
+            Assert.False(definition.ConvertFromString("false"));
+            Assert.False(definition.ConvertFromString("FALSE"));
+            Assert.True(definition.ConvertFromString("true"));
+            Assert.True(definition.ConvertFromString("TRUE"));
         }
 
-        [TestMethod]
-        [TestCategory("CascadeSettings")]
-        [ExpectedException(typeof(FormatException))]
+        [Fact]
+        [Trait("Category", "CascadeSettings")]
         public void BoolSettingDefinition_ConvertFromString_RaisesFormatException()
         {
             var definition = new BoolSettingDefinition("test", "desc", false);
-            definition.ConvertFromString("no");
+            Assert.Throws<FormatException>(() => definition.ConvertFromString("no"));
         }
     }
 }

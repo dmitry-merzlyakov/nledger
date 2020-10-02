@@ -17,12 +17,11 @@ command line.
 
 NLedger is written on pure C# with no dependencies on any external libraries
 or any platform-specific features. It lets NLedger properly work on any 
-Windows (or .Net compatible) system and be easily portable 
-to any .Net platform.
+.Net compatible system and can be embedded into any .Net application.
 
 ## Quick Start
 
-If you have just installed NLedger and want to know what to do next, you can try:
+If you have just installed NLedger MSI or ZIP package on Windows and want to know what to do next, you can try:
 
 - Run NLedger in a command line:
   - Click *.Net Ledger Folder* icon in the main menu;
@@ -33,6 +32,14 @@ If you have just installed NLedger and want to know what to do next, you can try
   - Click *.Net Ledger Live Demo* icon in the main menu;
   - Observe the documentation and try all examples in action;
 - Read this file to the end, *Ledger 3 Documentation*, *.Net Ledger Guide* and try to find the use of this tool.
+
+If you have installed NLedger from the sources, you can open a new command line window, navigate to NLedger folder and try:
+
+```
+ledger --version
+ledger bal -f test/input/drewr3.dat
+pwsh -file ./get-nledger-tools.ps1 -demo
+```
 
 ## Features
 
@@ -87,7 +94,7 @@ and keep yourself in loop with [Ledger Community](https://www.ledger-cli.org/con
 *So, if Ledger is so nice, why NLedger?* Here is the answer or, in other words, the project mission :)
 
 The first use of NLedger is enabling Ledger features in Windows world.
-Even as a developer, I found it was not easy to run Ledger 3.1.1 on Windows 10 and,
+Even as a developer, I faced difficulties running Ledger 3.1.1 on Windows 10 and,
 I believe, it would be unsolvable problem for regular people.
 
 I would like to let everyone install NLedger by one click and use it exactly
@@ -102,17 +109,16 @@ to port Ledger on .Net.
 ## Project Vision and Development Progress
 
 The ultimate overall goal of this project is to have a fully functional Ledger
-on .Net platform in the form of a command line utility plus to have a connector
-library that gives seamless access to the same functions for external .Net 
-applications.
+on .Net platform in the form of a command line utility plus provide a way to give 
+seamless access to the same functions for external .Net applications.
 
 - Current **Project Status** is:
-  - Ported from [Ledger 3.1.1](https://github.com/ledger/ledger), branch Next, commit fd486a59; 2018/4/9
+  - Ported from [Ledger 3.2.1](https://github.com/ledger/ledger), branch Master, commit 56c42e11; 2020/5/18
   - Core functionality is ported; command line utility is available;
   - Ledger testing framework is ported; 
   - Ledger tests are passed to some extend:
-    - 98% (650 out of 662) test cases passed;
-    - 12 test cases are ignored because of known limitations;
+    - 98% (694 out of 707) test cases passed;
+    - 13 test cases are ignored because of known limitations;
     - 0 failed.
 - **Current limitations** (technical restrictions that will be addressed by next releases) are:
   - No Python integration. Ledger tests that require Python are disabled;
@@ -129,18 +135,35 @@ applications.
 
 ## Installation
 
-Because of .Net nature, NLedger can run on any system that supports .Net Framework.
+Because of .Net nature, NLedger can run on any system that supports .Net (either .Net Framework or .Net Core).
 However, its testing framework and helper tools use PowerShell, so
-you can run Ledger tests only if your system supports PowerShell as well.
+you can run Ledger tests only if your system has installed PowerShell as well.
 
 ### System Requirements
 
-- .Net Framework 4.0 or higher (4.6.1 is recommended). It is required component to run the command line application;
-- PowerShell 4.0 or higher (5.0 is recommended). It is needed to run testing framework and other tools.
+- .Net Framework 4.5 or higher and/or .Net Core SDK 3.1 or higher. It is required component to run the command line application;
+- PowerShell 5.0 or higher. It is needed to run testing framework and other tools.
 
 Therefore, PowerShell is not required component, you can still use NLedger, but ability to run PowerShell scripts makes your life easier.
 
+### Build and Install from source code
+
+(Windows, Linux, OSX) Execute the following commands:
+
+```
+git clone https://github.com/dmitry-merzlyakov/nledger
+cd nledger
+pwsh -file ./get-nledger-up.ps1 -install
+```
+
+On Windows, depending on your Powershell version, the last command might look like:
+```
+powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -install
+```
+
 ### Install from NLedger Installation Package
+
+(Windows only)
 
 - Download the latest NLedger installation package (MSI file) from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases);
 - Run the installer and follow instructions on the screen;
@@ -149,6 +172,8 @@ Therefore, PowerShell is not required component, you can still use NLedger, but 
 *Note: the installer will request elevated permissions to call NGen.*
 
 ### Install from Binary Package
+
+(Windows only)
 
 - Download the latest NLedger installation package from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases);
 - Unpack the package to a temp folder;
@@ -159,6 +184,10 @@ OR (for impatient people):
 - move unpacked NLedger to a place of permanent location (e.g. *Program Files*);
 - Open *NLedger/Install* folder and execute NLedger.Install.cmd (confirm administrative privileges to let it call NGen); close the console;
 - Run Windows Command Line (e.g. type *cmd* in the search bar) and type *ledger* in it.
+
+## NLedger NuGet package
+
+NLedger is available as NuGet package. Read more how to embed NLedger into your software [here](https://github.com/dmitry-merzlyakov/nledger/blob/master/build.md) - section Developing with NLedger.
 
 ## Documentation
 
@@ -211,4 +240,4 @@ in the smallest detail. Thought it was quite big challenge for me
 
 The code is licensed under 3-clause [FreeBSD license](https://github.com/dmitry-merzlyakov/nledger/blob/master/LICENSE).
 
-(c) 2017-2018 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

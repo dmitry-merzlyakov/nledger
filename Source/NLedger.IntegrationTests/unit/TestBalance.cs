@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Times;
 using System;
@@ -14,38 +13,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.IntegrationTests.unit
 {
     /// <summary>
     /// Ported from t_balance.cc
     /// </summary>
-    [TestClass]
-    public class TestBalance
+    public class TestBalance : IDisposable
     {
-        [TestInitialize]
-        public void Initialize()
+        public TestBalance()
         {
-            MainApplicationContext.Initialize();
+            Initialize();
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
+            MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             TimesCommon.Current.TimesInitialize();
             Amount.Initialize();
 
             // Cause the display precision for dollars to be initialized to 2.
             Amount x1 = new Amount("$1.00");
-            Assert.IsTrue((bool)x1);
+            Assert.True((bool)x1);
 
             // [DM] not needed
             //amount_t::stream_fullstrings = true; // make reports from UnitTests accurate
         }
 
-        [TestCleanup]
-        public void Cleanup()
+        private void Cleanup()
         {
-            MainApplicationContext.Cleanup();
+            MainContextAcquirer.Dispose();
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
+
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestConstructors()
         {
             Balance b0 = new Balance();
@@ -58,36 +67,36 @@ namespace NLedger.IntegrationTests.unit
             Balance b7 = new Balance(new Amount("$ 1.00"));
             Balance b8 = new Balance(b7);
 
-            Assert.AreEqual(new Balance(), b0);
-            Assert.AreNotEqual(new Balance("0"), b0);
-            Assert.AreNotEqual(new Balance("0.0"), b0);
-            Assert.AreEqual(b2, (Balance)(long)123456UL);
-            Assert.AreEqual(b3, (Balance)12345L);
-            Assert.AreEqual(b4, (Balance)"EUR 123");
-            Assert.AreEqual(b5, (Balance)"$ 456");
-            Assert.AreEqual(b7, b8);
-            Assert.AreEqual(b8, (Balance)(new Amount("$ 1.00")));
+            Assert.Equal(new Balance(), b0);
+            Assert.NotEqual(new Balance("0"), b0);
+            Assert.NotEqual(new Balance("0.0"), b0);
+            Assert.Equal(b2, (Balance)(long)123456UL);
+            Assert.Equal(b3, (Balance)12345L);
+            Assert.Equal(b4, (Balance)"EUR 123");
+            Assert.Equal(b5, (Balance)"$ 456");
+            Assert.Equal(b7, b8);
+            Assert.Equal(b8, (Balance)(new Amount("$ 1.00")));
 
             b5 = (Balance)"euro 2345";
             b6 = (Balance)"DM -34532";
             b7 = (Balance)(new Amount("$ 1.00"));
 
             b8 = b5;
-            Assert.AreEqual(b5, b8);
+            Assert.Equal(b5, b8);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
-            Assert.IsTrue(b5.Valid());
-            Assert.IsTrue(b6.Valid());
-            Assert.IsTrue(b7.Valid());
-            Assert.IsTrue(b8.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
+            Assert.True(b5.Valid());
+            Assert.True(b6.Valid());
+            Assert.True(b7.Valid());
+            Assert.True(b8.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestAddition()
         {
             Amount a0 = new Amount();
@@ -111,23 +120,23 @@ namespace NLedger.IntegrationTests.unit
             b5 += a1;
             b5 += a4;
 
-            Assert.AreEqual(new Balance(1.00), b0);
-            Assert.AreEqual(b3 += a3, b4);
-            Assert.AreEqual(new Balance(4L), b2);
-            Assert.AreEqual(new Balance() + new Amount("$3"), b5);
+            Assert.Equal(new Balance(1.00), b0);
+            Assert.Equal(b3 += a3, b4);
+            Assert.Equal(new Balance(4L), b2);
+            Assert.Equal(new Balance() + new Amount("$3"), b5);
 
-            Boost.CheckThrow<BalanceError, Balance>(() => b3 += a0);
+            Assert.Throws<BalanceError>(() => b3 += a0);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
-            Assert.IsTrue(b5.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
+            Assert.True(b5.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestSubtraction()
         {
             Amount a0 = new Amount();
@@ -151,24 +160,24 @@ namespace NLedger.IntegrationTests.unit
             b5 -= a1;
             b5 -= a4;
 
-            Assert.AreEqual(new Balance(-1.00), b0);
-            Assert.AreEqual(b3 -= a3, b4);
-            Assert.AreEqual(new Balance(), b2);
-            Assert.AreEqual(b3 -= b2, b3);
-            Assert.AreEqual(new Balance() - new Amount("$3"), b5);
+            Assert.Equal(new Balance(-1.00), b0);
+            Assert.Equal(b3 -= a3, b4);
+            Assert.Equal(new Balance(), b2);
+            Assert.Equal(b3 -= b2, b3);
+            Assert.Equal(new Balance() - new Amount("$3"), b5);
 
-            Boost.CheckThrow<BalanceError, Balance>(() => b3 -= a0);
+            Assert.Throws<BalanceError>(() => b3 -= a0);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
-            Assert.IsTrue(b5.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
+            Assert.True(b5.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestEqaulity()
         {
             Amount a0 = new Amount();
@@ -185,34 +194,34 @@ namespace NLedger.IntegrationTests.unit
             Balance b6 = new Balance("0.00");
             Balance b7 = new Balance("0.00");
 
-            Assert.IsTrue(b2 == b3);
-            Assert.IsTrue(b4 == a2);
-            Assert.IsTrue(b1 == (Amount)"1.00");
-            Assert.IsTrue(b5 == new Amount("-$1"));
-            Assert.IsTrue(!(b6 == (Amount)"0"));
-            Assert.IsTrue(!(b6 == a3));
-            Assert.IsTrue(!(b6 == (Amount)"0.00"));
-            Assert.IsTrue(b6 == b7);
+            Assert.True(b2 == b3);
+            Assert.True(b4 == a2);
+            Assert.True(b1 == (Amount)"1.00");
+            Assert.True(b5 == new Amount("-$1"));
+            Assert.True(!(b6 == (Amount)"0"));
+            Assert.True(!(b6 == a3));
+            Assert.True(!(b6 == (Amount)"0.00"));
+            Assert.True(b6 == b7);
 
             b4 += b5;
             b5 += a2;
 
-            Assert.IsTrue(b4 == b5);
+            Assert.True(b4 == b5);
 
-            Boost.CheckThrow<BalanceError, bool>(() => b0 == (Balance)a0);
+            Assert.Throws<BalanceError>(() => b0 == (Balance)a0);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
-            Assert.IsTrue(b5.Valid());
-            Assert.IsTrue(b6.Valid());
-            Assert.IsTrue(b7.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
+            Assert.True(b5.Valid());
+            Assert.True(b6.Valid());
+            Assert.True(b7.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestMultiplication()
         {
             Amount a0 = new Amount();
@@ -226,12 +235,12 @@ namespace NLedger.IntegrationTests.unit
             Balance b5 = new Balance("$1");
             Balance b6 = new Balance();
 
-            Assert.AreEqual(b1 *= (Amount)2.00, (Balance)new Amount(2.00));
-            Assert.AreEqual(b2 *= (Amount)2L, (Balance)new Amount(4L));
-            Assert.AreEqual(b2 *= (Amount)2UL, (Balance)new Amount(8UL));
-            Assert.AreEqual(b3 *= new Amount("-8 CAD"), (Balance)new Amount("CAD 24"));
-            Assert.AreEqual(b0 *= (Amount)2UL, b0);
-            Assert.AreEqual(b0 *= a1, (Balance)a1);
+            Assert.Equal(b1 *= (Amount)2.00, (Balance)new Amount(2.00));
+            Assert.Equal(b2 *= (Amount)2L, (Balance)new Amount(4L));
+            Assert.Equal(b2 *= (Amount)2UL, (Balance)new Amount(8UL));
+            Assert.Equal(b3 *= new Amount("-8 CAD"), (Balance)new Amount("CAD 24"));
+            Assert.Equal(b0 *= (Amount)2UL, b0);
+            Assert.Equal(b0 *= a1, (Balance)a1);
 
             b6 += b3;
             b3 += b4;
@@ -243,23 +252,23 @@ namespace NLedger.IntegrationTests.unit
             b6 += b4;
             b6 += b5;
 
-            Assert.AreEqual(b3, b6);
+            Assert.Equal(b3, b6);
 
-            Boost.CheckThrow<BalanceError, Balance>(() => b1 *= a0);
-            Boost.CheckThrow<BalanceError, Balance>(() => b4 *= new Amount("1 CAD"));
-            Boost.CheckThrow<BalanceError, Balance>(() => b3 *= new Amount("1 CAD"));
+            Assert.Throws<BalanceError>(() => b1 *= a0);
+            Assert.Throws<BalanceError>(() => b4 *= new Amount("1 CAD"));
+            Assert.Throws<BalanceError>(() => b3 *= new Amount("1 CAD"));
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
-            Assert.IsTrue(b5.Valid());
-            Assert.IsTrue(b6.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
+            Assert.True(b5.Valid());
+            Assert.True(b6.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestDivision()
         {
             Amount a0 = new Amount();
@@ -273,11 +282,11 @@ namespace NLedger.IntegrationTests.unit
             Balance b5 = new Balance("$2");
             Balance b6 = new Balance();
 
-            Assert.AreEqual(b1 /= (Amount)2.00, (Balance)new Amount(2.00));
-            Assert.AreEqual(b2 /= (Amount)2L, (Balance)new Amount(2L));
-            Assert.AreEqual(b2 /= (Amount)2UL, (Balance)new Amount(1UL));
-            Assert.AreEqual(b3 /= new Amount("-3 CAD"), (Balance)new Amount("CAD 8"));
-            Assert.AreEqual(b0 /= (Amount)2UL, b0);
+            Assert.Equal(b1 /= (Amount)2.00, (Balance)new Amount(2.00));
+            Assert.Equal(b2 /= (Amount)2L, (Balance)new Amount(2L));
+            Assert.Equal(b2 /= (Amount)2UL, (Balance)new Amount(1UL));
+            Assert.Equal(b3 /= new Amount("-3 CAD"), (Balance)new Amount("CAD 8"));
+            Assert.Equal(b0 /= (Amount)2UL, b0);
 
             b6 += b3;
             b3 += b4;
@@ -289,24 +298,24 @@ namespace NLedger.IntegrationTests.unit
             b6 += b4;
             b6 += b5;
 
-            Assert.AreEqual(b3, b6);
+            Assert.Equal(b3, b6);
 
-            Boost.CheckThrow<BalanceError, Balance>(() => b1 /= a0);
-            Boost.CheckThrow<BalanceError, Balance>(() => b1 /= a1);
-            Boost.CheckThrow<BalanceError, Balance>(() => b4 /= new Amount("1 CAD"));
-            Boost.CheckThrow<BalanceError, Balance>(() => b3 /= new Amount("1 CAD"));
+            Assert.Throws<BalanceError>(() => b1 /= a0);
+            Assert.Throws<BalanceError>(() => b1 /= a1);
+            Assert.Throws<BalanceError>(() => b4 /= new Amount("1 CAD"));
+            Assert.Throws<BalanceError>(() => b3 /= new Amount("1 CAD"));
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
-            Assert.IsTrue(b5.Valid());
-            Assert.IsTrue(b6.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
+            Assert.True(b5.Valid());
+            Assert.True(b6.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestNegation()
         {
             Amount a1 = new Amount("0.00");
@@ -326,24 +335,24 @@ namespace NLedger.IntegrationTests.unit
             b2 += -a3;
             b3 = -b1;
 
-            Assert.AreEqual(b0.Negated(), b0);
-            Assert.AreEqual(b2, b3);
-            Assert.AreEqual(b2, -b1);
-            Assert.AreEqual(b2.Negated(), b1);
+            Assert.Equal(b0.Negated(), b0);
+            Assert.Equal(b2, b3);
+            Assert.Equal(b2, -b1);
+            Assert.Equal(b2.Negated(), b1);
 
             b2.InPlaceNegate();
 
-            Assert.AreEqual(b2, b1);
-            Assert.AreEqual(b1, -b3);
+            Assert.Equal(b2, b1);
+            Assert.Equal(b1, -b3);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestAbs()
         {
             Amount a1 = new Amount("0.00");
@@ -361,16 +370,16 @@ namespace NLedger.IntegrationTests.unit
             b2 += -a2;
             b2 += -a3;
 
-            Assert.AreEqual(b0.Abs(), b0);
-            Assert.AreEqual(b2.Abs(), b1.Abs());
+            Assert.Equal(b0.Abs(), b0);
+            Assert.Equal(b2.Abs(), b1.Abs());
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestCeiling()
         {
             Amount a1 = new Amount("0.00");
@@ -400,22 +409,22 @@ namespace NLedger.IntegrationTests.unit
             b4 += a5.Ceilinged();
             b4 += a6.Ceilinged();
 
-            Assert.AreEqual(b0.Ceilinged(), b0);
-            Assert.AreEqual(b2.Ceilinged(), b4);
-            Assert.AreEqual(b1.Ceilinged(), b3);
+            Assert.Equal(b0.Ceilinged(), b0);
+            Assert.Equal(b2.Ceilinged(), b4);
+            Assert.Equal(b1.Ceilinged(), b3);
 
             b1.InPlaceCeiling();
-            Assert.AreEqual(b1, b3);
+            Assert.Equal(b1, b3);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestFloor()
         {
             Amount a1 = new Amount("0.00");
@@ -445,22 +454,22 @@ namespace NLedger.IntegrationTests.unit
             b4 += a5.Floored();
             b4 += a6.Floored();
 
-            Assert.AreEqual(b0.Floored(), b0);
-            Assert.AreEqual(b2.Floored(), b4);
-            Assert.AreEqual(b1.Floored(), b3);
+            Assert.Equal(b0.Floored(), b0);
+            Assert.Equal(b2.Floored(), b4);
+            Assert.Equal(b1.Floored(), b3);
 
             b1.InPlaceFloor();
-            Assert.AreEqual(b1, b3);
+            Assert.Equal(b1, b3);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestRound()
         {
             Amount a1 = new Amount("0.00");
@@ -508,22 +517,22 @@ namespace NLedger.IntegrationTests.unit
             b4 += a5;
             b4 += a6;
 
-            Assert.AreEqual(b0.Rounded(), b0);
-            Assert.AreEqual(b2.Rounded(), b4);
-            Assert.AreEqual(b1.Rounded(), b4);
+            Assert.Equal(b0.Rounded(), b0);
+            Assert.Equal(b2.Rounded(), b4);
+            Assert.Equal(b1.Rounded(), b4);
 
             b1.InPlaceRound();
-            Assert.AreEqual(b1, b3);
+            Assert.Equal(b1, b3);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
-            Assert.IsTrue(b2.Valid());
-            Assert.IsTrue(b3.Valid());
-            Assert.IsTrue(b4.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
+            Assert.True(b2.Valid());
+            Assert.True(b3.Valid());
+            Assert.True(b4.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestTruth()
         {
             Amount a1 = new Amount("0.00");
@@ -537,15 +546,15 @@ namespace NLedger.IntegrationTests.unit
             b1 += a2;
             b1 += a3;
 
-            Assert.IsTrue(!(bool)b0);
-            Assert.IsTrue((bool)b1);
+            Assert.True(!(bool)b0);
+            Assert.True((bool)b1);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Balance_TestForZero()
         {
             Amount a1 = new Amount("0.00");
@@ -559,17 +568,17 @@ namespace NLedger.IntegrationTests.unit
             b1 += a2;
             b1 += a3;
 
-            Assert.IsTrue(b0.IsEmpty);
-            Assert.IsTrue(b0.IsZero);
-            Assert.IsTrue(b0.IsRealZero);
-            Assert.IsTrue(!b0.IsNonZero);
-            Assert.IsTrue(!b1.IsEmpty);
-            Assert.IsTrue(!b1.IsZero);
-            Assert.IsTrue(!b1.IsRealZero);
-            Assert.IsTrue(b1.IsNonZero);
+            Assert.True(b0.IsEmpty);
+            Assert.True(b0.IsZero);
+            Assert.True(b0.IsRealZero);
+            Assert.True(!b0.IsNonZero);
+            Assert.True(!b1.IsEmpty);
+            Assert.True(!b1.IsZero);
+            Assert.True(!b1.IsRealZero);
+            Assert.True(b1.IsNonZero);
 
-            Assert.IsTrue(b0.Valid());
-            Assert.IsTrue(b1.Valid());
+            Assert.True(b0.Valid());
+            Assert.True(b1.Valid());
         }
     }
 }

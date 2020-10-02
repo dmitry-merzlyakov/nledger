@@ -37,7 +37,11 @@
 .PARAMETER disableIgnoreList
     Relative or absolute path to a file with a list of test to be ignored.
     In case of a relative path, the tool uses the own location folder as a base.
-    This switch forces executing all test files disregarding the content of ignore list.
+.PARAMETER noConsole
+    Writes all output console messages to Verbose channel.
+    This option is helpful if this script is called from another script.
+.PARAMETER showProgress
+    Shows testing progress by means of Write-Progress command
 .EXAMPLE
     C:\PS> .\NLTest.ps1
     Executes all test files and displays short summary in the console.
@@ -66,10 +70,12 @@ Param(
     [Parameter(Mandatory=$False)][string]$filterRegex = "",
     [Parameter(Mandatory=$False)][string]$ignoreListPath = ".\NLTest.IgnoreList.xml",
     [Switch]$disableIgnoreList = $False,
-    [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))\NLedger\NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
+    [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))/NLedger/NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
     [Switch]$xmlReport = $False,
     [Switch]$htmlReport = $False,
-    [Switch]$showReport = $False
+    [Switch]$showReport = $False,
+    [Switch]$noConsole = $False,
+    [Switch]$showProgress = $False
 )
 
 if ($nledgerExePath -eq "") { $nledgerExePath = if ($env:nledgerExePath -eq $null) { "..\NLedger-cli.exe" } else { $env:nledgerExePath } }
@@ -81,6 +87,7 @@ trap
 } 
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+[string]$Script:DirSeparator = [System.IO.Path]::DirectorySeparatorChar
 
 [string]$Script:absNLedgerExePath = if (![System.IO.Path]::IsPathRooted($nledgerExePath)) { Resolve-Path (Join-Path $Script:ScriptPath $nledgerExePath) -ErrorAction Stop } else { $nledgerExePath }
 [string]$Script:absNLedgerTestPath = if (![System.IO.Path]::IsPathRooted($nledgerTestPath)) { Resolve-Path (Join-Path $Script:ScriptPath $nledgerTestPath) -ErrorAction Stop } else { $nledgerTestPath }
@@ -91,7 +98,7 @@ if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot
 if (!(Test-Path $Script:absIgnoreListPath -PathType Leaf)) { throw "Cannot find Ignore List file: $Script:absIgnoreListPath" }
 
 [string]$Script:absTestRootPath = $Script:absNLedgerTestPath
-$Script:absNLedgerTestPath = "$Script:absNLedgerTestPath\test"
+$Script:absNLedgerTestPath = "$Script:absNLedgerTestPath$($Script:DirSeparator)test"
 if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot find 'test' subfolder in test root folder: $Script:absNLedgerTestPath" }
 
 Write-Verbose "NLedger executable path: $Script:absNLedgerExePath"
@@ -100,12 +107,16 @@ Write-Verbose "Source folder path: $Script:absTestRootPath"
 
 [xml]$Script:ignoreListContent = Get-Content $Script:absIgnoreListPath
 $Script:ignoreListTable = @{}
-$Script:ignoreListContent.SelectNodes("/nltest-ignore-list/ignore") | ForEach { $Script:ignoreListTable[$_.test] = $_.reason }
+$Script:ignoreListContent.SelectNodes("/nltest-ignore-list/ignore") | ForEach { $Script:ignoreListTable[$_.test.Replace('\',$($Script:DirSeparator))] = $_.reason }
 Write-Verbose "Read IgnoreList; found $($Script:ignoreListTable.Count) test(s) to ignore"
+
+[bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+Write-Verbose "Detected: is windows platform=$isWindowsPlatform"
 
 [int]$Script:TimeoutMilliseconds = 30 * 1000 # Execution timeout is 30s
 
 # Tech: writes interactive console output
+[System.Text.StringBuilder]$Script:outBuffer = [System.Text.StringBuilder]::new()
 function ConsoleMessage {
     [CmdletBinding()]
     Param(    
@@ -115,11 +126,42 @@ function ConsoleMessage {
         [Switch]$warn = $False,
         [Switch]$comment = $False
     )
-    if ($newLine) {
-        if ($err) { Write-Host $text -ForegroundColor Red } else { if ($comment) { Write-Host $text -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else { Write-Host $text -ForegroundColor White } } }
+    if ($noConsole) {
+        $Script:outBuffer.Append($text)
+        if ($newLine) { 
+            Write-Verbose $Script:outBuffer.ToString()
+            $Script:outBuffer.Clear()
+        }
     } else {
-        if ($err) { Write-Host $text -NoNewline -ForegroundColor Red } else { if ($comment) { Write-Host $text -NoNewline -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else {Write-Host -NoNewline $text -ForegroundColor White } } }
+        if ($newLine) {
+            if ($err) { Write-Host $text -ForegroundColor Red } else { if ($comment) { Write-Host $text -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else { Write-Host $text -ForegroundColor White } } }
+        } else {
+            if ($err) { Write-Host $text -NoNewline -ForegroundColor Red } else { if ($comment) { Write-Host $text -NoNewline -ForegroundColor Gray } else { if ($warn) { Write-Host $text -ForegroundColor DarkYellow } else {Write-Host -NoNewline $text -ForegroundColor White } } }
+        }
     }
+}
+
+[int]$Script:WriteProgressID = 1
+
+function ProgressMessage() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$True)]$testCase,
+        [Parameter(Mandatory=$True)][int]$testsCount,
+        [Parameter(Mandatory=$True)][int]$failedTestsCount
+    )
+    if ($showProgress) {
+        [int]$Private:PercentComplete = (($Script:testCase.TestIndex / $Script:testCounter) * 100)
+        [string]$Private:Activity = "NLedger Test Toolkit: testing $nledgerExePath"
+        [string]$Private:Failed = $(if($failedTestsCount -eq 0){"[No Failed]"}else{"[Failed $failedTestsCount]"})
+        [string]$Private:Status = "[Test $($Script:testCase.TestIndex) out of $Script:testCounter Case $($Script:testCase.TestCaseIndex)] $Private:Failed $($Script:testCase.ShortFileName)"
+        Write-Progress -Id $Script:WriteProgressID -Activity $Private:Activity -Status $Private:Status -PercentComplete $Private:PercentComplete
+    }
+}
+
+function DoneProgressMessage() {
+    [CmdletBinding()] Param()
+    Write-Progress -Id $Script:WriteProgressID -Activity "Done" -Completed
 }
 
 # Tech: normalizes the text to be ready for comparison
@@ -188,14 +230,14 @@ function ParseTestFile {
                         $Private:setVariables = @{}
                     } else {
                         # If current line contains a template "$sourcepath" - adopt it to current folder
-                        if ($Private:line -match '\"\$sourcepath/([^\"]*)\"') { $Private:line = $Private:line -replace '\"\$sourcepath/([^\"]*)\"',"""$Script:absTestRootPath\$($Matches[1].Replace('/','\'))""" }
+                        if ($Private:line -match '\"\$sourcepath/([^\"]*)\"') { $Private:line = $Private:line -replace '\"\$sourcepath/([^\"]*)\"',"""$Script:absTestRootPath$($Script:DirSeparator)$($Matches[1].Replace('/',$($Script:DirSeparator)))""" }
                         # The same but w/o quites
-                        if ($Private:line -match '\$sourcepath/(.*)') { $Private:line = $Private:line -replace '\$sourcepath/(.*)',"$Script:absTestRootPath\$($Matches[1].Replace('/','\'))" }
+                        if ($Private:line -match '\$sourcepath/(.*)') { $Private:line = $Private:line -replace '\$sourcepath/(.*)',"$Script:absTestRootPath$($Script:DirSeparator)$($Matches[1].Replace('/',$($Script:DirSeparator)))" }
                         # If the line contains $FILE template - replace it with current file name
                         $Private:line = $Private:line -replace '\$FILE', $absTestFile
                         # Special case: if error message contains a relative path in a file name, expand it
                         $Private:errFileName = "(Error: File to include was not found: "")(?<path>\.\/)"
-                        $Private:line = $Private:line -replace $Private:errFileName, "Error: File to include was not found: ""$Script:absTestRootPath\"
+                        $Private:line = $Private:line -replace $Private:errFileName, "Error: File to include was not found: ""$Script:absTestRootPath$($Script:DirSeparator)"
                         # Add the line either to the output or stderr
                         if ($Private:directToErr) { $Private:err += $Private:line+"`r`n" } else { $Private:output += $Private:line+"`r`n" }
                     }
@@ -228,7 +270,33 @@ function RunExecutable {
     $Private:pinfo.RedirectStandardOutput = $true
     $Private:pinfo.RedirectStandardInput = $isStdin
     $Private:pinfo.UseShellExecute = $false
-    $Private:pinfo.Arguments = $arguments
+
+    if($Script:isWindowsPlatform) {
+        $Private:pinfo.Arguments = $arguments
+    } else {
+        # Simulate schell preprocessing
+        [string]$Private:quoteChar = $null
+        [string]$Private:quoteText = $null
+        foreach ($arg in [char[]]$arguments) {
+            if($Private:quoteChar) {
+                if($arg -eq $Private:quoteChar) { $Private:quoteChar = $null }
+                else { $Private:quoteText += $arg }
+            } else {
+                if ($arg -eq "'" -or $arg -eq '"') { $Private:quoteChar = $arg }
+                else {
+                    if ($arg -eq ' ') {
+                        if ($Private:quoteText) { $null = $Private:pinfo.ArgumentList.Add($Private:quoteText) }
+                        $Private:quoteText = $null
+                    } else {
+                        $Private:quoteText += $arg
+                    }    
+                }
+            }
+        }        
+        if ($Private:quoteText) { $null = $Private:pinfo.ArgumentList.Add($Private:quoteText) }
+        foreach($parg in $Private:pinfo.ArgumentList) {Write-Verbose "PInfo Argument: $parg"}
+    }
+
     $Private:pinfo.CreateNoWindow = $true
     $Private:pinfo.WorkingDirectory = $Script:absTestRootPath
     $Private:pinfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8
@@ -314,8 +382,8 @@ function RunTestCase {
     $env:COLUMNS = "80"
     # Simulating pipe redirection in original tests
     $env:nledgerIsAtty = "false"
-    # Equals to TZ=America/Chicago
-    $env:nledgerTimeZoneId = "Central Standard Time"
+    # CST is equal to TZ=America/Chicago
+    $env:nledgerTimeZoneId = if($Script:isWindowsPlatform) {"Central Standard Time"}else{"America/Chicago"}
     # Force setting output encoding to UTF8 (powershell console issue)
     $env:nledgerOutputEncoding = "utf-8"
     # Disable colored Ansi Terminal emulation to pass output Ansi control codes that some tests validate
@@ -342,6 +410,10 @@ function RunTestCase {
         $Private:testCaseResult.DiffOut = $Private:nrmExpectedOut -ne $Private:nrmActualOut
         $Private:testCaseResult.DiffErr = $Private:nrmExpectedErr -ne $Private:nrmActualErr
         $Private:testCaseResult.DiffCode = $Private:testCaseResult.exitcode -ne $Private:testCaseResult.runResult.exitcode
+
+        if($Private:testCaseResult.DiffOut) {Write-Verbose "Actual output: $Private:nrmActualOut"}
+        if($Private:testCaseResult.DiffErr) {Write-Verbose "Actual error: $Private:nrmActualErr"}
+        if($Private:testCaseResult.DiffCode) {Write-Verbose "Actual code: $($Private:testCaseResult.runResult.exitcode)"}
     }
     catch {
         $Private:testCaseResult.ExceptionMessage = $_
@@ -515,11 +587,15 @@ foreach($Script:relTestFile in $Script:selectedTests) {
 ConsoleMessage -newLine -comment "Collected $($Script:testCases.Length) test cases in $($Script:selectedTests.Length) tests"
 Write-Verbose "Collected $($Script:testCases.Length) test cases"
 
+[int]$Script:failedTestCases = 0
 $Script:testCaseResults = @()
 foreach($Script:testCase in $Script:testCases) {
+    $null = ProgressMessage -testCase $Script:testCase -testsCount $Script:testCounter -failedTestsCount $Script:failedTestCases
     $Private:testCaseResult = RunTestCase $Script:testCase $Script:testCounter
     $Script:testCaseResults += $Private:testCaseResult
+    if ($Private:testCaseResult.IsFailed) {$Script:failedTestCases++}
 }
+$null = DoneProgressMessage
 
 Write-Verbose "Building summary information"
 
@@ -549,7 +625,7 @@ if ($xmlReport -or $htmlReport -or $showReport) {
 
         Write-Verbose "Generating an html report"
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
-        $xslt.Load("$Script:ScriptPath\NLTest.xslt");
+        $xslt.Load("$Script:ScriptPath/NLTest.xslt");
         [System.Xml.XmlReader]$xmlReader = [System.Xml.XmlNodeReader]::new($xml);
         $writer= [System.IO.StreamWriter] "$reportFileName.html"
         $rd = $xslt.Transform($xmlReader, $null, $writer);

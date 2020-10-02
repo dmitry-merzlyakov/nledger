@@ -5,7 +5,8 @@
   <ignore test="baseline\dir-import_py.test" reason="Requires Python integration" />
   <ignore test="baseline\dir-python_py.test" reason="Requires Python integration" />
   <ignore test="baseline\feat-option_py.test" reason="Requires Python integration" />
-  <ignore test="baseline\feat-value_py.test" reason="Requires Python integration" />
+  <ignore test="baseline\feat-value_py2.test" reason="Requires Python integration" />
+  <ignore test="baseline\feat-value_py3.test" reason="Requires Python integration" />
   <ignore test="regress\4D9288AE_py.test" reason="Requires Python integration" />
   <ignore test="regress\78AB4B87_py.test" reason="Requires Python integration" />
   <ignore test="regress\9188F587_py.test" reason="Requires Python integration" />

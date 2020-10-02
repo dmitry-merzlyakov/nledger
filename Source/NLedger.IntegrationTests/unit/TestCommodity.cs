@@ -1,12 +1,11 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLedger.Amounts;
 using NLedger.Commodities;
 using NLedger.Times;
@@ -15,33 +14,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace NLedger.IntegrationTests.unit
 {
     /// <summary>
     /// Ported from t_commodity.cc
     /// </summary>
-    [TestClass]
-    public class TestCommodity
+    public class TestCommodity : IDisposable
     {
-        [TestInitialize]
-        public void Initialize()
+        public TestCommodity()
         {
-            MainApplicationContext.Initialize();
+            Initialize();
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
+            MainContextAcquirer = new MainApplicationContext().AcquireCurrentThread();
             TimesCommon.Current.TimesInitialize();
             Amount.Initialize();
             // [DM] not needed
             //amount_t::stream_fullstrings = true; // make reports from UnitTests accurate
         }
 
-        [TestCleanup]
-        public void Cleanup()
+        private void Cleanup()
         {
-            MainApplicationContext.Cleanup();
+            MainContextAcquirer.Dispose();
         }
 
-        [TestMethod]
-        [TestCategory("BoostAutoTest")]
+        public MainApplicationContext.ThreadAcquirer MainContextAcquirer { get; private set; }
+
+        [Fact]
+        [Trait("Category", "BoostAutoTest")]
         public void AutoTestCase_Commodity_TestPriceHistory()
         {
             DateTime jan17_05;
@@ -65,8 +74,8 @@ namespace NLedger.IntegrationTests.unit
             Amount x0 = new Amount();
             Amount x1 = new Amount("100.10 AAPL");
 
-            Boost.CheckThrow<AmountError, Amount>(() => x0.Value());
-            Assert.IsTrue(!(bool)x1.Value());
+            Assert.Throws<AmountError>(() => x0.Value());
+            Assert.True(!(bool)x1.Value());
 
             // Commodities cannot be constructed by themselves, since a great deal
             // of their state depends on how they were seen to be used.
@@ -93,30 +102,30 @@ namespace NLedger.IntegrationTests.unit
             cad.AddPrice(jan17_06, new Amount("$1.11"));
 
             Amount amt = x1.Value(feb28_07sbm);
-            Assert.IsNotNull(amt);
-            Assert.AreEqual(new Amount("$1831.83"), amt);
+            Assert.NotNull(amt);
+            Assert.Equal(new Amount("$1831.83"), amt);
 
             amt = x1.Value(TimesCommon.Current.CurrentTime);
-            Assert.IsNotNull(amt);
-            Assert.AreEqual("$2124.12", amt.ToString());
-            Assert.AreEqual("$2124.122", amt.ToFullString());
+            Assert.NotNull(amt);
+            Assert.Equal("$2124.12", amt.ToString());
+            Assert.Equal("$2124.122", amt.ToFullString());
 
             amt = x1.Value(TimesCommon.Current.CurrentTime, euro);
-            Assert.IsNotNull(amt);
-            Assert.AreEqual("EUR 1787.50", amt.Rounded().ToString());
+            Assert.NotNull(amt);
+            Assert.Equal("EUR 1787.50", amt.Rounded().ToString());
 
             // Add a newer Euro pricing
             aapl.AddPrice(jan17_07, new Amount("EUR 23.00"));
 
             amt = x1.Value(TimesCommon.Current.CurrentTime, euro);
-            Assert.IsNotNull(amt);
-            Assert.AreEqual("EUR 2302.30", amt.ToString());
+            Assert.NotNull(amt);
+            Assert.Equal("EUR 2302.30", amt.ToString());
 
             amt = x1.Value(TimesCommon.Current.CurrentTime, cad);
-            Assert.IsNotNull(amt);
-            Assert.AreEqual("CAD 3223.22", amt.ToString());
+            Assert.NotNull(amt);
+            Assert.Equal("CAD 3223.22", amt.ToString());
 
-            Assert.IsTrue(x1.Valid());
+            Assert.True(x1.Valid());
         }
     }
 }

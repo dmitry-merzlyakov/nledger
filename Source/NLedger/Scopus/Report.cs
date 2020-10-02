@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -17,7 +17,6 @@ using NLedger.Filters;
 using NLedger.Formatting;
 using NLedger.Items;
 using NLedger.Iterators;
-using NLedger.Org;
 using NLedger.Output;
 using NLedger.Print;
 using NLedger.Querying;
@@ -166,6 +165,7 @@ namespace NLedger.Scopus
         public const string OptionPayeeWidth = "payee_width_";
         public const string OptionAccountWidth = "account_width_";
         public const string OptionAmountWidth = "amount_width_";
+        public const string OptionAverageLotPrices = "average_lot_prices";
         public const string OptionTotalWidth = "total_width_";
         public const string OptionValues = "values";
         #endregion
@@ -328,6 +328,7 @@ namespace NLedger.Scopus
         public Option PayeeWidthHandler { get; private set; }
         public Option AccountWidthHandler { get; private set; }
         public Option AmountWidthHandler { get; private set; }
+        public Option AverageLotPricesHandler { get; private set; }
         public Option TotalWidthHandler { get; private set; }
         public Option ValuesHandler { get; private set; }
         #endregion
@@ -684,6 +685,9 @@ namespace NLedger.Scopus
 
             if (!GroupByHandler.Handled)
                 new AccountsFlusher(handler, this).Handle(Value.Empty);
+
+            // [DM] Disposing handlers at the moment when they go out of scope (like invoking a descructor in c++ code)
+            chain?.Dispose();
         }
 
         /// <summary>
@@ -826,6 +830,14 @@ namespace NLedger.Scopus
                 return BoldIfHandler.Expr.Calc(scope);
             else
                 return Value.False;
+        }
+
+        public Value FnAveragedLots(CallScope args)
+        {
+            if (args.Has<Balance>(0))
+                return Value.Get(Balance.AverageLotPrices(args.Get<Balance>(0)));
+            else
+                return args[0];
         }
 
         public Value FnMarket(CallScope args)
@@ -1055,6 +1067,27 @@ namespace NLedger.Scopus
         public Value FnCommodity(CallScope args)
         {
             return Value.Get(args.Get<Amount>(0).Commodity.Symbol);
+        }
+
+        /// <summary>
+        /// Ported from value_t report_t::fn_commodity_price(call_scope_t& args)
+        /// </summary>
+        public Value FnCommodityPrice(CallScope args)
+        {
+            PricePoint? pricePoint = CommodityPool.Current.CommodityPriceHistory.FindPrice(args.Get<Amount>(0).Commodity, args.Get<DateTime>(1));
+            if (pricePoint.HasValue)
+                return Value.Get(pricePoint.Value.Price);
+            else
+                return Value.Get(new Amount());
+        }
+
+        /// <summary>
+        /// value_t report_t::fn_set_commodity_price(call_scope_t& args)
+        /// </summary>
+        public Value FnSetCommodityPrice(CallScope args)
+        {
+            args.Get<Amount>(0).Commodity.AddPrice(args.Get<DateTime>(1), args.Get<Amount>(2), true);
+            return Value.Empty;
         }
 
         public Value FnClearCommodity(CallScope args)
@@ -1451,7 +1484,7 @@ namespace NLedger.Scopus
                 }
                 else
                 {
-                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'"), s);
+                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'", s));
                 }
             }));
             
@@ -1719,6 +1752,12 @@ namespace NLedger.Scopus
 
             LotDatesHandler = Options.Add(new Option(OptionLotDates));
             LotPricesHandler = Options.Add(new Option(OptionLotPrices));
+            AverageLotPricesHandler = Options.Add(new Option(OptionAverageLotPrices, (o, w) =>
+            {
+                LotPricesHandler.On(w);
+                DisplayAmountHandler.On(w, "averaged_lots(display_amount)");
+                DisplayTotalHandler.On(w, "averaged_lots(display_total)");
+            }));
             LotNotesHandler = Options.Add(new Option(OptionLotNotes));
             LotsHandler = Options.Add(new Option(OptionLots));
             LotsActualHandler = Options.Add(new Option(OptionLotsActual));
@@ -1759,7 +1798,7 @@ namespace NLedger.Scopus
                 if (begin.HasValue)
                     TimesCommon.Current.Epoch = Terminus = begin.Value;
                 else
-                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'"), s);
+                    throw new ArgumentException(String.Format("Could not determine beginning of period '{0}'", s));
             }));
 
             OnlyHandler = Options.Add(new Option(OptionOnly, (o, w, s) =>
@@ -1950,7 +1989,7 @@ namespace NLedger.Scopus
                 else if (s == "trailing")
                     Format.DefaultStyle = FormatElisionStyleEnum.TRUNCATE_TRAILING;
                 else 
-                    throw new ArgumentException(String.Format("Unrecognized truncation style: '{0}'"), s);
+                    throw new ArgumentException(String.Format("Unrecognized truncation style: '{0}'", s));
 
                 Format.DefaultStyleChanged = true;
             }));
@@ -2037,6 +2076,7 @@ namespace NLedger.Scopus
             Options.AddLookupOpt(OptionAuxDate);
             Options.AddLookupOpt(OptionAverage);
             Options.AddLookupOpt(OptionAccountWidth);
+            Options.AddLookupOpt(OptionAverageLotPrices);
             Options.AddLookupOpt(OptionAmountWidth);
 
             Options.AddLookupOpt(OptionBalanceFormat);
@@ -2213,6 +2253,7 @@ namespace NLedger.Scopus
             LookupItems.MakeFunctor("amount_expr", scope => FnAmountExpr((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("ansify_if", scope => FnAnsifyIf((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("abs", scope => FnAbs((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("averaged_lots", scope => FnAveragedLots((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             LookupItems.MakeFunctor("black", scope => FnBlack((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("blink", scope => FnBlink((CallScope)scope), SymbolKindEnum.FUNCTION);
@@ -2221,6 +2262,7 @@ namespace NLedger.Scopus
 
             LookupItems.MakeFunctor("cyan", scope => FnCyan((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("commodity", scope => FnCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("commodity_price", scope => FnCommodityPrice((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("ceiling", scope => FnCeiling((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("clear_commodity", scope => FnClearCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
 
@@ -2266,6 +2308,7 @@ namespace NLedger.Scopus
             LookupItems.MakeFunctor("scrub", scope => FnScrub((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("strip", scope => FnStrip((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("should_bold", scope => FnShouldBold((CallScope)scope), SymbolKindEnum.FUNCTION);
+            LookupItems.MakeFunctor("set_commodity_price", scope => FnSetCommodityPrice((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             LookupItems.MakeFunctor("truncated", scope => FnTruncated((CallScope)scope), SymbolKindEnum.FUNCTION);
             LookupItems.MakeFunctor("total_expr", scope => FnTotalExpr((CallScope)scope), SymbolKindEnum.FUNCTION);
@@ -2344,11 +2387,6 @@ namespace NLedger.Scopus
 
             // l
             LookupItems.MakeFunctor("lisp", scope => PostsReporter(new FormatEmacsPosts(this.OutputStream), "#lisp").Handle((CallScope)scope), SymbolKindEnum.COMMAND);
-
-            // o
-
-            var orgReporter = PostsReporter(new PostsToOrgTable(this, MaybeFormat(PrependFormatHandler)), "#org");
-            LookupItems.MakeFunctor("org", scope => orgReporter.Handle((CallScope)scope), SymbolKindEnum.COMMAND);
 
             // p
 

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2018, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2018, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -124,8 +124,10 @@ namespace NLedger.Accounts
             return DoFindAccountRe(this, new Mask(regexp));
         }
 
-        public Value Amount(Expr expr = null)
+        public Value Amount(bool realOnly = false, Expr expr = null)
         {
+            Logger.Current.Debug("account.amount", () => $"real only: {realOnly}");
+
             if (HasXData && XData.Visited)
             {
                 for (int i = XData.SelfDetails.LastPost; i < Posts.Count; i++)
@@ -133,6 +135,9 @@ namespace NLedger.Accounts
                     Post post = Posts[i];
                     if (post.XData.Visited && !post.XData.Considered)
                     {
+                        if (!post.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL))
+                            XData.SelfDetails.RealTotal = post.AddToValue(XData.SelfDetails.RealTotal, expr);
+
                         XData.SelfDetails.Total = post.AddToValue(XData.SelfDetails.Total, expr);
                         post.XData.Considered = true;
                     }
@@ -144,13 +149,19 @@ namespace NLedger.Accounts
                     Post post = XData.ReportedPosts[i];
                     if (post.XData.Visited && !post.XData.Considered)
                     {
+                        if (!post.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL))
+                            XData.SelfDetails.RealTotal = post.AddToValue(XData.SelfDetails.RealTotal, expr);
+
                         XData.SelfDetails.Total = post.AddToValue(XData.SelfDetails.Total, expr);
                         post.XData.Considered = true;
                     }
                 }
                 XData.SelfDetails.LastReportedPost = XData.ReportedPosts.Count;
 
-                return XData.SelfDetails.Total;
+                if (realOnly)
+                    return XData.SelfDetails.RealTotal;
+                else
+                    return XData.SelfDetails.Total;
             }
             else
             {
@@ -355,7 +366,7 @@ namespace NLedger.Accounts
                         XData.FamilyDetails.Total = Value.AddOrSetValue(XData.FamilyDetails.Total, temp);
                 }
 
-                temp = Amount(expr);
+                temp = Amount(false, expr);
                 if (!Value.IsNullOrEmpty(temp))
                     XData.FamilyDetails.Total = Value.AddOrSetValue(XData.FamilyDetails.Total, temp);
             }

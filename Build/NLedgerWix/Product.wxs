@@ -131,9 +131,11 @@
       <Feature Id="NLedgerFeature" Title="!(loc.NLedgerFeature_Title)" Level="1" Display="expand" Description="!(loc.NLedgerFeature_Desc)" ConfigurableDirectory="APPLICATIONFOLDER" AllowAdvertise="no" Absent="disallow" InstallDefault="local" >
 
          <!-- NLedger Core components (not optional) -->
-         <ComponentRef Id="AppBinFiles"/>                      <!-- NLedger dll and exe files -->
+         <ComponentRef Id="AppBinFiles"/>                      <!-- NLedger .Net Framework dll and exe files -->
+         <ComponentRef Id="AppBinCoreFiles"/>                  <!-- NLedger .Net Core dll and exe files -->
          <ComponentRef Id="AppBinFilesPath"/>                  <!-- Adding NLedger folder to PATH -->
          <ComponentRef Id="LedgerManFiles"/>                   <!-- Ledger manual that can be open from NLedger -->
+         <ComponentRef Id="LedgerCoreManFiles"/>               <!-- Ledger manual that can be open from NLedger Core -->
          <ComponentRef Id="LicenseFiles"/>                     <!-- License files -->
          <ComponentRef Id="Extras"/>                           <!-- Extras folder with samples for db calls -->
          <ComponentRef Id="NLedgerFolderShortcuts"/>           <!-- Adding a shortcut for NLedger folder -->
@@ -164,7 +166,6 @@
 
          <!-- Test toolkit is disabled by default (Level=3) -->
          <Feature Id="TestToolkitFeature" Title="!(loc.TestToolkitFeature_Title)" Level="5" Description="!(loc.TestToolkitFeature_Desc)" AllowAdvertise="no" >
-           <ComponentRef Id="LedgerTestFiles_test"/>
            <ComponentRef Id="LedgerTestFiles_manual"/>
            <ComponentRef Id="LedgerTestFiles_nledger"/>
            <ComponentRef Id="LedgerTestFiles_input"/>
