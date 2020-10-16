@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -191,8 +192,8 @@ namespace NLedger.Utility
         public static string GetWidthAlignFormatString(int width = 0, bool alignRight = false)
         {
             int key = alignRight ? width : -width;
-            string formatString;
-            if (!WidthAlignFormatStrings.TryGetValue(key, out formatString))
+
+            return WidthAlignFormatStrings.GetOrAdd(key, w =>
             {
                 StringBuilder sb = new StringBuilder();
                 sb.Append("{0");
@@ -205,10 +206,8 @@ namespace NLedger.Utility
                 }
                 sb.Append("}");
 
-                formatString = sb.ToString();
-                WidthAlignFormatStrings[key] = formatString;
-            }
-            return formatString;
+                return sb.ToString();
+            });
         }
 
         public static string GetFirstLine(this string s)
@@ -237,6 +236,6 @@ namespace NLedger.Utility
             }
         }
 
-        private static readonly IDictionary<int, string> WidthAlignFormatStrings = new Dictionary<int, string>();
+        private static readonly ConcurrentDictionary<int, string> WidthAlignFormatStrings = new ConcurrentDictionary<int, string>();
     }
 }
