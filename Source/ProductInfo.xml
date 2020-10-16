@@ -2,7 +2,7 @@
 <ProductInfo>
   <General>
 	<Version>0.8</Version>
-	<Patch>0</Patch>
+	<Patch>1</Patch>
 	<Stage>beta</Stage>		<!-- Pre-alpha - Alpha - Private Beta - Public Beta - Release Candidate(RC) - Release to Manufacturing(RTM) - General Availability (GA) -->
     <!-- This is a reference to a snapshot of the original source code that has been ported. -->
     <OriginalSource>
