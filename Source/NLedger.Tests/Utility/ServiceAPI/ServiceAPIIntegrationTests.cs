@@ -167,6 +167,28 @@ namespace NLedger.Tests.Utility.ServiceAPI
             Assert.Equal(BalCheckingOutputText.Replace("\r", "").Trim(), response.OutputText.Trim());
         }
 
+        [Fact]
+        public void ServiceAPI_IntegrationTests_8()
+        {
+            for (int n = 0; n < 2; n++)  // Repeat the same test 2 times. For intensive manual testing, it can be changed to 1000
+            {
+                var query = "bal checking --account=code";
+
+                Func<string, Task<KeyValuePair<string, string>>> calculation = async ledgerQuery =>
+                {
+                    var session = await new ServiceEngine().CreateSessionAsync("-f /dev/stdin", InputText).ConfigureAwait(false);
+                    var result = await session.ExecuteCommandAsync(ledgerQuery).ConfigureAwait(false);
+                    if (result.HasErrors) throw new Exception(result.ErrorText);
+                    return new KeyValuePair<string, string>(ledgerQuery, result.OutputText);
+                };
+
+                var tasks = Enumerable.Range(0, 100).AsParallel().Select(i => calculation(query)).ToArray();
+                Task.WaitAll(tasks);
+
+                Assert.DoesNotContain(tasks.Select(t => t.Result.Value), s => String.IsNullOrEmpty(s));
+            }
+        }
+
         private Exception CheckSessionResponseOutput(ServiceResponse serviceResponse, string expectedOutput)
         {
             try
