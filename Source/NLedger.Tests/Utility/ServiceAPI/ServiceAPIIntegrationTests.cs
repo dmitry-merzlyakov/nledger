@@ -189,6 +189,37 @@ namespace NLedger.Tests.Utility.ServiceAPI
             }
         }
 
+        [Fact]
+        public void ServiceAPI_ServiceSession_Dispose_Verification()
+        {
+            Task.Run(() => ServiceAPI_ServiceSession_Dispose_Verification_Action()).Wait();
+        }
+
+        private async Task ServiceAPI_ServiceSession_Dispose_Verification_Action()
+        {
+            var DailyLedger = @"
+; Income
+2011/11/21 Payment for hard work completed
+   Bank:Paypal       $350.00
+   Income:Hard Work
+2012/7/1 Partial payment from Client X
+   Bank:Paypal       $100
+   Receivable:ClientX";
+
+            var engine = new ServiceEngine();
+            for (int i = 0; i < 2; i++)
+            {
+                var inputText = string.Join(Environment.NewLine, "", "", DailyLedger).Trim();
+                using (var session = await engine.CreateSessionAsync("-f /dev/stdin", inputText).ConfigureAwait(false))
+                {
+                    var result = await session.ExecuteCommandAsync("bal").ConfigureAwait(false);
+                    if (result.HasErrors) throw new Exception(result.ErrorText);
+                    Assert.True(result.OutputText.Any());
+                }
+            }
+        }
+
+
         private Exception CheckSessionResponseOutput(ServiceResponse serviceResponse, string expectedOutput)
         {
             try

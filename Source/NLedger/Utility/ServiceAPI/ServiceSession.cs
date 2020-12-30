@@ -114,13 +114,16 @@ namespace NLedger.Utility.ServiceAPI
 
         private void CloseSession()
         {
-            if (GlobalScope != null)
+            if (GlobalScope != null && MainApplicationContext != null)
             {
-                GlobalScope.QuickClose();
-                GlobalScope.Dispose();
-                GlobalScope = null;
+                using (MainApplicationContext.AcquireCurrentThread())
+                {
+                    GlobalScope.QuickClose();
+                    GlobalScope.Dispose();
+                    GlobalScope = null;
 
-                Logger.Current.Info(() => LedgerSessionEnded);
+                    Logger.Current.Info(() => LedgerSessionEnded);
+                }
             }
         }
 
