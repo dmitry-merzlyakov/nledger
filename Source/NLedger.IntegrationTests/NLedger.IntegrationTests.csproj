@@ -6,7 +6,7 @@
     <Company>Dmitry Merzlyakov</Company>
     <Product>NLedger, the double-entry accounting tool</Product>
     <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
-    <Copyright>Copyright © 2015-2020, Dmitry Merzlyakov</Copyright>
+    <Copyright>Copyright © 2015-2021, Dmitry Merzlyakov</Copyright>
     <VersionPrefix>0.8.2</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
     <SourceRevisionId>dev-environment</SourceRevisionId>
@@ -43,12 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Contrib\test\**\*.*" LinkBase="test">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>      
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Contrib\Extras\cat.cmd">
       <Link>cat.cmd</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>    
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
