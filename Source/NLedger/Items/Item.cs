@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
@@ -61,13 +61,10 @@ namespace NLedger.Items
         }
 
         public Item()
-        {
-            CreateLookupItems();
-        }
+        { }
 
         public Item(Item item)
         {
-            CreateLookupItems();
             CopyDetails(item);
         }
 
@@ -76,7 +73,7 @@ namespace NLedger.Items
         public Date? Date { get; set; }
         public Date? DateAux { get; set; }
         public string Note { get; set; }
-        public ItemPosition Pos 
+        public ItemPosition Pos
         {
             get { return _Pos ?? (_Pos = new ItemPosition()); }
             set { _Pos = value; }
@@ -335,7 +332,7 @@ namespace NLedger.Items
 
         public override ExprOp Lookup(SymbolKindEnum kind, string name)
         {
-            return LookupItems.Lookup(kind, name, this);
+            return LookupItems.Value.Lookup(kind, name, this);
         }
 
         /// <summary>
@@ -416,7 +413,7 @@ namespace NLedger.Items
             {
                 string buf = item.Note.Length > 15 ? Environment.NewLine + "    ;" : "  ;" +
                     item.Note.Replace(Environment.NewLine, Environment.NewLine + "    ;");
-               return Value.StringValue(buf);
+                return Value.StringValue(buf);
             }
         }
 
@@ -477,7 +474,7 @@ namespace NLedger.Items
             else if (args.Size == 0)
                 throw new RuntimeError(RuntimeError.ErrorMessageTooFewArgumentsToFunction);
             else
-                throw new RuntimeError(RuntimeError.ErrorMessageTooManyArgumentsToFunction);            
+                throw new RuntimeError(RuntimeError.ErrorMessageTooManyArgumentsToFunction);
         }
 
         private static Value GetId(Item item)
@@ -524,79 +521,83 @@ namespace NLedger.Items
             return Value.Get((long)item.State);
         }
 
-        private void CreateLookupItems()
+        private static ExprOpCollection CreateLookupItems()
         {
+            ExprOpCollection lookupItems = new ExprOpCollection();
+
             // a
-            LookupItems.MakeFunctor("actual", scope => GetWrapper((CallScope)scope, p => GetActual(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("actual_date", scope => GetWrapper((CallScope)scope, p => GetPrimaryDate(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, p => Value.Get(p) /* Not allowed in .Net */ ), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("aux_date", scope => GetWrapper((CallScope)scope, p => GetAuxDate(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("actual", scope => GetWrapper((CallScope)scope, p => GetActual(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("actual_date", scope => GetWrapper((CallScope)scope, p => GetPrimaryDate(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, p => Value.Get(p) /* Not allowed in .Net */ ), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("aux_date", scope => GetWrapper((CallScope)scope, p => GetAuxDate(p)), SymbolKindEnum.FUNCTION);
 
             // b
-            LookupItems.MakeFunctor("beg_line", scope => GetWrapper((CallScope)scope, p => GetBegLine(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("beg_pos", scope => GetWrapper((CallScope)scope, p => GetBegPos(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("beg_line", scope => GetWrapper((CallScope)scope, p => GetBegLine(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("beg_pos", scope => GetWrapper((CallScope)scope, p => GetBegPos(p)), SymbolKindEnum.FUNCTION);
 
             // c
-            LookupItems.MakeFunctor("cleared", scope => GetWrapper((CallScope)scope, p => GetCleared(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("comment", scope => GetWrapper((CallScope)scope, p => GetComment(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("cleared", scope => GetWrapper((CallScope)scope, p => GetCleared(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("comment", scope => GetWrapper((CallScope)scope, p => GetComment(p)), SymbolKindEnum.FUNCTION);
 
             // d
-            LookupItems.MakeFunctor("d", scope => GetWrapper((CallScope)scope, p => Value.Get(p.GetDate())), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("date", scope => GetWrapper((CallScope)scope, p => Value.Get(p.GetDate())), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("depth", scope => Value.Zero, SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("d", scope => GetWrapper((CallScope)scope, p => Value.Get(p.GetDate())), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("date", scope => GetWrapper((CallScope)scope, p => Value.Get(p.GetDate())), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("depth", scope => Value.Zero, SymbolKindEnum.FUNCTION);
 
             // e
-            LookupItems.MakeFunctor("end_line", scope => GetWrapper((CallScope)scope, p => GetEndLine(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("end_pos", scope => GetWrapper((CallScope)scope, p => GetEndPos(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("effective_date", scope => GetWrapper((CallScope)scope, p => GetAuxDate(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("end_line", scope => GetWrapper((CallScope)scope, p => GetEndLine(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("end_pos", scope => GetWrapper((CallScope)scope, p => GetEndPos(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("effective_date", scope => GetWrapper((CallScope)scope, p => GetAuxDate(p)), SymbolKindEnum.FUNCTION);
 
             // f
-            LookupItems.MakeFunctor("filename", scope => GetWrapper((CallScope)scope, p => GetPathName(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("filebase", scope => GetWrapper((CallScope)scope, p => GetFileBase(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("filepath", scope => GetWrapper((CallScope)scope, p => GetFilePath(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("filename", scope => GetWrapper((CallScope)scope, p => GetPathName(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("filebase", scope => GetWrapper((CallScope)scope, p => GetFileBase(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("filepath", scope => GetWrapper((CallScope)scope, p => GetFilePath(p)), SymbolKindEnum.FUNCTION);
 
             // h
-            LookupItems.MakeFunctor("has_tag", scope => HasTag((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("has_meta", scope => HasTag((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("has_tag", scope => HasTag((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("has_meta", scope => HasTag((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             // i
-            LookupItems.MakeFunctor("is_account", scope => Value.False /* ignore */, SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("id", scope => GetWrapper((CallScope)scope, p => GetId(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("is_account", scope => Value.False /* ignore */, SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("id", scope => GetWrapper((CallScope)scope, p => GetId(p)), SymbolKindEnum.FUNCTION);
 
             // m
-            LookupItems.MakeFunctor("meta", scope => GetTag((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("meta", scope => GetTag((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             // n
-            LookupItems.MakeFunctor("note", scope => GetWrapper((CallScope)scope, p => GetNote(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("note", scope => GetWrapper((CallScope)scope, p => GetNote(p)), SymbolKindEnum.FUNCTION);
 
             // p
-            LookupItems.MakeFunctor("pending", scope => GetWrapper((CallScope)scope, p => GetPending(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("parent", scope => Value.False /* ignore */, SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("primary_date", scope => GetWrapper((CallScope)scope, p => GetPrimaryDate(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("pending", scope => GetWrapper((CallScope)scope, p => GetPending(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("parent", scope => Value.False /* ignore */, SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("primary_date", scope => GetWrapper((CallScope)scope, p => GetPrimaryDate(p)), SymbolKindEnum.FUNCTION);
 
             // s
-            LookupItems.MakeFunctor("status", scope => GetWrapper((CallScope)scope, p => GetStatus(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("state", scope => GetWrapper((CallScope)scope, p => GetStatus(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("seq", scope => GetWrapper((CallScope)scope, p => Value.Get(p.Seq)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("status", scope => GetWrapper((CallScope)scope, p => GetStatus(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("state", scope => GetWrapper((CallScope)scope, p => GetStatus(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("seq", scope => GetWrapper((CallScope)scope, p => Value.Get(p.Seq)), SymbolKindEnum.FUNCTION);
 
             // t
-            LookupItems.MakeFunctor("tag", scope => GetTag((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("tag", scope => GetTag((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             // u
-            LookupItems.MakeFunctor("uncleared", scope => GetWrapper((CallScope)scope, p => GetUncleared(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("uuid", scope => GetWrapper((CallScope)scope, p => GetId(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("uncleared", scope => GetWrapper((CallScope)scope, p => GetUncleared(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("uuid", scope => GetWrapper((CallScope)scope, p => GetId(p)), SymbolKindEnum.FUNCTION);
 
             // v
-            LookupItems.MakeFunctor("value_date", scope => GetWrapper((CallScope)scope, p => Value.Get(p.Date)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("value_date", scope => GetWrapper((CallScope)scope, p => Value.Get(p.Date)), SymbolKindEnum.FUNCTION);
 
             // L
-            LookupItems.MakeFunctor("L", scope => GetWrapper((CallScope)scope, p => GetActual(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("L", scope => GetWrapper((CallScope)scope, p => GetActual(p)), SymbolKindEnum.FUNCTION);
 
             // X
-            LookupItems.MakeFunctor("X", scope => GetWrapper((CallScope)scope, p => GetCleared(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("X", scope => GetWrapper((CallScope)scope, p => GetCleared(p)), SymbolKindEnum.FUNCTION);
 
             // Y
-            LookupItems.MakeFunctor("Y", scope => GetWrapper((CallScope)scope, p => GetPending(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("Y", scope => GetWrapper((CallScope)scope, p => GetPending(p)), SymbolKindEnum.FUNCTION);
+
+            return lookupItems;
         }
 
         #endregion
@@ -628,6 +629,6 @@ namespace NLedger.Items
 
         private IDictionary<string, ItemTag> Metadata = null;
         private ItemPosition _Pos = null;
-        private readonly ExprOpCollection LookupItems = new ExprOpCollection();
+        private static readonly Lazy<ExprOpCollection> LookupItems = new Lazy<ExprOpCollection>(() => CreateLookupItems(), true);
     }
 }

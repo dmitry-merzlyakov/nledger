@@ -23,8 +23,8 @@
     <Company>Dmitry Merzlyakov</Company>
     <Product>NLedger, the double-entry accounting tool</Product>
     <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
-    <Copyright>Copyright © 2015-2020, Dmitry Merzlyakov</Copyright>
-    <VersionPrefix>0.8.2</VersionPrefix>
+    <Copyright>Copyright © 2015-2021, Dmitry Merzlyakov</Copyright>
+    <VersionPrefix>0.8.3</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
     <SourceRevisionId>dev-environment</SourceRevisionId>
     <OutputPath>bin\$(Configuration)\</OutputPath>

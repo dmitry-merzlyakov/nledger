@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -71,15 +71,11 @@ namespace NLedger
         }
 
         public Post()
-        {
-            CreateLookupItems(); 
-        }
+        { }
 
         public Post(Post post)
             : base(post)
         {
-            CreateLookupItems();
-
             Xact = post.Xact;
             Account = post.Account;
             if (post.Amount != null)
@@ -287,7 +283,7 @@ namespace NLedger
 
         public override ExprOp Lookup(SymbolKindEnum kind, string name)
         {
-            return LookupItems.Lookup(kind, name, this) ?? base.Lookup(kind, name);
+            return LookupItems.Value.Lookup(kind, name, this) ?? base.Lookup(kind, name);
         }
 
         public override void CopyDetails(Item item)
@@ -675,85 +671,89 @@ namespace NLedger
             return Value.Get(post.GetDate());
         }
 
-        private void CreateLookupItems()
-        {            
+        private static ExprOpCollection CreateLookupItems()
+        {
+            var lookupItems = new ExprOpCollection();
+
             // a
-            LookupItems.MakeFunctor("a", scope => GetWrapper((CallScope)scope, p => GetAmount(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("amount", scope => GetWrapper((CallScope)scope, p => GetAmount(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("account", scope => GetAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("account_base", scope => GetWrapper((CallScope)scope, p => GetAccountBase(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("account_id", scope => GetWrapper((CallScope)scope, p => GetAccountId(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("any", scope => FnAny((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("all", scope => FnAll((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("a", scope => GetWrapper((CallScope)scope, p => GetAmount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("amount", scope => GetWrapper((CallScope)scope, p => GetAmount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("account", scope => GetAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("account_base", scope => GetWrapper((CallScope)scope, p => GetAccountBase(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("account_id", scope => GetWrapper((CallScope)scope, p => GetAccountId(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("any", scope => FnAny((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("all", scope => FnAll((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             // b
-            LookupItems.MakeFunctor("b", scope => GetWrapper((CallScope)scope, p => GetCost(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("b", scope => GetWrapper((CallScope)scope, p => GetCost(p)), SymbolKindEnum.FUNCTION);
 
             // c
-            LookupItems.MakeFunctor("code", scope => GetWrapper((CallScope)scope, p => GetCode(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("cost", scope => GetWrapper((CallScope)scope, p => GetCost(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("cost_calculated", scope => GetWrapper((CallScope)scope, p => GetIsCostCalculated(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("count", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("calculated", scope => GetWrapper((CallScope)scope, p => GetIsCalculated(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("commodity", scope => GetCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("checkin", scope => GetWrapper((CallScope)scope, p => GetCheckin(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("checkout", scope => GetWrapper((CallScope)scope, p => GetCheckout(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("code", scope => GetWrapper((CallScope)scope, p => GetCode(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("cost", scope => GetWrapper((CallScope)scope, p => GetCost(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("cost_calculated", scope => GetWrapper((CallScope)scope, p => GetIsCostCalculated(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("count", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("calculated", scope => GetWrapper((CallScope)scope, p => GetIsCalculated(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("commodity", scope => GetCommodity((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("checkin", scope => GetWrapper((CallScope)scope, p => GetCheckin(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("checkout", scope => GetWrapper((CallScope)scope, p => GetCheckout(p)), SymbolKindEnum.FUNCTION);
 
             // d
-            LookupItems.MakeFunctor("display_account", scope => GetDisplayAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("depth", scope => GetWrapper((CallScope)scope, p => GetAccountDepth(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("datetime", scope => GetWrapper((CallScope)scope, p => GetDateTime(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("display_account", scope => GetDisplayAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("depth", scope => GetWrapper((CallScope)scope, p => GetAccountDepth(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("datetime", scope => GetWrapper((CallScope)scope, p => GetDateTime(p)), SymbolKindEnum.FUNCTION);
 
             // h
-            LookupItems.MakeFunctor("has_cost", scope => GetWrapper((CallScope)scope, p => GetHasCost(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("has_cost", scope => GetWrapper((CallScope)scope, p => GetHasCost(p)), SymbolKindEnum.FUNCTION);
 
             // i
-            LookupItems.MakeFunctor("index", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("index", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
 
             // m
-            LookupItems.MakeFunctor("magnitude", scope => GetWrapper((CallScope)scope, p => GetMagnitude(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("magnitude", scope => GetWrapper((CallScope)scope, p => GetMagnitude(p)), SymbolKindEnum.FUNCTION);
 
             // n
-            LookupItems.MakeFunctor("n", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("note", scope => GetWrapper((CallScope)scope, p => GetNote(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("n", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("note", scope => GetWrapper((CallScope)scope, p => GetNote(p)), SymbolKindEnum.FUNCTION);
 
             // p
-            LookupItems.MakeFunctor("post", scope => GetWrapper((CallScope)scope, p => Value.ScopeValue(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("payee", scope => GetWrapper((CallScope)scope, p => Value.StringValue(p.Payee)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("primary", scope => GetWrapper((CallScope)scope, p => GetCommodityIsPrimary(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("price", scope => GetWrapper((CallScope)scope, p => GetPrice(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("parent", scope => GetWrapper((CallScope)scope, p => GetXact(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("post", scope => GetWrapper((CallScope)scope, p => Value.ScopeValue(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("payee", scope => GetWrapper((CallScope)scope, p => Value.StringValue(p.Payee)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("primary", scope => GetWrapper((CallScope)scope, p => GetCommodityIsPrimary(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("price", scope => GetWrapper((CallScope)scope, p => GetPrice(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("parent", scope => GetWrapper((CallScope)scope, p => GetXact(p)), SymbolKindEnum.FUNCTION);
 
             // r
-            LookupItems.MakeFunctor("real", scope => GetWrapper((CallScope)scope, p => GetReal(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("real", scope => GetWrapper((CallScope)scope, p => GetReal(p)), SymbolKindEnum.FUNCTION);
 
             // t
-            LookupItems.MakeFunctor("total", scope => GetWrapper((CallScope)scope, p => GetTotal(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("total", scope => GetWrapper((CallScope)scope, p => GetTotal(p)), SymbolKindEnum.FUNCTION);
 
             // u
-            LookupItems.MakeFunctor("use_direct_amount", scope => GetWrapper((CallScope)scope, p => GetUseDirectAmount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("use_direct_amount", scope => GetWrapper((CallScope)scope, p => GetUseDirectAmount(p)), SymbolKindEnum.FUNCTION);
 
             // v
-            LookupItems.MakeFunctor("virtual", scope => GetWrapper((CallScope)scope, p => GetVirtual(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("value_date", scope => GetWrapper((CallScope)scope, p => GetValueDate(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("virtual", scope => GetWrapper((CallScope)scope, p => GetVirtual(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("value_date", scope => GetWrapper((CallScope)scope, p => GetValueDate(p)), SymbolKindEnum.FUNCTION);
 
             // x
-            LookupItems.MakeFunctor("xact", scope => GetWrapper((CallScope)scope, p => GetXact(p)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("xact_id", scope => GetWrapper((CallScope)scope, p => GetXactId(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("xact", scope => GetWrapper((CallScope)scope, p => GetXact(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("xact_id", scope => GetWrapper((CallScope)scope, p => GetXactId(p)), SymbolKindEnum.FUNCTION);
 
             // N
-            LookupItems.MakeFunctor("N", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("N", scope => GetWrapper((CallScope)scope, p => GetCount(p)), SymbolKindEnum.FUNCTION);
 
             // O
-            LookupItems.MakeFunctor("O", scope => GetWrapper((CallScope)scope, p => GetTotal(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("O", scope => GetWrapper((CallScope)scope, p => GetTotal(p)), SymbolKindEnum.FUNCTION);
 
             // R
-            LookupItems.MakeFunctor("R", scope => GetWrapper((CallScope)scope, p => GetReal(p)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("R", scope => GetWrapper((CallScope)scope, p => GetReal(p)), SymbolKindEnum.FUNCTION);
+
+            return lookupItems;
         }
 
         #endregion
 
         private PostXData _XData = null;
-        private readonly ExprOpCollection LookupItems = new ExprOpCollection();
+        private static readonly Lazy<ExprOpCollection> LookupItems = new Lazy<ExprOpCollection>(() => CreateLookupItems(), true);
     }
 }
