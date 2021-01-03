@@ -29,7 +29,6 @@ namespace NLedger.Accounts
         {
             Accounts = new SortedDictionary<string, Account>();
             Posts = new List<Post>();
-            CreateLookupItems();
         }
 
         public Account(Account parent, string name, string note = null) : this()
@@ -330,7 +329,7 @@ namespace NLedger.Accounts
 
         public override ExprOp Lookup(SymbolKindEnum kind, string name)
         {
-            return LookupItems.Lookup(kind, name, this);
+            return LookupItems.Value.Lookup(kind, name, this);
         }
 
         public string PartialName(bool flat)
@@ -598,63 +597,67 @@ namespace NLedger.Accounts
             return Value.SimplifiedValueOrZero(account.Total());
         }
 
-        private void CreateLookupItems()
+        private static ExprOpCollection CreateLookupItems()
         {
+            var lookupItems = new ExprOpCollection();
+
             // a
-            LookupItems.MakeFunctor("a", scope => GetWrapper((CallScope)scope, a => GetAmount(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("amount", scope => GetWrapper((CallScope)scope, a => GetAmount(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("account", scope => GetAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("account_base", scope => GetWrapper((CallScope)scope, a => Value.StringValue(a.Name)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, a => Value.Get(a) /* [DM] Address is not allowed in .Net; return a whole entity */ ), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("any", scope => FnAny((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("all", scope => FnAll((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("a", scope => GetWrapper((CallScope)scope, a => GetAmount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("amount", scope => GetWrapper((CallScope)scope, a => GetAmount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("account", scope => GetAccount((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("account_base", scope => GetWrapper((CallScope)scope, a => Value.StringValue(a.Name)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("addr", scope => GetWrapper((CallScope)scope, a => Value.Get(a) /* [DM] Address is not allowed in .Net; return a whole entity */ ), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("any", scope => FnAny((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("all", scope => FnAll((CallScope)scope), SymbolKindEnum.FUNCTION);
 
             // c
-            LookupItems.MakeFunctor("count", scope => GetWrapper((CallScope)scope, a => GetCount(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("cost", scope => GetWrapper((CallScope)scope, a => GetCost(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("count", scope => GetWrapper((CallScope)scope, a => GetCount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("cost", scope => GetWrapper((CallScope)scope, a => GetCost(a)), SymbolKindEnum.FUNCTION);
 
             // d
-            LookupItems.MakeFunctor("depth", scope => GetWrapper((CallScope)scope, a => GetDepth(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("depth_parent", scope => GetWrapper((CallScope)scope, a => GetDepthParent(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("depth_spacer", scope => GetWrapper((CallScope)scope, a => GetDepthSpacer(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("depth", scope => GetWrapper((CallScope)scope, a => GetDepth(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("depth_parent", scope => GetWrapper((CallScope)scope, a => GetDepthParent(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("depth_spacer", scope => GetWrapper((CallScope)scope, a => GetDepthSpacer(a)), SymbolKindEnum.FUNCTION);
 
             // e
-            LookupItems.MakeFunctor("earliest", scope => GetWrapper((CallScope)scope, a => GetEarliest(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("earliest_checkin", scope => GetWrapper((CallScope)scope, a => GetEarliestCheckin(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("earliest", scope => GetWrapper((CallScope)scope, a => GetEarliest(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("earliest_checkin", scope => GetWrapper((CallScope)scope, a => GetEarliestCheckin(a)), SymbolKindEnum.FUNCTION);
 
             // i
-            LookupItems.MakeFunctor("is_account", scope => Value.True, SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("is_index", scope => GetWrapper((CallScope)scope, a => GetSubcount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("is_account", scope => Value.True, SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("is_index", scope => GetWrapper((CallScope)scope, a => GetSubcount(a)), SymbolKindEnum.FUNCTION);
 
             // l
-            LookupItems.MakeFunctor("l", scope => GetWrapper((CallScope)scope, a => GetDepth(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("latest_cleared", scope => GetWrapper((CallScope)scope, a => GetLatestCleared(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("latest", scope => GetWrapper((CallScope)scope, a => GetLatest(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("latest_checkout", scope => GetWrapper((CallScope)scope, a => GetLatestCheckout(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("latest_checkout_cleared", scope => GetWrapper((CallScope)scope, a => GetLatestCheckoutCleared(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("l", scope => GetWrapper((CallScope)scope, a => GetDepth(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("latest_cleared", scope => GetWrapper((CallScope)scope, a => GetLatestCleared(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("latest", scope => GetWrapper((CallScope)scope, a => GetLatest(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("latest_checkout", scope => GetWrapper((CallScope)scope, a => GetLatestCheckout(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("latest_checkout_cleared", scope => GetWrapper((CallScope)scope, a => GetLatestCheckoutCleared(a)), SymbolKindEnum.FUNCTION);
 
             // n
-            LookupItems.MakeFunctor("n", scope => GetWrapper((CallScope)scope, a => GetSubcount(a)), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("note", scope => GetWrapper((CallScope)scope, a => GetNote(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("n", scope => GetWrapper((CallScope)scope, a => GetSubcount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("note", scope => GetWrapper((CallScope)scope, a => GetNote(a)), SymbolKindEnum.FUNCTION);
 
             // p
-            LookupItems.MakeFunctor("partial_account", scope => GetPartialName((CallScope)scope), SymbolKindEnum.FUNCTION);
-            LookupItems.MakeFunctor("parent", scope => GetWrapper((CallScope)scope, a => Value.ScopeValue(a.Parent)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("partial_account", scope => GetPartialName((CallScope)scope), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("parent", scope => GetWrapper((CallScope)scope, a => Value.ScopeValue(a.Parent)), SymbolKindEnum.FUNCTION);
 
             // s
-            LookupItems.MakeFunctor("subcount", scope => GetWrapper((CallScope)scope, a => GetSubcount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("subcount", scope => GetWrapper((CallScope)scope, a => GetSubcount(a)), SymbolKindEnum.FUNCTION);
 
             // t
-            LookupItems.MakeFunctor("total", scope => GetWrapper((CallScope)scope, a => GetTotal(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("total", scope => GetWrapper((CallScope)scope, a => GetTotal(a)), SymbolKindEnum.FUNCTION);
 
             // u
-            LookupItems.MakeFunctor("use_direct_amount", scope => Value.False /* ignore */, SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("use_direct_amount", scope => Value.False /* ignore */, SymbolKindEnum.FUNCTION);
 
             // N
-            LookupItems.MakeFunctor("N", scope => GetWrapper((CallScope)scope, a => GetCount(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("N", scope => GetWrapper((CallScope)scope, a => GetCount(a)), SymbolKindEnum.FUNCTION);
 
             // O
-            LookupItems.MakeFunctor("O", scope => GetWrapper((CallScope)scope, a => GetTotal(a)), SymbolKindEnum.FUNCTION);
+            lookupItems.MakeFunctor("O", scope => GetWrapper((CallScope)scope, a => GetTotal(a)), SymbolKindEnum.FUNCTION);
+
+            return lookupItems;
         }
 
         #endregion
@@ -676,6 +679,6 @@ namespace NLedger.Accounts
 
         private string _FullName = null;
         private AccountXData _XData = null;
-        private readonly ExprOpCollection LookupItems = new ExprOpCollection();
+        private static readonly Lazy<ExprOpCollection> LookupItems = new Lazy<ExprOpCollection>(() => CreateLookupItems(), true);
     }
 }
