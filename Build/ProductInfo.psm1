@@ -61,9 +61,9 @@ function Update-ProjectFiles {
             Write-Verbose "Process attribute '$($Private:infoAttr.Name)' with value '$Private:replacementText'"
             $Private:asmInfoAttr = $Private:asmInfoContent.SelectNodes("/Project/PropertyGroup/$($Private:infoAttr.Name)")
             if (!$Private:asmInfoAttr) { throw "Cannot find element /Project/PropertyGroup/$($Private:infoAttr.Name) in file $Private:asmInfo"}
-            if ($Private:asmInfoAttr.InnerText -ne $Private:replacementText) {
+            if ($Private:asmInfoAttr.'#text' -ne $Private:replacementText) {
                 Write-Verbose "Detected differences; updating..."           
-                $Private:asmInfoAttr.InnerText = $Private:replacementText
+                $Private:asmInfoAttr[0].'#text' = $Private:replacementText  # Indexer is needed because of PS bug - https://github.com/PowerShell/PowerShell/issues/2459
                 $Private:HasChanges = $True
             } else {
                 Write-Verbose "The value of the found attribute is the same as in ProductInfo.xml; no changes."
@@ -71,7 +71,18 @@ function Update-ProjectFiles {
         }
         if ($Private:HasChanges) {
             if ($verify) { throw "Verification fails. File $Private:asmInfo needs to be updated." }        
-            $Private:asmInfoContent | Set-Content -Path $Private:asmInfo -ErrorAction Stop
+            # Save XML with BOM and without annotation
+            $Private:utf8WithBom = New-Object System.Text.UTF8Encoding($true) # $true - BOM is needed
+            $Private:xmlWriterSettings = New-Object System.Xml.XmlWriterSettings
+            $Private:xmlWriterSettings.OmitXmlDeclaration = $true;
+            $Private:xmlWriterSettings.Indent = $true;
+
+            $Private:sw = New-Object System.IO.StreamWriter($Private:asmInfo, $false, $Private:utf8WithBom)
+            $Private:xw = [System.Xml.XmlWriter]::Create($Private:sw, $Private:xmlWriterSettings)
+            $Private:asmInfoContent.Save($Private:xw)
+            $Private:xw.Close()
+            $Private:sw.Close()
+
             Write-Output "File $Private:asmInfo has been updated with recent product info."
         } else {
             Write-Verbose "File $Private:asmInfo has the latest product info; no changes."
