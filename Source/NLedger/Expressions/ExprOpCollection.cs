@@ -25,7 +25,7 @@ namespace NLedger.Expressions
                 throw new ArgumentNullException("exprFunc");
 
             // Search optimization
-            if (name.EndsWith("_"))
+            if (name.EndsWith("_", StringComparison.Ordinal))  // [DM] using ordinal comparison improves EndsWith performance
                 name = name.Remove(name.Length - 1);
 
             IDictionary<string, ExprOp> items = GetOrCreate(symbol);
