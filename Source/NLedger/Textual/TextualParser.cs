@@ -26,6 +26,7 @@ using NLedger.Journals;
 using NLedger.Values;
 using NLedger.Scopus;
 using NLedger.Utils;
+using NLedger.Extensibility;
 
 namespace NLedger.Textual
 {
@@ -287,7 +288,7 @@ namespace NLedger.Textual
             else if (line == PayeeToken)
                 ReadPayeeDirective(arg, textualReader);
             else if (line == PythonToken)
-                ReadPythonDirective(arg);
+                ReadPythonDirective(arg, textualReader);
             else if (line == TagToken)
                 ReadTagDirective(arg, textualReader);
             else if (line == TestToken)
@@ -895,15 +896,42 @@ namespace NLedger.Textual
         }
 
         /// <remarks>ported from python_directive</remarks>
-        private void ReadPythonDirective(string arg)
+        private void ReadPythonDirective(string line, ITextualReader textualReader)
         {
-            throw new ParseError(ParseError.ParseError_PythonDirectiveSeenButPythonSupportIsMissing);
+            var extendedSession = ExtendedSession.Current ?? throw new ParseError(ParseError.ParseError_PythonDirectiveSeenButPythonSupportIsMissing);
+
+            var script = new StringBuilder(line?.Trim());
+            int indent = 0;
+
+            while (textualReader.PeekWhitespaceLine() || textualReader.PeekBlankLine())
+            {
+                line = ReadLine(textualReader);
+                if (!String.IsNullOrEmpty(line))
+                {
+                    if (indent == 0)
+                        while (indent < line.Length && Char.IsWhiteSpace(line[indent])) indent++;
+
+                    int startIndex = 0;
+                    for (int i = 0; i < line.Length && i < indent && Char.IsWhiteSpace(line[i]); i++)
+                        startIndex = i;
+
+                    if (startIndex < line.Length)
+                        script.AppendLine(line.Substring(startIndex));
+                }
+            }
+
+            if (!extendedSession.IsInitialized)
+                extendedSession.Initialize();
+
+            extendedSession.MainModule.DefineGlobal("journal", Context.Journal);
+            extendedSession.Eval(script.ToString(), ExtensionEvalModeEnum.EvalMulti);
         }
 
         /// <remarks>ported from import_directive</remarks>
-        private void ReadImportDirective(string arg)
+        private void ReadImportDirective(string line)
         {
-            throw new ParseError(ParseError.ParseError_ImportDirectiveSeenButPythonSupportIsMissing);
+            var extendedSession = ExtendedSession.Current ?? throw new ParseError(ParseError.ParseError_ImportDirectiveSeenButPythonSupportIsMissing);
+            extendedSession.ImportOption(line?.Trim());
         }
 
         /// <remarks>ported from payee_directive</remarks>

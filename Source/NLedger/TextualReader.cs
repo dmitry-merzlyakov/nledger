@@ -49,6 +49,12 @@ namespace NLedger
             return !IsEof() && (ch == ' ' || ch == '\t');
         }
 
+        public bool PeekBlankLine()
+        {
+            var ch = (char)StreamReader.Peek();
+            return !IsEof() && (ch == '\n' || ch == '\r');
+        }
+
         public void Dispose()
         {
             if (StreamReader != null)

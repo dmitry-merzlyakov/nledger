@@ -24,5 +24,10 @@ namespace NLedger
         /// It is equal to peek_whitespace_line
         /// </summary>
         bool PeekWhitespaceLine();
+
+        /// <summary>
+        /// It is equal to peek_blank_line
+        /// </summary>
+        bool PeekBlankLine();
     }
 }
