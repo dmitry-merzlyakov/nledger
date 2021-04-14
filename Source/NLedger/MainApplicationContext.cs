@@ -9,6 +9,7 @@
 using NLedger.Abstracts;
 using NLedger.Abstracts.Impl;
 using NLedger.Commodities;
+using NLedger.Extensibility;
 using NLedger.Formatting;
 using NLedger.Scopus;
 using NLedger.Times;
@@ -128,6 +129,13 @@ namespace NLedger
             _EnvironmentVariables = new Dictionary<string, string>(variables ?? Empty, StringComparer.InvariantCultureIgnoreCase);
         }
 
+        public ExtendedSession ExtendedSession { get; private set; }
+
+        public ExtendedSession SetExtendedSession(ExtendedSession extendedSession)
+        {
+            return ExtendedSession = extendedSession;
+        }
+
         // Abstract Application Services
         public IApplicationServiceProvider ApplicationServiceProvider => _ApplicationServiceProvider;
 
@@ -165,6 +173,7 @@ namespace NLedger
             context.CancellationSignal = CancellationSignal;
             context.DefaultPager = DefaultPager;
             context._EnvironmentVariables = _EnvironmentVariables;
+            context.ExtendedSession = ExtendedSession;
             return context;
         }
 

@@ -920,10 +920,10 @@ namespace NLedger.Textual
                 }
             }
 
-            if (!extendedSession.IsInitialized)
+            if (!extendedSession.IsInitialized())
                 extendedSession.Initialize();
 
-            extendedSession.MainModule.DefineGlobal("journal", Context.Journal);
+            extendedSession.DefineGlobal("journal", Context.Journal);
             extendedSession.Eval(script.ToString(), ExtensionEvalModeEnum.EvalMulti);
         }
 
