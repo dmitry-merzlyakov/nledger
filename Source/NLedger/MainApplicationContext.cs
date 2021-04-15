@@ -31,13 +31,15 @@ namespace NLedger
         IVirtualConsoleProvider VirtualConsoleProvider { get; }
         IFileSystemProvider FileSystemProvider { get; }
         IPagerProvider PagerProvider { get; }
+        IExtensionProvider ExtensionProvider { get; }
     }
 
     public class ApplicationServiceProvider : IApplicationServiceProvider
     {
         public ApplicationServiceProvider(Func<IQuoteProvider> quoteProviderFactory = null, Func<IProcessManager> processManagerFactory = null, 
             Func<IManPageProvider> manPageProviderFactory = null, Func<IVirtualConsoleProvider> virtualConsoleProviderFactory = null,
-            Func<IFileSystemProvider> fileSystemProviderFactory = null, Func<IPagerProvider> pagerProviderFactory = null)
+            Func<IFileSystemProvider> fileSystemProviderFactory = null, Func<IPagerProvider> pagerProviderFactory = null,
+            Func<IExtensionProvider> extensionProviderFactory = null)
         {
             _QuoteProvider = new Lazy<IQuoteProvider>(quoteProviderFactory ?? (() => new QuoteProvider()));
             _ProcessManager = new Lazy<IProcessManager>(processManagerFactory ?? (() => new ProcessManager()));
@@ -45,6 +47,7 @@ namespace NLedger
             _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(virtualConsoleProviderFactory ?? (() => new VirtualConsoleProvider()));
             _FileSystemProvider = new Lazy<IFileSystemProvider>(fileSystemProviderFactory ?? (() => new FileSystemProvider()));
             _PagerProvider = new Lazy<IPagerProvider>(pagerProviderFactory ?? (() => new PagerProvider()));
+            _ExtensionProvider = new Lazy<IExtensionProvider>(extensionProviderFactory ?? EmptyExtensionProvider.CurrentFactory);
         }
 
         public IQuoteProvider QuoteProvider => _QuoteProvider.Value;
@@ -53,6 +56,7 @@ namespace NLedger
         public IVirtualConsoleProvider VirtualConsoleProvider => _VirtualConsoleProvider.Value;
         public IFileSystemProvider FileSystemProvider => _FileSystemProvider.Value;
         public IPagerProvider PagerProvider => _PagerProvider.Value;
+        public IExtensionProvider ExtensionProvider => _ExtensionProvider.Value;
 
         private readonly Lazy<IQuoteProvider> _QuoteProvider;
         private readonly Lazy<IProcessManager> _ProcessManager;
@@ -60,6 +64,7 @@ namespace NLedger
         private readonly Lazy<IVirtualConsoleProvider> _VirtualConsoleProvider;
         private readonly Lazy<IFileSystemProvider> _FileSystemProvider;
         private readonly Lazy<IPagerProvider> _PagerProvider;
+        private readonly Lazy<IExtensionProvider> _ExtensionProvider;
     }
 
 

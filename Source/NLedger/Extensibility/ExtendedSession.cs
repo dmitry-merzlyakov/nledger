@@ -19,6 +19,8 @@ namespace NLedger.Extensibility
     {
         public const string OptionImport = "import_";
 
+        public static ExtendedSession CreateExtendedSession() => MainApplicationContext.Current?.ApplicationServiceProvider.ExtensionProvider.CreateExtendedSession();
+
         public static ExtendedSession Current => MainApplicationContext.Current?.ExtendedSession;
 
         public ExtendedSession()

@@ -8,6 +8,6 @@ namespace NLedger.Extensibility
 {
     public interface IExtensionProvider
     {
-        void ImportModule(ExtensionModule module);
+        ExtendedSession CreateExtendedSession();
     }
 }
