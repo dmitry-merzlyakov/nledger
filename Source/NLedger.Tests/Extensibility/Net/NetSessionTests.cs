@@ -17,7 +17,7 @@ namespace NLedger.Tests.Extensibility.Net
         {
             var inputText = @"
 tag PATH
-    check System.IO.File.Exists(value,'10')
+    check System.IO.File.Exists(value)
 
 2012-02-29 KFC
     ; PATH: test/baseline/feat-import_py.test
@@ -30,7 +30,9 @@ tag PATH
                 {
                     return new ApplicationServiceProvider(
                         virtualConsoleProviderFactory: () => new VirtualConsoleProvider(mem.ConsoleInput, mem.ConsoleOutput, mem.ConsoleError),
-                        extensionProviderFactory: () => new NetExtensionProvider());
+                        extensionProviderFactory: () => new NetExtensionProvider(
+                                () => new NetSession(new NamespaceResolver(true), new ValueConverter())  // enable global scan for all namespaces for this test to check how it works w/o 'import' directive
+                            ));
                 });
 
             var session = engine.CreateSession("-f /dev/stdin", inputText);

@@ -11,9 +11,10 @@ namespace NLedger.Extensibility.Net
 {
     public class NetNamespaceScope : Scope
     {
-        public NetNamespaceScope(INamespaceResolver namespaceResolver)
+        public NetNamespaceScope(INamespaceResolver namespaceResolver, IValueConverter valueConverter)
         {
             _NamespaceResolver = namespaceResolver ?? throw new ArgumentNullException(nameof(namespaceResolver));
+            _ValueConverter = valueConverter ?? throw new ArgumentNullException(nameof(valueConverter));
         }
 
         protected NetNamespaceScope(NetNamespaceScope parentNamespace, string name)
@@ -22,7 +23,7 @@ namespace NLedger.Extensibility.Net
                 throw new ArgumentNullException(nameof(name));
 
             Name = name;
-            ParentNamespace = ParentNamespace ?? throw new ArgumentNullException(nameof(parentNamespace));
+            ParentNamespace = parentNamespace ?? throw new ArgumentNullException(nameof(parentNamespace));
         }
 
         public string Name { get; }
@@ -32,8 +33,9 @@ namespace NLedger.Extensibility.Net
         public bool IsRoot => ParentNamespace == null;
 
         public INamespaceResolver NamespaceResolver => _NamespaceResolver ?? ParentNamespace.NamespaceResolver;
+        public IValueConverter ValueConverter => _ValueConverter ?? ParentNamespace.ValueConverter;
 
-        public override string Description => IsRoot ? "." : Name;
+        public override string Description => IsRoot ? "{Root}" : Name;
 
         public override ExprOp Lookup(SymbolKindEnum kind, string name)
         {
@@ -42,14 +44,14 @@ namespace NLedger.Extensibility.Net
                 Scope scope;
                 if (!Children.TryGetValue(name, out scope))
                 {
-                    var fullName = FullName + "." + name;
+                    var fullName = GetFullName(name);
 
                     if (NamespaceResolver.IsNamespace(fullName))
                         scope = new NetNamespaceScope(this, name);
                     else
                     {
                         if (NamespaceResolver.IsClass(fullName))
-                            scope = new NetClassScope(fullName);
+                            scope = new NetClassScope(fullName, ValueConverter);
                         else
                             return null;
                     }
@@ -62,9 +64,23 @@ namespace NLedger.Extensibility.Net
             return null;
         }
 
-        private string FullName => IsRoot ? String.Empty : ParentNamespace?.FullName + "." + Name;
+        public string GetFullName()
+        {
+            if (IsRoot)
+                return String.Empty;
+
+            var parent = ParentNamespace.GetFullName();
+            return String.IsNullOrEmpty(parent) ? Name : parent + "." + Name;
+        }
+
+        public string GetFullName(string name)
+        {
+            var parent = GetFullName();
+            return String.IsNullOrEmpty(parent) ? name : parent + "." + name;
+        }
 
         private readonly INamespaceResolver _NamespaceResolver;
+        private readonly IValueConverter _ValueConverter;
         private readonly IDictionary<string, Scope> Children = new Dictionary<string, Scope>();
     }
 }

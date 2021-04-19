@@ -10,13 +10,15 @@ namespace NLedger.Extensibility.Net
 {
     public class NetSession : ExtendedSession
     {
-        public NetSession(INamespaceResolver namespaceResolver)
+        public NetSession(INamespaceResolver namespaceResolver, IValueConverter valueConverter)
         {
             NamespaceResolver = namespaceResolver ?? throw new ArgumentNullException(nameof(namespaceResolver));
-            RootNamespace = new NetNamespaceScope(NamespaceResolver);
+            ValueConverter = valueConverter ?? throw new ArgumentNullException(nameof(valueConverter));
+            RootNamespace = new NetNamespaceScope(NamespaceResolver, ValueConverter);
         }
 
         public INamespaceResolver NamespaceResolver { get; }
+        public IValueConverter ValueConverter { get; }
         public NetNamespaceScope RootNamespace { get; }
 
         public override void DefineGlobal(string name, object value)

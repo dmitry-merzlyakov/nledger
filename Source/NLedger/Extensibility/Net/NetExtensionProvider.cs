@@ -8,9 +8,16 @@ namespace NLedger.Extensibility.Net
 {
     public class NetExtensionProvider : IExtensionProvider
     {
+        public NetExtensionProvider(Func<NetSession> netSessionFactory = null)
+        {
+            NetSessionFactory = netSessionFactory ?? (() => new NetSession(new NamespaceResolver(), new ValueConverter()));
+        }
+
+        public Func<NetSession> NetSessionFactory { get; }
+
         public ExtendedSession CreateExtendedSession()
         {
-            return new NetSession(new NamespaceResolver());
+            return NetSessionFactory();
         }
     }
 }
