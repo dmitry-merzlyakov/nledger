@@ -17,7 +17,7 @@ namespace NLedger.Tests.Extensibility.Net
         {
             var inputText = @"
 tag PATH
-    check System.IO.File.Exists(value)
+    check System.IO.File.Exists(value,'10')
 
 2012-02-29 KFC
     ; PATH: test/baseline/feat-import_py.test

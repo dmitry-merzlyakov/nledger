@@ -10,6 +10,15 @@ namespace NLedger.Extensibility.Net
 {
     public class NetSession : ExtendedSession
     {
+        public NetSession(INamespaceResolver namespaceResolver)
+        {
+            NamespaceResolver = namespaceResolver ?? throw new ArgumentNullException(nameof(namespaceResolver));
+            RootNamespace = new NetNamespaceScope(NamespaceResolver);
+        }
+
+        public INamespaceResolver NamespaceResolver { get; }
+        public NetNamespaceScope RootNamespace { get; }
+
         public override void DefineGlobal(string name, object value)
         {
             //throw new NotImplementedException();
@@ -37,8 +46,9 @@ namespace NLedger.Extensibility.Net
 
         protected override ExprOp LookupFunction(string name)
         {
-            //throw new NotImplementedException();
-            return ExprOp.WrapValue(Value.ScopeValue(new NetModule()));
+            //TODO check globals
+            return RootNamespace.Lookup(Scopus.SymbolKindEnum.FUNCTION, name);
+            //return ExprOp.WrapValue(Value.ScopeValue(new NetModule()));
         }
     }
 }

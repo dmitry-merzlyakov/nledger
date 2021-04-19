@@ -10,7 +10,7 @@ namespace NLedger.Extensibility.Net
     {
         public ExtendedSession CreateExtendedSession()
         {
-            return new NetSession();
+            return new NetSession(new NamespaceResolver());
         }
     }
 }

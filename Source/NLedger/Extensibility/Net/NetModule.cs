@@ -17,15 +17,49 @@ namespace NLedger.Extensibility.Net
         {
             if (name == "Exists")
                 return ExprOp.WrapFunctor(ExprFunc);
+                //return ExprOp.WrapFunctor(new Functor().ExprFunc);
 
             //throw new NotImplementedException();
-            var module = new NetModule();
-            return ExprOp.WrapValue(Value.ScopeValue(new NetModule()));
+            if (name == "System" || name == "IO" || name == "File")
+            {
+                var module = new NetModule();
+                return ExprOp.WrapValue(Value.ScopeValue(new NetModule()));
+            }
+
+            return null;
         }
 
         public Value ExprFunc(Scope scope)
         {
+            CallScope callScope = scope as CallScope;
+
+            IList<Value> vv = new List<Value>();
+            if (callScope.Value().Type == ValueTypeEnum.Sequence)
+                foreach (var v in callScope.Value().AsSequence)
+                    vv.Add(v);
+            var vvv = callScope.Value();
+
+
+            if (System.IO.File.Exists("kk"))
+                return Value.Get(new testobject() { val = "999" });
+
             return Value.False;
         }
+    }
+
+    public class Functor
+    {
+        public Value ExprFunc(Scope scope)
+        {
+            CallScope callScope = scope as CallScope;
+            var vvv = callScope.Value();
+
+            return Value.False;
+        }
+    }
+
+    public class testobject
+    {
+        public string val { get; set; }
     }
 }
