@@ -12,11 +12,12 @@ namespace NLedger.Extensibility.Net
     public class NetClassScope : Scope
     {
         public NetClassScope(string className, IValueConverter valueConverter)
-        {
-            if (string.IsNullOrWhiteSpace(className))
-                throw new ArgumentNullException(nameof(className));
+            : this (Type.GetType(className), valueConverter)
+        { }
 
-            ClassType = Type.GetType(className) ?? throw new ArgumentException($"Cannot find .Net class '{className}'");
+        public NetClassScope(Type type, IValueConverter valueConverter)
+        {
+            ClassType = type ?? throw new ArgumentNullException(nameof(type));
             ValueConverter = valueConverter ?? throw new ArgumentNullException(nameof(valueConverter));
         }
 

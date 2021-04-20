@@ -51,7 +51,7 @@ namespace NLedger.Extensibility.Net
                     else
                     {
                         if (NamespaceResolver.IsClass(fullName))
-                            scope = new NetClassScope(fullName, ValueConverter);
+                            scope = new NetClassScope(NamespaceResolver.GetClassType(fullName), ValueConverter);
                         else
                             return null;
                     }

@@ -19,6 +19,18 @@ namespace NLedger.Extensibility.Net
             return Data.ScannedClasses.ContainsKey(name);
         }
 
+        public Type GetClassType(string name)
+        {
+            if (String.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
+            Type type;
+            if (Data.ScannedClasses.TryGetValue(name, out type))
+                return type;
+            else
+                throw new ArgumentException($"Cannot find class '{name}'");
+        }
+
         public bool IsNamespace(string name)
         {
             if (Data.ScannedNamespaces.Contains(name))

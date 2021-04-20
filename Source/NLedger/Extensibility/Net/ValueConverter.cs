@@ -1,4 +1,7 @@
-﻿using NLedger.Values;
+﻿using NLedger.Amounts;
+using NLedger.Scopus;
+using NLedger.Utility;
+using NLedger.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +31,36 @@ namespace NLedger.Extensibility.Net
 
         public Value GetValue(object obj)
         {
-            return Value.Get(obj);
+            if (obj == null)
+                return new Value();
+
+            var type = obj.GetType();
+            if (type == typeof(Boolean))
+                return Value.Get((bool)obj);
+            else if (type == typeof(Date))
+                return Value.Get((Date)obj);
+            else if (type == typeof(DateTime))
+                return Value.Get((DateTime)obj);
+            else if (type == typeof(DateTime?))
+                return Value.Get((DateTime?)obj);
+            else if (type == typeof(int))
+                return Value.Get((int)obj);
+            else if (type == typeof(long))
+                return Value.Get((long)obj);
+            else if (type == typeof(Amount))
+                return Value.Get((Amount)obj);
+            else if (type == typeof(Balance))
+                return Value.Get((Balance)obj);
+            else if (type == typeof(String))
+                return Value.Get((String)obj);
+            else if (type == typeof(Mask))
+                return Value.Get((Mask)obj);
+            else if (typeof(Scope).IsAssignableFrom(type))
+                return Value.Get((Scope)obj);
+            else if (typeof(IList<Value>).IsAssignableFrom(type))
+                return Value.Get((IList<Value>)obj);
+            else
+                return Value.Get(obj);
         }
     }
 }
