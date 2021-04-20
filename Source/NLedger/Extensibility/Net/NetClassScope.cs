@@ -32,6 +32,14 @@ namespace NLedger.Extensibility.Net
                 var methods = ClassType.GetMethods().Where(m => m.Name == name).ToArray();
                 if (methods.Any())
                     return ExprOp.WrapFunctor(new MethodFunctor(null, methods, ValueConverter).ExprFunctor);
+
+                var field = ClassType.GetField(name);
+                if (field != null)
+                    return ExprOp.WrapFunctor(new ValueFunctor(field.GetValue(null), ValueConverter).ExprFunctor);
+
+                var prop = ClassType.GetProperty(name);
+                if (prop != null)
+                    return ExprOp.WrapFunctor(new ValueFunctor(prop.GetValue(null), ValueConverter).ExprFunctor);
             }
             return null;
         }

@@ -36,7 +36,7 @@ tag PATH
                 });
 
             var session = engine.CreateSession("-f /dev/stdin", inputText);
-            Assert.True(session.IsActive);
+            Assert.True(session.IsActive, session.ErrorText);
             Assert.Equal("Warning: \"\", line 8: Metadata check failed for (PATH: test/baseline/feat-import_py.test): (((System.IO).File).Exists(value))", session.ErrorText.Trim());
 
             var response = session.ExecuteCommand("reg");

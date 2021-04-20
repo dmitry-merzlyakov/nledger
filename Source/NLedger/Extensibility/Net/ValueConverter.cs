@@ -23,7 +23,7 @@ namespace NLedger.Extensibility.Net
                 case ValueTypeEnum.Mask: return val.AsMask;
                 case ValueTypeEnum.String: return val.AsString;
             }
-            return null;
+            return null; // TODO add casting scope to post etc
         }
 
         public Value GetValue(object obj)

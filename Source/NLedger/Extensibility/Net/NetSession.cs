@@ -23,7 +23,10 @@ namespace NLedger.Extensibility.Net
 
         public override void DefineGlobal(string name, object value)
         {
-            //throw new NotImplementedException();
+            if (String.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
+            Globals[name] = BaseFunctor.Selector(value, ValueConverter);
         }
 
         public override void Eval(string code, ExtensionEvalModeEnum mode)
@@ -48,9 +51,13 @@ namespace NLedger.Extensibility.Net
 
         protected override ExprOp LookupFunction(string name)
         {
-            //TODO check globals
+            BaseFunctor functor;
+            if (Globals.TryGetValue(name, out functor))
+                return ExprOp.WrapFunctor(functor.ExprFunctor);
+
             return RootNamespace.Lookup(Scopus.SymbolKindEnum.FUNCTION, name);
-            //return ExprOp.WrapValue(Value.ScopeValue(new NetModule()));
         }
+
+        private readonly IDictionary<string, BaseFunctor> Globals = new Dictionary<string, BaseFunctor>();
     }
 }

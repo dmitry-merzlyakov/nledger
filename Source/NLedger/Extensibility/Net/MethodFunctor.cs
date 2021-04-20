@@ -10,22 +10,19 @@ using System.Threading.Tasks;
 
 namespace NLedger.Extensibility.Net
 {
-    public class MethodFunctor
+    public class MethodFunctor : BaseFunctor
     {
         public MethodFunctor(object subject, MethodInfo[] methods, IValueConverter valueConverter)
+            : base (valueConverter)
         {
             Subject = subject;
             Methods = methods ?? throw new ArgumentNullException(nameof(methods));
-            ValueConverter = valueConverter ?? throw new ArgumentNullException(nameof(valueConverter));
         }
 
-        public IValueConverter ValueConverter { get; }
         public object Subject { get; }
         public MethodInfo[] Methods { get; }
 
-        public ExprFunc ExprFunctor => ExprFunc;
-
-        public Value ExprFunc(Scope scope)
+        public override Value ExprFunc(Scope scope)
         {
             var callScope = (scope as CallScope) ?? throw new InvalidOperationException("Expected CallScope");
             var paramList = GetParamList(callScope).ToArray();
@@ -34,19 +31,6 @@ namespace NLedger.Extensibility.Net
             var result = methodInfo.Invoke(Subject, paramList);
 
             return ValueConverter.GetValue(result);
-        }
-
-        private IEnumerable<object> GetParamList(CallScope callScope)
-        {
-            if (callScope.Value().Type == ValueTypeEnum.Sequence)
-            {
-                foreach (var val in callScope.Value().AsSequence)
-                    yield return ValueConverter.GetObject(val);
-            }
-            else
-            {
-                yield return ValueConverter.GetObject(callScope.Value());
-            }
         }
 
         private MethodInfo SelectMethod(object[] paramList)
