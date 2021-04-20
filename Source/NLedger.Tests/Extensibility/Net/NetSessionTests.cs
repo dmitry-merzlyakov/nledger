@@ -82,5 +82,41 @@ tag PATH
             Assert.False(response.HasErrors);
         }
 
+        [Fact]
+        // Net extension example: custom options and using NLedger logger
+        public void NetSession_IntegrationTest3()
+        {
+            var inputText = @"
+--myfirst
+--mysecond Hey
+";
+            // TODO 1) underscore 2) context is empty 3) custom object in global variable 4) use logger from context
+            Action<object> myFirst = context => { NLedger.Utils.Logger.Current.Info(() => "In myFirst"); };
+            Action<object,string> mySecond = (context, val) => { var a1 = context; };
+
+            var engine = new ServiceEngine(
+                createCustomProvider: mem =>
+                {
+                    return new ApplicationServiceProvider(
+                        virtualConsoleProviderFactory: () => new VirtualConsoleProvider(mem.ConsoleInput, mem.ConsoleOutput, mem.ConsoleError),
+                        extensionProviderFactory: () => new NetExtensionProvider(
+                                configureAction: extendedSession =>
+                                {
+                                    extendedSession.DefineGlobal("option_myfirst_", myFirst);
+                                    extendedSession.DefineGlobal("option_mysecond_", mySecond);
+                                }
+                            ));
+                });
+
+            var session = engine.CreateSession("-f /dev/stdin --trace 7", inputText);  // --trace 7 -> Set logging level to LOG_INFO
+            Assert.True(session.IsActive, session.ErrorText);
+
+            // TODO
+            Assert.Contains("In myFirst", session.ErrorText);
+
+            var response = session.ExecuteCommand("reg");
+            Assert.False(response.HasErrors);
+        }
+
     }
 }
