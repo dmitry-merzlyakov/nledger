@@ -118,5 +118,39 @@ tag PATH
             Assert.False(response.HasErrors);
         }
 
+        [Fact]
+        // Net extension example: importing assemblies and aliases
+        public void NetSession_IntegrationTest4()
+        {
+            var inputText = @"
+#import assembly System.IO.FileSystem            # This name is for .Net Core
+import assembly mscorlib            # This name is for .Net Core
+import alias isfile for System.IO.File.Exists
+
+tag PATH
+    check isfile(value)
+
+2012-02-29 KFC
+    ; PATH: test/baseline/feat-import_py.test
+    Expenses:Food                $20
+    Assets:Cash
+";
+
+            var engine = new ServiceEngine(
+                createCustomProvider: mem =>
+                {
+                    return new ApplicationServiceProvider(
+                        virtualConsoleProviderFactory: () => new VirtualConsoleProvider(mem.ConsoleInput, mem.ConsoleOutput, mem.ConsoleError),
+                        extensionProviderFactory: () => new NetExtensionProvider());
+                });
+
+            var session = engine.CreateSession("-f /dev/stdin", inputText);
+            Assert.True(session.IsActive, session.ErrorText);
+            Assert.Equal("Warning: \"\", line 8: Metadata check failed for (PATH: test/baseline/feat-import_py.test): (((System.IO).File).Exists(value))", session.ErrorText.Trim());
+
+            var response = session.ExecuteCommand("reg");
+            Assert.False(response.HasErrors);
+        }
+
     }
 }
