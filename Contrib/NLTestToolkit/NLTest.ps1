@@ -31,8 +31,8 @@
     If this parameter is omitted, the files are added to "NLedger" subfolder
     in the default user document folder. 
     The default file name is NLedgerTestReport-[current date and time].
-.PARAMETER ignoreListPath
-    Relative or absolute path to a file with a list of test to be ignored.
+.PARAMETER metaListPath
+    Relative or absolute path to a file with a list of test metadata.
     In case of a relative path, the tool uses the own location folder as a base.
 .PARAMETER disableIgnoreList
     Relative or absolute path to a file with a list of test to be ignored.
@@ -68,7 +68,7 @@ Param(
     [Parameter(Mandatory=$False)][string]$nledgerExePath = "",
     [Parameter(Mandatory=$False)][string]$nledgerTestPath = "..",
     [Parameter(Mandatory=$False)][string]$filterRegex = "",
-    [Parameter(Mandatory=$False)][string]$ignoreListPath = ".\NLTest.IgnoreList.xml",
+    [Parameter(Mandatory=$False)][string]$metaListPath = ".\NLTest.Meta.xml",
     [Switch]$disableIgnoreList = $False,
     [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))/NLedger/NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
     [Switch]$xmlReport = $False,
@@ -91,11 +91,11 @@ trap
 
 [string]$Script:absNLedgerExePath = if (![System.IO.Path]::IsPathRooted($nledgerExePath)) { Resolve-Path (Join-Path $Script:ScriptPath $nledgerExePath) -ErrorAction Stop } else { $nledgerExePath }
 [string]$Script:absNLedgerTestPath = if (![System.IO.Path]::IsPathRooted($nledgerTestPath)) { Resolve-Path (Join-Path $Script:ScriptPath $nledgerTestPath) -ErrorAction Stop } else { $nledgerTestPath }
-[string]$Script:absIgnoreListPath = if (![System.IO.Path]::IsPathRooted($ignoreListPath)) { Resolve-Path (Join-Path $Script:ScriptPath $ignoreListPath) -ErrorAction Stop } else { $ignoreListPath }
+[string]$Script:absMetaListPath = if (![System.IO.Path]::IsPathRooted($metaListPath)) { Resolve-Path (Join-Path $Script:ScriptPath $metaListPath) -ErrorAction Stop } else { $metaListPath }
 
 if (!(Test-Path $Script:absNLedgerExePath -PathType Leaf)) { throw "Cannot find NLedger executable file: $Script:absNLedgerExePath" }
 if (!(Test-Path $Script:absNLedgerTestPath -PathType Container)) { throw "Cannot find a folder with NLedger test: $Script:absNLedgerTestPath" }
-if (!(Test-Path $Script:absIgnoreListPath -PathType Leaf)) { throw "Cannot find Ignore List file: $Script:absIgnoreListPath" }
+if (!(Test-Path $Script:absMetaListPath -PathType Leaf)) { throw "Cannot find Ignore List file: $Script:absMetaListPath" }
 
 [string]$Script:absTestRootPath = $Script:absNLedgerTestPath
 $Script:absNLedgerTestPath = "$Script:absNLedgerTestPath$($Script:DirSeparator)test"
@@ -105,10 +105,19 @@ Write-Verbose "NLedger executable path: $Script:absNLedgerExePath"
 Write-Verbose "Test folder path: $Script:absNLedgerTestPath"
 Write-Verbose "Source folder path: $Script:absTestRootPath"
 
-[xml]$Script:ignoreListContent = Get-Content $Script:absIgnoreListPath
-$Script:ignoreListTable = @{}
-$Script:ignoreListContent.SelectNodes("/nltest-ignore-list/ignore") | ForEach { $Script:ignoreListTable[$_.test.Replace('\',$($Script:DirSeparator))] = $_.reason }
-Write-Verbose "Read IgnoreList; found $($Script:ignoreListTable.Count) test(s) to ignore"
+[xml]$Script:metaListContent = Get-Content $Script:absMetaListPath
+$Script:testCategories = @{}
+$Script:metaListContent.SelectNodes("/nltest-metadata/categories/category") | ForEach-Object { $Script:testCategories[$_.name] = ($_.SelectNodes("./test") | ForEach-Object { $_.file.Replace('\',$($Script:DirSeparator)) }) }
+Write-Verbose "Read MetaList; found $($Script:testCategories.Count) test categories"
+$Script:testCategories.Keys | ForEach-Object { Write-Verbose "Category: $_"; ( $Script:testCategories[$_] | ForEach-Object { Write-Verbose " File: $_"} )}
+
+$Script:ignoreActions = @()
+$Script:metaListContent.SelectNodes("/nltest-metadata/actions/ignore") | ForEach-Object { $Script:ignoreActions += [PsCustomObject]@{ categories=$_.categories; reason=$_.reason } }
+Write-Verbose "Found $($Script:ignoreActions.Count) ignore actions"
+
+$Script:variableActions = @()
+$Script:metaListContent.SelectNodes("/nltest-metadata/actions/variable") | ForEach-Object { $Script:variableActions += [PsCustomObject]@{ categories=$_.categories; varname=$_.varname; value=$_.value; } }
+Write-Verbose "Found $($Script:variableActions.Count) variable actions"
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
 Write-Verbose "Detected: is windows platform=$isWindowsPlatform"
@@ -345,11 +354,29 @@ function RunTestCase {
     $Private:testCaseResult.arguments = $testCase.CommandLine
     $Private:ignoreStdErr = $False
 
-    if (!$disableIgnoreList -and $Script:ignoreListTable.ContainsKey($testCase.ShortFileName)) {
-       $Private:testCaseResult.ReasonToIgnore = $Script:ignoreListTable[$testCase.ShortFileName]
-       $Private:testCaseResult.IsIgnored = $True
-       ConsoleMessage -newLine -warn "[IGNORED]"
-       return $Private:testCaseResult
+    # Find test categories
+    $Private:categories = $Script:testCategories.Keys | Where-Object { ($Script:testCategories[$_] | Where-Object { $_ -eq $testCase.ShortFileName } | Measure-Object).Count -gt 0 }
+    Write-Verbose "Test category(ies): $(if($Private:categories){[string]::Join(",", $($Private:categories))}else{'none'})"
+
+    # Process ignore actions
+    if (!$disableIgnoreList) {
+        $Private:applicableActions = $Script:ignoreActions | Where-Object { $_.categories -split "," | Where-Object { $Private:categories -contains $_ } }
+        Write-Verbose "Found $(($Private:applicableActions | Measure-Object).Count) applicable ignore action(s)"
+        if (($Private:applicableActions | Measure-Object).Count -gt 0) {
+            $Private:testCaseResult.ReasonToIgnore = [string]::Join(",", ($Private:applicableActions | ForEach-Object {$_.reason}))
+            Write-Verbose "Reason to ignore: $($Private:testCaseResult.ReasonToIgnore)"
+            $Private:testCaseResult.IsIgnored = $True
+            ConsoleMessage -newLine -warn "[IGNORED]"
+            return $Private:testCaseResult     
+        }
+    }
+
+    #Process variable actions
+    foreach($Private:varAction in $Script:variableActions) {
+        if (($Private:varAction.categories -split "," | Where-Object { $Private:categories -contains $_ } | Measure-Object).Count -gt 0) {
+            Write-Verbose "Setting environment variable: '$($Private:varAction.varname)' = '$($Private:varAction.value)'"
+            [Environment]::SetEnvironmentVariable($Private:varAction.varname, $Private:varAction.value, "Process")
+        }
     }
 
     # Finalize command line arguments and expected exit code

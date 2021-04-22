@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nltest-metadata>
+    <categories>
+        <category name="python">                <!-- Python Integration tests -->
+            <test file="baseline\feat-import_py.test" />
+            <test file="baseline\dir-import_py.test" />
+            <test file="baseline\dir-python_py.test" />
+            <test file="baseline\feat-option_py.test" />
+            <test file="baseline\feat-value_py2.test" />
+            <test file="baseline\feat-value_py3.test" />
+            <test file="regress\4D9288AE_py.test" />
+            <test file="regress\78AB4B87_py.test" />
+            <test file="regress\9188F587_py.test" />
+            <test file="regress\B21BF389_py.test" />
+            <test file="regress\xact_code_py.test" />            
+        </category>
+        <category name="datetime-error">        <!-- Tests that check specific error messages related to date and time processing -->
+            <test file="regress\BF3C1F82.test" />
+        </category>
+        <category name="dotnet">                <!-- .Net Integration tests -->
+            <test file="nledger\nl-baseline-net-1.test" />
+            <test file="nledger\nl-baseline-net-2.test" />
+            <test file="nledger\nl-baseline-net-3.test" />
+            <test file="nledger\nl-baseline-net-4.test" />
+        </category>
+    </categories>
+    <actions>
+        <ignore categories="python" reason="Requires Python integration" />
+        <ignore categories="datetime-error" reason=".Net DateTime runtime does not generate such messages as it is expected. Disabled for further decision." />
+        <!-- Configure integration tests -->
+        <variable categories="*" varname="nledgerExtensionProvider" value="" />
+        <variable categories="dotnet" varname="nledgerExtensionProvider" value="dotnet" />
+    </actions>
+</nltest-metadata>
