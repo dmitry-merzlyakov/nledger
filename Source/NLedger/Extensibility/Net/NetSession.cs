@@ -46,7 +46,14 @@ namespace NLedger.Extensibility.Net
             bool isComment = false;
             var args = StringExtensions.SplitArguments(StringExtensions.NextElement(ref line)).Where(s => !(isComment || (isComment = s[0].IsCommentChar()))).ToArray();
 
-            if (String.Equals(line, "assembly", StringComparison.InvariantCultureIgnoreCase))
+            if (String.Equals(line, "assemblies", StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (args.Length != 0)
+                    throw new ParseError("Directive 'import assemblies' does not require any arguments");
+
+                LoadAssembliesDirective();
+            }
+            else if (String.Equals(line, "assembly", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (args.Length != 1)
                     throw new ParseError("Directive 'import assembly' requires an assembly name as a single argument");
@@ -68,7 +75,7 @@ namespace NLedger.Extensibility.Net
                 AddAliasDirective(args[0], args[2]);
             }
             else
-                throw new ParseError("Directive 'import' for dotNet extension can only contain 'assembly', 'file' or 'alias' clauses.");
+                throw new ParseError("Directive 'import' for dotNet extension can only contain 'assemblies', 'assembly', 'file' or 'alias' clauses.");
         }
 
         public override void Initialize()
@@ -90,13 +97,15 @@ namespace NLedger.Extensibility.Net
             return RootNamespace.Lookup(Scopus.SymbolKindEnum.FUNCTION, name);
         }
 
+        protected virtual void LoadAssembliesDirective()
+        {
+            NamespaceResolver.AddAllAssemblies();
+        }
+
         protected virtual void LoadAssemblyDirective(string assemblyName)
         {
             if (String.IsNullOrWhiteSpace(assemblyName))
                 throw new ArgumentNullException(nameof(assemblyName));
-
-            if (assemblyName == "*")
-                NamespaceResolver.AddAllAssemblies();
 
             try
             {

@@ -35,26 +35,30 @@ namespace NLedger.Extensibility.Net
 
         private MethodInfo SelectMethod(object[] paramList)
         {
-            var selected = Methods.Where(m => IsApplicableForParameters(m, paramList));
+            var selected = Methods.
+                Select(m => new Tuple<MethodInfo, int>(m, IsApplicableForParameters(m, paramList))).
+                Where(t => t.Item2 >= 0).
+                OrderBy(t => t.Item2).
+                LastOrDefault()?.Item1;
 
-            if (!selected.Any())
-                throw new InvalidOperationException("TODO");
-            if (selected.Count() > 1)
+            if (selected == null)
                 throw new InvalidOperationException("TODO");
 
-            return selected.First();
+            return selected;
         }
 
-        private bool IsApplicableForParameters(MethodInfo methodInfo, object[] paramList)
+        private int IsApplicableForParameters(MethodInfo methodInfo, object[] paramList)
         {
+            var matchedCount = 0;
             var methodParams = methodInfo.GetParameters();
+
             for (int i = 0; i<methodParams.Length; i++)
             {
                 var methodParam = methodParams[i];
                 if (i >= paramList.Length)
                 {
                     if (!methodParam.IsOptional)
-                        return false;
+                        return -1;  // Not appliable method; cannot be used for given param list
                 }
                 else
                 {
@@ -62,11 +66,13 @@ namespace NLedger.Extensibility.Net
                     if (paramValue != null)
                     {
                         if (!methodParam.ParameterType.IsAssignableFrom(paramValue.GetType()))  // TODO - check conversion possibility; TODO - caching
-                            return false;
+                            return -1;  // Not appliable method; cannot be used for given param list
                     }
+                    matchedCount++;
                 }                
             }
-            return true;
+
+            return matchedCount;
         }
     }
 }
