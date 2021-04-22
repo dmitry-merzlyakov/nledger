@@ -12,6 +12,8 @@ namespace NLedger.Extensibility.Net
         bool IsNamespace(string name);
         bool IsClass(string name);
         Type GetClassType(string name);
+
+        void AddAllAssemblies();
         void AddAssembly(Assembly assembly);
     }
 }

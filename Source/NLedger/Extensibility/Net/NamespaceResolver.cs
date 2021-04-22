@@ -12,7 +12,7 @@ namespace NLedger.Extensibility.Net
             GlobalScan = globalScan;
         }
 
-        public bool GlobalScan { get; }
+        public bool GlobalScan { get; private set; }
 
         public bool IsClass(string name)
         {
@@ -43,6 +43,21 @@ namespace NLedger.Extensibility.Net
         public bool ContainsAssembly(Assembly assembly)
         {
             return Data.ScannedAssemblies.Contains(assembly);
+        }
+
+        public void AddAllAssemblies()
+        {
+            if (!GlobalScan)
+            {
+                lock(SyncRoot)
+                {
+                    if (!GlobalScan)
+                    {
+                        _AppDomainData = new AppDomainData(true);
+                        GlobalScan = true;
+                    }
+                }
+            }
         }
 
         public void AddAssembly(Assembly assembly)

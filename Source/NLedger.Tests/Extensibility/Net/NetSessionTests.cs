@@ -123,8 +123,8 @@ tag PATH
         public void NetSession_IntegrationTest4()
         {
             var inputText = @"
-#import assembly System.IO.FileSystem            # This name is for .Net Core
-import assembly mscorlib            # This name is for .Net Core
+import assembly System.IO.FileSystem            # This name is for .Net Core
+import assembly mscorlib                        # This name is for .Net Framework
 import alias isfile for System.IO.File.Exists
 
 tag PATH
@@ -146,7 +146,7 @@ tag PATH
 
             var session = engine.CreateSession("-f /dev/stdin", inputText);
             Assert.True(session.IsActive, session.ErrorText);
-            Assert.Equal("Warning: \"\", line 8: Metadata check failed for (PATH: test/baseline/feat-import_py.test): (((System.IO).File).Exists(value))", session.ErrorText.Trim());
+            Assert.Equal("Warning: \"\", line 12: Metadata check failed for (PATH: test/baseline/feat-import_py.test): isfile(value)", session.ErrorText.Trim());
 
             var response = session.ExecuteCommand("reg");
             Assert.False(response.HasErrors);

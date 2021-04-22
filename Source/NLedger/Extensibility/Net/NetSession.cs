@@ -1,6 +1,7 @@
 ﻿using NLedger.Expressions;
 using NLedger.Textual;
 using NLedger.Utility;
+using NLedger.Utils;
 using NLedger.Values;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace NLedger.Extensibility.Net
 {
     public class NetSession : ExtendedSession
     {
+        public static readonly string LoggerCategory = "extension.dotnet";
+
         public NetSession(INamespaceResolver namespaceResolver, IValueConverter valueConverter)
         {
             NamespaceResolver = namespaceResolver ?? throw new ArgumentNullException(nameof(namespaceResolver));
@@ -92,9 +95,19 @@ namespace NLedger.Extensibility.Net
             if (String.IsNullOrWhiteSpace(assemblyName))
                 throw new ArgumentNullException(nameof(assemblyName));
 
-            var assembly = Assembly.Load(assemblyName);
-            if (assembly != null)
-                NamespaceResolver.AddAssembly(assembly);
+            if (assemblyName == "*")
+                NamespaceResolver.AddAllAssemblies();
+
+            try
+            {
+                var assembly = Assembly.Load(assemblyName);
+                if (assembly != null)
+                    NamespaceResolver.AddAssembly(assembly);
+            }
+            catch (Exception ex)
+            {
+                Logger.Current.Debug(LoggerCategory, () => $"Error loading assembly {assemblyName}: {ex.ToString()}");
+            }
         }
 
         protected virtual void LoadAssemblyFileDirective(string assemblyFileName)
@@ -107,7 +120,7 @@ namespace NLedger.Extensibility.Net
                 NamespaceResolver.AddAssembly(assembly);
         }
 
-        private void AddAliasDirective(string aliasName, string path)
+        protected virtual void AddAliasDirective(string aliasName, string path)
         {
             if (String.IsNullOrWhiteSpace(aliasName))
                 throw new ArgumentNullException(nameof(aliasName));
@@ -117,8 +130,7 @@ namespace NLedger.Extensibility.Net
             if (aliasName.Contains('.'))
                 throw new ArgumentException($"Alias '{aliasName}' contains dot(s) that are not allowed in alias names");
 
-
-            throw new NotImplementedException("TODO");
+            Globals[aliasName] = PathFunctor.ParsePath(path, NamespaceResolver, ValueConverter);
         }
 
         private readonly IDictionary<string, BaseFunctor> Globals = new Dictionary<string, BaseFunctor>();
