@@ -12,4 +12,8 @@
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy RemoteSigned $(ProjectDir)PostBuildEvent.ps1 -ProjectDir $(ProjectDir) -TargetPath $(TargetPath)" />
+  </Target>
+
 </Project>

@@ -13,13 +13,13 @@ namespace NLedger.Extensibility.Python
         {
             try
             {
-                PythonHostSettings = PythonHostSettings.Read(PythonHostSettingsName);
-                PythonHost = new PythonHost(PythonHostSettings);
+                //PythonHostSettings = PythonHostSettings.Read(PythonHostSettingsName);
+                //PythonHost = new PythonHost(PythonHostSettings);
                 IsInitialized = true;
             }
             catch(Exception ex)
             {
-                Logger.Current.Debug("python", () => $"NLedger Python Extension is not configured (file '{PythonHostSettingsName}' not found or incorrect)");
+                //Logger.Current.Debug("python", () => $"NLedger Python Extension is not configured (file '{PythonHostSettingsName}' not found or incorrect)");
             }
         }
 
