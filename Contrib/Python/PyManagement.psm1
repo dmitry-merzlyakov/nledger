@@ -87,7 +87,7 @@ function Get-PipVersion {
     if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
     [string]$Private:result = $(& "$pyExecutable" "-m" "pip" "--version") 2>&1
     Write-Verbose "Python returned: $Private:result"
-    if ($Private:result -match "pip\s(?<pipver>\d+\.\d+\.\d+)\sfrom") { $Matches["pipver"] } else { "" }
+    if ($Private:result -match "pip\s(?<pipver>\d+\.\d+(\.\d+)?)\sfrom") { $Matches["pipver"] } else { "" }
 }
 
 function Test-PyModuleInstalled {

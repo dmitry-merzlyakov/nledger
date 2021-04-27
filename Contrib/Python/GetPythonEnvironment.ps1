@@ -110,7 +110,7 @@ Write-Verbose "Found pyDll: $pyDll"
 $pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
 if(!$pyNetModuleInfo) {
     Write-Verbose "PythonNet is not installed; installing $pyNetPath"
-    $null = Install-PyModule -pyExe $pyExecutable -pyModule $pyNetPackage    
+    $null = Install-PyModule -pyExe $pyExecutable -pyModule $pyNetPath    
     $pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
     if (!$pyNetModuleInfo) {throw "Pythonnet installation error"}
     Write-Verbose "Installed PythonNet version is $($pyNetModuleInfo.Version)"
