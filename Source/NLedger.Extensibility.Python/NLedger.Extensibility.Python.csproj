@@ -6,7 +6,7 @@
     <Company>Dmitry Merzlyakov</Company>
     <Product>NLedger, the double-entry accounting tool</Product>
     <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
-    <Copyright>Copyright © 2015-2021, Dmitry Merzlyakov</Copyright>
+    <Copyright>Copyright Â© 2015-2021, Dmitry Merzlyakov</Copyright>
     <VersionPrefix>0.8.3</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
     <SourceRevisionId>dev-environment</SourceRevisionId>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy RemoteSigned $(ProjectDir)PostBuildEvent.ps1 -TargetDir $(TargetDir)" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy RemoteSigned $(ProjectDir)PostBuildEvent.ps1 -TargetDir $(TargetDir) -VersionPrefix $(VersionPrefix)" />
   </Target>
 
 </Project>

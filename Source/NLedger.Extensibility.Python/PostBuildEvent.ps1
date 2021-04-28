@@ -7,7 +7,8 @@
 
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory=$True)][string]$TargetDir
+    [Parameter(Mandatory=$True)][string]$TargetDir,
+    [Parameter(Mandatory=$True)][string]$VersionPrefix
 )
 
 trap 
@@ -32,7 +33,7 @@ if (!$settings) {throw "Python environment is not properly configured (GetPython
 Write-Verbose "Building NLedger Python package"
 
 $packageBinaryFiles = [string]::Join(";",(Get-ChildItem -Path "$TargetDir/NLedger.*" -Exclude "*.pdb" | ForEach-Object { $_.FullName }))
-$packageVersion = "0.8.3"
+$packageVersion = $VersionPrefix
 
 $null = (. $Script:pythonBuild -pyExecutable $settings.PyExecutable -packageBinaryFiles $packageBinaryFiles -packageVersion $packageVersion -installPackage)
 
