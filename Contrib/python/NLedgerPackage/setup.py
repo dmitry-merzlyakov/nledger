@@ -1,39 +1,31 @@
 import setuptools
-
+import shutil
 import os
 from distutils.command.build_py import build_py
 
-# Prepare dotnet binaries
+# Prepare list of binaries and package version
 
-from subprocess import Popen, PIPE
-import shutil
+data = os.getenv('NLedgerPackageBuildBinaries', '').split(';')
+ver = os.getenv('NLedgerPackageBuildVersion', '')
 
-psfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'setup_runtime.ps1')
-process = Popen(['powershell.exe', '-NoLogo', '-ExecutionPolicy', 'RemoteSigned', '-File', psfile], stdout=PIPE)
-(output, err) = process.communicate()
-exit_code = process.wait()
+if not data:
+    raise Exception("No binary files specified; environment variable NLedgerPackage.Build.Binaries must contain semicolon-separated list of files.")
 
-if exit_code > 0:
-    raise Exception("Dotnet build script failed")
-
-data = output.splitlines()
-ver = data.pop(0).decode("utf-8")
-
-print (data)
-print (data[0].decode("utf-8"))
+if not ver:
+    raise Exception("Version is not specified; environment variable NLedgerPackage.Build.Version must contain a package version.")
 
 # Custom build extension
 
-class my_build_py(build_py):
+class ledger_build_py(build_py):
     def run(self):
         # honor the --dry-run flag
         if not self.dry_run:
 
-            target_dir = os.path.join(self.build_lib, 'mypytest/runtime')
+            target_dir = os.path.join(self.build_lib, 'ledger/runtime')
             self.mkpath(target_dir)
 
             for datafile in data:
-                shutil.copy(datafile.decode("utf-8"), target_dir) 
+                shutil.copy(datafile, target_dir) 
 
         # distutils uses old-style classes, so no super()
         build_py.run(self)
@@ -42,5 +34,5 @@ class my_build_py(build_py):
 
 setuptools.setup(
   version=ver,
-  cmdclass={'build_py': my_build_py}
+  cmdclass={'build_py': ledger_build_py}
 )
