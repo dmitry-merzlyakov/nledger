@@ -916,7 +916,7 @@ namespace NLedger.Textual
                         startIndex = i;
 
                     if (startIndex < line.Length)
-                        script.AppendLine(line.Substring(startIndex));
+                        script.AppendLine(line.SafeSubstring(startIndex + 1));
                 }
             }
 

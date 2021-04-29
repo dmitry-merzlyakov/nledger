@@ -32,8 +32,18 @@ namespace NLedger.Extensibility.Python
 
         public override void Eval(string code, ExtensionEvalModeEnum mode)
         {
-            // TODO
-            PythonEngine.Exec(code, MainModule.ModuleGlobals.Handle);
+            if (!IsInitialized())
+                Initialize();
+
+            try
+            {
+                PythonEngine.Exec(code, MainModule.ModuleGlobals.Handle);
+            }
+            catch (Exception ex)
+            {
+                ErrorContext.Current.AddErrorContext(ex.ToString());
+                throw new RuntimeError("Failed to evaluate Python code");
+            }
         }
 
         public override void ImportOption(string name)

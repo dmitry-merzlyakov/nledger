@@ -76,7 +76,7 @@ namespace NLedger.Extensibility.Python
                         }
                         else
                         {
-                            return ExprOp.WrapFunctor(GetFunctor(obj, name));
+                            return ExprOp.WrapFunctor(new PythonFunctor(name, obj).ExprFunctor);
                         }
                     }
                 }
@@ -85,9 +85,5 @@ namespace NLedger.Extensibility.Python
             return null;
         }
 
-        private ExprFunc GetFunctor(PyObject obj, string name)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
