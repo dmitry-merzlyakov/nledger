@@ -37,3 +37,4 @@ clr.AddReference(dllName)
 # Import library classes and specifying custom helper methods
 
 from NLedger import Post
+from NLedger.Amounts import Amount

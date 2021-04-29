@@ -20,8 +20,8 @@ if not ntpath.isfile(configfile):
     raise Exception("File not found: " + configfile)
 if not ntpath.isfile(runtimefile):
     raise Exception("File not found: " + runtimefile)
-if not ntpath.isfile(corefile):
-    raise Exception("File not found: " + corefile)
+#if not ntpath.isfile(corefile):
+#    raise Exception("File not found: " + corefile)
 
 # Manage configuration file
 
