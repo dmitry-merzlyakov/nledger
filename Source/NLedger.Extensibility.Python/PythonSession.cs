@@ -32,7 +32,8 @@ namespace NLedger.Extensibility.Python
 
         public override void Eval(string code, ExtensionEvalModeEnum mode)
         {
-            throw new NotImplementedException();
+            // TODO
+            PythonEngine.Exec(code, MainModule.ModuleGlobals.Handle);
         }
 
         public override void ImportOption(string name)

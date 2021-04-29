@@ -27,7 +27,7 @@ namespace NLedger.Extensibility.Python
             PythonSession = pythonSession;
             ModuleName = name;
             ModuleObject = obj;
-            ModuleGlobals = (PyDict)obj.GetAttr("__dict__");
+            ModuleGlobals = new PyDict(obj.GetAttr("__dict__"));
         }
 
         public PythonSession PythonSession { get; }
