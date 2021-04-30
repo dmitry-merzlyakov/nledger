@@ -25,10 +25,10 @@
         </category>
     </categories>
     <actions>
-        <ignore categories="python" reason="Requires Python integration" />
         <ignore categories="datetime-error" reason=".Net DateTime runtime does not generate such messages as it is expected. Disabled for further decision." />
         <!-- Configure integration tests -->
         <variable categories="*" varname="nledgerExtensionProvider" value="" />
         <variable categories="dotnet" varname="nledgerExtensionProvider" value="dotnet" />
+        <variable categories="python" varname="nledgerExtensionProvider" value="python" />
     </actions>
 </nltest-metadata>

@@ -41,8 +41,7 @@ namespace NLedger.Extensibility.Python
             if (obj.IsNone())
                 return new Value();
 
-            var pythonType = obj.GetPythonType();
-            var pythonTypeName = pythonType.GetAttr("__name__").ToString();
+            var pythonTypeName = obj.GetPythonTypeName();
 
             if (pythonTypeName == "bool")
                 return Value.Get(obj.As<bool>());

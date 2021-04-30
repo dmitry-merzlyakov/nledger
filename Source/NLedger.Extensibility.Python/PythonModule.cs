@@ -68,9 +68,9 @@ namespace NLedger.Extensibility.Python
                     var obj = ModuleGlobals.GetItem(name);
                     if (obj != null)
                     {
-                        var objModule = obj as PyModule;
-                        if (objModule != null)
+                        if (obj.IsModule())
                         {
+                            var objModule = new PyModule(obj);
                             var pythonModule = PythonSession.GetOrCreateModule(objModule, name);
                             return ExprOp.WrapValue(Value.ScopeValue(pythonModule));
                         }
