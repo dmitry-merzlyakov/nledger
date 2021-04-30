@@ -76,7 +76,7 @@ namespace NLedger.Extensibility.Python
                         }
                         else
                         {
-                            return ExprOp.WrapFunctor(new PythonFunctor(name, obj).ExprFunctor);
+                            return ExprOp.WrapFunctor(new PythonFunctor(name, obj, PythonSession.PythonValueConverter).ExprFunctor);
                         }
                     }
                 }

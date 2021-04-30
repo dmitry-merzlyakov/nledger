@@ -15,6 +15,7 @@ namespace NLedger.Extensibility.Python
         public bool IsSessionInitialized { get; private set; }
         public PythonModule MainModule { get; private set; }
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
+        public IPythonValueConverter PythonValueConverter { get; } = new PythonValueConverter();
 
         public PythonModule GetOrCreateModule(PyModule pyModule, string name)
         {
