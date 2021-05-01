@@ -52,7 +52,7 @@ namespace NLedger.Extensibility.Python
             if (!IsInitialized())
                 Initialize();
 
-            var isPyFile = str.Contains(".py");
+            var isPyFile = str.EndsWith(".py");
             var name = isPyFile ? AddPath(str) : str;
 
             try
@@ -136,7 +136,7 @@ namespace NLedger.Extensibility.Python
                 paths.Insert(0, pyParent);
             sysDict["path"] = paths;
 
-            return fileSystem.GetFileName(str);
+            return System.IO.Path.GetFileNameWithoutExtension(fileSystem.GetFileName(str));
         }
 
         private void ImportModule(string name)
