@@ -50,7 +50,7 @@ namespace NLedger.Extensibility.Python
             if (!importDirect)
             {
                 ModuleObject = mod;
-                ModuleGlobals = (PyDict)globals;
+                ModuleGlobals = new PyDict(globals);
             }
             else
             {

@@ -47,9 +47,26 @@ namespace NLedger.Extensibility.Python
             }
         }
 
-        public override void ImportOption(string name)
+        public override void ImportOption(string str)
         {
-            throw new NotImplementedException();
+            if (!IsInitialized())
+                Initialize();
+
+            var isPyFile = str.Contains(".py");
+            var name = isPyFile ? AddPath(str) : str;
+
+            try
+            {
+                if (isPyFile)
+                    MainModule.ImportModule(name, true);
+                else
+                    ImportModule(str);
+            }
+            catch (PythonException ex)
+            {
+                ErrorContext.Current.AddErrorContext(ex.ToString());
+                throw new RuntimeError($"Python failed to import: {str}");
+            }
         }
 
         public override void Initialize()
@@ -99,6 +116,33 @@ namespace NLedger.Extensibility.Python
         protected override ExprOp LookupFunction(string name)
         {
             return MainModule.Lookup(Scopus.SymbolKindEnum.FUNCTION, name);
+        }
+
+        private string AddPath(string str)
+        {
+            var sysModule = Py.Import("sys");
+            var sysDict = sysModule.GetAttr("__dict__");
+            var paths = new PyList(sysDict["path"]);
+
+            var fileSystem = MainApplicationContext.Current.ApplicationServiceProvider.FileSystemProvider;
+
+            var cwd = ParsingContext.GetCurrent().CurrentPath;
+            var parent = fileSystem.GetDirectoryName(fileSystem.GetFullPath(fileSystem.PathCombine(cwd, str)));
+
+            Logger.Current.Debug("python.interp", () => $"Adding {parent} to PYTHONPATH");
+
+            var pyParent = parent.ToPython();
+            if (!paths.Contains(pyParent))
+                paths.Insert(0, pyParent);
+            sysDict["path"] = paths;
+
+            return fileSystem.GetFileName(str);
+        }
+
+        private void ImportModule(string name)
+        {
+            var module = new PythonModule(this, name);
+            MainModule.DefineGlobal(name, module.ModuleObject);
         }
     }
 }
