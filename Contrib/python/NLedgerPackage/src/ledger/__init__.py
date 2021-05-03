@@ -38,3 +38,29 @@ clr.AddReference(dllName)
 
 from NLedger import Post
 from NLedger.Amounts import Amount
+from NLedger.Extensibility.Python import PythonSession
+
+# Routine to acquire and release output streams
+
+from io import StringIO
+
+class RedirectWrapperIO(StringIO):
+
+    is_error = False
+
+    def __init__(self, is_error):
+        self.is_error = is_error
+
+    def write(self,s):
+        return PythonSession.ConsoleWrite(s, self.is_error)
+
+_stdout = sys.stdout
+_stderr = sys.stderr
+
+def acquire_output_streams():
+    sys.stdout = RedirectWrapperIO(False)
+    sys.stderr = RedirectWrapperIO(True)
+
+def release_output_streams():
+    sys.stdout = _stdout
+    sys.stderr = _stderr

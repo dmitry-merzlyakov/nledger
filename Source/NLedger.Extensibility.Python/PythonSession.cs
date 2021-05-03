@@ -12,10 +12,21 @@ namespace NLedger.Extensibility.Python
 {
     public class PythonSession : ExtendedSession
     {
+        /// <summary>
+        /// Helper static method that routes text to Virtual Console standard output. Used by Python Ledger module to redirect output stream.
+        /// </summary>
+        public static int ConsoleWrite(string s, bool isError = false)
+        {
+            var consoleProvider = MainApplicationContext.Current?.ApplicationServiceProvider.VirtualConsoleProvider;
+            (isError ? consoleProvider.ConsoleError : consoleProvider.ConsoleOutput).Write(s);
+            return s?.Length ?? 0;
+        }
+
         public bool IsSessionInitialized { get; private set; }
         public PythonModule MainModule { get; private set; }
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
         public IPythonValueConverter PythonValueConverter { get; } = new PythonValueConverter();
+        public PyModule LedgerModule { get; private set; }
 
         public PythonModule GetOrCreateModule(PyModule pyModule, string name)
         {
@@ -84,7 +95,10 @@ namespace NLedger.Extensibility.Python
                     throw new InvalidOperationException("assert(Py_IsInitialized());");
 
                 MainModule = new PythonModule(this, "__main__", Py.Import("__main__"));
-                Py.Import("ledger");
+                LedgerModule = Py.Import("ledger");
+
+                // [DM] Redirecting output streams
+                LedgerModule.Exec("acquire_output_streams()");
 
                 IsSessionInitialized = true;
             }
@@ -101,6 +115,12 @@ namespace NLedger.Extensibility.Python
         public override bool IsInitialized()
         {
             return IsSessionInitialized;
+        }
+
+        public override void Dispose()
+        {
+            LedgerModule?.Exec("release_output_streams()");
+            base.Dispose();
         }
 
         public override Value PythonCommand(CallScope scope)

@@ -95,7 +95,7 @@ namespace NLedger.Extensibility
             return Value.Empty;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             MainApplicationContext.Current?.SetExtendedSession(null);
         }
