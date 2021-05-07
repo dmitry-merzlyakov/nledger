@@ -40,6 +40,26 @@ from NLedger import Post
 from NLedger.Amounts import Amount
 from NLedger.Extensibility.Python import PythonSession
 
+# First module initialization
+
+PythonSession.PythonModuleInitialization()
+
+# Export Ledger classes and globals
+
+from NLedger.Extensibility.Export import CommodityExport
+commodities = CommodityExport.commodities
+COMMODITY_STYLE_DEFAULTS = CommodityExport.COMMODITY_STYLE_DEFAULTS;
+COMMODITY_STYLE_SUFFIXED = CommodityExport.COMMODITY_STYLE_SUFFIXED;
+COMMODITY_STYLE_SEPARATED = CommodityExport.COMMODITY_STYLE_SEPARATED;
+COMMODITY_STYLE_DECIMAL_COMMA = CommodityExport.COMMODITY_STYLE_DECIMAL_COMMA;
+COMMODITY_STYLE_TIME_COLON = CommodityExport.COMMODITY_STYLE_TIME_COLON;
+COMMODITY_STYLE_THOUSANDS = CommodityExport.COMMODITY_STYLE_THOUSANDS;
+COMMODITY_NOMARKET = CommodityExport.COMMODITY_NOMARKET;
+COMMODITY_BUILTIN = CommodityExport.COMMODITY_BUILTIN;
+COMMODITY_WALKED = CommodityExport.COMMODITY_WALKED;
+COMMODITY_KNOWN = CommodityExport.COMMODITY_KNOWN;
+COMMODITY_PRIMARY = CommodityExport.COMMODITY_PRIMARY;
+
 # Routine to acquire and release output streams
 
 from io import StringIO

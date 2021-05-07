@@ -8,6 +8,7 @@
 // **********************************************************************************
 using NLedger.Amounts;
 using NLedger.Annotate;
+using NLedger.Extensibility.Export;
 using NLedger.Times;
 using NLedger.Utility;
 using NLedger.Utils;
@@ -32,7 +33,7 @@ namespace NLedger.Commodities
     /// <summary>
     /// Ported from commodity_pool_t
     /// </summary>
-    public class CommodityPool
+    public class CommodityPool : ICommodityPoolExport
     {
         public static CommodityPool Current
         {
@@ -430,6 +431,28 @@ namespace NLedger.Commodities
             Commodities.Add(name, commodity);
             return commodity;
         }
+
+        #region ICommodityPoolExport
+        public Commodity null_commodity => NullCommodity;
+        public Commodity default_commodity { get => DefaultCommodity; set => DefaultCommodity = value; }
+        public bool keep_base { get => KeepBase; set => KeepBase = value; }
+        public string price_db { get => PriceDb; set => PriceDb = value; }
+        public long quote_leeway { get => QuoteLeeway; set => QuoteLeeway = value; }
+        public bool get_quotes { get => GetQuotes; set => GetQuotes = value; }
+        public Func<Commodity, Commodity, PricePoint?> get_commodity_quote { get => GetCommodityQuote; set => GetCommodityQuote = value; }
+
+        public Commodity create(string symbol) => Create(symbol);
+        public Commodity create(string symbol, Annotation details) => Create(symbol, details);
+        public Commodity find_or_create(string symbol) => FindOrCreate(symbol);
+        public Commodity find_or_create(string symbol, Annotation details) => FindOrCreate(symbol, details);
+        public Commodity find(string name) => Find(name);
+        public Commodity find(string name, Annotation details) => Find(name, details);
+        public void exchange(Commodity commodity, Amount per_unit_cost) => Exchange(commodity, per_unit_cost, TimesCommon.Current.CurrentTime);
+        public void exchange(Commodity commodity, Amount per_unit_cost, DateTime moment) => Exchange(commodity, per_unit_cost, moment);
+        public void exchange(Amount amount, Amount cost, bool is_per_unit, bool add_prices, DateTime? moment, string tag) => Exchange(amount, cost, is_per_unit, add_prices, moment, tag);
+        public Tuple<Commodity, PricePoint> parse_price_directive(string line, bool doNotAddPrice = false, bool noDate = false) => ParsePriceDirective(line, doNotAddPrice, noDate);
+        public Commodity parse_price_expression(string str, bool addPrice = true, DateTime? moment = null) => ParsePriceExpression(str, addPrice, moment);
+        #endregion
 
         private const string DebugCommodityDownload = "commodity.download";
     }

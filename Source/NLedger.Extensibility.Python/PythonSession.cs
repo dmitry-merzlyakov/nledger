@@ -6,6 +6,7 @@ using NLedger.Values;
 using Python.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NLedger.Extensibility.Python
@@ -20,6 +21,20 @@ namespace NLedger.Extensibility.Python
             var consoleProvider = MainApplicationContext.Current?.ApplicationServiceProvider.VirtualConsoleProvider;
             (isError ? consoleProvider.ConsoleError : consoleProvider.ConsoleOutput).Write(s);
             return s?.Length ?? 0;
+        }
+
+        public static void PythonModuleInitialization()
+        {
+            // MainApplicationContext is empty only if Python module is being initialized in Python session (not in NLedger process).
+            // Further code initializes global context for Python session.
+            if (MainApplicationContext.Current == null)
+            {
+                var context = new MainApplicationContext();   // TODO - read settings.
+                context.AcquireCurrentThread(); // TODO - add release code.
+                var pythonSession = new PythonSession();
+                context.SetExtendedSession(pythonSession);
+                Session.SetSessionContext(pythonSession);
+            }
         }
 
         public bool IsSessionInitialized { get; private set; }
@@ -119,18 +134,43 @@ namespace NLedger.Extensibility.Python
 
         public override void Dispose()
         {
-            LedgerModule?.Exec("release_output_streams()");
+            LedgerModule?.Exec("release_output_streams()");  // TOSO - check PyEngine status
             base.Dispose();
         }
 
-        public override Value PythonCommand(CallScope scope)
+        public override Value PythonCommand(CallScope args)
         {
-            throw new NotImplementedException("TODO");
+            if (!IsInitialized())
+                Initialize();
+
+            var argv = new List<string>();
+
+            argv.Add(Environment.GetCommandLineArgs().FirstOrDefault());  // TODO
+
+            for (int i = 0; i < args.Size; i++)
+                argv.Add(args.Get<string>(i));
+
+            int status = 1;
+
+            try
+            {
+                status = Runtime.Py_Main(argv.Count, argv.ToArray());
+            }
+            catch (Exception ex)
+            {
+                ErrorContext.Current.AddErrorContext(ex.ToString());
+                throw new RuntimeError("Failed to execute Python module");
+            }
+
+            if (status != 0)
+                throw new Exception(status.ToString()); // TODO
+
+            return Value.Empty;
         }
 
         public override Value ServerCommand(CallScope args)
         {
-            throw new NotImplementedException("TODO");
+            throw new NotImplementedException("TODO2");
         }
 
         protected override ExprOp LookupFunction(string name)
