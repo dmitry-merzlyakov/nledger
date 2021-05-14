@@ -113,7 +113,12 @@ function Test-PyModuleInstalled {
             Location = $(if($Private:result -match "\nLocation:\s*(?<loc>.*)\n") { $Matches["loc"]} else {""})
             Requires = $(if($Private:result -match "\nRequires:(?<req>.*)\n") { $Matches["req"]} else {""})
             RequiredBy = $(if($Private:result -match "\nRequired-by:\s*(?<rby>.*)$") { $Matches["rby"]} else {""})
+            MajorVersion = 0
         }
+
+        if($Private:packageInfo.Version -match "^(?<major>\d+)\.") {
+            $Private:packageInfo.MajorVersion = [int]$Matches["major"]
+        } else {throw "Incorrect package version $($pyNetModuleInfo.Version)"}    
     
         Write-Verbose "Module info: $Private:packageInfo"
         return $Private:packageInfo

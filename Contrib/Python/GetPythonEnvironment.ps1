@@ -38,11 +38,17 @@ Allows updating the settings file.
 #>
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory=$False)][string]$pyExecutable,
-    [Parameter(Mandatory=$False)][string]$pyEmbedVersion = "3.8.8",
-    [Switch][bool]$preferEmbedded = $False,
-    [Switch][bool]$configurePython = $False,
-    [Switch][bool]$settingsUpdate = $False
+    [Switch][bool]$discover = $False,
+    [Switch][bool]$status = $False,
+    [Switch][bool]$mount = $False,
+    [Switch][bool]$enable = $False,
+    [Switch][bool]$testconn = $False,
+    [Switch][bool]$disable = $False,
+    [Switch][bool]$dismount = $False,
+    [Switch][bool]$install = $False,
+    [Switch][bool]$uninstall = $False,
+    [Parameter(Mandatory=$False)][string]$path,
+    [Parameter(Mandatory=$False)][string]$embed
 )
 
 # set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process
@@ -55,7 +61,7 @@ trap
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath\PyManagement.psm1 -Force
-Import-Module $Script:ScriptPath\Settings.psm1 -Force
+#Import-Module $Script:ScriptPath\Settings.psm1 -Force
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
 
@@ -64,7 +70,113 @@ Import-Module $Script:ScriptPath\Settings.psm1 -Force
 $appPrefix = "NLedger"
 $pyEmbedPlatform = "amd64"
 $pyNetModule = "PythonNet"
+$pyLedgerModule = "Ledger"
 $pyNetPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/pythonnet-3.0.0.dev1-py3-none-any.whl")
+
+
+### Functions ###
+
+function GetPyInfo {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)][string]$pyExecutable)
+
+    $Private:info = [PSCustomObject]@{
+        error = ""
+        warning =""
+        pyExecutable = $pyExecutable
+        pyVersion = $null
+        pipVersion = $null
+        pyHome = ""
+        pyPath = ""
+        pyDll = ""
+        pyNetModuleInfo = $null
+        pyNetRuntimeDll = ""
+        pyLedgerModuleInfo = $null
+    }
+
+    if (Test-Path -LiteralPath $pyExecutable -PathType Leaf) {
+        $Private:info.pyVersion = Get-PyExpandedVersion -pyExe $pyExecutable
+        if ($Private:info.pyVersion) {
+            #TODO check Python platform
+            $Private:info.pipVersion = Get-PipVersion -pyExe $pyExecutable
+            if ($Private:info.pipVersion) {
+                $Private:info.pyHome = Split-Path $pyExecutable
+                $Private:info.pyPath = [String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
+                $Private:info.pyDll = "python$($pyVersion.Major)$($pyVersion.Minor)"
+                $Private:info.pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
+                if ($Private:info.pyNetModuleInfo) {
+                    if ($Private:info.pyNetModuleInfo.MajorVersion -ge 3) {
+                        $Private:info.pyNetRuntimeDll = [System.IO.Path]::GetFullPath("$($pyNetModuleInfo.Location.Trim())/pythonnet/runtime/Python.Runtime.dll")
+                        if(Test-Path -LiteralPath $pyNetRuntimeDll -PathType Leaf) {
+                            #TODO check PythonNet runtime platform (x86 vs x64)
+                            $Private:info.pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyLedgerModule
+                        } else { $Private:info.error = "Pythonnet runtime dll not found: $pyNetRuntimeDll" }
+                    } else { $Private:info.error = "Required PythonNet version is 3 or higher. Current version is $($pyNetModuleInfo.Version). Please, upgrade it manually" }
+                } else { $Private:info.warning = "PythonNet is not installed. Will be installed automatically." }
+            } else { $Private:info.error = "Pip is not installed. Please, refer to Python documentation or to https://bootstrap.pypa.io for installation instructions" }
+        } else { $Private:info.error = "Cannot get Python version ($pyExecutable)" }
+    } else { $Private:info.error = "Python executable file $pyExecutable not found" }
+
+    return $Private:info
+}
+
+function WritePyInfo {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)]$info)
+
+
+}
+
+### Commands ###
+
+function Discover {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$path)
+  
+    if($path) {
+      Write-Output "Testing Python by path: $path"
+      WritePyInfo (GetPyInfo -pyExecutable $path)
+      
+    } else {
+      Write-Output "Searching local Python"
+      $path = Search-PyExecutable
+      if ($path) {
+        Write-Output "Found local Python by path: $path"
+        WritePyInfo (GetPyInfo -pyExecutable $path)
+      } else { Write-Output "Local Pythooon not found"}
+  
+      Write-Output "Searching embedded Python"
+  
+      if($settings) {
+        Write-Output "Python path in current settings:"
+      }
+  
+    }  
+}
+  
+
+
+
+
+
+if (!($discover -or $status -or $mount -or $enable -or $testconn -or $disable -or $dismount -or $install -or $uninstall)) {
+    Write-Output "Print promt and help here"
+    return
+}
+
+if (([int]$discover + [int]$status + [int]$mount + [int]$enable + [int]$testconn + [int]$disable + [int]$dismount + [int]$install + [int]$uninstall) -gt 1) {
+    throw "More than one command selector is specified. Only one command switch is allowed: discover, status, mount, enable, testconn, disable, dismount, install, uninstall)"
+}
+
+if ($discover) {
+    if ($embed) { throw "'embed' parameter is not allowed for 'discover' command" }
+    Discover -path $path
+}
+
+
+
+##############################
+return
 
 if (!(Test-Path -LiteralPath $pyNetPath -PathType Leaf)) {throw "Fatal: '$pyNetPath' not found"}
 
