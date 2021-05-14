@@ -166,6 +166,72 @@ function Get-PySitePackages {
     return $(Get-PyPath -pyExecutable $pyExecutable | Where-Object{ $_ -match "site-packages" } | Out-String ).Trim()
 }
 
+function Get-PyEnvironmentInfo {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$True)][string]$pyExecutable,
+        [string[]]$pyModuleNames
+    )
+
+    $Private:info = [PSCustomObject]@{
+        status = 0
+        message = ""
+        pyExecutable = $pyExecutable
+        pyVersion = $null
+        pipVersion = ""
+        pyHome = ""
+        pyPath = ""
+        pyDll = ""
+        pyModules = @{}
+    }
+
+    if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) {
+        $Private:info.message = "Python executable file $pyExecutable not found"
+        return $Private:info
+    }
+
+    $Private:info.pyVersion = Get-PyExpandedVersion -pyExe $pyExecutable
+    if(!$Private:info.pyVersion) { 
+        $Private:info.message = "Cannot get Python version. Unexpected response for --version command."
+        return $Private:info
+    }
+    Write-Verbose "Python version: $($Private:info.pyVersion)"
+    
+    $Private:info.pipVersion = Get-PipVersion -pyExe $pyExecutable
+    if(!$pipVersion) {
+        $Private:info.message = "Pip is not installed. Please, install it according to Python documentation (you can refer to https://bootstrap.pypa.io/get-pip.py)"
+        return $Private:info
+    }
+    Write-Verbose "Pip version: $Private:info.pipVersion"
+    
+    $Private:info.pyHome = Split-Path $pyExecutable
+    Write-Verbose "Found pyHome: $($Private:info.pyHome)"
+
+    $Private:info.pyPath=[String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
+    Write-Verbose "Found pyPath: $($Private:info.pyPath)"
+
+    $Private:info.pyDll="python$($pyVersion.Major)$($pyVersion.Minor)"
+    Write-Verbose "Found pyDll: $($Private:info.pyDll)"
+
+    $Private:notInstalledModules = @()
+    foreach($Private:moduleName in $pyModuleNames) {
+        $Private:pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $Private:moduleName
+        if ($Private:pyNetModuleInfo) { $Private:info.pyModules[$Private:moduleName] = $Private:pyNetModuleInfo }
+        else { $Private:notInstalledModules += $Private:moduleName }
+    }
+
+    if ($Private:notInstalledModules) {
+        $Private:info.message = "Some Python modules not installed: $([String]::Join(";", $Private:notInstalledModules)). You can install them manually or run auto-configuration"
+        $Private:info.status = -1   # Python deployment is partially consistent but it can be fixed automatically
+        return $Private:info
+    }
+
+    $Private:info.status = 1    # Python deployment is completely consistent
+    return $Private:info
+}
+
+# TODO remove PyCustomModule functions
+
 function Test-PyCustomModuleInstalled {
     [CmdletBinding()]
     Param(
@@ -478,6 +544,30 @@ function Search-PyEmbedPthFile {
     return [string]$(Get-ChildItem -Path $pyHome -Filter "python*._pth" | Where-Object { !$_.PSIsContainer -and $_.Name -match "python\d+\._pth" } | ForEach-Object { $_.FullName})
 }
 
+function Search-PyEmbedInstalled {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$True)][string]$appPrefix,
+        [Parameter(Mandatory=$True)][string]$pyPlatform,
+        [Switch]$fullPath = $False
+    )
+
+    if ($pyVersion -notmatch "\d+\.\d+\.\d+") { throw "Incorrect Python version: $pyVersion"}    
+    if ($pyPlatform -ne 'amd64' -and $pyPlatform -ne 'win32') { throw "Invalid Python Platform '$pyPlatform' - expected either 'amd64' or 'win32'"}
+    if (!$Script:isWindowsPlatform) {throw "Embedded Python is available on Windows platform only."}
+    
+    Write-Verbose "Searching installed embedded python deployments for application $appPrefix (expected python platform $pyPlatform"
+
+    $Private:root = [System.IO.Path]::GetFullPath($(Join-Path $localAppData $appPrefix))
+    if (Test-Path -LiteralPath $Private:root -PathType Container) {
+        foreach($Private:embedFolder in (Get-ChildItem -LiteralPath $Private:root -Filter "python-*-embed-$pyPlatform" | Where-Object { $_.PSIsContainer })) {
+            if ($Private:embedFolder.Name -match "python-(\d+\.\d+\.\d+)-embed-$pyPlatform") { 
+                Write-Output $(if($fullPath){$Private:embedFolder.FullName}else{$Matches[1]})
+            }
+        }
+    }
+}
+
 function Test-PyEmbedInstalled {
     [CmdletBinding()]
     Param(
@@ -486,6 +576,7 @@ function Test-PyEmbedInstalled {
         [Parameter(Mandatory=$True)][string]$pyPlatform
     )
 
+    if ($pyVersion -notmatch "\d+\.\d+\.\d+") { throw "Incorrect Python version: $pyVersion"}    
     if ($pyPlatform -ne 'amd64' -and $pyPlatform -ne 'win32') { throw "Invalid Python Platform '$pyPlatform' - expected either 'amd64' or 'win32'"}
     if (!$Script:isWindowsPlatform) {throw "Embedded Python is available on Windows platform only."}
     
@@ -524,8 +615,10 @@ function Install-PyEmbed {
         [Parameter(Mandatory=$True)][string]$pyPlatform
     )
 
+    Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Initialization"
     Write-Verbose "Installing embedded python for application $appPrefix (python version $pyVersion; platform $pyPlatform"
 
+    if ($pyVersion -notmatch "\d+\.\d+\.\d+") { throw "Incorrect Python version: $pyVersion"}    
     if ($pyPlatform -ne 'amd64' -and $pyPlatform -ne 'win32') { throw "Invalid Python Platform '$pyPlatform' - expected either 'amd64' or 'win32'"}
     if (!$Script:isWindowsPlatform) {throw "Embedded Python is available on Windows platform only."}
 
@@ -534,9 +627,11 @@ function Install-PyEmbed {
 
     if (Test-Path -LiteralPath $Private:pyHome -PathType Container) { throw "Python is already installed by path: $Private:pyHome" }
 
+    Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Getting deployment package"
     [string]$Private:packageName = Get-PyEmbedPackage -appPrefix $appPrefix -pyVersion $pyVersion -pyPlatform $pyPlatform
     Write-Verbose "Python package name: ]$Private:packageName"
 
+    Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Extracting deployment package content"
     Write-Verbose "Extracting python package..."
     $null = Expand-Archive -LiteralPath $Private:packageName -DestinationPath $Private:pyHome
     if (!(Test-Path -LiteralPath $Private:pyHome -PathType Container)) { throw "Cannot extract python package to $Private:pyHome" }
@@ -546,6 +641,7 @@ function Install-PyEmbed {
 
     if (!(Get-PipVersion -pyExecutable $Private:pyExecutable)) {
         Write-Verbose "Pip is not installed; installing..."
+        Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Package structure verification"
 
         [string]$Private:pyPth = Search-PyEmbedPthFile -pyHome $Private:pyHome
         if(!$Private:pyPth) { throw "Python _PTH file not found in $Private:pyHome"}
@@ -560,6 +656,7 @@ function Install-PyEmbed {
             Write-Verbose "File $Private:pyPth is updated"
         }
 
+        Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Getting PIP installation script"
         Write-Verbose "Downloading get-pip.py"
 
         [string]$Private:tempFileName = [System.IO.Path]::GetTempFileName()
@@ -579,11 +676,13 @@ function Install-PyEmbed {
             Remove-Item -LiteralPath $Private:tempFileName
         }
 
+        Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Installing PIP"
         Write-Verbose "Running get-pip.py"
-        $null = (& $Private:pyExecutable $private:getPipTargetPath)
+        $null = (& $Private:pyExecutable $private:getPipTargetPath "--no-warn-script-location")
         if (!(Get-PipVersion -pyExecutable $Private:pyExecutable)) { throw "Was not able to install Pip"}
     }
 
+    Write-Progress -Activity "Installing Embedded Python $pyVersion" -Status "Complete" -Completed
     Write-Verbose "Embedded python is installed by path $Private:pyHome"
     return $Private:pyHome
 }
@@ -597,8 +696,9 @@ function Uninstall-PyEmbed {
         [Switch]$withPackage = $False
     )
 
-    Write-Verbose "Uninstalliing embedded python for application $appPrefix (python version $pyVersion; platform $pyPlatform"
+    Write-Verbose "Uninstalling embedded python for application $appPrefix (python version $pyVersion; platform $pyPlatform"
 
+    if ($pyVersion -notmatch "\d+\.\d+\.\d+") { throw "Incorrect Python version: $pyVersion"}    
     if ($pyPlatform -ne 'amd64' -and $pyPlatform -ne 'win32') { throw "Invalid Python Platform '$pyPlatform' - expected either 'amd64' or 'win32'"}
     if (!$Script:isWindowsPlatform) {throw "Embedded Python is available on Windows platform only."}
 
