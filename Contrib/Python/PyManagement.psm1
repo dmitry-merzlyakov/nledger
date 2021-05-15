@@ -150,7 +150,7 @@ function Uninstall-PyModule {
 
     if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
     Write-Verbose "Uninstalling Python module: $pyModule"
-    [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "uninstall" $pyModule) 2>&1 | Out-String )
+    [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "uninstall" $pyModule "-y") 2>&1 | Out-String )
     Write-Verbose "Python returned: $Private:result"
 }
 
@@ -546,7 +546,7 @@ function Search-PyEmbedPthFile {
     Param([Parameter(Mandatory=$True)][string]$pyHome)
 
     if (!(Test-Path -LiteralPath $pyHome -PathType Container)) { throw "Python home folder not found: $pyExecutable"}
-    return [string]$(Get-ChildItem -Path $pyHome -Filter "python*._pth" | Where-Object { !$_.PSIsContainer -and $_.Name -match "python\d+\._pth" } | ForEach-Object { $_.FullName})
+    return [string]$(Get-ChildItem -Path $pyHome -Filter "python*._pth" | Where-Object { !$_.PSIsContainer -and $_.Name -match "python\d+\._pth" } | ForEach-Object { $_.FullName })
 }
 
 function Search-PyEmbedInstalled {
@@ -557,7 +557,6 @@ function Search-PyEmbedInstalled {
         [Switch]$fullPath = $False
     )
 
-    if ($pyVersion -notmatch "\d+\.\d+\.\d+") { throw "Incorrect Python version: $pyVersion"}    
     if ($pyPlatform -ne 'amd64' -and $pyPlatform -ne 'win32') { throw "Invalid Python Platform '$pyPlatform' - expected either 'amd64' or 'win32'"}
     if (!$Script:isWindowsPlatform) {throw "Embedded Python is available on Windows platform only."}
     
@@ -567,7 +566,7 @@ function Search-PyEmbedInstalled {
     if (Test-Path -LiteralPath $Private:root -PathType Container) {
         foreach($Private:embedFolder in (Get-ChildItem -LiteralPath $Private:root -Filter "python-*-embed-$pyPlatform" | Where-Object { $_.PSIsContainer })) {
             if ($Private:embedFolder.Name -match "python-(\d+\.\d+\.\d+)-embed-$pyPlatform") { 
-                Write-Output $(if($fullPath){$Private:embedFolder.FullName}else{$Matches[1]})
+                Write-Output $(if($fullPath){"$($Private:embedFolder.FullName)\python.exe"}else{$Matches[1]})
             }
         }
     }
