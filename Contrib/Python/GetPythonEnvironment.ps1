@@ -241,10 +241,10 @@ function Write-PyInfo {
     if($info.pyNetModuleInfo) { Write-Output "Python.Net installed. Version: $($info.pyNetModuleInfo.Version)"}
     if($info.pyNetRuntimeDll) { Write-Output "Python.Net runtime dll: $($info.pyNetRuntimeDll)"}
     if($info.pyLedgerModuleInfo) { Write-Output "Ledger Python module installed. Version: $($info.pyLedgerModuleInfo.Version)"}
-    if($info.error) { Write-Output "[NOT READY] This Python deployment cannot be configured (manual actions are probably needed): $($info.error)"}
+    if($info.error) { Write-Console "{c:DarkRed}[NOT READY]{c:Gray} This Python deployment cannot be configured (manual actions are probably needed): $($info.error)"}
     else {
-        if($info.warning) { Write-Output "[WARNING] $($info.warning)"; Write-Output "[READY] This Python can be configured for NLedger."}
-        else { Write-Output "[READY] This Python is ready for NLedger" }
+        if($info.warning) { Write-Console "{c:DarkYellow}[WARNING]{c:Gray} $($info.warning)"; Write-Console "{c:DarkYellow}[READY]{c:Gray} This Python can be configured for NLedger."}
+        else { Write-Console "{c:DarkGreen}[READY]{c:Gray} This Python is ready for NLedger" }
     }
 }
 
@@ -348,35 +348,37 @@ function Discover {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$path)
   
+    Write-Console ""
     if($path) {
-      Write-Output "Testing Python by path: $path"
-      Write-PyInfo (Get-PyInfo -pyExecutable $path)
+        Write-Console "{c:DarkCyan}[Local Python]{c:Gray} Testing Python by path: $path"
+        Write-PyInfo (Get-PyInfo -pyExecutable $path)
+        Write-Console ""
       
     } else {
         Write-Verbose "Search local Python"
         $path = Search-PyExecutable
         if ($path) {
-            Write-Output "[Local Python] Found by path: $path"
+            Write-Console "{c:DarkCyan}[Local Python]{c:Gray} Found by path: $path"
             Write-PyInfo (Get-PyInfo -pyExecutable $path)
-        } else { Write-Output "[Local Python] Not found"}
-        Write-Output ""
+        } else { Write-Console "{c:DarkCyan}[Local Python]{c:Gray} Not found"}
+        Write-Console ""
   
         Write-Verbose "Search embed Python"
         $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
-        if (!$embeds) { Write-Output "[Embed Python] $(if($Script:isWindowsPlatform){"Not found"}else{"Not available"})";Write-Output "" }
+        if (!$embeds) { Write-Console "{c:DarkCyan}[Embed Python]{c:Gray} $(if($Script:isWindowsPlatform){"Not found"}else{"Not available"})";Write-Output "" }
         $embeds | ForEach-Object {
-            Write-Output "[Embed Python] Found by path: $_"
+            Write-Console "{c:DarkCyan}[Embed Python]{c:Gray} Found by path: $_"
             Write-PyInfo (Get-PyInfo -pyExecutable $_)
-            Write-Output ""
+            Write-Console ""
         }
   
         Write-Verbose "Check NLedger Python settings"
         $settings = Get-PythonIntegrationSettings
         if($settings) {
-            Write-Output "[NLedger Settings] Found ($Script:settingsFileName); configured Python: $($settings.PyExecutable)"
+            Write-Console "{c:DarkCyan}[NLedger Settings]{c:Gray} Found ($Script:settingsFileName); configured Python: $($settings.PyExecutable)"
             Write-PyInfo (Get-PyInfo -pyExecutable $settings.PyExecutable)
-        } else { Write-Output "[NLedger Settings] No found (no file $Script:settingsFileName)" }
-        Write-Output ""
+        } else { Write-Console "{c:DarkCyan}[NLedger Settings]{c:Gray} Not found (no file $Script:settingsFileName)" }
+        Write-Console ""
     }  
 }
 
@@ -423,13 +425,15 @@ function Link {
 
     if ($path -and $embed) { throw "Link command cannot get both 'path' and 'embed' parameters at the same time."}
 
+    Write-Console ""
     $Private:settings = Get-PythonIntegrationSettings
 
     if (!$path -and !$embed) {
         Write-Verbose "Auto-configuring Link parameters. Checking settings first."
         if ($Private:settings) {
             $path = $settings.PyExecutable
-            Write-Output "Auto-linking: use path '$path' specified in NLedger Python settings ($Script:settingsFileName)"
+            Write-Output "Auto-linking: use path '$path'"
+            Write-Output "  specified in NLedger Python settings ($Script:settingsFileName)"
         } else {
             Write-Verbose "No settings file. Searching local Python"
             $path = Search-PyExecutable
@@ -467,7 +471,8 @@ function Link {
         Write-Output "Settings file ($Script:settingsFileName) is updated"
     } else { Write-Verbose "Settings file $Script:settingsFileName is actual"}
 
-    Write-Output "NLedger Python link is active (Settings file: $Script:settingsFileName)"
+    Write-Console "NLedger Python link is {c:DarkYellow}active{c:Gray} (Settings file: $Script:settingsFileName)"
+    Write-Console ""
 }
 
 <#
@@ -486,18 +491,20 @@ function Status {
     Param()
 
     $Private:info = Get-StatusInfo
-    Write-Output "NLedger Python extension: $(if($Private:info.enabled){'[ENABLED]'}else{'[DISABLED]'}) ('ExtensionProvider' setting value in NLedger configuration: '$($Private:info.extensionProvider)')"
-    if ($Private:info.enabled -and !$Private:info.validated) { Write-Output "[WARNING] NLedger Python extension is unusable: $($Private:info.message)" }
-    Write-Output "NLedger Python connection settings: $(if($Private:info.settings){'[EXISTS]'}else{'[DO NOT EXIST]'}) File: $Script:settingsFileName"
+
+    Write-Console ""
+    Write-Console "NLedger Python extension: $(if($Private:info.enabled){'{c:DarkGreen}[ENABLED]{c:Gray}'}else{'{c:DarkRed}[DISABLED]{c:Gray}'}) ('ExtensionProvider' setting value in NLedger configuration: '$($Private:info.extensionProvider)')"
+    if ($Private:info.enabled -and !$Private:info.validated) {Write-Console "[WARNING] NLedger Python extension is unusable: $($Private:info.message)" }
+    Write-Console "NLedger Python connection settings: $(if($Private:info.settings){'{c:DarkGreen}[EXISTS]{c:Gray}'}else{'{c:DarkRed}[NOT EXIST]{c:Gray}'}) File: $Script:settingsFileName"
     if ($Private:info.settings) {
-        Write-Output "Configured Python path: $($Private:info.pyInfo.pyExecutable)"
-        if ($Private:info.pyInfo.error) { Write-Output "Python deployment status: [ERROR] - $($Private:info.pyInfo.error)" }
+        Write-Console "  Python path: $($Private:info.pyInfo.pyExecutable)"
+        if ($Private:info.pyInfo.error) { Write-Console "  Python deployment status: {c:DarkRed}[ERROR]{c:Gray} - $($Private:info.pyInfo.error)" }
         else {
-            if ($Private:info.pyInfo.warning) { Write-Output "Python deployment status: [WARNING] - $($Private:info.pyInfo.warning)" }
-            else { Write-Output "Python deployment status: [OK]" }
+            if ($Private:info.pyInfo.warning) { Write-Console "  Python deployment status: {c:DarkYellow}[WARNING]{c:Gray} - $($Private:info.pyInfo.warning)" }
+            else { Write-Console "  Python deployment status: {c:DarkGreen}[OK]{c:Gray}" }
         }
     }
-    Write-Output ""
+    Write-Console ""
 }
 
 <#
@@ -525,8 +532,9 @@ function Enable {
     if ($Private:info.extensionProvider -ne "python") { $null = SetConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
 
     $Private:info = Get-StatusInfo
-    if (!$Private:info.validated) { Write-Output "Cannot enable Python extension; validation message: $($Private:info.message)" }
-    else { Write-Output "NLedger Python extension is enabled" }
+    if (!$Private:info.validated) { Write-Console "{c:DarkRed}Cannot enable Python extension{c:Gray}; validation message: $($Private:info.message)" }
+    else { Write-Console "NLedger Python extension is {c:DarkGreen}enabled{c:Gray}" }
+    Write-Output ""
 }
 
 <#
@@ -540,14 +548,16 @@ function Disable {
     [CmdletBinding()]
     Param()
     
+    Write-Output ""
     $Private:info = Get-StatusInfo
     if ($Private:info.extensionProvider -and $Private:info.extensionProvider -ne "python") {throw "Cannot disable extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
     if ($Private:info.extensionProvider -eq "python") { $null = RemoveConfigValue -scope "user" -settingName "ExtensionProvider" }
 
     $Private:info = Get-StatusInfo
-    if ($Private:info.enabled) { Write-Output "Cannot disable extension; use NLedger Configuration console to sort out the issue manually" }
-    else { Write-Output "NLedger Python extension is disabled" }
+    if ($Private:info.enabled) { Write-Console "{c:DarkRed}Cannot disable extension{c:Gray}; use NLedger Configuration console to sort out the issue manually" }
+    else { Write-Console "NLedger Python extension is {c:DarkRed}disabled{c:Gray}" }
+    Write-Output ""
 }
 
 <#
@@ -561,11 +571,13 @@ function Unlink {
     [CmdletBinding()]
     Param()
     
+    Write-Console ""
     $Private:info = Get-StatusInfo
     if ($Private:info.extensionProvider -eq "python") {throw "Cannot unlink Python connection because Python extension is currently active ('ExtensionProvider' setting value in NLedger configuration is 'python'). Disable extension first using 'disable' command"}
 
     Remove-PythonIntegrationSettings
-    Write-Output "NLedger Python connection is unlinked (settings file $Script:settingsFileName is removed)"
+    Write-Console "NLedger Python link is {c:DarkYellow}not active{c:Gray} (settings file $Script:settingsFileName is removed)"
+    Write-Console ""
 }
 
 <#
@@ -582,7 +594,10 @@ Will use a default (3.8.1) version otherwise
 function Install {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
+
+    Write-Output ""
     Write-Output "Embedded Python is available by path: $(Get-PyEmbed -appPrefix $appPrefix -pyVersion $version -pyPlatform $pyPlatform)"
+    Write-Output ""
 }
 
 <#
@@ -600,21 +615,35 @@ function Uninstall {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
+    Write-Output ""
     $Private:settings = Get-PythonIntegrationSettings
     $Private:path = Test-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
     if ($Private:path) {
-        if ([System.IO.Path]::GetFullPath($(Split-Path $Private:settings.PyExecutable)) -eq $Private:path) { throw "Cannot uninstall embed Python $version because it is currently linked (PyHome $Private:path). Unlink connection first."}
+        if ($Private:settings -and [System.IO.Path]::GetFullPath($(Split-Path $Private:settings.PyExecutable)) -eq $Private:path) { throw "Cannot uninstall embed Python $version because it is currently linked (PyHome $Private:path). Unlink connection first."}
         Uninstall-PyEmbed -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
     }
 
     Write-Output "Embedded Python $version is uninstalled"
+    Write-Output ""
 }
 
 function Help {
     [CmdletBinding()]
     Param()
 
-    Write-Console "Print {c:Red}promt{c:White} and help here"
+    Write-Console "{c:Gray}Available commands:"
+    Write-Console " {c:Yellow}discover{c:Gray} - find and show status of local Python deployments"
+    Write-Console " {c:Yellow}status{c:Gray} - validate and show connection status"
+    Write-Console " {c:Yellow}link{c:Gray} - create NLedger Python connection settings. Installs missing required software"
+    Write-Console " {c:Yellow}enable{c:Gray} - enables Python extension in NLedger configuration; creates connection settings if missed"
+    Write-Console " {c:Yellow}disable{c:Gray} - disables Python extension in NLedger configuration"
+    Write-Console " {c:Yellow}unlink{c:Gray} - removes NLedger Python connection settings"
+    Write-Console " {c:Yellow}install{c:Gray} - install embed Python (Windows only)"
+    Write-Console " {c:Yellow}uninstall{c:Gray} - uninstall embed Python (Windows only)"
+    Write-Console " {c:Yellow}testlink{c:Gray} - validates and returns NLedger Python connection settings in technical format"
+    Write-Console "Use 'get-help [command]' to get more information about individual commands"
+    Write-Console "Use 'exit' to close console window"
+    Write-Console ""    
 }
 
 
@@ -626,10 +655,10 @@ if ($path -and $embed) { throw "'path' and 'embed' cannot be specified both at t
 
 if (!$command) {
     Write-Console ""
-    Write-Console "NLedger Python Connection Console"
+    Write-Console "{c:White}NLedger Python Connection Console"
     Write-Console "*********************************"
-    Write-Console "This script helps to manage NLedger Python Extension settings"
-    Write-Console "It can manage, configure and validate NLedger settings and involved external software."
+    Write-Console "{c:Gray}This script manages NLedger Python Extension settings"
+    Write-Console "It can discover environment details, configure and validate NLedger settings, install or configure dependent software."
     Write-Console ""
     Help
     return
