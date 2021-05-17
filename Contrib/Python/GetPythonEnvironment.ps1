@@ -54,6 +54,7 @@ trap
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath/PyManagement.psm1 -Force
 Import-Module $Script:ScriptPath/../NLManagement/NLSetup.psm1 -Force
+Import-Module $Script:ScriptPath/../NLManagement/NLCommon.psm1 -Force
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
 
@@ -505,58 +506,33 @@ function Unnstall {
 
 # Manage parameters
 
+if ($path -and $command -in @("status","disable","unlink","install","uninstall","testlink")) { throw "'path' parameter is not allowed for command '$command'"}
+if ($embed -and $command -in @("discover","status","disable","unlink","testlink")) { throw "'embed' parameter is not allowed for command '$command'"}
+if ($path -and $embed) { throw "'path' and 'embed' cannot be specified both at the same time" }
+
 if (!$command) {
-    Write-Output "Print promt and help here"
+    Write-Console "Print {c:Red}promt{c:White} and help here"
     return
 }
 
-if ($command -eq 'discover') {
-    if ($embed) { throw "'embed' parameter is not allowed for 'discover' command" }
-    Discover -path $path
-}
+if ($command -eq 'discover') { Discover -path $path }
+if ($command -eq 'status') { Status }
 
 if ($command -eq 'link') {
-    if ($path -and $embed) { throw "'link' command can be specified with either 'path' or 'embed' parameter but not both at the same time" }
     if ($embed) {Link -embed $embed} else {
         if ($path) {Link -path $path} else { Link }
     }
-}
-
-if ($command -eq 'status') {
-    if ($path -and $embed) { throw "'status' command cannot be specified with either 'path' or 'embed' parameter" }
-    Status
 }
 
 if ($command -eq 'enable') {
-    if ($path -and $embed) { throw "'enable' command can be specified with either 'path' or 'embed' parameter but not both at the same time" }
     if ($embed) {Link -embed $embed} else {
         if ($path) {Link -path $path} else { Link }
     }
-
     Enable
 }
 
-if ($command -eq 'disable') {
-    if ($path -and $embed) { throw "'disable' command cannot be specified with either 'path' or 'embed' parameter" }
-    Disable
-}
-
-if ($command -eq 'unlink') {
-    if ($path -and $embed) { throw "'disable' command cannot be specified with either 'path' or 'embed' parameter" }
-    Unlink
-}
-
-if ($command -eq 'install') {
-    if ($path) { throw "'path' parameter is not allowed for 'install' command" }
-    if ($embed) {Install -version $embed}else{Install}
-}
-
-if ($command -eq 'uninstall') {
-    if ($path) { throw "'path' parameter is not allowed for 'uninstall' command" }
-    if ($embed) {Unnstall -version $embed}else{Unnstall}
-}
-
-if ($command -eq 'testlink') {
-    if ($path -and $embed) { throw "'disable' command cannot be specified with either 'path' or 'embed' parameter" }
-    Test-Link
-}
+if ($command -eq 'disable') { Disable }
+if ($command -eq 'unlink') { Unlink }
+if ($command -eq 'install') { if ($embed) {Install -version $embed}else{Install} }
+if ($command -eq 'uninstall') { if ($embed) {Unnstall -version $embed}else{Unnstall} }
+if ($command -eq 'testlink') { Test-Link }
