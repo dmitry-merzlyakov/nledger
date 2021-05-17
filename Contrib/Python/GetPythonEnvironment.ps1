@@ -38,7 +38,7 @@ Allows updating the settings file.
 #>
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory=$False)][ValidateSet("discover","status","link","enable","testconn","disable","unlink","install","uninstall")]$command,
+    [Parameter(Mandatory=$False)][ValidateSet("discover","status","link","enable","testlink","disable","unlink","install","uninstall")]$command,
     [Parameter(Mandatory=$False)][string]$path,
     [Parameter(Mandatory=$False)][string]$embed
 )
@@ -143,7 +143,7 @@ function Remove-PythonIntegrationSettings {
 
     if (Test-Path -LiteralPath $Script:settingsFileName -PathType Leaf) {
         Write-Verbose "Removing NLedger Python integration settings: $Script:settingsFileName"
-        $null = Remove-Item -LiteralPath $Private:settingsFileName
+        $null = Remove-Item -LiteralPath $Script:settingsFileName
         if (Test-Path -LiteralPath $Script:settingsFileName -PathType Leaf) { throw "Cannot delete file $Script:settingsFileName" }
     }
 }
@@ -221,7 +221,7 @@ function Get-PyInfo {
                             $Private:info.pyLedgerModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyLedgerModule
                         } else { $Private:info.error = "Pythonnet runtime dll not found: $pyNetRuntimeDll" }
                     } else { $Private:info.error = "Required PythonNet version is 3 or higher. Current version is $($pyNetModuleInfo.Version). Please, upgrade it manually" }
-                } else { $Private:info.warning = "PythonNet is not installed. Will be installed automatically." }
+                } else { $Private:info.warning = "PythonNet is not installed. 'link' command can install it automatically." }
             } else { $Private:info.error = "Pip is not installed. Please, refer to Python documentation or to https://bootstrap.pypa.io for installation instructions" }
         } else { $Private:info.error = "Cannot get Python version ($pyExecutable)" }
     } else { $Private:info.error = "Python executable file $pyExecutable not found" }
@@ -282,6 +282,25 @@ function Get-StatusInfo {
     }
 
     return $Private:info
+}
+
+function Test-Link {
+    [CmdletBinding()]
+    Param()
+
+    $Private:settings = Get-PythonIntegrationSettings
+    if ($Private:settings) {
+        $Private:pyInfo = Get-PyInfo -pyExecutable $Private:settings.PyExecutable
+        if ($Private:pyInfo) {
+            if(!$Private:pyInfo.error) {
+                if(!$Private:pyInfo.warning) {
+                    return $Private:settings
+                } else { Write-Verbose "Test-link: settings exist but validating Python envirnment exposed a warning: $($Private:pyInfo.warning)." }
+            } else { Write-Verbose "Test-link: settings exist but validating Python envirnment exposed an error: $($Private:pyInfo.error)." }
+        } else { Write-Verbose "Test-link: settings exist but cannot validate Python environment." }
+    }
+
+    return $null
 }
 
 function Install-LedgerModule {
@@ -375,7 +394,7 @@ function Link {
 
     if ($embed) {
         Write-Verbose "Installing embedded python $embed"
-        $path = Search-PyExecutable -pyHome (Get-PyEmbed -appPrefix $appPrefix -pyVersion $embed -pyPlatform $pyEmbedPlatform)
+        $path = Search-PyExecutable -pyHome (Get-PyEmbed -appPrefix $appPrefix -pyVersion $embed -pyPlatform $pyPlatform)
         Write-Output "Link: installed embed Python $embed by path $path"
     }
 
@@ -453,15 +472,38 @@ function Disable {
     else { Write-Output "NLedger Python extension is disabled" }
 }
 
+function Unlink {
+    [CmdletBinding()]
+    Param()
+    
+    $Private:info = Get-StatusInfo
+    if ($Private:info.extensionProvider -eq "python") {throw "Cannot unlink Python connection because Python extension is currently active ('ExtensionProvider' setting value in NLedger configuration is 'python'). Disable extension first using 'disable' command"}
+
+    Remove-PythonIntegrationSettings
+    Write-Output "NLedger Python connection is unlinked (settings file $Script:settingsFileName is removed)"
+}
+
 function Install {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
     Write-Output "Embedded Python is available by path: $(Get-PyEmbed -appPrefix $appPrefix -pyVersion $version -pyPlatform $pyPlatform)"
 }
   
+function Unnstall {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
+    $Private:settings = Get-PythonIntegrationSettings
+    $Private:path = Test-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
+    if ($Private:path) {
+        if ([System.IO.Path]::GetFullPath($(Split-Path $Private:settings.PyExecutable)) -eq $Private:path) { throw "Cannot uninstall embed Python $version because it is currently linked (PyHome $Private:path). Unlink connection first."}
+        Uninstall-PyEmbed -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
+    }
 
+    Write-Output "Embedded Python $version is uninstalled"
+}
 
+# Manage parameters
 
 if (!$command) {
     Write-Output "Print promt and help here"
@@ -474,7 +516,7 @@ if ($command -eq 'discover') {
 }
 
 if ($command -eq 'link') {
-    if ($path -and $embed) { throw "'link' command can be specified with either 'path' or 'embed' parameter but noth both at the same time" }
+    if ($path -and $embed) { throw "'link' command can be specified with either 'path' or 'embed' parameter but not both at the same time" }
     if ($embed) {Link -embed $embed} else {
         if ($path) {Link -path $path} else { Link }
     }
@@ -486,7 +528,11 @@ if ($command -eq 'status') {
 }
 
 if ($command -eq 'enable') {
-    if ($path -and $embed) { throw "'enable' command cannot be specified with either 'path' or 'embed' parameter" }
+    if ($path -and $embed) { throw "'enable' command can be specified with either 'path' or 'embed' parameter but not both at the same time" }
+    if ($embed) {Link -embed $embed} else {
+        if ($path) {Link -path $path} else { Link }
+    }
+
     Enable
 }
 
@@ -495,81 +541,22 @@ if ($command -eq 'disable') {
     Disable
 }
 
+if ($command -eq 'unlink') {
+    if ($path -and $embed) { throw "'disable' command cannot be specified with either 'path' or 'embed' parameter" }
+    Unlink
+}
+
 if ($command -eq 'install') {
     if ($path) { throw "'path' parameter is not allowed for 'install' command" }
-    if ($embed) {Install -version $embed}else{Install-Embed}
+    if ($embed) {Install -version $embed}else{Install}
 }
 
-
-##############################
-return
-
-if (!(Test-Path -LiteralPath $pyNetPath -PathType Leaf)) {throw "Fatal: '$pyNetPath' not found"}
-
-## Main routince
-
-$settings = Get-PythonIntegrationSettings
-if ($settings) {
-    $pyExecutable = $settings.PyExecutable
-    Write-Verbose "Settings file exists ($(Get-PythonIntegrationSettingsFileName)). pyExecutable is set to $pyExecutable"
-} else {
-    if ($pyExecutable) {
-        Write-Verbose "pyExecutable is specified as input parameter: $pyExecutable"
-    } else {
-        Write-Verbose "pyExecutable is not specified."
-        if ($preferEmbedded -and $Script:isWindowsPlatform) {
-            Write-Verbose "Installing embedded python $pyEmbedVersion"
-            $pyExecutable = Search-PyExecutable -pyHome (Get-PyEmbed -appPrefix $appPrefix -pyVersion $pyEmbedVersion -pyPlatform $pyEmbedPlatform)
-            Write-Verbose "Embed Python is installed; pyExecutable is: $pyExecutable"
-        } else {
-            Write-Verbose "Looking for local Python"
-            $pyExecutable = Search-PyExecutable
-            if (!$pyExecutable) {throw "Python not found (neither 'py' nor 'python' nor 'python3' commands work)"}
-            Write-Verbose "Local Python found; pyExecutable is: $pyExecutable"
-        }
-    }
+if ($command -eq 'uninstall') {
+    if ($path) { throw "'path' parameter is not allowed for 'uninstall' command" }
+    if ($embed) {Unnstall -version $embed}else{Unnstall}
 }
 
-$pyVersion = Get-PyExpandedVersion -pyExe $pyExecutable
-if(!$pyVersion) {throw "Cannot get Python version ($pyExecutable)"}
-Write-Verbose "Python version: $pyVersion"
-
-$pipVersion = Get-PipVersion -pyExe $pyExecutable
-if(!$pipVersion) {throw "Pip is not installed. Please, install it to continue integration setup (see documentation if you have any questions)"}
-Write-Verbose "Pip version: $pipVersion"
-
-$pyHome = Split-Path $pyExecutable
-Write-Verbose "Found pyHome: $pyHome"
-$pyPath=[String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
-Write-Verbose "Found pyPath: $pyPath"
-$pyDll="python$($pyVersion.Major)$($pyVersion.Minor)"
-Write-Verbose "Found pyDll: $pyDll"
-
-$pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
-if(!$pyNetModuleInfo) {
-    Write-Verbose "PythonNet is not installed; installing $pyNetPath"
-    $null = Install-PyModule -pyExe $pyExecutable -pyModule $pyNetPath    
-    $pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
-    if (!$pyNetModuleInfo) {throw "Pythonnet installation error"}
-    Write-Verbose "Installed PythonNet version is $($pyNetModuleInfo.Version)"
-} else {
-    if($pyNetModuleInfo.Version -match "^(?<major>\d+)\.") {
-        [int]$pyNetMajorVersion = $Matches["major"]
-            if($pyNetMajorVersion -lt 3) {throw "Required PythonNet version is 3 or higher. Current version is $($pyNetModuleInfo.Version)"}
-            Write-Verbose "Current PythonNet version is $($pyNetModuleInfo.Version)"
-    } else {throw "Incorrect package version $($pyNetModuleInfo.Version)"}
+if ($command -eq 'testlink') {
+    if ($path -and $embed) { throw "'disable' command cannot be specified with either 'path' or 'embed' parameter" }
+    Test-Link
 }
-
-$pyNetRuntimeDll = [System.IO.Path]::GetFullPath("$($pyNetModuleInfo.Location.Trim())/pythonnet/runtime/Python.Runtime.dll")
-if(!(Test-Path -LiteralPath $pyNetRuntimeDll -PathType Leaf)) {throw "Pythonnet runtime dll not found: $pyNetRuntimeDll"}
-#TODO check PythonNet runtime platform (x86 vs x64)
-Write-Verbose "Found pyNetRuntimeDll: $pyNetRuntimeDll"
-
-# Update settings if necessary
-if (!$settings -or ($settings.PyExecutable -ne $pyExecutable -or $settings.PyHome -ne $pyHome -or $settings.PyPath -ne $pyPath -or $settings.PyDll -ne $pyDll -or $settings.PyNetRuntimeDll -ne $pyNetRuntimeDll)) {
-    Write-Verbose "Settings file is outdated"
-    $settings = Update-PythonEnvironmentSettings -pyExecutable $pyExecutable -pyHome $pyHome -pyPath $pyPath -pyDll $pyDll -pyNetRuntimeDll $pyNetRuntimeDll
-} else { Write-Verbose "Settings file $(Get-PythonIntegrationSettingsFileName) is actual"}
-
-# Done, return actual Python settings
-Write-Output $settings

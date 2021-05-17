@@ -27,7 +27,7 @@ if(!(Test-Path -LiteralPath $Script:pythonBuild -PathType Leaf)) {throw "Python 
 
 Write-Verbose "Checking python environment"
 
-$settings = (. $Script:pythonEnv)
+$settings = (. $Script:pythonEnv -command testlink)
 if (!$settings) {throw "Python environment is not properly configured (GetPythonEnvironment returns empty result)"}
 
 Write-Verbose "Building NLedger Python package"
