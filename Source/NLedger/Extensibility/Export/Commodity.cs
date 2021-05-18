@@ -37,6 +37,18 @@ namespace NLedger.Extensibility.Export
         public CommodityPool pool => Origin.Pool;
         public string base_symbol => Origin.BaseSymbol;
         public string symbol => Origin.Symbol;
+        public string name { get => Origin.Name; set => Origin.SetName(value); }
+        public string note { get => Origin.Note; set => Origin.SetNote(value); }
+        public int precision { get => Origin.Precision; set => Origin.Precision = value; }
+        public Amount smaller { get => Origin.Smaller; set => Origin.Smaller = value.Origin; }
+        public Amount larger { get => Origin.Larger; set => Origin.Larger = value.Origin; }
+
+        public void add_price(DateTime date, Amount price) => Origin.AddPrice(date, price.Origin);
+        public void add_price(DateTime date, Amount price, bool reflexive) => Origin.AddPrice(date, price.Origin, reflexive);
+        public void remove_price(DateTime date, Commodity commodity) => Origin.RemovePrice(date, commodity.Origin);
+        public PricePoint find_price(Commodity commodity = null, DateTime moment = default(DateTime), DateTime oldest = default(DateTime)) => Origin.FindPrice(commodity?.Origin, moment, oldest);
+        public PricePoint check_for_updated_price(PricePoint point = null, DateTime moment = default(DateTime), Commodity inTermsOf = null) => Origin.CheckForUpdatedPrice(point?.Origin, moment, inTermsOf?.Origin);
+        public void Valid() => Origin.Valid();
 
         public override bool Equals(object obj) => Origin.Equals(obj);
         public override int GetHashCode() => Origin.GetHashCode();
