@@ -1,6 +1,9 @@
 ﻿using NLedger.Abstracts.Impl;
+using NLedger.Amounts;
+using NLedger.Extensibility;
 using NLedger.Extensibility.Net;
 using NLedger.Utility.ServiceAPI;
+using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,6 +153,118 @@ tag PATH
 
             var response = session.ExecuteCommand("reg");
             Assert.False(response.HasErrors);
+        }
+
+        // Helper class for NetSession_IntegrationTest5
+        public class TestAverageCalculator
+        {
+            public Amount Average { get; private set; }
+            public int Count { get; private set; }
+            public ISet<Xact> ProcessedXacts { get; } = new HashSet<Xact>();
+
+            public bool Process(Xact xact, Amount amount)
+            {
+                if (Average == null)                                // It makes sense to initialize a common amount here because
+                    Average = new Amount(0, amount.Commodity);      // this method is called when commodity context is initialized
+
+                if (!ProcessedXacts.Contains(xact))
+                {
+                    ProcessedXacts.Add(xact);
+                    Count++;
+                    var count = new Amount(Count);
+                    Average = Average + ((amount - Average) / count);
+                }
+                return true;                                        // All posts are accepted in this example
+            }
+        }
+
+        [Fact]
+        // Net extension example: average calculation across transactions
+        public void NetSession_IntegrationTest5()
+        {
+
+            var journal = @"
+commodity $
+   format $1,000.00
+   default
+
+= expr 'averageCalculator(xact,amount)'
+  [$account:AVERAGE]  ( calculatedAverage )
+  [AVERAGE]  ( -calculatedAverage )
+  
+2012-02-29 KFC
+    Expenses:Food                $20
+    Assets:Cash
+ 
+2012-03-01 KFC
+    Expenses:Food                $5
+    Assets:Cash
+";
+
+            var testAverageCalculator = new TestAverageCalculator();
+
+            var engine = new ServiceEngine(
+                 createCustomProvider: mem =>
+                 {
+                     return new ApplicationServiceProvider(
+                          virtualConsoleProviderFactory: () => new VirtualConsoleProvider(mem.ConsoleInput, mem.ConsoleOutput, mem.ConsoleError),
+                          extensionProviderFactory: () => new NetExtensionProvider(
+                                     configureAction: extendedSession =>
+                                     {
+                                         extendedSession.DefineGlobal("averageCalculator", (Func<Xact, Amount, bool>)((x, a) => testAverageCalculator.Process(x, a)));
+                                         extendedSession.DefineGlobal("calculatedAverage", (Func<Amount>)(() => testAverageCalculator.Average));
+                                     }
+                               ));
+                 });
+
+            var session = engine.CreateSession("-f /dev/stdin", journal);
+            Assert.True(session.IsActive, session.ErrorText);
+
+            var reg = session.ExecuteCommand("reg");
+            Assert.False(reg.HasErrors, reg.ErrorText);
+            Assert.Equal(@"
+12-Feb-29 KFC                   Expenses:Food                $20.00       $20.00
+                                Assets:Cash                 $-20.00            0
+                                [Expense:Food:AVERAGE]       $20.00       $20.00
+                                [AVERAGE]                   $-20.00            0
+                                [Assets:Cash:AVERAGE]        $20.00       $20.00
+                                [AVERAGE]                   $-20.00            0
+12-Mar-01 KFC                   Expenses:Food                 $5.00        $5.00
+                                Assets:Cash                  $-5.00            0
+                                [Expense:Food:AVERAGE]       $12.50       $12.50
+                                [AVERAGE]                   $-12.50            0
+                                [Assets:Cash:AVERAGE]        $12.50       $12.50
+                                [AVERAGE]                   $-12.50            0".NormalizeOutput(), reg.OutputText.NormalizeOutput());
+
+            var bal = session.ExecuteCommand("bal");
+            Assert.False(bal.HasErrors, bal.ErrorText);
+            Assert.Equal(@"
+               $7.50  Assets:Cash
+              $32.50    AVERAGE
+             $-65.00  AVERAGE
+              $57.50  Expenses:Food
+              $32.50    AVERAGE
+--------------------
+                   0".NormalizeOutput(), bal.OutputText.NormalizeOutput());
+
+            var balReal = session.ExecuteCommand("bal --real");
+            Assert.False(balReal.HasErrors, balReal.ErrorText);
+            Assert.Equal(@"
+             $-25.00  Assets:Cash
+              $25.00  Expenses:Food
+--------------------
+                   0".NormalizeOutput(), balReal.OutputText.NormalizeOutput());
+
+            var equity = session.ExecuteCommand("equity");
+            Assert.False(equity.HasErrors, equity.ErrorText);
+            Assert.Equal(@"
+2012/03/01 Opening Balances
+    Assets:Cash                              $-25.00
+    [Assets:Cash:AVERAGE]                     $32.50
+    [AVERAGE]                                $-65.00
+    Expenses:Food                             $25.00
+    [Expenses:Food:AVERAGE]                   $32.50".NormalizeOutput(), equity.OutputText.NormalizeOutput());
+
         }
 
     }
