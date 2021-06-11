@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLedger.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,9 @@ namespace NLedger.Extensibility.Export
     public class Annotation : BaseExport<Annotate.Annotation>
     {
         public static implicit operator Annotation(Annotate.Annotation annotation) => new Annotation(annotation);
+        public static explicit operator bool(Annotation annotation) => (bool)annotation.Origin;         // .def("__nonzero__", &annotation_t::operator bool)
+        public static bool operator ==(Annotation annLeft, Annotation annRight) => annLeft.Origin == annRight.Origin;
+        public static bool operator !=(Annotation annLeft, Annotation annRight) => annLeft.Origin != annRight.Origin;
 
         public const int ANNOTATION_PRICE_CALCULATED = 0x01;
         public const int ANNOTATION_PRICE_FIXATED = 0x02;
@@ -26,6 +30,15 @@ namespace NLedger.Extensibility.Export
         public void clear_flags(uint flag) => Flags.Value.ClearFlags(Origin, flag);
         public void add_flags(uint flag) => Flags.Value.AddFlags(Origin, flag);
         public void drop_flags(uint flag) => Flags.Value.DropFlags(Origin, flag);
+
+        public Amount price { get => Origin.Price; set => Origin.Price = value.Origin; }
+        public DateTime? date { get => Origin.Date; set => Origin.Date = (Date)value; }
+        public string tag { get => Origin.Tag; set => Origin.Tag = value; }
+        public bool valid() => true;
+
+        public override bool Equals(object obj) => Origin.Equals((obj as Annotation)?.Origin);
+        public override int GetHashCode() => Origin.GetHashCode();
+
 
         private static Lazy<FlagsConverter<Annotate.Annotation>> Flags = new Lazy<FlagsConverter<Annotate.Annotation>>(() =>
         {

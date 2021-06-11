@@ -159,6 +159,8 @@ namespace NLedger.Annotate
             return base.GetHashCode() ^ (Details != null ? Details.GetHashCode() : 0);
         }
 
+        public void SetDetails(Annotation details) => Details = details;
+
         protected Commodity Commodity { get; private set; }   // referent() is the synonym
     }
 }

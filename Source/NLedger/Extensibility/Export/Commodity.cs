@@ -27,11 +27,11 @@ namespace NLedger.Extensibility.Export
         public static bool decimal_comma_by_default { get => Commodities.Commodity.Defaults.DecimalCommaByDefault; set => Commodities.Commodity.Defaults.DecimalCommaByDefault = value; }
         public override string ToString() => Origin.Symbol;
         public static bool symbol_needs_quotes(string symbol) => Commodities.Commodity.SymbolNeedsQuotes(symbol);
-        public Commodity referent => Origin.Referent;
+        public virtual Commodity referent => Origin.Referent;
 
         public bool has_annotation() => Origin.IsAnnotated;
-        public Commodity strip_annotations() => Origin.StripAnnotations(new Annotate.AnnotationKeepDetails());
-        public Commodity strip_annotations(KeepDetails keep) => Origin.StripAnnotations(keep.Origin);
+        public virtual Commodity strip_annotations() => Origin.StripAnnotations(new Annotate.AnnotationKeepDetails());
+        public virtual Commodity strip_annotations(KeepDetails keep) => Origin.StripAnnotations(keep.Origin);
         public string write_annotations() => Origin.WriteAnnotations();
 
         public CommodityPool pool => Origin.Pool;
@@ -50,7 +50,7 @@ namespace NLedger.Extensibility.Export
         public PricePoint check_for_updated_price(PricePoint point = null, DateTime moment = default(DateTime), Commodity inTermsOf = null) => Origin.CheckForUpdatedPrice(point?.Origin, moment, inTermsOf?.Origin);
         public void Valid() => Origin.Valid();
 
-        public override bool Equals(object obj) => Origin.Equals(obj);
+        public override bool Equals(object obj) => Origin.Equals((obj as Commodity)?.Origin);
         public override int GetHashCode() => Origin.GetHashCode();
     }
 }
