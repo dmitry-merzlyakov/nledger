@@ -364,6 +364,17 @@ namespace NLedger.Amounts
         }
 
         /// <summary>
+        /// Ported from void amount_t::set_keep_precision(const bool keep) const
+        /// </summary>
+        public void SetKeepPrecision(bool keep = true)
+        {
+            if (!Quantity.HasValue)
+                throw new AmountError(AmountError.ErrorMessageCannotSetWhetherToKeepThePrecisionOfAnUninitializedAmount);
+
+            Quantity = Quantity.SetKeepPrecision(keep);
+        }
+
+        /// <summary>
         /// An amount's commodity may be annotated with special details, such as the
         /// price it was purchased for, when it was acquired, or an arbitrary note,
         /// identifying perhaps the lot number of an item.
@@ -1095,7 +1106,7 @@ namespace NLedger.Amounts
                 return;
 
             Logger.Current.Debug("amount.unround", () => String.Format("Unrounding {0}", this));
-            Quantity = Quantity.SetKeepPrecision(true);
+            SetKeepPrecision(true);
             Logger.Current.Debug("amount.unround", () => String.Format("Unrounded = {0}", this));
         }
 
@@ -1269,7 +1280,7 @@ namespace NLedger.Amounts
                 return;
 
             //_dup;
-            Quantity = Quantity.SetKeepPrecision(false);
+            SetKeepPrecision(false);
         }
 
         /// <summary>
@@ -1330,6 +1341,17 @@ namespace NLedger.Amounts
         public void ClearCommodity()
         {
             Commodity = CommodityPool.Current.NullCommodity;
+        }
+
+        public int Precision
+        {
+            get
+            {
+                if (!Quantity.HasValue)
+                    throw new AmountError(AmountError.ErrorMessageCannotDeterminePrecisionOfAnUninitializedAmount);
+
+                return Quantity.Precision;
+            }
         }
 
         public int DisplayPrecision

@@ -45,6 +45,12 @@ PythonSession.PythonModuleInitialization()
 
 from NLedger.Extensibility.Export import CommodityPool
 from NLedger.Extensibility.Export import Commodity
+from NLedger.Extensibility.Export import KeepDetails
+from NLedger.Extensibility.Export import PricePoint
+from NLedger.Extensibility.Export import Annotation
+from NLedger.Extensibility.Export import AnnotatedCommodity
+from NLedger.Extensibility.Export import Amount
+from NLedger.Extensibility.Export import ParseFlags
 
 commodities = CommodityPool.commodities
 COMMODITY_STYLE_DEFAULTS = CommodityPool.COMMODITY_STYLE_DEFAULTS;
