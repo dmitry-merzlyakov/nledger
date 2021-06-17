@@ -94,6 +94,21 @@ namespace NLedger.Values
             }
         }
 
+        public static explicit operator bool(Value value)
+        {
+            return value?.Bool ?? false;
+        }
+
+        public static bool operator <(Value left, Value right)
+        {
+            return left?.IsLessThan(right) ?? false;
+        }
+
+        public static bool operator >(Value left, Value right)
+        {
+            return left?.IsGreaterThan(right) ?? false;
+        }
+
         public static Value operator -(Value val)
         {
             return val.Negated();
@@ -977,6 +992,19 @@ namespace NLedger.Values
             }
             ErrorContext.Current.AddErrorContext(String.Format("While calling number() on {0}:", this));
             throw new ValueError(String.Format(ValueError.CannotDetermineNumericValueOfSmth, this));
+        }
+
+        public Value Reduced()
+        {
+            Value temp = Value.Clone(this);
+            temp.InPlaceUnreduce();
+            return temp;
+        }
+
+        public void InPlaceReduce()
+        {
+            if (Storage != null)
+                Storage = Storage.Reduce();
         }
 
         public Value Unreduced()

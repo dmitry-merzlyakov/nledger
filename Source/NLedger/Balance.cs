@@ -425,6 +425,16 @@ namespace NLedger
                 amount.InPlaceTruncate();
         }
 
+        public void InPlaceReduce()
+        {
+            // A temporary must be used here because reduction may cause
+            // multiple component amounts to collapse to the same commodity.
+            Balance temp = new Balance();
+            foreach (Amount amount in Amounts.Values)
+                temp = temp.Add(amount.Reduced());
+            Amounts = temp.Amounts;
+        }
+
         public void InPlaceUnreduce()
         {
             // A temporary must be used here because unreduction may cause

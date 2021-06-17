@@ -59,6 +59,7 @@ namespace NLedger.Values
         IValueStorage StripAnnotations(AnnotationKeepDetails whatToKeep);
         IValueStorage Simplify();
         IValueStorage Truncate();
+        IValueStorage Reduce();
         IValueStorage Unreduce();
     }
 
@@ -293,6 +294,11 @@ namespace NLedger.Values
         }
 
         public virtual IValueStorage Unreduce()
+        {
+            return this;
+        }
+
+        public virtual IValueStorage Reduce()
         {
             return this;
         }
@@ -1084,6 +1090,12 @@ namespace NLedger.Values
             return this;
         }
 
+        public override IValueStorage Reduce()
+        {
+            AsAmount.InPlaceReduce();
+            return this;
+        }
+
         public override IValueStorage Unreduce()
         {
             AsAmount.InPlaceUnreduce();
@@ -1291,6 +1303,12 @@ namespace NLedger.Values
         public override IValueStorage Truncate()
         {
             AsBalance.InPlaceTruncate();
+            return this;
+        }
+
+        public override IValueStorage Reduce()
+        {
+            AsBalance.InPlaceReduce();
             return this;
         }
 
@@ -1655,6 +1673,14 @@ namespace NLedger.Values
             }
             sb.Append(")");
             return sb.ToString();
+        }
+
+        public override IValueStorage Reduce()
+        {
+            var sequence = AsSequence;
+            for (int i = 0; i < sequence.Count; i++)
+                sequence[i].InPlaceReduce();
+            return this;
         }
 
         public override IValueStorage Unreduce()
