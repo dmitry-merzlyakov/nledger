@@ -8,6 +8,8 @@ namespace NLedger.Extensibility.Export
 {
     public class Balance : BaseExport<NLedger.Balance>
     {
+        public static implicit operator Balance(NLedger.Balance balance) => new Balance(balance);
+
         protected Balance(NLedger.Balance origin) : base(origin)
         {  }
 

@@ -8,6 +8,8 @@ namespace NLedger.Extensibility.Export
 {
     public class Mask : BaseExport<NLedger.Mask>
     {
+        public static implicit operator Mask(NLedger.Mask mask) => new Mask(mask);
+
         protected Mask(NLedger.Mask origin) : base(origin)
         { }
 

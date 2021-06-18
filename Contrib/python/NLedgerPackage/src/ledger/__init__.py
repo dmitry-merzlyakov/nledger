@@ -51,6 +51,8 @@ from NLedger.Extensibility.Export import Annotation
 from NLedger.Extensibility.Export import AnnotatedCommodity
 from NLedger.Extensibility.Export import Amount
 from NLedger.Extensibility.Export import ParseFlags
+from NLedger.Extensibility.Export import ValueType
+from NLedger.Extensibility.Export import Value
 
 commodities = CommodityPool.commodities
 COMMODITY_STYLE_DEFAULTS = CommodityPool.COMMODITY_STYLE_DEFAULTS;
@@ -64,6 +66,17 @@ COMMODITY_BUILTIN = CommodityPool.COMMODITY_BUILTIN;
 COMMODITY_WALKED = CommodityPool.COMMODITY_WALKED;
 COMMODITY_KNOWN = CommodityPool.COMMODITY_KNOWN;
 COMMODITY_PRIMARY = CommodityPool.COMMODITY_PRIMARY;
+
+NULL_VALUE = Value.NULL_VALUE
+
+def string_value(str)
+    return Value.string_value(str)
+
+def mask_value(str)
+    return Value.mask_value(str)
+
+def value_context(str)
+    return Value.value_context(str)
 
 # Routine to acquire and release output streams
 
