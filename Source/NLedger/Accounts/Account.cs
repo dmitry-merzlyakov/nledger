@@ -332,7 +332,7 @@ namespace NLedger.Accounts
             return LookupItems.Value.Lookup(kind, name, this);
         }
 
-        public string PartialName(bool flat)
+        public string PartialName(bool flat = false)
         {
             StringBuilder sb = new StringBuilder(Name);
 
