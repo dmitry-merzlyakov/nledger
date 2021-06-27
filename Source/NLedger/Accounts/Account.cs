@@ -372,6 +372,14 @@ namespace NLedger.Accounts
             return XData.FamilyDetails.Total;
         }
 
+        /// <summary>
+        /// Ported from bool children_with_xdata()
+        /// </summary>
+        public bool ChildrenWithXData()
+        {
+            return Accounts.Any(a => a.Value.HasXData || a.Value.ChildrenWithXData());
+        }
+
         public int ChildrenWithFlags(bool toDisplay, bool visited)
         {
             int count = 0;
