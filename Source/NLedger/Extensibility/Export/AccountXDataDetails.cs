@@ -33,7 +33,7 @@ namespace NLedger.Extensibility.Export
         public IEnumerable<string> accounts_referenced => Origin.AccountsReferenced.ToList();
         public IEnumerable<string> payees_referenced => Origin.PayeesReferenced.ToList();
 
-        public void update(Post post) => Origin.Update(post.Origin);
-        public void update(Post post, bool gatherAll) => Origin.Update(post.Origin, gatherAll);
+        public void update(Posting post) => Origin.Update(post.Origin);
+        public void update(Posting post, bool gatherAll) => Origin.Update(post.Origin, gatherAll);
     }
 }

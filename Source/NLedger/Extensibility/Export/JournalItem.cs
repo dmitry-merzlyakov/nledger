@@ -38,6 +38,8 @@ namespace NLedger.Extensibility.Export
 
         public new Items.Item Origin { get; }
 
+        public uint flags { get => (uint)Origin.Flags; set => Origin.Flags = (SupportsFlagsEnum)value; }
+
         public bool has_flags(uint flag) => (((uint)Origin.Flags) & flag) == flag;
         public void clear_flags() => Origin.Flags = default(SupportsFlagsEnum);
         public void add_flags(uint flag) => Origin.Flags = (SupportsFlagsEnum)((uint)Origin.Flags | flag);

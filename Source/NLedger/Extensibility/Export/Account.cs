@@ -46,7 +46,7 @@ namespace NLedger.Extensibility.Export
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
         public IEnumerator<Account> GetEnumerator() => accounts().GetEnumerator();
         public IList<Account> accounts() => Origin.Accounts.Values.Select(a => (Account)a).ToList();
-        public IList<Post> posts() => Origin.Posts.Select(p => (Post)p).ToList();
+        public IList<Posting> posts() => Origin.Posts.Select(p => (Posting)p).ToList();
 
         public bool has_xdata() => Origin.HasXData;
         public void clear_xdata() => Origin.ClearXData();

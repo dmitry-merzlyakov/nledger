@@ -31,7 +31,7 @@ namespace NLedger.Extensibility.Export
 
         public AccountXDataDetails self_details => Origin.SelfDetails;
         public AccountXDataDetails family_details => Origin.FamilyDetails;
-        public IList<Post> reported_posts => Origin.ReportedPosts.Select(p => (Post)p).ToList();
+        public IList<Posting> reported_posts => Origin.ReportedPosts.Select(p => (Posting)p).ToList();
         public IList<SortValue> sort_values => Origin.SortValues.Select(t => new SortValue(t)).ToList();
 
         public static Lazy<FlagsConverter<Accounts.AccountXData>> Flags = new Lazy<FlagsConverter<Accounts.AccountXData>>(() =>
