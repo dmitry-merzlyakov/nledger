@@ -37,12 +37,12 @@ namespace NLedger.Extensibility.Export
             return Mapping.Values.Where(f => f.HasFlag(flags)).All(f => f.Getter(origin));
         }
 
-        public void ClearFlags(T origin, uint flags)
+        public void ClearFlags(T origin)
         {
             if (origin == null)
                 throw new ArgumentNullException(nameof(origin));
 
-            Mapping.Values.Where(f => f.HasFlag(flags)).ToList().ForEach(f => f.Setter(origin, false));
+            Mapping.Values.ToList().ForEach(f => f.Setter(origin, false));
         }
 
         public void AddFlags(T origin, uint flags)
@@ -58,7 +58,7 @@ namespace NLedger.Extensibility.Export
             if (origin == null)
                 throw new ArgumentNullException(nameof(origin));
 
-            Mapping.Values.Where(f => f.HasFlag(flags)).ToList().ForEach(f => f.Setter(origin, !f.Getter(origin)));
+            Mapping.Values.Where(f => f.HasFlag(flags)).ToList().ForEach(f => f.Setter(origin, false));
         }
 
         public FlagsConverter<T> AddMapping(uint flag, Func<T, bool> getter, Action<T, bool> setter)

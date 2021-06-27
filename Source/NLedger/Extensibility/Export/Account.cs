@@ -9,10 +9,10 @@ namespace NLedger.Extensibility.Export
 {
     public class Account : BaseExport<Accounts.Account>, IEnumerable<Account>
     {
-        public static uint ACCOUNT_NORMAL = 0x00;
-        public static uint ACCOUNT_KNOWN = 0x01;
-        public static uint ACCOUNT_TEMP = 0x02;
-        public static uint ACCOUNT_GENERATED = 0x02;
+        public static readonly uint ACCOUNT_NORMAL = 0x00;
+        public static readonly uint ACCOUNT_KNOWN = 0x01;
+        public static readonly uint ACCOUNT_TEMP = 0x02;
+        public static readonly uint ACCOUNT_GENERATED = 0x02;
 
         public static implicit operator Account(Accounts.Account xdata) => new Account(xdata);
 
@@ -22,7 +22,7 @@ namespace NLedger.Extensibility.Export
         public uint flags { get => Flags.Value.GetFlags(Origin); set => Flags.Value.SetFlags(Origin, value); }
 
         public bool has_flags(uint flag) => Flags.Value.HasFlags(Origin, flag);
-        public void clear_flags(uint flag) => Flags.Value.ClearFlags(Origin, flag);
+        public void clear_flags() => Flags.Value.ClearFlags(Origin);
         public void add_flags(uint flag) => Flags.Value.AddFlags(Origin, flag);
         public void drop_flags(uint flag) => Flags.Value.DropFlags(Origin, flag);
 

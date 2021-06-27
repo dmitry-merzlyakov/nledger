@@ -98,6 +98,9 @@ namespace NLedger
         public Scope DefaultScope { get; set; }
         public Scope EmptyScope { get; set; }
 
+        // For Item
+        public bool UseAuxDate { get; set; }
+
         // For Logger & Validator
         public ILogger Logger { get; set; } = new Logger();
         public bool IsVerifyEnabled { get; set; }

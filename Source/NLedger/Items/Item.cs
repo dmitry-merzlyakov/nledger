@@ -25,7 +25,11 @@ namespace NLedger.Items
     /// </summary>
     public abstract class Item : Scope
     {
-        public static bool UseAuxDate { get; set; }
+        public static bool UseAuxDate 
+        {
+            get => MainApplicationContext.Current.UseAuxDate;
+            set => MainApplicationContext.Current.UseAuxDate = value;
+        }
 
         public static string ItemContext(Item item, string desc)
         {

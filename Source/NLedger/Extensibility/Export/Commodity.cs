@@ -20,7 +20,7 @@ namespace NLedger.Extensibility.Export
         public int flags { get => (int)Origin.Flags; set => Origin.Flags = (Commodities.CommodityFlagsEnum)value; }
 
         public bool has_flags(int flag) => Origin.Flags.HasFlag((Commodities.CommodityFlagsEnum)flag);
-        public void clear_flags(int flag) => Origin.Flags = Commodities.CommodityFlagsEnum.COMMODITY_STYLE_DEFAULTS;
+        public void clear_flags() => Origin.Flags = Commodities.CommodityFlagsEnum.COMMODITY_STYLE_DEFAULTS;
         public void add_flags(int flag) => Origin.Flags |= (Commodities.CommodityFlagsEnum)flag;
         public void drop_flags(int flag) => Origin.Flags &= ~(Commodities.CommodityFlagsEnum)flag;
 

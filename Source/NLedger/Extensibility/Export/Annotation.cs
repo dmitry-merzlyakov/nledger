@@ -27,7 +27,7 @@ namespace NLedger.Extensibility.Export
         public uint flags { get => Flags.Value.GetFlags(Origin); set => Flags.Value.SetFlags(Origin, value); }
 
         public bool has_flags(uint flag) => Flags.Value.HasFlags(Origin, flag);
-        public void clear_flags(uint flag) => Flags.Value.ClearFlags(Origin, flag);
+        public void clear_flags() => Flags.Value.ClearFlags(Origin);
         public void add_flags(uint flag) => Flags.Value.AddFlags(Origin, flag);
         public void drop_flags(uint flag) => Flags.Value.DropFlags(Origin, flag);
 
