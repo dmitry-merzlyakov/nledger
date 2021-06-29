@@ -42,8 +42,7 @@ namespace NLedger.Extensibility.Export
         public bool has_xdata() => Origin.HasXData();
         public void clear_xdata() => Origin.ClearXData();
 
-        // TBC
-        // query
+        public IEnumerable<Posting> query(string query) => Journals.JournalExtensions.Query(Origin, query).Select(p => (Posting)p).ToList();
 
         public bool valid() => Origin.Valid();
     }
