@@ -14,7 +14,7 @@ namespace NLedger.Extensibility.Export
         public Position() : this(new ItemPosition())
         { }
 
-        internal Position(ItemPosition origin) : base(origin)
+        protected Position(ItemPosition origin) : base(origin)
         { }
 
         public string pathname { get => Origin.PathName; set => Origin.PathName = value; }

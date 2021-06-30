@@ -17,7 +17,7 @@ namespace NLedger.Extensibility.Export
 
         public new Xacts.PeriodXact Origin { get; }
 
-        public Times.DateInterval period => Origin.Period;
+        public NLedger.Times.DateInterval period => Origin.Period;
         public string period_string => Origin.PeriodSting;
     }
 }

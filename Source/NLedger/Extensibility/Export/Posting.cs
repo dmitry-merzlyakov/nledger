@@ -15,7 +15,7 @@ namespace NLedger.Extensibility.Export
 
         public static implicit operator Posting(NLedger.Post post) => new Posting(post);
 
-        internal Posting(NLedger.Post origin) : base(origin)
+        protected Posting(NLedger.Post origin) : base(origin)
         {
             Origin = origin;
         }

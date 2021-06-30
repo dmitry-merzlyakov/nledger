@@ -44,7 +44,7 @@ namespace NLedger.Extensibility.Export
         public Commodity find(string name) => Origin.Find(name);
         public Commodity find(string name, Annotation details) => Origin.Find(name, details.Origin);
 
-        public void exchange(Commodity commodity, Amount per_unit_cost) => Origin.Exchange(commodity.Origin, per_unit_cost.Origin, Times.TimesCommon.Current.CurrentTime);
+        public void exchange(Commodity commodity, Amount per_unit_cost) => Origin.Exchange(commodity.Origin, per_unit_cost.Origin, NLedger.Times.TimesCommon.Current.CurrentTime);
         public void exchange(Commodity commodity, Amount per_unit_cost, DateTime moment) => Origin.Exchange(commodity.Origin, per_unit_cost.Origin, moment);
         public void exchange(Amount amount, Amount cost, bool is_per_unit, bool add_prices, DateTime? moment, string tag) => Origin.Exchange(amount.Origin, cost.Origin, is_per_unit, add_prices, moment, tag);
 

@@ -23,7 +23,7 @@ namespace NLedger.Extensibility.Export
         public void add_post(Posting post) => Origin.AddPost(post?.Origin);
         public bool remove_post(Posting post) => Origin.RemovePost(post?.Origin);
         public bool finalize() => Origin.FinalizeXact();
-        public IEnumerable<Posting> posts() => Origin.Posts.Select(p => new Posting(p)).ToList();
+        public IEnumerable<Posting> posts() => Origin.Posts.Select(p => (Posting)p).ToList();
 
         public IEnumerator<Posting> GetEnumerator() => posts().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();

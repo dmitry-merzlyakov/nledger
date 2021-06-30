@@ -10,7 +10,7 @@ namespace NLedger.Extensibility.Export
     {
         public static implicit operator FileInfo(Journals.JournalFileInfo fileInfo) => new FileInfo(fileInfo);
 
-        internal FileInfo(Journals.JournalFileInfo origin) : base(origin)
+        protected FileInfo(Journals.JournalFileInfo origin) : base(origin)
         { }
 
         public string filename => Origin.FileName;
