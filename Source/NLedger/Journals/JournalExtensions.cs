@@ -37,7 +37,7 @@ namespace NLedger.Journals
                     args.PushBack(Value.StringValue(arg));
                 coll.Report.ParseQueryArgs(args, "@Journal.query");
 
-                currentReport.PostsReport(coll.CollectPosts);
+                coll.Report.PostsReport(coll.CollectPosts);
                 return coll.CollectPosts.Posts;
             }
         }
