@@ -43,6 +43,8 @@ namespace NLedger.Extensibility.Python
         public IPythonValueConverter PythonValueConverter { get; } = new PythonValueConverter();
         public PyModule LedgerModule { get; private set; }
 
+        public IDisposable GIL() => Py.GIL();
+
         public PythonModule GetOrCreateModule(PyModule pyModule, string name)
         {
             PythonModule pythonModule;
@@ -54,7 +56,8 @@ namespace NLedger.Extensibility.Python
 
         public override void DefineGlobal(string name, object value)
         {
-            MainModule.DefineGlobal(name, PyObject.FromManagedObject(value));
+            using(GIL())
+                MainModule.DefineGlobal(name, PyObject.FromManagedObject(value));
         }
 
         public override void Eval(string code, ExtensionEvalModeEnum mode)
@@ -64,7 +67,8 @@ namespace NLedger.Extensibility.Python
 
             try
             {
-                PythonEngine.Exec(code, MainModule.ModuleGlobals.Handle);
+                using (GIL())
+                    PythonEngine.Exec(code, MainModule.ModuleGlobals.Handle);
             }
             catch (Exception ex)
             {
@@ -102,26 +106,29 @@ namespace NLedger.Extensibility.Python
 
             var trace = Logger.Current.TraceContext("python_init", 1)?.Message("Initialized Python").Start(); // TRACE_START
 
-            try
+            using (GIL())
             {
-                Logger.Current.Debug("python.interp", () => "Initializing Python");
+                try
+                {
+                    Logger.Current.Debug("python.interp", () => "Initializing Python");
 
-                if (!PythonEngine.IsInitialized)
-                    throw new InvalidOperationException("assert(Py_IsInitialized());");
+                    if (!PythonEngine.IsInitialized)
+                        throw new InvalidOperationException("assert(Py_IsInitialized());");
 
-                MainModule = new PythonModule(this, "__main__", Py.Import("__main__"));
-                LedgerModule = Py.Import("ledger");
+                    MainModule = new PythonModule(this, "__main__", Py.Import("__main__"));
+                    LedgerModule = Py.Import("ledger");
 
-                // [DM] Redirecting output streams
-                LedgerModule.Exec("acquire_output_streams()");
+                    // [DM] Redirecting output streams
+                    LedgerModule.Exec("acquire_output_streams()");
 
-                IsSessionInitialized = true;
-            }
-            catch (Exception ex)
-            {
-                // TODO PyErr_Print();
-                ErrorContext.Current.AddErrorContext(ex.ToString());
-                throw new RuntimeError("Python failed to initialize");
+                    IsSessionInitialized = true;
+                }
+                catch (Exception ex)
+                {
+                    // TODO PyErr_Print();
+                    ErrorContext.Current.AddErrorContext(ex.ToString());
+                    throw new RuntimeError("Python failed to initialize");
+                }
             }
 
             trace?.Finish(); // TRACE_FINISH
@@ -134,7 +141,9 @@ namespace NLedger.Extensibility.Python
 
         public override void Dispose()
         {
-            LedgerModule?.Exec("release_output_streams()");  // TOSO - check PyEngine status
+            using(GIL())
+              LedgerModule?.Exec("release_output_streams()");  // TOSO - check PyEngine status
+
             base.Dispose();
         }
 
@@ -152,14 +161,22 @@ namespace NLedger.Extensibility.Python
 
             int status = 1;
 
-            try
+            using (GIL())
             {
-                status = Runtime.Py_Main(argv.Count, argv.ToArray());
-            }
-            catch (Exception ex)
-            {
-                ErrorContext.Current.AddErrorContext(ex.ToString());
-                throw new RuntimeError("Failed to execute Python module");
+                try
+                {
+                    //[DM] TODO - This piece is ported from original code. However, Py_Main requires re-initialization Python context because it finalizes it
+                    // The temporal workaround is just to execute target script (w/o parameters).
+                    // Proper solution is to run this stuff in a separated app domain.
+                    //status = Runtime.Py_Main(argv.Count, argv.ToArray());
+                    LedgerModule.Exec(System.IO.File.ReadAllText(argv[1]));
+                    status = 0;
+                }
+                catch (Exception ex)
+                {
+                    ErrorContext.Current.AddErrorContext(ex.ToString());
+                    throw new RuntimeError("Failed to execute Python module");
+                }
             }
 
             if (status != 0)
@@ -180,23 +197,26 @@ namespace NLedger.Extensibility.Python
 
         private string AddPath(string str)
         {
-            var sysModule = Py.Import("sys");
-            var sysDict = sysModule.GetAttr("__dict__");
-            var paths = new PyList(sysDict["path"]);
+            using (GIL())
+            {
+                var sysModule = Py.Import("sys");
+                var sysDict = sysModule.GetAttr("__dict__");
+                var paths = new PyList(sysDict["path"]);
 
-            var fileSystem = MainApplicationContext.Current.ApplicationServiceProvider.FileSystemProvider;
+                var fileSystem = MainApplicationContext.Current.ApplicationServiceProvider.FileSystemProvider;
 
-            var cwd = ParsingContext.GetCurrent().CurrentPath;
-            var parent = fileSystem.GetDirectoryName(fileSystem.GetFullPath(fileSystem.PathCombine(cwd, str)));
+                var cwd = ParsingContext.GetCurrent().CurrentPath;
+                var parent = fileSystem.GetDirectoryName(fileSystem.GetFullPath(fileSystem.PathCombine(cwd, str)));
 
-            Logger.Current.Debug("python.interp", () => $"Adding {parent} to PYTHONPATH");
+                Logger.Current.Debug("python.interp", () => $"Adding {parent} to PYTHONPATH");
 
-            var pyParent = parent.ToPython();
-            if (!paths.Contains(pyParent))
-                paths.Insert(0, pyParent);
-            sysDict["path"] = paths;
+                var pyParent = parent.ToPython();
+                if (!paths.Contains(pyParent))
+                    paths.Insert(0, pyParent);
+                sysDict["path"] = paths;
 
-            return System.IO.Path.GetFileNameWithoutExtension(fileSystem.GetFileName(str));
+                return System.IO.Path.GetFileNameWithoutExtension(fileSystem.GetFileName(str));
+            }
         }
 
         private void ImportModule(string name)

@@ -858,7 +858,7 @@ namespace NLedger.Amounts
             }
 
             if (HasCommodity && amount.HasCommodity && Commodity != amount.Commodity)
-                throw new AmountError(AmountError.ErrorMessageAddingAmountsWithDifferentCommodities);
+                throw new AmountError(String.Format(AmountError.ErrorMessageSubtractingAmountsWithDifferentCommodities, Commodity, amount.Commodity));
 
             BigInt quantity = Quantity + amount.Quantity;
 
@@ -895,7 +895,7 @@ namespace NLedger.Amounts
             }
 
             if (HasCommodity && amount.HasCommodity && Commodity != amount.Commodity)
-                throw new AmountError(AmountError.ErrorMessageSubtractingAmountsWithDifferentCommodities);
+                throw new AmountError(String.Format(AmountError.ErrorMessageSubtractingAmountsWithDifferentCommodities, Commodity, amount.Commodity));
 
             BigInt quantity = Quantity - amount.Quantity;
 

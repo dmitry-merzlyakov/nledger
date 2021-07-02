@@ -22,7 +22,7 @@ namespace NLedger.Extensibility.Export
 
     public class Amount : BaseExport<Amounts.Amount>
     {
-        public static implicit operator Amount(Amounts.Amount amount) => new Amount(amount);
+        public static implicit operator Amount(Amounts.Amount amount) => amount != null ? new Amount(amount) : null;
         public static explicit operator Amount(long amount) => new Amount(new Amounts.Amount(amount));
 
         public static bool operator ==(Amount left, Amount right) => left.Origin == right.Origin;

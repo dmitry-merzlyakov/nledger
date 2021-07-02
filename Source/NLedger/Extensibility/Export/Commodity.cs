@@ -13,6 +13,8 @@ namespace NLedger.Extensibility.Export
         public static explicit operator bool(Commodity commodity) => (bool)commodity.Origin;
         public static bool operator ==(Commodity commLeft, Commodity commRight) => commLeft.Origin == commRight.Origin;
         public static bool operator !=(Commodity commLeft, Commodity commRight) => commLeft.Origin != commRight.Origin;
+        public static bool operator ==(Commodity left, string right) => left.Origin.ToString() == right;
+        public static bool operator !=(Commodity left, string right) => left.Origin.ToString() != right;
 
         protected Commodity(Commodities.Commodity origin) : base(origin)
         { }
