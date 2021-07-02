@@ -13,18 +13,18 @@ namespace NLedger.Extensibility.Export
         public bool second { get; set; }
     }
 
+    public enum State
+    {
+        Uncleared = Items.ItemStateEnum.Uncleared,
+        Cleared = Items.ItemStateEnum.Cleared,
+        Pending = Items.ItemStateEnum.Pending
+    }
+
     public class JournalItem : Scope
     {
         public static readonly uint ITEM_NORMAL = (uint)SupportsFlagsEnum.ITEM_NORMAL;
         public static readonly uint ITEM_GENERATED = (uint)SupportsFlagsEnum.ITEM_GENERATED;
         public static readonly uint ITEM_TEMP = (uint)SupportsFlagsEnum.ITEM_TEMP;
-
-        public enum State
-        {
-            Uncleared = Items.ItemStateEnum.Uncleared,
-            Cleared = Items.ItemStateEnum.Cleared,
-            Pending = Items.ItemStateEnum.Pending
-        }
 
         public static implicit operator JournalItem(Items.Item item) => new JournalItem(item);
 
