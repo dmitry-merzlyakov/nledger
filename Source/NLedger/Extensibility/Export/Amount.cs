@@ -1,4 +1,5 @@
 ﻿using NLedger.Times;
+using NLedger.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,6 +112,7 @@ namespace NLedger.Extensibility.Export
 
         public Amount value() => Origin.Value(TimesCommon.Current.CurrentTime);
         public Amount value(Commodity in_terms_of) => Origin.Value(TimesCommon.Current.CurrentTime, in_terms_of.Origin);
+        public Amount value(Commodity in_terms_of, Date moment) => Origin.Value(moment, in_terms_of.Origin);
         public Amount value(Commodity in_terms_of, DateTime moment) => Origin.Value(moment, in_terms_of.Origin);
 
         public Amount price() => Origin.Price;

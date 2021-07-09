@@ -72,7 +72,7 @@ namespace NLedger.Extensibility.Export
 
         public static bool use_aux_date { get => Items.Item.UseAuxDate; set => Items.Item.UseAuxDate = value; }
 
-        public Date? date { get => Origin.Date; set => Origin.Date = value; }
+        public Date date { get => Origin.GetDate(); set => Origin.Date = value; }
         public Date? aux_date { get => Origin.DateAux; set => Origin.DateAux = value; }
         public State state { get => (State)Origin.State; set => Origin.State = (Items.ItemStateEnum)value; }
 
