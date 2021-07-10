@@ -165,11 +165,20 @@ namespace NLedger.Extensibility.Python
             {
                 try
                 {
-                    //[DM] TODO - This piece is ported from original code. However, Py_Main requires re-initialization Python context because it finalizes it
-                    // The temporal workaround is just to execute target script (w/o parameters).
-                    // Proper solution is to run this stuff in a separated app domain.
+                    //[DM] TODO - Commented piece of code below (...Runtime.Py_Main...) is ported from original Ledger.
+                    // However, using Py_Main requires re-initialization of Python context when it finishes because Py_Main finalizes the context at the end.
+                    // It is acceptable for a command-line utility but cannot be followed in a software library.
+                    // The temporal workaround is just to execute target script (w/o parameters) by means of Exec as a script block.
+                    // Proper solution is to run this stuff (...Runtime.Py_Main...) in a separated app domain and will be considered further.
                     //status = Runtime.Py_Main(argv.Count, argv.ToArray());
-                    LedgerModule.Exec(System.IO.File.ReadAllText(argv[1]));
+
+                    //[DM] Some tests (e.g. regress\B21BF389_py.test) indicate that Python code executed by Ledger's 'python' command
+                    // expects to have variable __file___ populated with running Python file name (because Ledger uses Py_Main for this command).
+                    // For compatibility purposes, let's populate this variable with proper name.
+                    var fileName = System.IO.Path.GetFullPath(argv[1]);
+                    LedgerModule.SetAttr("__file__", new PyString(fileName));
+
+                    LedgerModule.Exec(System.IO.File.ReadAllText(fileName));
                     status = 0;
                 }
                 catch (Exception ex)
