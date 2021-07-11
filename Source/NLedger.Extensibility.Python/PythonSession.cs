@@ -37,10 +37,15 @@ namespace NLedger.Extensibility.Python
             }
         }
 
+        public PythonSession()
+        {
+            PythonValueConverter = new PythonValueConverter(this);
+        }
+
         public bool IsSessionInitialized { get; private set; }
         public PythonModule MainModule { get; private set; }
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
-        public IPythonValueConverter PythonValueConverter { get; } = new PythonValueConverter();
+        public IPythonValueConverter PythonValueConverter { get; }
         public PyModule LedgerModule { get; private set; }
 
         public IDisposable GIL() => Py.GIL();

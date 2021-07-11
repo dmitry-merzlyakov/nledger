@@ -1,6 +1,7 @@
 import ntpath
 from enum import Enum
 from configparser import ConfigParser
+import os
 
 # Options to load dotnet runtime
 ClrRuntime = Enum('ClrRuntime', 'auto netfx core mono')
@@ -11,6 +12,8 @@ configfile = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)
 
 # full path to runtime file name
 runtimefile = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '../runtime/NLedger.Extensibility.Python.dll'))
+if "nledger_extensibility_python_dll_path" in os.environ:
+    runtimefile = os.environ["nledger_extensibility_python_dll_path"]
 
 # full path to core runtime file name
 corefile = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '../runtime/NLedger.runtimeconfig.json'))

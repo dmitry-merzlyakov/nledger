@@ -49,7 +49,7 @@ from NLedger.Extensibility.Export import KeepDetails
 from NLedger.Extensibility.Export import PricePoint
 from NLedger.Extensibility.Export import Annotation
 from NLedger.Extensibility.Export import AnnotatedCommodity
-from NLedger.Extensibility.Export import Amount
+from NLedger.Extensibility.Export import Amount as ExportedAmount
 from NLedger.Extensibility.Export import ParseFlags
 from NLedger.Extensibility.Export import ValueType
 from NLedger.Extensibility.Export import Value
@@ -164,6 +164,17 @@ def times_initialize():
 
 def times_shutdown():
     Times.times_shutdown()
+
+
+# Wrappers for NLedger exported classes
+# They extend base export definitions with Python-related specifics
+
+class Amount(ExportedAmount):
+
+    def exact(value):
+        return Amount(ExportedAmount.exact(value))
+
+
 
 
 # Routine to acquire and release output streams
