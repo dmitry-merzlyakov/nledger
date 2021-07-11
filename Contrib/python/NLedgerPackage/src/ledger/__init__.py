@@ -43,8 +43,8 @@ PythonSession.PythonModuleInitialization()
 
 # Export Ledger classes and globals
 
-from NLedger.Extensibility.Export import CommodityPool
-from NLedger.Extensibility.Export import Commodity
+from NLedger.Extensibility.Export import CommodityPool as ExportedCommodityPool
+from NLedger.Extensibility.Export import Commodity as ExportedCommodity
 from NLedger.Extensibility.Export import KeepDetails
 from NLedger.Extensibility.Export import PricePoint
 from NLedger.Extensibility.Export import Annotation
@@ -76,18 +76,18 @@ from NLedger.Extensibility.Export import Transaction
 from NLedger.Extensibility.Export import AutomatedTransaction
 from NLedger.Extensibility.Export import PeriodicTransaction
 
-commodities = CommodityPool.commodities
-COMMODITY_STYLE_DEFAULTS = CommodityPool.COMMODITY_STYLE_DEFAULTS;
-COMMODITY_STYLE_SUFFIXED = CommodityPool.COMMODITY_STYLE_SUFFIXED;
-COMMODITY_STYLE_SEPARATED = CommodityPool.COMMODITY_STYLE_SEPARATED;
-COMMODITY_STYLE_DECIMAL_COMMA = CommodityPool.COMMODITY_STYLE_DECIMAL_COMMA;
-COMMODITY_STYLE_TIME_COLON = CommodityPool.COMMODITY_STYLE_TIME_COLON;
-COMMODITY_STYLE_THOUSANDS = CommodityPool.COMMODITY_STYLE_THOUSANDS;
-COMMODITY_NOMARKET = CommodityPool.COMMODITY_NOMARKET;
-COMMODITY_BUILTIN = CommodityPool.COMMODITY_BUILTIN;
-COMMODITY_WALKED = CommodityPool.COMMODITY_WALKED;
-COMMODITY_KNOWN = CommodityPool.COMMODITY_KNOWN;
-COMMODITY_PRIMARY = CommodityPool.COMMODITY_PRIMARY;
+#commodities = ExportedCommodityPool.commodities
+COMMODITY_STYLE_DEFAULTS = ExportedCommodityPool.COMMODITY_STYLE_DEFAULTS
+COMMODITY_STYLE_SUFFIXED = ExportedCommodityPool.COMMODITY_STYLE_SUFFIXED
+COMMODITY_STYLE_SEPARATED = ExportedCommodityPool.COMMODITY_STYLE_SEPARATED
+COMMODITY_STYLE_DECIMAL_COMMA = ExportedCommodityPool.COMMODITY_STYLE_DECIMAL_COMMA
+COMMODITY_STYLE_TIME_COLON = ExportedCommodityPool.COMMODITY_STYLE_TIME_COLON
+COMMODITY_STYLE_THOUSANDS = ExportedCommodityPool.COMMODITY_STYLE_THOUSANDS
+COMMODITY_NOMARKET = ExportedCommodityPool.COMMODITY_NOMARKET
+COMMODITY_BUILTIN = ExportedCommodityPool.COMMODITY_BUILTIN
+COMMODITY_WALKED = ExportedCommodityPool.COMMODITY_WALKED
+COMMODITY_KNOWN = ExportedCommodityPool.COMMODITY_KNOWN
+COMMODITY_PRIMARY = ExportedCommodityPool.COMMODITY_PRIMARY
 
 ANNOTATION_PRICE_CALCULATED = Annotation.ANNOTATION_PRICE_CALCULATED;
 ANNOTATION_PRICE_FIXATED = Annotation.ANNOTATION_PRICE_FIXATED;
@@ -168,14 +168,224 @@ def times_shutdown():
 
 # Wrappers for NLedger exported classes
 # They extend base export definitions with Python-related specifics
+# Basically, python code is needed to manage two cases: 
+# a) when operation result is an object of .Net class and we need to wrap it up (e.g. overloaded operators like +); 
+# b) when an operation parameter is a python type and cannot be implicitly associated with a .Net method (e.g. datetime.datetime vs DateTime)
 
-class Amount(ExportedAmount):
+from NLedger.Amounts import Amount as OriginAmount
+from NLedger.Commodities import CommodityPool as OriginCommodityPool
+from NLedger.Commodities import Commodity as OriginCommodity
+
+def to_amount(value):
+    return value if type(value) == Amount else Amount(value)
+
+# Amounts
+
+class Amount(OriginAmount):
 
     def exact(value):
-        return Amount(ExportedAmount.exact(value))
+        return Amount(OriginAmount.Exact(value))
 
+    def __eq__(self, o: object) -> bool:
+        return super().__eq__(to_amount(o))
 
+    def __ne__(self, o: object) -> bool:
+        return super().__ne__(to_amount(o))
 
+    def __lt__(self, o: object) -> bool:
+        return super().__lt__(to_amount(o))
+
+    def __le__(self, o: object) -> bool:
+        return super().__le__(to_amount(o))
+
+    def __gt__(self, o: object) -> bool:
+        return super().__gt__(to_amount(o))
+
+    def __ge__(self, o: object) -> bool:
+        return super().__ge__(to_amount(o))
+
+    def __neg__(self):
+        return Amount(super().__neg__())
+
+    def __bool__(self) -> bool:
+        return self.IsNonZero
+
+    __nonzero__ = __bool__
+
+    def __add__(self, o: object):
+        return Amount(super().__add__(to_amount(o)))
+
+    def __radd__(self, o: object):
+        return Amount(super().__radd__(to_amount(o)))
+
+    def __sub__(self, o: object):
+        return Amount(super().__sub__(to_amount(o)))
+
+    def __rsub__(self, o: object):
+        return Amount(super().__rsub__(to_amount(o)))
+
+    def __mul__(self, o: object):
+        return Amount(super().__mul__(to_amount(o)))
+
+    def __rmul__(self, o: object):
+        return Amount(super().__rmul__(to_amount(o)))
+
+    def __truediv__(self, o: object):
+        return Amount(super().__truediv__(to_amount(o)))
+
+    def __rtruediv__(self, o: object):
+        return Amount(super().__rtruediv__(to_amount(o)))
+
+    @property
+    def precision(self):
+        return super().Precision
+
+    @property
+    def display_precision(self):
+        return super().DisplayPrecision
+
+    @property
+    def keep_precision(self):
+        return super().KeepPrecision
+
+    @keep_precision.setter
+    def keep_precision(self, value):
+        return super().SetKeepPrecision(value)
+
+    def negated(self):
+        return Amount(self.Negated())
+
+    def in_place_negate(self):
+        self.InPlaceNegate()
+        return self
+
+    def abs(self):
+        return Amount(self.Abs())
+
+    __abs__ = abs
+
+    def inverted(self):
+        return Amount(self.Inverted())
+
+    def rounded(self):
+        return Amount(self.Rounded())
+
+    def in_place_round(self):
+        self.InPlaceRound()
+        return self
+
+    def truncated(self):
+        return Amount(self.Truncated())
+
+    def in_place_truncate(self):
+        self.InPlaceTruncate()
+        return self
+
+    def floored(self):
+        return Amount(self.Floored())
+
+    def in_place_floor(self):
+        self.InPlaceFloor()
+        return self
+
+    def unrounded(self):
+        return Amount(self.Unrounded())
+
+    def in_place_unround(self):
+        self.InPlaceUnround()
+        return self
+
+    def reduced(self):
+        return Amount(self.Reduced())
+
+    def in_place_reduce(self):
+        self.InPlaceReduce()
+        return self
+
+    def unreduced(self):
+        return Amount(self.Unreduced())
+
+    def in_place_unreduce(self):
+        self.InPlaceUnreduce()
+        return self
+
+    # TBC
+
+# Commodities
+
+class CommodityPool:
+
+    origin: None
+
+    def __init__(self,origin) -> None:
+        assert isinstance(origin, OriginCommodityPool)
+        self.origin = origin
+
+    @property
+    def null_commodity(self):
+        return Commodity(self.origin.NullCommodity)
+
+    @property
+    def default_commodity(self):
+        return Commodity.get_or_none(self.origin.DefaultCommodity)
+
+    @default_commodity.setter
+    def set_default_commodity(self, value):
+        self.origin.DefaultCommodity = value
+
+    @property
+    def keep_base(self):
+        return self.origin.KeepBase
+
+    @keep_base.setter
+    def keep_base(self, value):
+        self.origin.KeepBase = value
+
+    @property
+    def price_db(self):
+        return self.origin.PriceDb
+
+    @price_db.setter
+    def price_db(self, value):
+        self.origin.PriceDb = value
+
+    @property
+    def quote_leeway(self):
+        return self.origin.QuoteLeeway
+
+    @quote_leeway.setter
+    def quote_leeway(self, value):
+        self.origin.QuoteLeeway = value
+
+    @property
+    def get_quotes(self):
+        return self.origin.GetQuotes
+
+    @get_quotes.setter
+    def get_quotes(self, value):
+        self.origin.GetQuotes = value
+
+    def create(self, symbol):
+        return Commodity(self.origin.Create(symbol))
+
+    # TBC
+
+commodities = CommodityPool(OriginCommodityPool.Current)
+
+class Commodity:
+
+    origin: None
+
+    def get_or_none(origin):
+        return Commodity(origin) if origin != None else None
+
+    def __init__(self,origin) -> None:
+        assert isinstance(origin, OriginCommodity)
+        self.origin = origin
+
+    @property
+    def symbol(self):
+        return self.origin.Symbol
 
 # Routine to acquire and release output streams
 

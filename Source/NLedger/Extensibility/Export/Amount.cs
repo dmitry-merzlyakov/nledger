@@ -50,16 +50,19 @@ namespace NLedger.Extensibility.Export
 
         public static Amount operator +(Amount left, Amount right) => left.Origin + right.Origin;
         public static Amount operator +(Amount left, long right) => left.Origin + (Amount)right;
+        public static Amount operator +(long left, Amount right) => (Amount)left + right.Origin;
 
         public static Amount operator -(Amount left, Amount right) => left.Origin - right.Origin;
         public static Amount operator -(Amount left, long right) => left.Origin - (Amount)right;
+        public static Amount operator -(long left, Amount right) => (Amount)left - right.Origin;
 
         public static Amount operator *(Amount left, Amount right) => left.Origin * right.Origin;
         public static Amount operator *(Amount left, long right) => left.Origin * (Amount)right;
+        public static Amount operator *(long left, Amount right) => (Amount)left * right.Origin;
 
         public static Amount operator /(Amount left, Amount right) => left.Origin / right.Origin;
         public static Amount operator /(Amount left, long right) => left.Origin / (Amount)right;
-
+        public static Amount operator /(long left, Amount right) => (Amount)left / right.Origin;
 
         protected Amount(Amounts.Amount origin) : base(origin)
         { }
