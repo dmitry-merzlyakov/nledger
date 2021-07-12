@@ -47,7 +47,7 @@ from NLedger.Extensibility.Export import CommodityPool as ExportedCommodityPool
 from NLedger.Extensibility.Export import Commodity as ExportedCommodity
 from NLedger.Extensibility.Export import KeepDetails
 from NLedger.Extensibility.Export import PricePoint
-from NLedger.Extensibility.Export import Annotation
+from NLedger.Extensibility.Export import Annotation as ExportedAnnotation
 from NLedger.Extensibility.Export import AnnotatedCommodity
 from NLedger.Extensibility.Export import Amount as ExportedAmount
 from NLedger.Extensibility.Export import ParseFlags
@@ -89,12 +89,12 @@ COMMODITY_WALKED = ExportedCommodityPool.COMMODITY_WALKED
 COMMODITY_KNOWN = ExportedCommodityPool.COMMODITY_KNOWN
 COMMODITY_PRIMARY = ExportedCommodityPool.COMMODITY_PRIMARY
 
-ANNOTATION_PRICE_CALCULATED = Annotation.ANNOTATION_PRICE_CALCULATED;
-ANNOTATION_PRICE_FIXATED = Annotation.ANNOTATION_PRICE_FIXATED;
-ANNOTATION_PRICE_NOT_PER_UNIT = Annotation.ANNOTATION_PRICE_NOT_PER_UNIT;
-ANNOTATION_DATE_CALCULATED = Annotation.ANNOTATION_DATE_CALCULATED;
-ANNOTATION_TAG_CALCULATED = Annotation.ANNOTATION_TAG_CALCULATED;
-ANNOTATION_VALUE_EXPR_CALCULATED = Annotation.ANNOTATION_VALUE_EXPR_CALCULATED;
+ANNOTATION_PRICE_CALCULATED = ExportedAnnotation.ANNOTATION_PRICE_CALCULATED
+ANNOTATION_PRICE_FIXATED = ExportedAnnotation.ANNOTATION_PRICE_FIXATED
+ANNOTATION_PRICE_NOT_PER_UNIT = ExportedAnnotation.ANNOTATION_PRICE_NOT_PER_UNIT
+ANNOTATION_DATE_CALCULATED = ExportedAnnotation.ANNOTATION_DATE_CALCULATED
+ANNOTATION_TAG_CALCULATED = ExportedAnnotation.ANNOTATION_TAG_CALCULATED
+ANNOTATION_VALUE_EXPR_CALCULATED = ExportedAnnotation.ANNOTATION_VALUE_EXPR_CALCULATED
 
 NULL_VALUE = Value.NULL_VALUE
 
@@ -172,9 +172,11 @@ def times_shutdown():
 # a) when operation result is an object of .Net class and we need to wrap it up (e.g. overloaded operators like +); 
 # b) when an operation parameter is a python type and cannot be implicitly associated with a .Net method (e.g. datetime.datetime vs DateTime)
 
+from NLedger.Extensibility.Export import FlagsAdapter
 from NLedger.Amounts import Amount as OriginAmount
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
+from NLedger.Annotate import Annotation as OriginAnnotation
 
 def to_amount(value):
     return value if type(value) == Amount else Amount(value)
@@ -371,6 +373,59 @@ class CommodityPool:
     # TBC
 
 commodities = CommodityPool(OriginCommodityPool.Current)
+
+class Annotation:
+
+    origin: None
+    flags_adapter = FlagsAdapter.AnnotationFlagsAdapter()
+
+    def __init__(self,origin) -> None:
+        assert isinstance(origin, OriginAnnotation)
+        self.origin = origin
+
+    def __eq__(self, o: object) -> bool:
+        return self.Equals(o.origin)
+
+    def __ne__(self, o: object) -> bool:
+        return not self.Equals(o.origin)
+
+    @property
+    def flags(self):
+        return self.flags_adapter.GetFlags(self.origin)
+
+    @flags.setter
+    def flags(self,value):
+        return self.flags_adapter.SetFlags(self.origin, value)
+
+    def has_flags(self,flag):
+        return self.flags_adapter.HasFlags(self.origin, flag)
+
+    def clear_flags(self):
+        return self.flags_adapter.ClearFlags(self.origin)
+
+    def add_flags(self,flag):
+        return self.flags_adapter.AddFlags(self.origin,flag)
+
+    def drop_flags(self,flag):
+        return self.flags_adapter.DropFlags(self.origin,flag)
+
+    @property
+    def price(self):
+        return Amount(self.origin.Price)
+
+    @price.setter
+    def price(self,value):
+        self.origin.Price = value
+
+    @property
+    def date(self):
+        return to_pdate(self.origin.Date)
+
+    @date.setter
+    def date(self,value):
+        self.origin.Date = to_ndate(value)
+
+    #TBC
 
 class Commodity:
 
