@@ -83,6 +83,7 @@ namespace NLedger.Extensibility.Export
                 if (!IsFlag(flag))
                     throw new ArgumentException($"Value {flag} is not a bit flag");
 
+                Flag = flag;
                 Getter = getter ?? throw new ArgumentNullException(nameof(getter));
                 Setter = setter ?? throw new ArgumentNullException(nameof(setter));
             }

@@ -453,10 +453,15 @@ class Annotation:
         self.origin = origin
 
     def __eq__(self, o: object) -> bool:
-        return self.Equals(o.origin)
+        return self.origin.Equals(o.origin)
 
     def __ne__(self, o: object) -> bool:
-        return not self.Equals(o.origin)
+        return not self.origin.Equals(o.origin)
+
+    def __bool__(self) -> bool:
+        return not OriginAnnotation.IsNullOrEmpty(self.origin)
+
+    __nonzero__ = __bool__
 
     @property
     def flags(self):
@@ -494,7 +499,16 @@ class Annotation:
     def date(self,value):
         self.origin.Date = to_ndate(value)
 
-    #TBC
+    @property
+    def tag(self):
+        return self.origin.Tag
+
+    @tag.setter
+    def tag(self,value):
+        self.origin.Tag = value
+
+    def valid(self) -> bool:
+        return True # valid() is not implemented in NLedger's annotation
 
 class Commodity:
 
