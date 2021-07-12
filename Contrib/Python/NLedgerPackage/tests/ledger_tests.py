@@ -40,6 +40,12 @@ import ledger
 from ledger import Amount
 print("Module ledger is properly imported")
 
+from datetime import datetime
+from datetime import date
+from System import DateTime
+from NLedger.Utility import Date
+from System import Nullable
+
 class LedgerModuleTests(unittest.TestCase):
 
     def test_commodity_scope_attributes(self):
@@ -57,6 +63,71 @@ class LedgerModuleTests(unittest.TestCase):
 
         self.assertIsNotNone(0x1000, ledger.commodities)
         self.assertEqual("<class 'ledger.CommodityPool'>", str(type(ledger.commodities)))
+
+    def test_to_pdate(self):
+
+        self.assertIsNone(ledger.to_pdate(None))
+
+        ndatetime = DateTime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(date(2021, 5, 22), ledger.to_pdate(ndatetime))
+
+        ndate = Date(2021, 5, 22)
+        self.assertEqual(date(2021, 5, 22), ledger.to_pdate(ndate))
+
+        pdatetime = datetime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(date(2021, 5, 22), ledger.to_pdate(pdatetime))
+
+        pdate = date(2021, 5, 22)
+        self.assertEqual(date(2021, 5, 22), ledger.to_pdate(pdate))
+
+    def test_to_pdatetime(self):
+
+        self.assertIsNone(ledger.to_pdatetime(None))
+
+        ndatetime = DateTime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(datetime(2021, 5, 22, 23, 55, 50, 99), ledger.to_pdatetime(ndatetime))
+
+        ndate = Date(2021, 5, 22)
+        self.assertEqual(datetime(2021, 5, 22, 0, 0, 0, 0), ledger.to_pdatetime(ndate))
+
+        pdatetime = datetime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(datetime(2021, 5, 22, 23, 55, 50, 99), ledger.to_pdatetime(pdatetime))
+
+        pdate = date(2021, 5, 22)
+        self.assertEqual(datetime(2021, 5, 22, 0, 0, 0, 0), ledger.to_pdatetime(pdate))
+
+    def test_to_ndate(self):
+
+        self.assertEqual(None, ledger.to_ndate(None))
+
+        pdatetime = datetime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(Date(2021, 5, 22), ledger.to_ndate(pdatetime))
+
+        pdate = date(2021, 5, 22)
+        self.assertEqual(Date(2021, 5, 22), ledger.to_ndate(pdate))
+
+        ndatetime = DateTime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(Date(2021, 5, 22), ledger.to_ndate(ndatetime))
+
+        ndate = Date(2021, 5, 22)
+        self.assertEqual(Date(2021, 5, 22), ledger.to_ndate(ndate))
+
+    def test_to_ndatetime(self):
+
+        self.assertEqual(None, ledger.to_ndatetime(None))
+
+        pdatetime = datetime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(DateTime(2021, 5, 22, 23, 55, 50, 99), ledger.to_ndatetime(pdatetime))
+
+        pdate = date(2021, 5, 22)
+        self.assertEqual(DateTime(2021, 5, 22), ledger.to_ndatetime(pdate))
+
+        ndatetime = DateTime(2021, 5, 22, 23, 55, 50, 99)
+        self.assertEqual(DateTime(2021, 5, 22, 23, 55, 50, 99), ledger.to_ndatetime(ndatetime))
+
+        ndate = Date(2021, 5, 22)
+        self.assertEqual(DateTime(2021, 5, 22), ledger.to_ndatetime(ndate))
+
 
 # Commodities
 

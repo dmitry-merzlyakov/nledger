@@ -178,6 +178,75 @@ from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
 from NLedger.Annotate import Annotation as OriginAnnotation
 
+# Manage date conversions
+
+from datetime import datetime
+from datetime import date
+
+from NLedger.Utility import Date
+from System import DateTime
+from System.Globalization import DateTimeStyles
+
+# Converts to Python date
+def to_pdate(value) -> date:
+    if value is None:
+        return None
+    elif isinstance(value, DateTime):
+        return date(value.Year, value.Month, value.Day)
+    elif isinstance(value, Date):
+        return date(value.Year, value.Month, value.Day)
+    elif isinstance(value, datetime):
+        return value.date()
+    elif isinstance(value, date):
+        return value
+    else:
+        raise Exception("Date value is expected")
+
+# Converts to Python datetime
+def to_pdatetime(value) -> datetime:
+    if value is None:
+        return None
+    elif isinstance(value, DateTime):
+        return datetime(value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, value.Millisecond)
+    elif isinstance(value, Date):
+        return datetime(value.Year, value.Month, value.Day, 0, 0, 0, 0)
+    elif isinstance(value, datetime):
+        return value
+    elif isinstance(value, date):
+        return datetime.combine(value, datetime.min.time())
+    else:
+        raise Exception("Date value is expected")
+
+# Converts to .Net Ledger Date
+def to_ndate(value) -> Date:
+    if value is None:
+        return None
+    elif isinstance(value, DateTime):
+        return Date(value.Year, value.Month, value.Day)
+    elif isinstance(value, Date):
+        return value
+    elif isinstance(value, datetime):
+        return Date(value.year, value.month, value.day)
+    elif isinstance(value, date):
+        return Date(value.year, value.month, value.day)
+    else:
+        raise Exception("Date value is expected")
+
+# Converts to .Net DateTime
+def to_ndatetime(value) -> DateTime:
+    if value is None:
+        return None
+    elif isinstance(value, DateTime):
+        return value
+    elif isinstance(value, Date):
+        return DateTime(value.Year, value.Month, value.Day)
+    elif isinstance(value, datetime):
+        return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond)
+    elif isinstance(value, date):
+        return DateTime(value.year, value.month, value.day)
+    else:
+        raise Exception("Date value is expected")
+
 def to_amount(value):
     return value if type(value) == Amount else Amount(value)
 
