@@ -188,6 +188,8 @@ from NLedger.Utility import Date
 from System import DateTime
 from System.Globalization import DateTimeStyles
 
+from NLedger.Times import TimesCommon
+
 # Converts to Python date
 def to_pdate(value) -> date:
     if value is None:
@@ -395,7 +397,7 @@ class CommodityPool:
 
     @property
     def null_commodity(self):
-        return Commodity(self.origin.NullCommodity)
+        return Commodity.from_origin(self.origin.NullCommodity)
 
     @property
     def default_commodity(self):
@@ -437,11 +439,43 @@ class CommodityPool:
     def get_quotes(self, value):
         self.origin.GetQuotes = value
 
-    def create(self, symbol):
-        return Commodity(self.origin.Create(symbol))
+    def create(self, symbol: str, details = None):
+        assert details is None or isinstance(details, Annotation)
+        return Commodity.from_origin(self.origin.Create(symbol) if details is None else self.origin.Create(symbol, details.origin))
 
-    def find_or_create(self, symbol):
-        return Commodity(self.origin.FindOrCreate(symbol))
+    def find_or_create(self, symbol: str, details = None):
+        assert details is None or isinstance(details, Annotation)
+        return Commodity.from_origin(self.origin.FindOrCreate(symbol) if details is None else self.origin.FindOrCreate(symbol, details.origin))
+
+    def find(self, symbol: str, details = None):
+        assert details is None or isinstance(details, Annotation)
+        return Commodity.from_origin(self.origin.Find(symbol) if details is None else self.origin.Find(symbol, details.origin))
+
+    # Allowed arguments for 'exchange' method: 
+    # exchange(commodity: Commodity, per_unit_cost: Amount)
+    # exchange(commodity: Commodity, per_unit_cost: Amount, moment: datetime)
+    # exchange(amount: Amount, cost: Amount, is_per_unit: bool, add_prices: bool, moment: datetime = None, tag: str = None)
+    def exchange(self,*args):
+        if len(args) == 2:
+            assert isinstance(args[0], Commodity)
+            assert isinstance(args[1], Amount)
+            self.origin.Exchange(args[0].origin, args[1], TimesCommon.Current.CurrentTime)
+        elif len(args) == 3:
+            assert isinstance(args[0], Commodity)
+            assert isinstance(args[1], Amount)
+            assert isinstance(args[2], datetime) or isinstance(args[4], date)
+            self.origin.Exchange(args[0].origin, args[1], to_ndatetime(args[2]))
+        elif len(args) >= 4 and len(args) <= 6:
+            assert isinstance(args[0], Amount)
+            assert isinstance(args[1], Amount)
+            assert isinstance(args[2], bool)
+            assert isinstance(args[3], bool)
+            assert len(args) < 5 or (isinstance(args[4], datetime) or isinstance(args[4], date))
+            assert len(args) < 6 or isinstance(args[5], str)
+            self.origin.Exchange(args[0], args[1], args[2], args[3], to_ndatetime(args[4]) if len(args) >= 5 else None, args[5] if len(args) == 6 else None)
+        else:
+            raise Exception("Unexpected number of 'exchange' arguments (allowed from 2 to 6")
+
 
     # TBC
 
@@ -579,7 +613,7 @@ class Commodity:
 
     @classmethod
     def from_origin(cls, origin):
-        return Commodity(origin=origin) if not origin is None else None
+        return Commodity(origin=origin) if not origin is None else None  # TODO - manage annotated commodities
 
     @property
     def symbol(self):

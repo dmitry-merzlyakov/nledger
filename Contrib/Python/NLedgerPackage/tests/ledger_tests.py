@@ -206,6 +206,89 @@ class CommodityPoolTests(unittest.TestCase):
         self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
         self.assertEqual('"XYZ1"', commodity.symbol)
 
+        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        commodity = commodity_pool.create("XYZ2", annotation)
+
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ2"', commodity.symbol)
+
+    def test_commodity_pool_find_or_create(self):
+
+        commodity_pool = ledger.commodities
+
+        commodity = commodity_pool.find_or_create("XYZ10")
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ10"', commodity.symbol)
+
+        commodity = commodity_pool.find_or_create("XYZ10")
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ10"', commodity.symbol)
+
+        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+
+        commodity = commodity_pool.find_or_create("XYZ11", annotation)
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ11"', commodity.symbol)
+
+        commodity = commodity_pool.find_or_create("XYZ11", annotation)
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ11"', commodity.symbol)
+
+    def test_commodity_pool_find(self):
+
+        commodity_pool = ledger.commodities
+
+        commodity = commodity_pool.find("XYZNONE999")
+        self.assertIsNone(commodity)
+
+        commodity_pool.find_or_create("XYZ20")
+        commodity = commodity_pool.find("XYZ20")
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ20"', commodity.symbol)
+
+        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        commodity_pool.find_or_create("XYZ20", annotation)
+
+        commodity = commodity_pool.find("XYZ20", annotation)
+        self.assertIsNotNone(commodity)
+        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual('"XYZ20"', commodity.symbol)
+
+    def test_commodity_exchange_2(self):
+
+        commodity_pool = ledger.commodities
+        commodity = commodity_pool.find_or_create("ZS1")
+        amount = ledger.Amount("10")
+        commodity_pool.exchange(commodity,amount)
+
+    def test_commodity_exchange_3(self):
+
+        commodity_pool = ledger.commodities
+        commodity = commodity_pool.find_or_create("ZS1")
+        amount = ledger.Amount("10")
+        moment = datetime(2021, 5, 22)
+        commodity_pool.exchange(commodity,amount,moment)
+
+    def test_commodity_exchange_6(self):
+
+        commodity_pool = ledger.commodities
+        amount = ledger.Amount("10")
+        cost = ledger.Amount("20")
+        is_per_unit = True
+        add_prices = True
+        moment = datetime(2021, 5, 22)
+        tag = "tag-1"
+        commodity_pool.exchange(amount,cost,is_per_unit,add_prices)
+        commodity_pool.exchange(amount,cost,is_per_unit,add_prices,moment)
+        commodity_pool.exchange(amount,cost,is_per_unit,add_prices,moment,tag)
+
+
 class AnnotationTests(unittest.TestCase):
 
     def test_annotation_eq(self):
