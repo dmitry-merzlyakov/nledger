@@ -46,6 +46,7 @@ from System import DateTime
 from NLedger.Utility import Date
 
 from NLedger.Annotate import Annotation as OriginAnnotation
+from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 
 class LedgerModuleTests(unittest.TestCase):
 
@@ -304,6 +305,107 @@ class AnnotationTests(unittest.TestCase):
 
         annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10), None, "tag-1"))
         self.assertTrue(annotation1.valid())
+
+class KeepDetailsTests(unittest.TestCase):
+
+    def test_keepdetails_constructor(self):
+
+        keepdetails1 = ledger.KeepDetails()
+        self.assertFalse(keepdetails1.keep_price)
+        self.assertFalse(keepdetails1.keep_date)
+        self.assertFalse(keepdetails1.keep_tag)
+        self.assertFalse(keepdetails1.only_actuals)
+
+        keepdetails2 = ledger.KeepDetails(True)
+        self.assertTrue(keepdetails2.keep_price)
+        self.assertFalse(keepdetails2.keep_date)
+        self.assertFalse(keepdetails2.keep_tag)
+        self.assertFalse(keepdetails2.only_actuals)
+
+        keepdetails3 = ledger.KeepDetails(True,True)
+        self.assertTrue(keepdetails3.keep_price)
+        self.assertTrue(keepdetails3.keep_date)
+        self.assertFalse(keepdetails3.keep_tag)
+        self.assertFalse(keepdetails3.only_actuals)
+
+        keepdetails4 = ledger.KeepDetails(True,True,True)
+        self.assertTrue(keepdetails4.keep_price)
+        self.assertTrue(keepdetails4.keep_date)
+        self.assertTrue(keepdetails4.keep_tag)
+        self.assertFalse(keepdetails4.only_actuals)
+
+        keepdetails5 = ledger.KeepDetails(True,True,True,True)
+        self.assertTrue(keepdetails5.keep_price)
+        self.assertTrue(keepdetails5.keep_date)
+        self.assertTrue(keepdetails5.keep_tag)
+        self.assertTrue(keepdetails5.only_actuals)
+
+    def test_keepdetails_from_origin(self):
+
+        origin = OriginAnnotationKeepDetails(True,True,True,True)
+        keepdetails = ledger.KeepDetails.from_origin(origin)
+        self.assertTrue(keepdetails.keep_price)
+        self.assertTrue(keepdetails.keep_date)
+        self.assertTrue(keepdetails.keep_tag)
+        self.assertTrue(keepdetails.only_actuals)
+
+    def test_keepdetails_keep_price(self):
+
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.keep_price)
+        keepdetails.keep_price = True
+        self.assertTrue(keepdetails.keep_price)
+        keepdetails.keep_price = False
+        self.assertFalse(keepdetails.keep_price)
+
+    def test_keepdetails_keep_date(self):
+
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.keep_date)
+        keepdetails.keep_date = True
+        self.assertTrue(keepdetails.keep_date)
+        keepdetails.keep_date = False
+        self.assertFalse(keepdetails.keep_date)
+
+    def test_keepdetails_keep_tag(self):
+
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.keep_tag)
+        keepdetails.keep_tag = True
+        self.assertTrue(keepdetails.keep_tag)
+        keepdetails.keep_tag = False
+        self.assertFalse(keepdetails.keep_tag)
+
+    def test_keepdetails_only_actuals(self):
+
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.only_actuals)
+        keepdetails.only_actuals = True
+        self.assertTrue(keepdetails.only_actuals)
+        keepdetails.only_actuals = False
+        self.assertFalse(keepdetails.only_actuals)
+
+    def test_keepdetails_keep_all(self):
+
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.keep_all())
+        keepdetails = ledger.KeepDetails(True,True,True)
+        self.assertTrue(keepdetails.keep_all())
+
+        commodity = ledger.commodities.find_or_create("ZX9")
+        keepdetails = ledger.KeepDetails()
+        self.assertTrue(keepdetails.keep_all(commodity))
+
+    def test_keepdetails_keep_any(self):
+
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.keep_any())
+        keepdetails = ledger.KeepDetails(False,True,False)
+        self.assertTrue(keepdetails.keep_any())
+
+        commodity = ledger.commodities.find_or_create("ZX9")
+        keepdetails = ledger.KeepDetails()
+        self.assertFalse(keepdetails.keep_any(commodity))
 
 # Amount tests
 

@@ -45,7 +45,7 @@ PythonSession.PythonModuleInitialization()
 
 from NLedger.Extensibility.Export import CommodityPool as ExportedCommodityPool
 from NLedger.Extensibility.Export import Commodity as ExportedCommodity
-from NLedger.Extensibility.Export import KeepDetails
+from NLedger.Extensibility.Export import KeepDetails as ExportedKeepDetails
 from NLedger.Extensibility.Export import PricePoint
 from NLedger.Extensibility.Export import Annotation as ExportedAnnotation
 from NLedger.Extensibility.Export import AnnotatedCommodity
@@ -177,6 +177,7 @@ from NLedger.Amounts import Amount as OriginAmount
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
 from NLedger.Annotate import Annotation as OriginAnnotation
+from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 
 # Manage date conversions
 
@@ -398,7 +399,7 @@ class CommodityPool:
 
     @property
     def default_commodity(self):
-        return Commodity.get_or_none(self.origin.DefaultCommodity)
+        return Commodity.from_origin(self.origin.DefaultCommodity)
 
     @default_commodity.setter
     def set_default_commodity(self, value):
@@ -438,6 +439,9 @@ class CommodityPool:
 
     def create(self, symbol):
         return Commodity(self.origin.Create(symbol))
+
+    def find_or_create(self, symbol):
+        return Commodity(self.origin.FindOrCreate(symbol))
 
     # TBC
 
@@ -510,16 +514,72 @@ class Annotation:
     def valid(self) -> bool:
         return True # valid() is not implemented in NLedger's annotation
 
+class KeepDetails:
+
+    origin: None
+
+    def __init__(self, keepPrice = False, keepDate = False, keepTag = False, onlyActuals = False, origin = None) -> None:
+
+        if not(origin is None):
+            assert isinstance(origin, OriginAnnotationKeepDetails)
+            self.origin = origin
+        else:
+            self.origin = OriginAnnotationKeepDetails(keepPrice, keepDate, keepTag, onlyActuals)
+
+    @classmethod
+    def from_origin(cls, origin):
+        return KeepDetails(origin=origin) if not origin is None else None
+
+    @property
+    def keep_price(self) -> bool:
+        return self.origin.KeepPrice
+
+    @keep_price.setter
+    def keep_price(self,value):
+        self.origin.KeepPrice = value
+
+    @property
+    def keep_date(self) -> bool:
+        return self.origin.KeepDate
+
+    @keep_date.setter
+    def keep_date(self,value):
+        self.origin.KeepDate = value
+
+    @property
+    def keep_tag(self) -> bool:
+        return self.origin.KeepTag
+
+    @keep_tag.setter
+    def keep_tag(self,value):
+        self.origin.KeepTag = value
+
+    @property
+    def only_actuals(self) -> bool:
+        return self.origin.OnlyActuals
+
+    @only_actuals.setter
+    def only_actuals(self,value):
+        self.origin.OnlyActuals = value
+
+    def keep_all(self, comm = None):
+        return self.origin.KeepAll() if comm is None else self.origin.KeepAll(comm.origin)
+
+    def keep_any(self, comm = None):
+        return self.origin.KeepAny() if comm is None else self.origin.KeepAny(comm.origin)
+
+
 class Commodity:
 
     origin: None
 
-    def get_or_none(origin):
-        return Commodity(origin) if origin != None else None
-
     def __init__(self,origin) -> None:
         assert isinstance(origin, OriginCommodity)
         self.origin = origin
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Commodity(origin=origin) if not origin is None else None
 
     @property
     def symbol(self):
