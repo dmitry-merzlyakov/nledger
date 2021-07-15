@@ -477,8 +477,35 @@ class CommodityPool:
         else:
             raise Exception("Unexpected number of 'exchange' arguments (allowed from 2 to 6")
 
+    def parse_price_directive(self, line: str, do_not_add_price: bool = False, no_date: bool = False):
+        pair = self.origin.ParsePriceDirective(line, do_not_add_price, no_date)
+        return (Commodity.from_origin(pair.Item1), PricePoint.from_origin(pair.Item2)) if not pair is None else None
 
-    # TBC
+    def parse_price_expression(self, line: str, add_price: bool = True, moment: datetime = None):
+        return Commodity.from_origin(self.origin.ParsePriceExpression(line, add_price, to_ndatetime(moment)))
+
+    def __getitem__(self, symbol):
+        comm = Commodity.from_origin(self.origin.Find(symbol))
+        if comm is None:
+            raise ValueError("Could not find commodity " + str(symbol))
+        return comm
+
+    def keys(self):
+        return list(self.origin.Commodities.Keys)
+
+    def has_key(self, symbol:str) -> bool:
+        return not self.origin.Find(symbol) is None
+
+    __contains__ = has_key
+
+    def values(self):
+        return [Commodity.from_origin(comm) for comm in self.origin.Commodities.Values]
+
+    def items(self):
+        return [(kv.Key, Commodity.from_origin(kv.Value)) for kv in self.origin.Commodities]
+
+    def __iter__(self):
+        return iter(self.keys())
 
 commodities = CommodityPool(OriginCommodityPool.Current)
 
@@ -618,7 +645,7 @@ class PricePoint:
 
     @classmethod
     def from_origin(cls, origin):
-        return PricePoint(origin=origin) if not origin is None else None
+        return PricePoint(None, None, origin) if not origin is None else None
 
     def __eq__(self, o: object) -> bool:
         return self.origin.Equals(o.origin if isinstance(o, PricePoint) else o)
@@ -655,6 +682,12 @@ class Commodity:
     @classmethod
     def from_origin(cls, origin):
         return Commodity(origin=origin) if not origin is None else None  # TODO - manage annotated commodities
+
+    def __eq__(self, o: object) -> bool:
+        return self.origin.Equals(o.origin if isinstance(o, Commodity) else o)
+
+    def __ne__(self, o: object) -> bool:
+        return not self.origin.Equals(o.origin if isinstance(o, Commodity) else o)
 
     @property
     def symbol(self):

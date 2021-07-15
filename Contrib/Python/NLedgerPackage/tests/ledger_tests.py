@@ -1,5 +1,6 @@
 # NLedger Python Extensibility module tests (ledger)
 
+from typing import Tuple
 import unittest
 import ntpath
 import os
@@ -288,6 +289,98 @@ class CommodityPoolTests(unittest.TestCase):
         commodity_pool.exchange(amount,cost,is_per_unit,add_prices,moment)
         commodity_pool.exchange(amount,cost,is_per_unit,add_prices,moment,tag)
 
+    def test_commodity_parse_price_directive(self):
+
+        commodity_pool = ledger.commodities
+        result1 = commodity_pool.parse_price_directive("2020-01-15 GAL $3")
+        result2 = commodity_pool.parse_price_directive("1989/01/15 12:00:00 GAL $3",True)
+        result3 = commodity_pool.parse_price_directive("1989/01/15 12:00:00 GAL $3",True,True)
+
+        self.assertIsNotNone(result1)
+        self.assertIsNotNone(result2)
+        self.assertIsNotNone(result3)
+
+        self.assertIsInstance(result1[0], ledger.Commodity)
+        self.assertIsInstance(result1[1], ledger.PricePoint)
+
+    def test_commodity_getitem(self):
+
+        commodity_pool = ledger.commodities
+        commodity_pool.find_or_create("QA22")
+
+        comm = commodity_pool["QA22"]
+        self.assertIsNotNone(comm)
+        self.assertIsInstance(comm, ledger.Commodity)
+        self.assertEqual('"QA22"', comm.symbol)
+
+        with self.assertRaises(ValueError) as context:
+            commodity_pool["non-existing-commodity"]
+
+        self.assertEqual('Could not find commodity non-existing-commodity', str(context.exception))
+
+    def test_commodity_keys(self):
+
+        commodity_pool = ledger.commodities
+        commodity_pool.find_or_create("QA22")
+
+        keys = commodity_pool.keys()
+        self.assertIsNotNone(keys)
+        self.assertIsInstance(keys, list)
+        self.assertTrue('QA22' in keys)
+
+    def test_commodity_has_key(self):
+
+        commodity_pool = ledger.commodities
+        commodity_pool.find_or_create("QA22")
+
+        self.assertTrue(commodity_pool.has_key("QA22"))
+        self.assertFalse(commodity_pool.has_key("non-existing-commodity"))
+
+    def test_commodity_contains(self):
+
+        commodity_pool = ledger.commodities
+        commodity_pool.find_or_create("QA22")
+
+        self.assertTrue("QA22" in commodity_pool)
+        self.assertFalse("non-existing-commodity" in commodity_pool)
+
+    def test_commodity_values(self):
+
+        commodity_pool = ledger.commodities
+        comm = commodity_pool.find_or_create("QA22")
+
+        values = commodity_pool.values()
+        self.assertIsNotNone(values)
+        self.assertIsInstance(values, list)        
+        self.assertTrue(comm in values)
+
+        for val in values:
+            self.assertIsInstance(val, ledger.Commodity)
+
+    def test_commodity_items(self):
+
+        commodity_pool = ledger.commodities
+        comm = commodity_pool.find_or_create("QA22")
+
+        items = commodity_pool.items()
+        self.assertIsNotNone(items)
+        self.assertIsInstance(items, list)        
+        self.assertTrue(("QA22", comm) in items)
+
+        for val in items:
+            self.assertIsInstance(val, Tuple)
+            self.assertIsInstance(val[0], str)
+            self.assertIsInstance(val[1], ledger.Commodity)
+
+    def test_commodity_iter(self):
+
+        commodity_pool = ledger.commodities
+        comm = commodity_pool.find_or_create("QA22")
+
+        for k in commodity_pool:
+            self.assertIsNotNone(k)
+            self.assertIsInstance(k, str)
+            self.assertTrue(commodity_pool.has_key(k))
 
 class AnnotationTests(unittest.TestCase):
 
