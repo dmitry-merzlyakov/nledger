@@ -541,7 +541,6 @@ class PricePointTests(unittest.TestCase):
         self.assertEqual(price2, price_point.price)
         self.assertIsInstance(price_point.price, Amount)
 
-
 class KeepDetailsTests(unittest.TestCase):
 
     def test_keepdetails_constructor(self):
@@ -642,6 +641,67 @@ class KeepDetailsTests(unittest.TestCase):
         commodity = ledger.commodities.find_or_create("ZX9")
         keepdetails = ledger.KeepDetails()
         self.assertFalse(keepdetails.keep_any(commodity))
+
+class CommodityTests(unittest.TestCase):
+
+    def test_commodity_flags(self):
+
+        comm = ledger.commodities.find_or_create("WTC1")
+
+        flags = comm.flags
+        comm.flags = ledger.COMMODITY_PRIMARY
+        self.assertEqual(ledger.COMMODITY_PRIMARY, comm.flags)
+        comm.flags = flags
+        self.assertEqual(flags, comm.flags)
+
+    def test_commodity_has_flags(self):
+
+        comm = ledger.commodities.find_or_create("WTC1")
+        flags = comm.flags
+
+        comm.flags = ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS
+        self.assertTrue(comm.has_flags(ledger.COMMODITY_PRIMARY))
+        self.assertTrue(comm.has_flags(ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_THOUSANDS))
+        self.assertTrue(comm.has_flags(ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS))
+        self.assertFalse(comm.has_flags(ledger.COMMODITY_STYLE_SEPARATED))
+        self.assertFalse(comm.has_flags(ledger.COMMODITY_STYLE_SEPARATED | ledger.COMMODITY_PRIMARY))
+
+        comm.flags = flags
+
+    def test_commodity_clear_flags(self):
+
+        comm = ledger.commodities.find_or_create("WTC1")
+        flags = comm.flags
+        comm.flags = ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS
+
+        comm.clear_flags()
+        self.assertTrue(comm.flags == 0)
+
+        comm.flags = flags
+
+    def test_commodity_add_flags(self):
+
+        comm = ledger.commodities.find_or_create("WTC1")
+        flags = comm.flags
+
+        comm.flags = ledger.COMMODITY_PRIMARY
+        comm.add_flags(ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS)
+        self.assertTrue(comm.has_flags(ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS))
+
+        comm.flags = flags
+
+    def test_commodity_drop_flags(self):
+
+        comm = ledger.commodities.find_or_create("WTC1")
+        flags = comm.flags
+
+        comm.flags = ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS
+        comm.drop_flags(ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS)
+        self.assertFalse(comm.has_flags(ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED | ledger.COMMODITY_STYLE_THOUSANDS))
+        self.assertFalse(comm.has_flags(ledger.COMMODITY_PRIMARY | ledger.COMMODITY_STYLE_SUFFIXED))
+        self.assertTrue(comm.has_flags(ledger.COMMODITY_PRIMARY))
+
+        comm.flags = flags
 
 # Amount tests
 

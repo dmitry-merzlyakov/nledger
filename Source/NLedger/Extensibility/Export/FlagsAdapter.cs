@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLedger.Commodities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,5 +19,7 @@ namespace NLedger.Extensibility.Export
                 AddMapping(Annotation.ANNOTATION_TAG_CALCULATED, a => a.IsTagCalculated, (a, v) => a.IsTagCalculated = v).
                 AddMapping(Annotation.ANNOTATION_VALUE_EXPR_CALCULATED, a => a.IsValueExprCalculated, (a, v) => a.IsValueExprCalculated = v);
         }
+
+        public static int CommodityFlagsToInt(CommodityFlagsEnum flags) => (int)flags;
     }
 }

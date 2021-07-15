@@ -177,6 +177,7 @@ from NLedger.Amounts import Amount as OriginAmount
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
 from NLedger.Commodities import PricePoint as OriginPricePoint
+from NLedger.Commodities import CommodityFlagsEnum
 from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 
@@ -670,7 +671,6 @@ class PricePoint:
         assert isinstance(value, Amount)
         self.origin.Price = value
 
-
 class Commodity:
 
     origin: None
@@ -688,6 +688,27 @@ class Commodity:
 
     def __ne__(self, o: object) -> bool:
         return not self.origin.Equals(o.origin if isinstance(o, Commodity) else o)
+
+    @property
+    def flags(self) -> int:
+        return FlagsAdapter.CommodityFlagsToInt(self.origin.Flags)
+
+    @flags.setter
+    def flags(self,value:int):
+        self.origin.Flags = CommodityFlagsEnum(value)
+
+    def has_flags(self,value:int) -> bool:
+        return (self.flags & value) == value
+
+    def clear_flags(self):
+        self.flags = 0
+
+    def add_flags(self,value:int):
+        self.flags |= value
+
+    def drop_flags(self,value:int):
+        self.flags &= ~value
+
 
     @property
     def symbol(self):
