@@ -46,7 +46,7 @@ PythonSession.PythonModuleInitialization()
 from NLedger.Extensibility.Export import CommodityPool as ExportedCommodityPool
 from NLedger.Extensibility.Export import Commodity as ExportedCommodity
 from NLedger.Extensibility.Export import KeepDetails as ExportedKeepDetails
-from NLedger.Extensibility.Export import PricePoint
+from NLedger.Extensibility.Export import PricePoint as ExportedPricePoint
 from NLedger.Extensibility.Export import Annotation as ExportedAnnotation
 from NLedger.Extensibility.Export import AnnotatedCommodity
 from NLedger.Extensibility.Export import Amount as ExportedAmount
@@ -176,6 +176,7 @@ from NLedger.Extensibility.Export import FlagsAdapter
 from NLedger.Amounts import Amount as OriginAmount
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
+from NLedger.Commodities import PricePoint as OriginPricePoint
 from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 
@@ -601,6 +602,46 @@ class KeepDetails:
 
     def keep_any(self, comm = None):
         return self.origin.KeepAny() if comm is None else self.origin.KeepAny(comm.origin)
+
+class PricePoint:
+
+    origin: None
+
+    def __init__(self, when, price, origin = None) -> None:
+
+        if not(origin is None):
+            assert isinstance(origin, OriginPricePoint)
+            self.origin = origin
+        else:
+            assert isinstance(price, Amount)
+            self.origin = OriginPricePoint(to_ndatetime(when), price)
+
+    @classmethod
+    def from_origin(cls, origin):
+        return PricePoint(origin=origin) if not origin is None else None
+
+    def __eq__(self, o: object) -> bool:
+        return self.origin.Equals(o.origin if isinstance(o, PricePoint) else o)
+
+    def __ne__(self, o: object) -> bool:
+        return not self.origin.Equals(o.origin if isinstance(o, PricePoint) else o)
+
+    @property
+    def when(self) -> datetime:
+        return to_pdatetime(self.origin.When)
+
+    @when.setter
+    def when(self,value):
+        self.origin.When = to_ndatetime(value)
+
+    @property
+    def price(self) -> Amount:
+        return to_amount(self.origin.Price)
+
+    @price.setter
+    def price(self,value):
+        assert isinstance(value, Amount)
+        self.origin.Price = value
 
 
 class Commodity:

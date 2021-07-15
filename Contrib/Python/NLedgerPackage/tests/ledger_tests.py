@@ -389,6 +389,66 @@ class AnnotationTests(unittest.TestCase):
         annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10), None, "tag-1"))
         self.assertTrue(annotation1.valid())
 
+class PricePointTests(unittest.TestCase):
+
+    def test_pricepoint_constructor(self):
+
+        when = datetime(2021, 5, 12, 22, 55, 59)
+        price = Amount(10)
+
+        price_point = ledger.PricePoint(when, price)
+
+        self.assertIsNotNone(price_point)
+        self.assertEqual(when, price_point.when)
+        self.assertEqual(price, price_point.price)
+
+    def test_pricepoint_eq(self):
+
+        when1 = datetime(2021, 5, 12, 22, 55, 59)
+        price1 = Amount(10)
+
+        when2 = datetime(2020, 5, 12, 22, 55, 59)
+        price2 = Amount(20)
+
+        price_point1 = ledger.PricePoint(when1, price1)
+        price_point1a = ledger.PricePoint(when1, price1)
+
+        price_point2 = ledger.PricePoint(when2, price2)
+        price_point2a = ledger.PricePoint(when2, price2)
+
+        self.assertTrue(price_point1 == price_point1a)
+        self.assertTrue(price_point2 == price_point2a)
+        self.assertTrue(price_point1 != price_point2)
+        self.assertTrue(price_point1 != price_point2a)
+        self.assertFalse(price_point1 != price_point1a)
+        self.assertFalse(price_point2 != price_point2a)
+        self.assertFalse(price_point1 == price_point2)
+        self.assertFalse(price_point1 == price_point2a)
+
+    def test_pricepoint_when(self):
+
+        when1 = datetime(2021, 5, 12, 22, 55, 59)
+        when2 = datetime(2020, 5, 12, 22, 55, 59)
+        price = Amount(20)
+
+        price_point = ledger.PricePoint(when1, price)
+        self.assertEqual(when1, price_point.when)
+        price_point.when = when2
+        self.assertEqual(when2, price_point.when)
+
+    def test_pricepoint_price(self):
+
+        when = datetime(2021, 5, 12, 22, 55, 59)
+        price1 = Amount(10)
+        price2 = Amount(20)
+
+        price_point = ledger.PricePoint(when, price1)
+        self.assertEqual(price1, price_point.price)
+        price_point.price = price2
+        self.assertEqual(price2, price_point.price)
+        self.assertIsInstance(price_point.price, Amount)
+
+
 class KeepDetailsTests(unittest.TestCase):
 
     def test_keepdetails_constructor(self):
