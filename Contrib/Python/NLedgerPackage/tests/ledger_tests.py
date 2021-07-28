@@ -644,6 +644,18 @@ class KeepDetailsTests(unittest.TestCase):
 
 class CommodityTests(unittest.TestCase):
 
+    def test_commodity_decimal_comma_by_default(self):
+
+        val = ledger.Commodity.decimal_comma_by_default
+
+        ledger.Commodity.decimal_comma_by_default = True
+        self.assertTrue(ledger.Commodity.decimal_comma_by_default)
+
+        ledger.Commodity.decimal_comma_by_default = False
+        self.assertFalse(ledger.Commodity.decimal_comma_by_default)
+
+        ledger.Commodity.decimal_comma_by_default = val
+
     def test_commodity_flags(self):
 
         comm = ledger.commodities.find_or_create("WTC1")

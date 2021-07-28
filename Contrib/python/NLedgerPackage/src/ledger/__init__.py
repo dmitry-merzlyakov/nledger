@@ -8,6 +8,12 @@ from clr_loader import get_netfx
 
 from pythonnet import set_runtime
 
+# Static property helper
+
+class classproperty(property):
+    def __get__(self, cls, owner):
+        return classmethod(self.fget).__get__(None, owner)()
+
 # Set preferrable runtime and load clr
 
 if clrRuntime == ClrRuntime.core:
@@ -682,6 +688,14 @@ class Commodity:
     @classmethod
     def from_origin(cls, origin):
         return Commodity(origin=origin) if not origin is None else None  # TODO - manage annotated commodities
+
+    @classproperty
+    def decimal_comma_by_default(cls) -> bool:
+        return OriginCommodity.Defaults.DecimalCommaByDefault
+
+    @decimal_comma_by_default.setter
+    def decimal_comma_by_default(cls,value:bool):
+        OriginCommodity.Defaults.DecimalCommaByDefault = value
 
     def __eq__(self, o: object) -> bool:
         return self.origin.Equals(o.origin if isinstance(o, Commodity) else o)
