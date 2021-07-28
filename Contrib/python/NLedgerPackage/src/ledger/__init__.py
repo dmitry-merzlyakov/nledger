@@ -391,6 +391,14 @@ class Amount(OriginAmount):
         self.InPlaceUnreduce()
         return self
 
+    @property
+    def commodity(self):
+        return Commodity.from_origin(self.Commodity)
+
+    @commodity.setter
+    def commodity(self,value):
+        self.Commodity = value.origin if not value is None else None
+
     # TBC
 
 # Commodities
@@ -723,6 +731,33 @@ class Commodity:
     def drop_flags(self,value:int):
         self.flags &= ~value
 
+    def __str__(self) -> str:
+        return self.origin.Symbol
+
+    def __bool__(self) -> bool:
+        return not self.origin.Equals(OriginCommodityPool.Current.NullCommodity)
+
+    __nonzero__ = __bool__
+
+    @staticmethod
+    def symbol_needs_quotes(symbol: str) -> bool:
+        return OriginCommodity.SymbolNeedsQuotes(symbol)
+
+    @property
+    def referent(self):
+        return Commodity.from_origin(self.origin.Referent)
+
+    def has_annotation(self) -> bool:
+        return self.origin.IsAnnotated
+
+    def strip_annotations(self, keep: KeepDetails = None):
+        return self.origin.StripAnnotations(keep.origin if not keep is None else KeepDetails().origin)
+
+    def write_annotations(self) -> str:
+        return self.origin.WriteAnnotations()
+
+    def pool(self) -> CommodityPool:
+        return CommodityPool(self.origin.Pool)
 
     @property
     def symbol(self):

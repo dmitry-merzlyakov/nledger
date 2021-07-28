@@ -715,6 +715,57 @@ class CommodityTests(unittest.TestCase):
 
         comm.flags = flags
 
+    def test_commodity_str_shows_symbol(self):
+
+        comm = ledger.commodities.find_or_create("WTC2")
+        self.assertEqual('"WTC2"', str(comm))
+        self.assertEqual('"WTC2"', comm.symbol)
+
+    def test_commodity_bool_checks_null_commodity(self):
+
+        comm = ledger.commodities.find_or_create("WTC3")
+        self.assertTrue(bool(comm))
+        self.assertTrue(isinstance(comm, ledger.Commodity))
+        # Empty amount has null commodity
+        null_comm = ledger.Amount().commodity
+        self.assertFalse(bool(null_comm))
+
+    def test_commodity_symbol_needs_quotes(self):
+
+        self.assertFalse(ledger.Commodity.symbol_needs_quotes("A"))
+        self.assertTrue(ledger.Commodity.symbol_needs_quotes("A1"))
+
+        comm = ledger.commodities.find_or_create("WTC2")
+        self.assertFalse(comm.symbol_needs_quotes("A"))
+        self.assertTrue(comm.symbol_needs_quotes("A1"))
+
+    def test_commodity_referent(self):
+
+        comm = ledger.commodities.find_or_create("WTC2")
+        refr = comm.referent
+        self.assertTrue(isinstance(refr, ledger.Commodity))
+
+    def test_commodity_has_annotation(self):
+
+        comm = ledger.commodities.find_or_create("WTC2")
+        self.assertFalse(comm.has_annotation())
+
+    def test_commodity_strip_annotations(self):
+
+        comm = ledger.commodities.find_or_create("WTC2")
+        self.assertEqual(comm, comm.strip_annotations())
+        self.assertEqual(comm, comm.strip_annotations(ledger.KeepDetails()))
+
+    def test_commodity_write_annotations(self):
+
+        comm = ledger.commodities.find_or_create("WTC3")
+        self.assertEqual("", comm.write_annotations())
+
+    def test_commodity_pool(self):
+
+        comm = ledger.commodities.find_or_create("WTC4")
+        self.assertEqual(ledger.commodities.origin, comm.pool().origin)
+
 # Amount tests
 
 class AmountTests(unittest.TestCase):
@@ -1108,6 +1159,14 @@ class AmountTests(unittest.TestCase):
         a1.in_place_unreduce()
         self.assertEqual("0.67 ZXD", str(a1))
         self.assertEqual("<class 'ledger.Amount'>", str(type(a1)))
+
+    def test_amount_commodity(self):
+
+        a1 = ledger.Amount("2.00 ZXD")
+        comm = a1.commodity
+        self.assertEqual("ZXD", str(comm))
+        a1.commodity = None
+        self.assertIsNone(a1.commodity)
 
 
 if __name__ == '__main__':
