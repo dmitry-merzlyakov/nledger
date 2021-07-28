@@ -258,146 +258,166 @@ def to_ndatetime(value) -> DateTime:
     else:
         raise Exception("Date value is expected")
 
-def to_amount(value):
-    return value if type(value) == Amount else Amount(value)
-
 # Amounts
 
-class Amount(OriginAmount):
+class Amount:
 
-    def exact(value):
-        return Amount(OriginAmount.Exact(value))
+    origin: None
+
+    def __init__(self,value,origin = None) -> None:
+        if origin:
+            assert isinstance(origin, OriginAmount)
+            self.origin = origin
+        else:
+            self.origin = OriginAmount(value)
+
+    @classmethod
+    def from_origin(cls, origin) -> 'Amount':
+        return Amount(None, origin) if not origin is None else None
+
+    @classmethod
+    def to_amount(cls, value) -> 'Amount':
+        return value if isinstance(value, Amount) else Amount(value)
+
+    @classmethod
+    def exact(cls, value) -> 'Amount':
+        return Amount.from_origin(OriginAmount.Exact(value))
 
     def __eq__(self, o: object) -> bool:
-        return super().__eq__(to_amount(o))
+        return self.origin == Amount.to_amount(o).origin
 
     def __ne__(self, o: object) -> bool:
-        return super().__ne__(to_amount(o))
+        return self.origin != Amount.to_amount(o).origin
 
     def __lt__(self, o: object) -> bool:
-        return super().__lt__(to_amount(o))
+        return self.origin < Amount.to_amount(o).origin
 
     def __le__(self, o: object) -> bool:
-        return super().__le__(to_amount(o))
+        return self.origin <= Amount.to_amount(o).origin
 
     def __gt__(self, o: object) -> bool:
-        return super().__gt__(to_amount(o))
+        return self.origin > Amount.to_amount(o).origin
 
     def __ge__(self, o: object) -> bool:
-        return super().__ge__(to_amount(o))
+        return self.origin >= Amount.to_amount(o).origin
 
-    def __neg__(self):
-        return Amount(super().__neg__())
+    def __neg__(self) -> 'Amount':
+        return Amount.from_origin(-self.origin)
 
     def __bool__(self) -> bool:
-        return self.IsNonZero
+        return self.origin.IsNonZero
 
     __nonzero__ = __bool__
 
-    def __add__(self, o: object):
-        return Amount(super().__add__(to_amount(o)))
+    def __add__(self, o: object) -> 'Amount':
+        return Amount.from_origin(self.origin + Amount.to_amount(o).origin)
 
-    def __radd__(self, o: object):
-        return Amount(super().__radd__(to_amount(o)))
+    def __radd__(self, o: object) -> 'Amount':
+        return Amount.from_origin(Amount.to_amount(o).origin + self.origin)
 
-    def __sub__(self, o: object):
-        return Amount(super().__sub__(to_amount(o)))
+    def __sub__(self, o: object) -> 'Amount':
+        return Amount.from_origin(self.origin - Amount.to_amount(o).origin)
 
-    def __rsub__(self, o: object):
-        return Amount(super().__rsub__(to_amount(o)))
+    def __rsub__(self, o: object) -> 'Amount':
+        return Amount.from_origin(Amount.to_amount(o).origin - self.origin)
 
-    def __mul__(self, o: object):
-        return Amount(super().__mul__(to_amount(o)))
+    def __mul__(self, o: object) -> 'Amount':
+        return Amount.from_origin(self.origin * Amount.to_amount(o).origin)
 
-    def __rmul__(self, o: object):
-        return Amount(super().__rmul__(to_amount(o)))
+    def __rmul__(self, o: object) -> 'Amount':
+        return Amount.from_origin(Amount.to_amount(o).origin * self.origin)
 
-    def __truediv__(self, o: object):
-        return Amount(super().__truediv__(to_amount(o)))
+    def __truediv__(self, o: object) -> 'Amount':
+        return Amount.from_origin(self.origin / Amount.to_amount(o).origin)
 
-    def __rtruediv__(self, o: object):
-        return Amount(super().__rtruediv__(to_amount(o)))
-
-    @property
-    def precision(self):
-        return super().Precision
+    def __rtruediv__(self, o: object) -> 'Amount':
+        return Amount.from_origin(Amount.to_amount(o).origin / self.origin)
 
     @property
-    def display_precision(self):
-        return super().DisplayPrecision
+    def precision(self) -> int:
+        return self.origin.Precision
 
     @property
-    def keep_precision(self):
-        return super().KeepPrecision
+    def display_precision(self) -> int:
+        return self.origin.DisplayPrecision
+
+    @property
+    def keep_precision(self) -> bool:
+        return self.origin.KeepPrecision
 
     @keep_precision.setter
-    def keep_precision(self, value):
-        return super().SetKeepPrecision(value)
+    def keep_precision(self, value: bool):
+        return self.origin.SetKeepPrecision(value)
 
-    def negated(self):
-        return Amount(self.Negated())
+    def negated(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Negated())
 
-    def in_place_negate(self):
-        self.InPlaceNegate()
+    def in_place_negate(self) -> 'Amount':
+        self.origin.InPlaceNegate()
         return self
 
-    def abs(self):
-        return Amount(self.Abs())
+    def abs(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Abs())
 
     __abs__ = abs
 
-    def inverted(self):
-        return Amount(self.Inverted())
+    def inverted(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Inverted())
 
-    def rounded(self):
-        return Amount(self.Rounded())
+    def rounded(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Rounded())
 
-    def in_place_round(self):
-        self.InPlaceRound()
+    def in_place_round(self) -> 'Amount':
+        self.origin.InPlaceRound()
         return self
 
-    def truncated(self):
-        return Amount(self.Truncated())
+    def truncated(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Truncated())
 
-    def in_place_truncate(self):
-        self.InPlaceTruncate()
+    def in_place_truncate(self) -> 'Amount':
+        self.origin.InPlaceTruncate()
         return self
 
-    def floored(self):
-        return Amount(self.Floored())
+    def floored(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Floored())
 
-    def in_place_floor(self):
-        self.InPlaceFloor()
+    def in_place_floor(self) -> 'Amount':
+        self.origin.InPlaceFloor()
         return self
 
-    def unrounded(self):
-        return Amount(self.Unrounded())
+    def unrounded(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Unrounded())
 
-    def in_place_unround(self):
-        self.InPlaceUnround()
+    def in_place_unround(self) -> 'Amount':
+        self.origin.InPlaceUnround()
         return self
 
-    def reduced(self):
-        return Amount(self.Reduced())
+    def reduced(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Reduced())
 
-    def in_place_reduce(self):
-        self.InPlaceReduce()
+    def in_place_reduce(self) -> 'Amount':
+        self.origin.InPlaceReduce()
         return self
 
-    def unreduced(self):
-        return Amount(self.Unreduced())
+    def unreduced(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Unreduced())
 
-    def in_place_unreduce(self):
-        self.InPlaceUnreduce()
+    def in_place_unreduce(self) -> 'Amount':
+        self.origin.InPlaceUnreduce()
         return self
 
     @property
-    def commodity(self):
-        return Commodity.from_origin(self.Commodity)
+    def commodity(self) -> 'Commodity':
+        return Commodity.from_origin(self.origin.Commodity)
 
     @commodity.setter
-    def commodity(self,value):
-        self.Commodity = value.origin if not value is None else None
+    def commodity(self, value: 'Commodity'):
+        self.origin.Commodity = value.origin if not value is None else None
+
+    def to_string(self) -> str:
+        return self.origin.ToString()
+
+    __str__ =  to_string
 
     # TBC
 
@@ -475,12 +495,12 @@ class CommodityPool:
         if len(args) == 2:
             assert isinstance(args[0], Commodity)
             assert isinstance(args[1], Amount)
-            self.origin.Exchange(args[0].origin, args[1], TimesCommon.Current.CurrentTime)
+            self.origin.Exchange(args[0].origin, args[1].origin, TimesCommon.Current.CurrentTime)
         elif len(args) == 3:
             assert isinstance(args[0], Commodity)
             assert isinstance(args[1], Amount)
             assert isinstance(args[2], datetime) or isinstance(args[4], date)
-            self.origin.Exchange(args[0].origin, args[1], to_ndatetime(args[2]))
+            self.origin.Exchange(args[0].origin, args[1].origin, to_ndatetime(args[2]))
         elif len(args) >= 4 and len(args) <= 6:
             assert isinstance(args[0], Amount)
             assert isinstance(args[1], Amount)
@@ -488,7 +508,7 @@ class CommodityPool:
             assert isinstance(args[3], bool)
             assert len(args) < 5 or (isinstance(args[4], datetime) or isinstance(args[4], date))
             assert len(args) < 6 or isinstance(args[5], str)
-            self.origin.Exchange(args[0], args[1], args[2], args[3], to_ndatetime(args[4]) if len(args) >= 5 else None, args[5] if len(args) == 6 else None)
+            self.origin.Exchange(args[0].origin, args[1].origin, args[2], args[3], to_ndatetime(args[4]) if len(args) >= 5 else None, args[5] if len(args) == 6 else None)
         else:
             raise Exception("Unexpected number of 'exchange' arguments (allowed from 2 to 6")
 
@@ -565,12 +585,12 @@ class Annotation:
         return self.flags_adapter.DropFlags(self.origin,flag)
 
     @property
-    def price(self):
-        return Amount(self.origin.Price)
+    def price(self) -> Amount:
+        return Amount.from_origin(self.origin.Price)
 
     @price.setter
-    def price(self,value):
-        self.origin.Price = value
+    def price(self, value: Amount):
+        self.origin.Price = value.origin if not value is None else None
 
     @property
     def date(self):
@@ -656,7 +676,7 @@ class PricePoint:
             self.origin = origin
         else:
             assert isinstance(price, Amount)
-            self.origin = OriginPricePoint(to_ndatetime(when), price)
+            self.origin = OriginPricePoint(to_ndatetime(when), price.origin if not price is None else None)
 
     @classmethod
     def from_origin(cls, origin):
@@ -678,12 +698,12 @@ class PricePoint:
 
     @property
     def price(self) -> Amount:
-        return to_amount(self.origin.Price)
+        return Amount.from_origin(self.origin.Price)
 
     @price.setter
-    def price(self,value):
+    def price(self, value: Amount):
         assert isinstance(value, Amount)
-        self.origin.Price = value
+        self.origin.Price = value.origin if not value is None else None
 
 class Commodity:
 
@@ -694,7 +714,7 @@ class Commodity:
         self.origin = origin
 
     @classmethod
-    def from_origin(cls, origin):
+    def from_origin(cls, origin) -> 'Commodity':
         return Commodity(origin=origin) if not origin is None else None  # TODO - manage annotated commodities
 
     @classproperty
@@ -702,7 +722,7 @@ class Commodity:
         return OriginCommodity.Defaults.DecimalCommaByDefault
 
     @decimal_comma_by_default.setter
-    def decimal_comma_by_default(cls,value:bool):
+    def decimal_comma_by_default(cls, value: bool):
         OriginCommodity.Defaults.DecimalCommaByDefault = value
 
     def __eq__(self, o: object) -> bool:
@@ -716,19 +736,19 @@ class Commodity:
         return FlagsAdapter.CommodityFlagsToInt(self.origin.Flags)
 
     @flags.setter
-    def flags(self,value:int):
+    def flags(self, value:int):
         self.origin.Flags = CommodityFlagsEnum(value)
 
-    def has_flags(self,value:int) -> bool:
+    def has_flags(self, value:int) -> bool:
         return (self.flags & value) == value
 
     def clear_flags(self):
         self.flags = 0
 
-    def add_flags(self,value:int):
+    def add_flags(self, value:int):
         self.flags |= value
 
-    def drop_flags(self,value:int):
+    def drop_flags(self, value:int):
         self.flags &= ~value
 
     def __str__(self) -> str:
@@ -744,13 +764,13 @@ class Commodity:
         return OriginCommodity.SymbolNeedsQuotes(symbol)
 
     @property
-    def referent(self):
+    def referent(self) -> 'Commodity':
         return Commodity.from_origin(self.origin.Referent)
 
     def has_annotation(self) -> bool:
         return self.origin.IsAnnotated
 
-    def strip_annotations(self, keep: KeepDetails = None):
+    def strip_annotations(self, keep: KeepDetails = None) -> 'Commodity':
         return self.origin.StripAnnotations(keep.origin if not keep is None else KeepDetails().origin)
 
     def write_annotations(self) -> str:
@@ -760,8 +780,44 @@ class Commodity:
         return CommodityPool(self.origin.Pool)
 
     @property
-    def symbol(self):
+    def base_symbol(self) -> str:
+        return self.origin.BaseSymbol
+
+    @property
+    def symbol(self) -> str:
         return self.origin.Symbol
+
+    @property
+    def name(self) -> str:
+        return self.origin.Name
+
+    @name.setter
+    def name(self, value: str):
+        self.origin.SetName(value)
+
+    @property
+    def note(self) -> str:
+        return self.origin.Note
+
+    @note.setter
+    def note(self, value: str):
+        self.origin.SetNote(value)
+
+    @property
+    def precision(self) -> int:
+        return self.origin.Precision
+
+    @precision.setter
+    def precision(self, value: int):
+        self.origin.Precision = value
+
+    @property
+    def smaller(self) -> Amount:
+        return Amount.from_origin(self.origin.Smaller)
+
+    @smaller.setter
+    def smaller(self, value: Amount):
+        self.origin.Smaller = value.origin if not value is None else None
 
 # Routine to acquire and release output streams
 

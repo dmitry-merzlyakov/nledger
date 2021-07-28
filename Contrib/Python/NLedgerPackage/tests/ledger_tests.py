@@ -404,7 +404,7 @@ class AnnotationTests(unittest.TestCase):
     def test_annotation_bool(self):
 
         self.assertFalse(bool(ledger.Annotation(OriginAnnotation(None, None, None))))
-        self.assertTrue(bool(ledger.Annotation(OriginAnnotation(ledger.Amount(10), None, None))))
+        self.assertTrue(bool(ledger.Annotation(OriginAnnotation(ledger.Amount(10).origin, None, None))))
         self.assertTrue(bool(ledger.Annotation(OriginAnnotation(None, Date(2021, 5, 10), None))))
         self.assertTrue(bool(ledger.Annotation(OriginAnnotation(None, None, "tag"))))
 
@@ -452,7 +452,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_price(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10), None, None))
+        annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10).origin, None, None))
         price = annotation1.price
         self.assertTrue(isinstance(price, ledger.Amount))
         self.assertEqual(ledger.Amount(10), price)
@@ -727,7 +727,7 @@ class CommodityTests(unittest.TestCase):
         self.assertTrue(bool(comm))
         self.assertTrue(isinstance(comm, ledger.Commodity))
         # Empty amount has null commodity
-        null_comm = ledger.Amount().commodity
+        null_comm = ledger.Amount(0).commodity
         self.assertFalse(bool(null_comm))
 
     def test_commodity_symbol_needs_quotes(self):
@@ -765,6 +765,57 @@ class CommodityTests(unittest.TestCase):
 
         comm = ledger.commodities.find_or_create("WTC4")
         self.assertEqual(ledger.commodities.origin, comm.pool().origin)
+
+    def test_commodity_base_symbol(self):
+
+        comm = ledger.commodities.find_or_create("WTC5")
+        self.assertEqual("WTC5", comm.base_symbol)
+
+    def test_commodity_symbol(self):
+
+        comm = ledger.commodities.find_or_create("WTC5")
+        self.assertEqual('"WTC5"', comm.symbol)
+
+    def test_commodity_name(self):
+
+        comm = ledger.commodities.find_or_create("WTC6")
+        name = comm.name
+
+        comm.name = "name1"
+        self.assertEqual("name1", comm.name)
+
+        comm.name = name
+
+    def test_commodity_note(self):
+
+        comm = ledger.commodities.find_or_create("WTC6")
+        note = comm.note
+
+        comm.note = "note1"
+        self.assertEqual("note1", comm.note)
+
+        comm.note = note
+
+    def test_commodity_precision(self):
+
+        comm = ledger.commodities.find_or_create("WTC6")
+        precision = comm.precision
+
+        comm.precision = 5
+        self.assertEqual(5, comm.precision)
+
+        comm.precision = precision
+
+    def test_commodity_smaller(self):
+
+        comm = ledger.commodities.find_or_create("WTC6")
+        smaller = comm.smaller
+
+        amnt = Amount(5)
+        comm.smaller = amnt
+        self.assertEqual(amnt, comm.smaller)
+
+        comm.smaller = smaller
 
 # Amount tests
 
