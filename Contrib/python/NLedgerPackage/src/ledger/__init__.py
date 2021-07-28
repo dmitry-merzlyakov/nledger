@@ -265,7 +265,7 @@ class Amount:
     origin: None
 
     def __init__(self,value,origin = None) -> None:
-        if origin:
+        if not (origin is None):
             assert isinstance(origin, OriginAmount)
             self.origin = origin
         else:
@@ -475,7 +475,7 @@ class CommodityPool:
     def get_quotes(self, value):
         self.origin.GetQuotes = value
 
-    def create(self, symbol: str, details = None):
+    def create(self, symbol: str, details: 'Annotation' = None):
         assert details is None or isinstance(details, Annotation)
         return Commodity.from_origin(self.origin.Create(symbol) if details is None else self.origin.Create(symbol, details.origin))
 
@@ -499,7 +499,7 @@ class CommodityPool:
         elif len(args) == 3:
             assert isinstance(args[0], Commodity)
             assert isinstance(args[1], Amount)
-            assert isinstance(args[2], datetime) or isinstance(args[4], date)
+            assert isinstance(args[2], datetime) or isinstance(args[2], date)
             self.origin.Exchange(args[0].origin, args[1].origin, to_ndatetime(args[2]))
         elif len(args) >= 4 and len(args) <= 6:
             assert isinstance(args[0], Amount)
@@ -675,7 +675,7 @@ class PricePoint:
             assert isinstance(origin, OriginPricePoint)
             self.origin = origin
         else:
-            assert isinstance(price, Amount)
+            assert price is None or isinstance(price, Amount)
             self.origin = OriginPricePoint(to_ndatetime(when), price.origin if not price is None else None)
 
     @classmethod
@@ -702,7 +702,7 @@ class PricePoint:
 
     @price.setter
     def price(self, value: Amount):
-        assert isinstance(value, Amount)
+        assert value is None or isinstance(value, Amount)
         self.origin.Price = value.origin if not value is None else None
 
 class Commodity:
