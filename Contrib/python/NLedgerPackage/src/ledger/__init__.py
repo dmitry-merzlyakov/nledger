@@ -218,7 +218,7 @@ def to_pdatetime(value) -> datetime:
     if value is None:
         return None
     elif isinstance(value, DateTime):
-        return datetime(value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, value.Millisecond)
+        return datetime(value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, value.Millisecond * 1000)
     elif isinstance(value, Date):
         return datetime(value.Year, value.Month, value.Day, 0, 0, 0, 0)
     elif isinstance(value, datetime):
@@ -252,7 +252,7 @@ def to_ndatetime(value) -> DateTime:
     elif isinstance(value, Date):
         return DateTime(value.Year, value.Month, value.Day)
     elif isinstance(value, datetime):
-        return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond)
+        return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond // 1000)
     elif isinstance(value, date):
         return DateTime(value.year, value.month, value.day)
     else:
@@ -818,6 +818,24 @@ class Commodity:
     @smaller.setter
     def smaller(self, value: Amount):
         self.origin.Smaller = value.origin if not value is None else None
+
+    @property
+    def larger(self) -> Amount:
+        return Amount.from_origin(self.origin.Larger)
+
+    @larger.setter
+    def larger(self, value: Amount):
+        self.origin.Larger = value.origin if not value is None else None
+
+    def add_price(self, date, price: Amount, reflexive: bool = None):
+        if (reflexive is None):
+            self.origin.AddPrice(to_ndatetime(date), price.origin)
+        else:
+            self.origin.AddPrice(to_ndatetime(date), price.origin, reflexive)
+
+    def remove_price(self, date, commodity: 'Commodity'):
+        self.origin.RemovePrice(to_ndatetime(date), commodity.origin)
+
 
 # Routine to acquire and release output streams
 

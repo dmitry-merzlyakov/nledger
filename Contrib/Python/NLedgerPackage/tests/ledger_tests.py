@@ -88,7 +88,7 @@ class LedgerModuleTests(unittest.TestCase):
         self.assertIsNone(ledger.to_pdatetime(None))
 
         ndatetime = DateTime(2021, 5, 22, 23, 55, 50, 99)
-        self.assertEqual(datetime(2021, 5, 22, 23, 55, 50, 99), ledger.to_pdatetime(ndatetime))
+        self.assertEqual(datetime(2021, 5, 22, 23, 55, 50, 99000), ledger.to_pdatetime(ndatetime))
 
         ndate = Date(2021, 5, 22)
         self.assertEqual(datetime(2021, 5, 22, 0, 0, 0, 0), ledger.to_pdatetime(ndate))
@@ -119,7 +119,7 @@ class LedgerModuleTests(unittest.TestCase):
 
         self.assertEqual(None, ledger.to_ndatetime(None))
 
-        pdatetime = datetime(2021, 5, 22, 23, 55, 50, 99)
+        pdatetime = datetime(2021, 5, 22, 23, 55, 50, 99000)
         self.assertEqual(DateTime(2021, 5, 22, 23, 55, 50, 99), ledger.to_ndatetime(pdatetime))
 
         pdate = date(2021, 5, 22)
@@ -816,6 +816,34 @@ class CommodityTests(unittest.TestCase):
         self.assertEqual(amnt, comm.smaller)
 
         comm.smaller = smaller
+
+    def test_commodity_larger(self):
+
+        comm = ledger.commodities.find_or_create("WTC7")
+        larger = comm.larger
+
+        amnt = Amount(5)
+        comm.larger = amnt
+        self.assertEqual(amnt, comm.larger)
+
+        comm.larger = larger
+
+    def test_commodity_add_price(self):
+
+        date = datetime.today()
+        comm = ledger.commodities.find_or_create("WTC8")
+        comm.add_price(date, ledger.Amount(10))
+        comm.add_price(date, ledger.Amount(10), True)
+        self.assertTrue("WTC8" in comm.pool().origin.CommodityPriceHistory.PrintMap(ledger.to_ndatetime(date)))
+
+    def test_commodity_remove_price(self):
+
+        date = datetime.today()
+        amnt = ledger.Amount(10)
+        comm = ledger.commodities.find_or_create("WTC9")
+        comm.add_price(date, amnt)
+        comm.remove_price(date, amnt.commodity)
+        self.assertFalse("WTC9" in comm.pool().origin.CommodityPriceHistory.PrintMap(ledger.to_ndatetime(date)))
 
 # Amount tests
 
