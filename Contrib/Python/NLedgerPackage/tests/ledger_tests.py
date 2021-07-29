@@ -845,6 +845,35 @@ class CommodityTests(unittest.TestCase):
         comm.remove_price(date, amnt.commodity)
         self.assertFalse("WTC9" in comm.pool().origin.CommodityPriceHistory.PrintMap(ledger.to_ndatetime(date)))
 
+    def test_commodity_find_price(self):
+
+        date = datetime.today()
+        amnt = ledger.Amount(10)
+        comm = ledger.commodities.find_or_create("WTD1")
+        comm.add_price(date, amnt)
+        self.assertIsNone(comm.find_price())
+        self.assertIsNone(comm.find_price(comm))
+        self.assertIsNone(comm.find_price(comm,date))
+        self.assertIsNone(comm.find_price(comm,date,date))
+
+    def test_commodity_check_for_updated_price(self):
+
+        date = datetime.today()
+        amnt = ledger.Amount(10)
+        comm = ledger.commodities.find_or_create("WTD2")
+        pricePoint = ledger.PricePoint(date,amnt)
+        self.assertIsNone(comm.check_for_updated_price())
+        self.assertIsNone(comm.check_for_updated_price(pricePoint))
+        self.assertIsNone(comm.check_for_updated_price(pricePoint,date))
+        self.assertIsNone(comm.check_for_updated_price(pricePoint,date,comm))
+
+    def test_commodity_valid(self):
+
+        date = datetime.today()
+        amnt = ledger.Amount(10)
+        comm = ledger.commodities.find_or_create("WTD3")
+        comm.valid()  # no exception
+
 # Amount tests
 
 class AmountTests(unittest.TestCase):

@@ -836,6 +836,14 @@ class Commodity:
     def remove_price(self, date, commodity: 'Commodity'):
         self.origin.RemovePrice(to_ndatetime(date), commodity.origin)
 
+    def find_price(self, commodity: 'Commodity' = None, moment = None, oldest = None) -> PricePoint:
+        PricePoint.from_origin(self.origin.FindPrice(commodity.origin if not commodity is None else None, to_ndatetime(moment) if not moment is None else DateTime.MinValue, to_ndatetime(oldest) if not oldest is None else DateTime.MinValue))
+
+    def check_for_updated_price(self, point: 'PricePoint' = None, moment = None, inTermsOf: 'Commodity' = None) -> PricePoint:
+        PricePoint.from_origin(self.origin.CheckForUpdatedPrice(point.origin if not point is None else None, to_ndatetime(moment) if not moment is None else DateTime.MinValue, inTermsOf.origin if not inTermsOf is None else None))
+
+    def valid(self):
+        self.origin.Valid()
 
 # Routine to acquire and release output streams
 
