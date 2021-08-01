@@ -60,9 +60,9 @@ from NLedger.Extensibility.Export import ParseFlags
 from NLedger.Extensibility.Export import ValueType
 from NLedger.Extensibility.Export import Value
 from NLedger.Extensibility.Export import ValueType
-from NLedger.Extensibility.Export import Account
-from NLedger.Extensibility.Export import AccountXData
-from NLedger.Extensibility.Export import AccountXDataDetails
+from NLedger.Extensibility.Export import Account as ExportedAccount
+from NLedger.Extensibility.Export import AccountXData as ExportedAccountXData
+from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountXDataDetails
 from NLedger.Extensibility.Export import Balance
 from NLedger.Extensibility.Export import Expr
 from NLedger.Extensibility.Export import FileInfo
@@ -104,19 +104,19 @@ ANNOTATION_VALUE_EXPR_CALCULATED = ExportedAnnotation.ANNOTATION_VALUE_EXPR_CALC
 
 NULL_VALUE = Value.NULL_VALUE
 
-ACCOUNT_NORMAL = Account.ACCOUNT_NORMAL
-ACCOUNT_KNOWN = Account.ACCOUNT_KNOWN
-ACCOUNT_TEMP = Account.ACCOUNT_TEMP
-ACCOUNT_GENERATED = Account.ACCOUNT_GENERATED
+ACCOUNT_NORMAL = ExportedAccount.ACCOUNT_NORMAL
+ACCOUNT_KNOWN = ExportedAccount.ACCOUNT_KNOWN
+ACCOUNT_TEMP = ExportedAccount.ACCOUNT_TEMP
+ACCOUNT_GENERATED = ExportedAccount.ACCOUNT_GENERATED
 
-ACCOUNT_EXT_SORT_CALC = AccountXData.ACCOUNT_EXT_SORT_CALC
-ACCOUNT_EXT_HAS_NON_VIRTUALS = AccountXData.ACCOUNT_EXT_HAS_NON_VIRTUALS
-ACCOUNT_EXT_HAS_UNB_VIRTUALS = AccountXData.ACCOUNT_EXT_HAS_UNB_VIRTUALS
-ACCOUNT_EXT_AUTO_VIRTUALIZE = AccountXData.ACCOUNT_EXT_AUTO_VIRTUALIZE
-ACCOUNT_EXT_VISITED = AccountXData.ACCOUNT_EXT_VISITED
-ACCOUNT_EXT_MATCHING = AccountXData.ACCOUNT_EXT_MATCHING
-ACCOUNT_EXT_TO_DISPLAY = AccountXData.ACCOUNT_EXT_TO_DISPLAY
-ACCOUNT_EXT_DISPLAYED = AccountXData.ACCOUNT_EXT_DISPLAYED
+ACCOUNT_EXT_SORT_CALC = ExportedAccountXData.ACCOUNT_EXT_SORT_CALC
+ACCOUNT_EXT_HAS_NON_VIRTUALS = ExportedAccountXData.ACCOUNT_EXT_HAS_NON_VIRTUALS
+ACCOUNT_EXT_HAS_UNB_VIRTUALS = ExportedAccountXData.ACCOUNT_EXT_HAS_UNB_VIRTUALS
+ACCOUNT_EXT_AUTO_VIRTUALIZE = ExportedAccountXData.ACCOUNT_EXT_AUTO_VIRTUALIZE
+ACCOUNT_EXT_VISITED = ExportedAccountXData.ACCOUNT_EXT_VISITED
+ACCOUNT_EXT_MATCHING = ExportedAccountXData.ACCOUNT_EXT_MATCHING
+ACCOUNT_EXT_TO_DISPLAY = ExportedAccountXData.ACCOUNT_EXT_TO_DISPLAY
+ACCOUNT_EXT_DISPLAYED = ExportedAccountXData.ACCOUNT_EXT_DISPLAYED
 
 ITEM_NORMAL = JournalItem.ITEM_NORMAL
 ITEM_GENERATED = JournalItem.ITEM_GENERATED
@@ -187,6 +187,7 @@ from NLedger.Commodities import PricePoint as OriginPricePoint
 from NLedger.Commodities import CommodityFlagsEnum
 from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
+from NLedger.Accounts import Account as OriginAccount
 
 # Manage date conversions
 
@@ -875,6 +876,48 @@ class AnnotatedCommodity(Commodity):
     @details.setter
     def details(self, value: Annotation) -> Annotation:
         return self.origin.SetDetails(value.origin)
+
+# Accounts
+
+class Account:
+
+    origin: None
+    flags_adapter = FlagsAdapter.AccountFlagsAdapter()
+
+    def __init__(self, parent: 'Account' = None, name: str = None, note: str = None, origin = None) -> None:
+
+        if not(origin is None):
+            assert isinstance(origin, OriginAccount)
+            self.origin = origin
+        else:
+            self.origin = OriginAccount(parent, name, note)
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    @property
+    def flags(self):
+        return self.flags_adapter.GetFlags(self.origin)
+
+    @flags.setter
+    def flags(self,value):
+        return self.flags_adapter.SetFlags(self.origin, value)
+
+    def has_flags(self,flag):
+        return self.flags_adapter.HasFlags(self.origin, flag)
+
+    def clear_flags(self):
+        return self.flags_adapter.ClearFlags(self.origin)
+
+    def add_flags(self,flag):
+        return self.flags_adapter.AddFlags(self.origin,flag)
+
+    def drop_flags(self,flag):
+        return self.flags_adapter.DropFlags(self.origin,flag)
+
+
+
 
 # Routine to acquire and release output streams
 

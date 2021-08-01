@@ -20,6 +20,14 @@ namespace NLedger.Extensibility.Export
                 AddMapping(Annotation.ANNOTATION_VALUE_EXPR_CALCULATED, a => a.IsValueExprCalculated, (a, v) => a.IsValueExprCalculated = v);
         }
 
+        public static FlagsConverter<Accounts.Account> AccountFlagsAdapter()
+        {
+            return new FlagsConverter<Accounts.Account>().
+                AddMapping(Account.ACCOUNT_KNOWN, a => a.IsKnownAccount, (a, v) => a.IsKnownAccount = v).
+                AddMapping(Account.ACCOUNT_TEMP, a => a.IsTempAccount, (a, v) => a.IsTempAccount = v).
+                AddMapping(Account.ACCOUNT_GENERATED, a => a.IsGeneratedAccount, (a, v) => a.IsGeneratedAccount = v);
+        }
+
         public static int CommodityFlagsToInt(CommodityFlagsEnum flags) => (int)flags;
     }
 }

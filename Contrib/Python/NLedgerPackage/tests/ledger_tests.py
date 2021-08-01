@@ -963,6 +963,68 @@ class AnnotatedCommodityTests(unittest.TestCase):
         annotated_commodity = ledger.commodities.find_or_create("XYZ25", annotation)
         self.assertEqual(' (tag1)', annotated_commodity.write_annotations())
 
+class AccountCommodityTests(unittest.TestCase):
+
+    def test_account_constructors(self):
+        acc1 = ledger.Account()
+        self.assertTrue(isinstance(acc1, ledger.Account))
+
+        acc2 = ledger.Account(acc1,"name","note")
+        self.assertTrue(isinstance(acc2, ledger.Account))
+
+        acc3 = ledger.Account(origin = ledger.OriginAccount())
+        self.assertTrue(isinstance(acc3, ledger.Account))
+
+    def test_account_from_origin(self):
+        acc1 = ledger.Account.from_origin(None)
+        self.assertIsNone(acc1)
+
+        acc2 = ledger.Account.from_origin(ledger.OriginAccount())
+        self.assertIsNotNone(acc2)
+        self.assertTrue(isinstance(acc2, ledger.Account))
+
+    def test_account_flags(self):
+
+        acnt = ledger.Account()
+        self.assertEqual(0, acnt.flags)
+        acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
+        self.assertEqual(ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED, acnt.flags)
+
+    def test_account_has_flags(self):
+
+        acnt = ledger.Account()
+        acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
+
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_KNOWN))
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_GENERATED))
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED))
+        self.assertFalse(acnt.has_flags(ledger.ACCOUNT_TEMP))
+
+    def test_account_clear_flags(self):
+
+        acnt = ledger.Account()
+        acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
+
+        acnt.clear_flags()
+        self.assertEqual(0, acnt.flags)
+
+    def test_annotation_add_flags(self):
+
+        acnt = ledger.Account()
+        acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
+
+        acnt.add_flags(ledger.ACCOUNT_TEMP)
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_TEMP))
+
+    def test_annotation_drop_flags(self):
+
+        acnt = ledger.Account()
+        acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
+
+        acnt.drop_flags(ledger.ACCOUNT_KNOWN)
+        self.assertFalse(acnt.has_flags(ledger.ACCOUNT_KNOWN))
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_GENERATED))
+
 
 # Amount tests
 
