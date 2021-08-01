@@ -211,7 +211,7 @@ class CommodityPoolTests(unittest.TestCase):
         commodity = commodity_pool.create("XYZ2", annotation)
 
         self.assertIsNotNone(commodity)
-        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual("<class 'ledger.AnnotatedCommodity'>", str(type(commodity)))
         self.assertEqual('"XYZ2"', commodity.symbol)
 
     def test_commodity_pool_find_or_create(self):
@@ -232,12 +232,12 @@ class CommodityPoolTests(unittest.TestCase):
 
         commodity = commodity_pool.find_or_create("XYZ11", annotation)
         self.assertIsNotNone(commodity)
-        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual("<class 'ledger.AnnotatedCommodity'>", str(type(commodity)))
         self.assertEqual('"XYZ11"', commodity.symbol)
 
         commodity = commodity_pool.find_or_create("XYZ11", annotation)
         self.assertIsNotNone(commodity)
-        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual("<class 'ledger.AnnotatedCommodity'>", str(type(commodity)))
         self.assertEqual('"XYZ11"', commodity.symbol)
 
     def test_commodity_pool_find(self):
@@ -258,7 +258,7 @@ class CommodityPoolTests(unittest.TestCase):
 
         commodity = commodity_pool.find("XYZ20", annotation)
         self.assertIsNotNone(commodity)
-        self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
+        self.assertEqual("<class 'ledger.AnnotatedCommodity'>", str(type(commodity)))
         self.assertEqual('"XYZ20"', commodity.symbol)
 
     def test_commodity_exchange_2(self):
@@ -873,6 +873,96 @@ class CommodityTests(unittest.TestCase):
         amnt = ledger.Amount(10)
         comm = ledger.commodities.find_or_create("WTD3")
         comm.valid()  # no exception
+
+class AnnotatedCommodityTests(unittest.TestCase):
+
+    def test_annotatedcommodity_constructor(self):
+        comm = ledger.commodities.find_or_create("WTD4")
+        ann = ledger.OriginAnnotation()
+        origin = ledger.OriginAnnotatedCommodity(comm.origin, ann)
+        annotatedCommodity = ledger.AnnotatedCommodity(origin)
+        self.assertTrue(isinstance(annotatedCommodity, ledger.AnnotatedCommodity))
+
+    def test_annotatedcommodity_details(self):
+        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        annotated_commodity = ledger.commodities.find_or_create("XYZ20", annotation)
+        self.assertTrue(isinstance(annotated_commodity, ledger.AnnotatedCommodity))
+
+        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        details = annotated_commodity.details
+
+        annotated_commodity.details = annotation2
+        self.assertEqual(annotation2, annotated_commodity.details)
+
+        annotated_commodity.details = annotation
+        self.assertEqual(annotation, annotated_commodity.details)
+
+    def test_annotatedcommodity_equals(self):
+        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
+        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotated_commodity1 = ledger.commodities.find_or_create("XYZ21", annotation1)
+        annotated_commodity1a = ledger.commodities.find_or_create("XYZ21", annotation1)
+        annotated_commodity2 = ledger.commodities.find_or_create("XYZ21", annotation2)
+
+        self.assertTrue(isinstance(annotated_commodity1, ledger.AnnotatedCommodity))
+        self.assertTrue(isinstance(annotated_commodity1a, ledger.AnnotatedCommodity))
+        self.assertTrue(isinstance(annotated_commodity2, ledger.AnnotatedCommodity))
+
+        self.assertTrue(annotated_commodity1 == annotated_commodity1)
+        self.assertTrue(annotated_commodity1a == annotated_commodity1)
+        self.assertTrue(annotated_commodity1 == annotated_commodity1a)
+        self.assertTrue(annotated_commodity1 != annotated_commodity2)
+        self.assertTrue(annotated_commodity2 != annotated_commodity1)
+
+        comm = ledger.commodities.find_or_create("XYZ21")
+        self.assertTrue(isinstance(comm, ledger.Commodity))
+
+        self.assertFalse(comm == annotated_commodity1)
+        self.assertFalse(annotated_commodity1 == comm)
+
+    def test_annotatedcommodity_referent(self):
+        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
+        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotated_commodity1 = ledger.commodities.find_or_create("XYZ23", annotation1)
+        annotated_commodity2 = ledger.commodities.find_or_create("XYZ23", annotation2)
+
+        referent1 = annotated_commodity1.referent
+        self.assertTrue(isinstance(referent1, ledger.Commodity))
+        self.assertFalse(isinstance(referent1, ledger.AnnotatedCommodity))
+
+        referent2 = annotated_commodity1.referent
+        self.assertTrue(isinstance(referent2, ledger.Commodity))
+        self.assertFalse(isinstance(referent2, ledger.AnnotatedCommodity))
+
+        self.assertEqual(referent1, referent2)
+        self.assertEqual('"XYZ23"', str(referent1))
+
+    def test_annotatedcommodity_strip_annotations(self):
+        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
+        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotated_commodity1 = ledger.commodities.find_or_create("XYZ24", annotation1)
+        annotated_commodity2 = ledger.commodities.find_or_create("XYZ24", annotation2)
+
+        stripped = annotated_commodity1.strip_annotations()
+        self.assertTrue(isinstance(stripped, ledger.Commodity))
+        self.assertFalse(isinstance(stripped, ledger.AnnotatedCommodity))
+        self.assertEqual('"XYZ24"', str(stripped))
+
+        stripped = annotated_commodity1.strip_annotations(ledger.KeepDetails(True, True, False, False))  # do not keep tags
+        self.assertTrue(isinstance(stripped, ledger.Commodity))
+        self.assertFalse(isinstance(stripped, ledger.AnnotatedCommodity))
+        self.assertEqual('"XYZ24"', str(stripped))
+
+        stripped = annotated_commodity1.strip_annotations(ledger.KeepDetails(True, True, True, True))  # keep tags
+        self.assertTrue(isinstance(stripped, ledger.Commodity))
+        self.assertTrue(isinstance(stripped, ledger.AnnotatedCommodity))
+        self.assertEqual('"XYZ24"', str(stripped))
+
+    def test_annotatedcommodity_write_annotations(self):
+        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
+        annotated_commodity = ledger.commodities.find_or_create("XYZ25", annotation)
+        self.assertEqual(' (tag1)', annotated_commodity.write_annotations())
+
 
 # Amount tests
 

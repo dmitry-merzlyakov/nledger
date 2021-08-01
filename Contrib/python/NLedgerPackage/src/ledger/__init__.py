@@ -182,6 +182,7 @@ from NLedger.Extensibility.Export import FlagsAdapter
 from NLedger.Amounts import Amount as OriginAmount
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
+from NLedger.Annotate import AnnotatedCommodity as OriginAnnotatedCommodity
 from NLedger.Commodities import PricePoint as OriginPricePoint
 from NLedger.Commodities import CommodityFlagsEnum
 from NLedger.Annotate import Annotation as OriginAnnotation
@@ -553,6 +554,10 @@ class Annotation:
         assert isinstance(origin, OriginAnnotation)
         self.origin = origin
 
+    @classmethod
+    def from_origin(cls, origin) -> 'Annotation':
+        return Annotation(origin=origin) if not origin is None else None
+
     def __eq__(self, o: object) -> bool:
         return self.origin.Equals(o.origin)
 
@@ -715,7 +720,13 @@ class Commodity:
 
     @classmethod
     def from_origin(cls, origin) -> 'Commodity':
-        return Commodity(origin=origin) if not origin is None else None  # TODO - manage annotated commodities
+        if origin is None:
+            return None
+
+        if isinstance(origin, OriginAnnotatedCommodity):
+            return AnnotatedCommodity(origin)
+
+        return Commodity(origin)
 
     @classproperty
     def decimal_comma_by_default(cls) -> bool:
@@ -771,7 +782,7 @@ class Commodity:
         return self.origin.IsAnnotated
 
     def strip_annotations(self, keep: KeepDetails = None) -> 'Commodity':
-        return self.origin.StripAnnotations(keep.origin if not keep is None else KeepDetails().origin)
+        return Commodity.from_origin(self.origin.StripAnnotations(keep.origin if not keep is None else KeepDetails().origin))
 
     def write_annotations(self) -> str:
         return self.origin.WriteAnnotations()
@@ -844,6 +855,26 @@ class Commodity:
 
     def valid(self):
         self.origin.Valid()
+
+class AnnotatedCommodity(Commodity):
+
+    origin: None
+
+    def __init__(self,origin) -> None:
+        assert isinstance(origin, OriginAnnotatedCommodity)
+        self.origin = origin
+
+    @classmethod
+    def from_origin(cls, origin) -> 'AnnotatedCommodity':
+        return Commodity(origin=origin) if not origin is None else None
+
+    @property
+    def details(self) -> Annotation:
+        return Annotation.from_origin(self.origin.Details)
+
+    @details.setter
+    def details(self, value: Annotation) -> Annotation:
+        return self.origin.SetDetails(value.origin)
 
 # Routine to acquire and release output streams
 
