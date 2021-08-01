@@ -1008,7 +1008,7 @@ class AccountCommodityTests(unittest.TestCase):
         acnt.clear_flags()
         self.assertEqual(0, acnt.flags)
 
-    def test_annotation_add_flags(self):
+    def test_account_add_flags(self):
 
         acnt = ledger.Account()
         acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
@@ -1016,7 +1016,7 @@ class AccountCommodityTests(unittest.TestCase):
         acnt.add_flags(ledger.ACCOUNT_TEMP)
         self.assertTrue(acnt.has_flags(ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_TEMP))
 
-    def test_annotation_drop_flags(self):
+    def test_account_drop_flags(self):
 
         acnt = ledger.Account()
         acnt.flags = ledger.ACCOUNT_KNOWN | ledger.ACCOUNT_GENERATED
@@ -1025,6 +1025,118 @@ class AccountCommodityTests(unittest.TestCase):
         self.assertFalse(acnt.has_flags(ledger.ACCOUNT_KNOWN))
         self.assertTrue(acnt.has_flags(ledger.ACCOUNT_GENERATED))
 
+    def test_account_parent(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        self.assertIsNone(acnt1.parent)
+        self.assertIsNotNone(acnt2.parent)
+        self.assertTrue(isinstance(acnt2.parent, ledger.Account))
+        self.assertEqual("account 1", acnt2.parent.name)
+
+    def test_account_name(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        self.assertEqual("account 1", acnt1.name)
+        self.assertEqual("account 2", acnt2.name)
+
+    def test_account_note(self):
+
+        acnt1 = ledger.Account(None, "account 1", "note 1")
+        acnt2 = ledger.Account(acnt1, "account 2", "note 2")
+        acnt1.add_account(acnt2)
+
+        self.assertEqual("note 1", acnt1.note)
+        self.assertEqual("note 2", acnt2.note)
+
+    def test_account_depth(self):
+
+        acnt1 = ledger.Account(None, "account 1", "note 1")
+        acnt2 = ledger.Account(acnt1, "account 2", "note 2")
+        acnt1.add_account(acnt2)
+
+        self.assertEqual(0, acnt1.depth)
+        self.assertEqual(1, acnt2.depth)
+
+    def test_account_str(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        self.assertEqual("account 1", str(acnt1))
+        self.assertEqual("account 1:account 2", str(acnt2))
+
+    def test_account_fullname(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        self.assertEqual("account 1", acnt1.fullname())
+        self.assertEqual("account 1:account 2", acnt2.fullname())
+
+    def test_account_partial_name(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        self.assertEqual("account 1", acnt1.partial_name())
+        self.assertEqual("account 2", acnt2.partial_name())
+        self.assertEqual("account 1", acnt1.partial_name(True))
+        self.assertEqual("account 2", acnt2.partial_name(True))
+
+    def test_account_add_account(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+
+        acnt1.add_account(acnt2)
+        self.assertEqual(str(acnt2), str(acnt1.find_account("account 2")))
+
+    def test_account_remove_account(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+
+        acnt1.add_account(acnt2)
+        acnt1.remove_account(acnt2)
+
+        self.assertIsNone(acnt1.find_account("account 2", False))
+
+    def test_account_find_account(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        res1 = acnt1.find_account("account 2", False)
+        self.assertTrue(isinstance(res1, ledger.Account))
+        self.assertEqual("account 1:account 2", str(res1))
+
+        self.assertIsNone(acnt1.find_account("account 3", False))
+
+        res2 = acnt1.find_account("account 3", True) # auto-creating
+        self.assertTrue(isinstance(res2, ledger.Account))
+        self.assertEqual("account 1:account 3", str(res2))
+
+    def test_account_find_account_re(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+
+        res1 = acnt1.find_account_re("account 2")
+        self.assertTrue(isinstance(res1, ledger.Account))
+        self.assertEqual("account 1:account 2", str(res1))
+
+        self.assertIsNone(acnt1.find_account_re("account 3"))
 
 # Amount tests
 

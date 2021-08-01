@@ -890,7 +890,7 @@ class Account:
             assert isinstance(origin, OriginAccount)
             self.origin = origin
         else:
-            self.origin = OriginAccount(parent, name, note)
+            self.origin = OriginAccount(parent.origin if not parent is None else None, name, note)
 
     @classmethod
     def from_origin(cls, origin):
@@ -916,8 +916,44 @@ class Account:
     def drop_flags(self,flag):
         return self.flags_adapter.DropFlags(self.origin,flag)
 
+    @property
+    def parent(self) -> 'Account':
+        return Account.from_origin(self.origin.Parent)
 
+    @property
+    def name(self) -> str:
+        return self.origin.Name
 
+    @property
+    def note(self) -> str:
+        return self.origin.Note
+
+    @property
+    def depth(self) -> int:
+        return self.origin.Depth
+
+    def __str__(self) -> str:
+        return self.origin.ToString()
+
+    def fullname(self) -> str:
+        return self.origin.FullName
+
+    def partial_name(self, flat: bool = None) -> str:
+        return self.origin.PartialName(flat) if flat else self.origin.PartialName()
+
+    def add_account(self, account: 'Account'):
+        self.origin.AddAccount(account.origin)
+
+    def remove_account(self, account: 'Account'):
+        self.origin.RemoveAccount(account.origin)
+
+    def find_account(self, acctname: str, auto_create: bool = None) -> 'Account':
+        return Account.from_origin(self.origin.FindAccount(acctname, auto_create) if not auto_create is None else self.origin.FindAccount(acctname))
+
+    def find_account_re(self, regexp: str) -> 'Account':
+        return Account.from_origin(self.origin.FindAccountRe(regexp))
+
+    # TBC
 
 # Routine to acquire and release output streams
 
