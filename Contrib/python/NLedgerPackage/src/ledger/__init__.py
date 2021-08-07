@@ -58,19 +58,19 @@ from NLedger.Extensibility.Export import AnnotatedCommodity
 from NLedger.Extensibility.Export import Amount as ExportedAmount
 from NLedger.Extensibility.Export import ParseFlags
 from NLedger.Extensibility.Export import ValueType
-from NLedger.Extensibility.Export import Value
-from NLedger.Extensibility.Export import ValueType
+from NLedger.Extensibility.Export import Value as ExportedValue
+from NLedger.Extensibility.Export import ValueType as ExportedValueType
 from NLedger.Extensibility.Export import Account as ExportedAccount
 from NLedger.Extensibility.Export import AccountXData as ExportedAccountXData
 from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountXDataDetails
-from NLedger.Extensibility.Export import Balance
+from NLedger.Extensibility.Export import Balance as ExportedBalance
 from NLedger.Extensibility.Export import Expr
 from NLedger.Extensibility.Export import FileInfo
 from NLedger.Extensibility.Export import Position
 from NLedger.Extensibility.Export import Journal
 from NLedger.Extensibility.Export import JournalItem
 from NLedger.Extensibility.Export import State
-from NLedger.Extensibility.Export import Mask
+from NLedger.Extensibility.Export import Mask as ExportedMask
 from NLedger.Extensibility.Export import Posting
 from NLedger.Extensibility.Export import PostingXData
 from NLedger.Extensibility.Export import SymbolKind
@@ -102,7 +102,7 @@ ANNOTATION_DATE_CALCULATED = ExportedAnnotation.ANNOTATION_DATE_CALCULATED
 ANNOTATION_TAG_CALCULATED = ExportedAnnotation.ANNOTATION_TAG_CALCULATED
 ANNOTATION_VALUE_EXPR_CALCULATED = ExportedAnnotation.ANNOTATION_VALUE_EXPR_CALCULATED
 
-NULL_VALUE = Value.NULL_VALUE
+NULL_VALUE = ExportedValue.NULL_VALUE
 
 ACCOUNT_NORMAL = ExportedAccount.ACCOUNT_NORMAL
 ACCOUNT_KNOWN = ExportedAccount.ACCOUNT_KNOWN
@@ -188,6 +188,14 @@ from NLedger.Commodities import CommodityFlagsEnum
 from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 from NLedger.Accounts import Account as OriginAccount
+from NLedger.Scopus import SymbolKindEnum
+from NLedger.Scopus import Scope as OriginScope
+from NLedger.Items import Item as OriginItem
+from NLedger.Values import ValueTypeEnum as ValueType
+from NLedger.Values import Value as OriginValue
+from NLedger import Balance as OriginBalance
+from NLedger import Mask as OriginMask
+
 
 # Manage date conversions
 
@@ -274,12 +282,16 @@ class Amount:
             self.origin = OriginAmount(value)
 
     @classmethod
-    def from_origin(cls, origin) -> 'Amount':
+    def from_origin(cls, origin) -> 'Amount':        
         return Amount(None, origin) if not origin is None else None
 
     @classmethod
     def to_amount(cls, value) -> 'Amount':
-        return value if isinstance(value, Amount) else Amount(value)
+        if isinstance(value, Amount):
+            return value
+        if isinstance(value, Value):
+            return value.to_amount()
+        return Amount(value)
 
     @classmethod
     def exact(cls, value) -> 'Amount':
@@ -420,6 +432,20 @@ class Amount:
         return self.origin.ToString()
 
     __str__ =  to_string
+
+    # TBC
+
+class Balance:
+
+    origin = None
+
+    def __init__(self, val) -> None:
+        if isinstance(val,Balance) or isinstance(val,Amount):
+            val = val.origin
+        if isinstance(val, OriginBalance):
+            self.origin = val
+        else:
+            self.origin = OriginBalance(val)
 
     # TBC
 
@@ -954,6 +980,182 @@ class Account:
         return Account.from_origin(self.origin.FindAccountRe(regexp))
 
     # TBC
+
+# Scope
+
+class Scope:
+
+    origin: None
+
+    def __init__(self,origin) -> None:
+        assert isinstance(origin, OriginScope)
+        self.origin = origin
+
+    @property
+    def description(self) -> str:
+        return self.Description
+
+    @property
+    def type_context(self) -> ValueType:
+        return self.TypeContext
+
+    @property
+    def type_required(self) -> bool:
+        return self.TypeRequired
+
+class JournalItem(Scope):
+
+    def __init__(self, origin) -> None:
+        assert isinstance(origin, OriginItem)
+        super().__init__(origin)
+
+# Posts
+
+class Posting(JournalItem):
+
+    origin: None
+
+    def __init__(self) -> None:
+        raise Exception("Abstract class") 
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    # TBC
+
+# Transactions
+
+class TransactionBase(JournalItem):
+
+    origin: None
+
+    def __init__(self) -> None:
+        raise Exception("Abstract class") 
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    # TBC
+
+class Transaction(TransactionBase):
+
+    origin: None
+
+    def __init__(self) -> None:
+        raise Exception("Abstract class") 
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    # TBC
+
+class PeriodicTransaction(TransactionBase):
+
+    origin: None
+
+    def __init__(self) -> None:
+        raise Exception("Abstract class") 
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    # TBC
+
+class AutomatedTransaction(TransactionBase):
+
+    origin: None
+
+    def __init__(self) -> None:
+        raise Exception("Abstract class") 
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    # TBC
+
+# Session
+
+class Session(Scope):
+
+    origin: None
+
+    def __init__(self) -> None:
+        raise Exception("Abstract class") 
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Account(origin=origin) if not origin is None else None
+
+    # TBC
+
+# Values
+
+class Mask:
+
+    origin = None
+
+    def __init__(self,val) -> None:
+        if isinstance(val, OriginMask):
+            self.origin = val
+        else:
+            self.origin = OriginMask(val)
+
+    # TBC
+
+
+class Value:
+
+    origin = None
+
+    def __init__(self,val) -> None:
+        if isinstance(val, datetime):
+            val = to_ndatetime(val)
+        if isinstance(val, date):
+            val = to_ndate(val)
+        if isinstance(val, Amount) or isinstance(val, Balance) or isinstance(val, Mask) or isinstance(val, Value):
+            val = val.origin
+        if isinstance(val, OriginValue):
+            self.origin = val
+        else:
+            self.origin = OriginValue(val)
+
+    @classmethod
+    def to_value(cls, val) -> 'Value':
+        return val if isinstance(val, Value) else Value(val)
+
+    def type(self) -> ValueType:
+        return self.origin.Type
+
+    def is_equal_to(self, val) -> bool:
+        return self.origin.IsEqualTo(val.origin)
+
+    def is_less_than(self, val) -> bool:
+        return self.origin.IsLessThan(val.origin)
+
+    def is_greater_than(self, val) -> bool:
+        return self.origin.IsGreaterThan(val.origin)
+
+    def __eq__(self, o: object) -> bool:
+        return self.origin == Value.to_value(o).origin
+
+    def __ne__(self, o: object) -> bool:
+        return self.origin != Value.to_value(o).origin
+
+    def __bool__(self) -> bool:
+        return self.origin.Bool
+
+    __nonzero__ = __bool__
+
+
+    # TBC
+
+    def to_amount(self) -> Amount:
+        return Amount.from_origin(self.origin.AsAmount)
 
 # Routine to acquire and release output streams
 

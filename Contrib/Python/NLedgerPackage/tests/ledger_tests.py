@@ -1138,6 +1138,116 @@ class AccountCommodityTests(unittest.TestCase):
 
         self.assertIsNone(acnt1.find_account_re("account 3"))
 
+# Value tests
+
+class ValueTests(unittest.TestCase):
+
+    def test_value_constructor_takes_bool(self):
+        val = ledger.Value(True)
+        self.assertEqual(ledger.ValueType.Boolean, val.type())
+
+    def test_value_constructor_takes_datetime(self):
+        val = ledger.Value(datetime(2020,10,15,22,55,59))
+        self.assertEqual(ledger.ValueType.DateTime, val.type())
+
+    def test_value_constructor_takes_date(self):
+        val = ledger.Value(date(2020,10,15))
+        self.assertEqual(ledger.ValueType.Date, val.type())
+
+    def test_value_constructor_takes_integer(self):
+        val = ledger.Value(10)
+        self.assertEqual(ledger.ValueType.Integer, val.type())
+
+    def test_value_constructor_takes_double(self):
+        val = ledger.Value(10.00)
+        self.assertEqual(ledger.ValueType.Amount, val.type())
+
+    def test_value_constructor_takes_amount(self):
+        val = ledger.Value(ledger.Amount(20))
+        self.assertEqual(ledger.ValueType.Amount, val.type())
+
+    def test_value_constructor_takes_balance(self):
+        val = ledger.Value(ledger.Balance(10))
+        self.assertEqual(ledger.ValueType.Balance, val.type())
+
+    def test_value_constructor_takes_mask(self):
+        val = ledger.Value(ledger.Mask("ABC"))
+        self.assertEqual(ledger.ValueType.Mask, val.type())
+
+    def test_value_constructor_takes_str(self):
+        val = ledger.Value("10")
+        self.assertEqual(ledger.ValueType.Amount, val.type())
+
+    def test_value_constructor_takes_another_value(self):
+        val = ledger.Value(ledger.Value(10))
+        self.assertEqual(ledger.ValueType.Integer, val.type())
+
+    def test_value_is_equal_to(self):
+        self.assertTrue(ledger.Value(10).is_equal_to(ledger.Value(10)))
+        self.assertFalse(ledger.Value(10).is_equal_to(ledger.Value(20)))
+
+    def test_value_is_less_than(self):
+        self.assertFalse(ledger.Value(10).is_less_than(ledger.Value(10)))
+        self.assertFalse(ledger.Value(10).is_less_than(ledger.Value(5)))
+        self.assertTrue(ledger.Value(10).is_less_than(ledger.Value(20)))
+
+    def test_value_is_less_than(self):
+        self.assertFalse(ledger.Value(10).is_greater_than(ledger.Value(10)))
+        self.assertTrue(ledger.Value(10).is_greater_than(ledger.Value(5)))
+        self.assertFalse(ledger.Value(10).is_greater_than(ledger.Value(20)))
+
+    def test_value_eq(self):
+        self.assertTrue(ledger.Value(10) == ledger.Value(10))
+        self.assertFalse(ledger.Value(10) == ledger.Value(20))
+
+        self.assertTrue(ledger.Value(10) == 10)
+        self.assertFalse(ledger.Value(10) == 20)
+
+        self.assertTrue(10 == ledger.Value(10))
+        self.assertFalse(20 == ledger.Value(10))
+
+        self.assertTrue(ledger.Value(10.0) == ledger.Amount(10))
+        self.assertFalse(ledger.Value(10.0) == ledger.Amount(20))
+
+        self.assertTrue(ledger.Amount(10) == ledger.Value(10.0))
+        self.assertFalse(ledger.Amount(20) == ledger.Value(10.0))
+
+        self.assertTrue(ledger.Value(ledger.Balance(10)) == ledger.Balance(10))
+        self.assertFalse(ledger.Value(ledger.Balance(10)) == ledger.Balance(20))
+
+        self.assertTrue(ledger.Balance(10) == ledger.Value(ledger.Balance(10)))
+        self.assertFalse(ledger.Balance(20) == ledger.Value(ledger.Balance(10)))
+
+    def test_value_ne(self):
+        self.assertFalse(ledger.Value(10) != ledger.Value(10))
+        self.assertTrue(ledger.Value(10) != ledger.Value(20))
+
+        self.assertFalse(ledger.Value(10) != 10)
+        self.assertTrue(ledger.Value(10) != 20)
+
+        self.assertFalse(10 != ledger.Value(10))
+        self.assertTrue(20 != ledger.Value(10))
+
+        self.assertFalse(ledger.Value(10.0) != ledger.Amount(10))
+        self.assertTrue(ledger.Value(10.0) != ledger.Amount(20))
+
+        self.assertFalse(ledger.Amount(10) != ledger.Value(10.0))
+        self.assertTrue(ledger.Amount(20) != ledger.Value(10.0))
+
+        self.assertFalse(ledger.Value(ledger.Balance(10)) != ledger.Balance(10))
+        self.assertTrue(ledger.Value(ledger.Balance(10)) != ledger.Balance(20))
+
+        self.assertFalse(ledger.Balance(10) != ledger.Value(ledger.Balance(10)))
+        self.assertTrue(ledger.Balance(20) != ledger.Value(ledger.Balance(10)))
+
+    def test_value_ne(self):
+        self.assertFalse(ledger.Value(False))
+        self.assertTrue(ledger.Value(True))
+
+        self.assertTrue(not ledger.Value(False))
+        self.assertFalse(not ledger.Value(True))
+
+
 # Amount tests
 
 class AmountTests(unittest.TestCase):
