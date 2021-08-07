@@ -104,9 +104,19 @@ namespace NLedger.Values
             return left?.IsLessThan(right) ?? false;
         }
 
+        public static bool operator <=(Value left, Value right)
+        {
+            return !(left?.IsGreaterThan(right) ?? false);
+        }
+
         public static bool operator >(Value left, Value right)
         {
             return left?.IsGreaterThan(right) ?? false;
+        }
+
+        public static bool operator >=(Value left, Value right)
+        {
+            return !(left?.IsLessThan(right) ?? false);
         }
 
         public static Value operator -(Value val)

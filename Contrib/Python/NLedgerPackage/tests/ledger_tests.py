@@ -1240,13 +1240,102 @@ class ValueTests(unittest.TestCase):
         self.assertFalse(ledger.Balance(10) != ledger.Value(ledger.Balance(10)))
         self.assertTrue(ledger.Balance(20) != ledger.Value(ledger.Balance(10)))
 
-    def test_value_ne(self):
+    def test_value_bool(self):
         self.assertFalse(ledger.Value(False))
         self.assertTrue(ledger.Value(True))
 
         self.assertTrue(not ledger.Value(False))
         self.assertFalse(not ledger.Value(True))
 
+        self.assertFalse(bool(ledger.Value(False)))
+        self.assertTrue(bool(ledger.Value(True)))
+
+        self.assertTrue(not bool(ledger.Value(False)))
+        self.assertFalse(not bool(ledger.Value(True)))
+
+    def test_value_lt(self):
+        self.assertFalse(ledger.Value(10) < ledger.Value(5))
+        self.assertFalse(ledger.Value(10) < ledger.Value(10))
+        self.assertTrue(ledger.Value(10) < ledger.Value(20))
+
+        self.assertFalse(ledger.Value(10) < 5)
+        self.assertFalse(ledger.Value(10) < 10)
+        self.assertTrue(ledger.Value(10) < 20)
+
+        self.assertTrue(5 < ledger.Value(10))
+        self.assertFalse(10 < ledger.Value(10))
+        self.assertFalse(20 < ledger.Value(10))
+
+        self.assertFalse(ledger.Value(10.0) < ledger.Amount(5))
+        self.assertFalse(ledger.Value(10.0) < ledger.Amount(10))
+        self.assertTrue(ledger.Value(10.0) < ledger.Amount(20))
+
+        self.assertTrue(ledger.Amount(5) < ledger.Value(10.0))
+        self.assertFalse(ledger.Amount(10) < ledger.Value(10.0))
+        self.assertFalse(ledger.Amount(20) < ledger.Value(10.0))
+
+    def test_value_le(self):
+        self.assertFalse(ledger.Value(10) <= ledger.Value(5))
+        self.assertTrue(ledger.Value(10) <= ledger.Value(10))
+        self.assertTrue(ledger.Value(10) <= ledger.Value(20))
+
+        self.assertFalse(ledger.Value(10) <= 5)
+        self.assertTrue(ledger.Value(10) <= 10)
+        self.assertTrue(ledger.Value(10) <= 20)
+
+        self.assertTrue(5 <= ledger.Value(10))
+        self.assertTrue(10 <= ledger.Value(10))
+        self.assertFalse(20 <= ledger.Value(10))
+
+        self.assertFalse(ledger.Value(10.0) <= ledger.Amount(5))
+        self.assertTrue(ledger.Value(10.0) <= ledger.Amount(10))
+        self.assertTrue(ledger.Value(10.0) <= ledger.Amount(20))
+
+        self.assertTrue(ledger.Amount(5) <= ledger.Value(10.0))
+        self.assertTrue(ledger.Amount(10) <= ledger.Value(10.0))
+        self.assertFalse(ledger.Amount(20) <= ledger.Value(10.0))
+
+    def test_value_gt(self):
+        self.assertTrue(ledger.Value(10) > ledger.Value(5))
+        self.assertFalse(ledger.Value(10) > ledger.Value(10))
+        self.assertFalse(ledger.Value(10) > ledger.Value(20))
+
+        self.assertTrue(ledger.Value(10) > 5)
+        self.assertFalse(ledger.Value(10) > 10)
+        self.assertFalse(ledger.Value(10) > 20)
+
+        self.assertFalse(5 > ledger.Value(10))
+        self.assertFalse(10 > ledger.Value(10))
+        self.assertTrue(20 > ledger.Value(10))
+
+        self.assertTrue(ledger.Value(10.0) > ledger.Amount(5))
+        self.assertFalse(ledger.Value(10.0) > ledger.Amount(10))
+        self.assertFalse(ledger.Value(10.0) > ledger.Amount(20))
+
+        self.assertFalse(ledger.Amount(5) > ledger.Value(10.0))
+        self.assertFalse(ledger.Amount(10) > ledger.Value(10.0))
+        self.assertTrue(ledger.Amount(20) > ledger.Value(10.0))
+
+    def test_value_ge(self):
+        self.assertTrue(ledger.Value(10) >= ledger.Value(5))
+        self.assertTrue(ledger.Value(10) >= ledger.Value(10))
+        self.assertFalse(ledger.Value(10) >= ledger.Value(20))
+
+        self.assertTrue(ledger.Value(10) >= 5)
+        self.assertTrue(ledger.Value(10) >= 10)
+        self.assertFalse(ledger.Value(10) >= 20)
+
+        self.assertFalse(5 >= ledger.Value(10))
+        self.assertTrue(10 >= ledger.Value(10))
+        self.assertTrue(20 >= ledger.Value(10))
+
+        self.assertTrue(ledger.Value(10.0) >= ledger.Amount(5))
+        self.assertTrue(ledger.Value(10.0) >= ledger.Amount(10))
+        self.assertFalse(ledger.Value(10.0) >= ledger.Amount(20))
+
+        self.assertFalse(ledger.Amount(5) >= ledger.Value(10.0))
+        self.assertTrue(ledger.Amount(10) >= ledger.Value(10.0))
+        self.assertTrue(ledger.Amount(20) >= ledger.Value(10.0))
 
 # Amount tests
 

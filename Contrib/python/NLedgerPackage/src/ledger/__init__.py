@@ -1151,6 +1151,18 @@ class Value:
 
     __nonzero__ = __bool__
 
+    def __lt__(self, o: object) -> bool:
+        return self.origin < Value.to_value(o).origin
+
+    def __le__(self, o: object) -> bool:
+        return self.origin <= Value.to_value(o).origin
+
+    def __gt__(self, o: object) -> bool:
+        return self.origin > Value.to_value(o).origin
+
+    def __ge__(self, o: object) -> bool:
+        return self.origin >= Value.to_value(o).origin
+
 
     # TBC
 
