@@ -1163,6 +1163,29 @@ class Value:
     def __ge__(self, o: object) -> bool:
         return self.origin >= Value.to_value(o).origin
 
+    def __add__(self, o: object) -> 'Value':
+        return Value.to_value(self.origin + Value.to_value(o).origin)
+
+    def __radd__(self, o: object) -> 'Value':
+        return Value.to_value(Value.to_value(o).origin + self.origin)
+
+    def __sub__(self, o: object) -> 'Value':
+        return Value.to_value(self.origin - Value.to_value(o).origin)
+
+    def __rsub__(self, o: object) -> 'Value':
+        return Value.to_value(Value.to_value(o).origin - self.origin)
+
+    def __mul__(self, o: object) -> 'Value':
+        return Value.to_value(self.origin * Value.to_value(o).origin)
+
+    def __rmul__(self, o: object) -> 'Value':
+        return Value.to_value(Value.to_value(o).origin * self.origin)
+
+    def __truediv__(self, o: object) -> 'Value':
+        return Value.to_value(self.origin / Value.to_value(o).origin)
+
+    def __rtruediv__(self, o: object) -> 'Value':
+        return Value.to_value(Value.to_value(o).origin / self.origin)
 
     # TBC
 

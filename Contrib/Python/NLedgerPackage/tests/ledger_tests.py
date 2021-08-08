@@ -1337,6 +1337,101 @@ class ValueTests(unittest.TestCase):
         self.assertTrue(ledger.Amount(10) >= ledger.Value(10.0))
         self.assertTrue(ledger.Amount(20) >= ledger.Value(10.0))
 
+    def test_value_add(self):
+        self.assertEqual(5, ledger.Value(2) + ledger.Value(3))
+        self.assertEqual(5, ledger.Value(2) + 3)
+        self.assertEqual(5, 2 + ledger.Value(3))
+        self.assertEqual(5, ledger.Value(2) + ledger.Amount(3))
+        self.assertEqual(5, ledger.Amount(2) + ledger.Value(3))
+        self.assertEqual(5, ledger.Value(2) + ledger.Balance(3))
+
+    def test_value_add_assignment(self):
+
+        val = ledger.Value(2)
+        val += ledger.Value(3)
+        self.assertEqual(5, val)
+
+        val = ledger.Value(2)
+        val += 3
+        self.assertEqual(5, val)
+
+        val = ledger.Value(2)
+        val += ledger.Amount(3)
+        self.assertEqual(5, val)
+
+        val = ledger.Value(2)
+        val += ledger.Balance(3)
+        self.assertEqual(5, val)
+
+    def test_value_sub(self):
+        self.assertEqual(2, ledger.Value(5) - ledger.Value(3))
+        self.assertEqual(2, ledger.Value(5) - 3)
+        self.assertEqual(2, 5 - ledger.Value(3))
+        self.assertEqual(2, ledger.Value(5) - ledger.Amount(3))
+        self.assertEqual(2, ledger.Amount(5) - ledger.Value(3))
+        self.assertEqual(2, ledger.Value(5) - ledger.Balance(3))
+
+    def test_value_sub_assignment(self):
+
+        val = ledger.Value(5)
+        val -= ledger.Value(3)
+        self.assertEqual(2, val)
+
+        val = ledger.Value(5)
+        val -= 3
+        self.assertEqual(2, val)
+
+        val = ledger.Value(5)
+        val -= ledger.Amount(3)
+        self.assertEqual(2, val)
+
+        val = ledger.Value(5)
+        val -= ledger.Balance(3)
+        self.assertEqual(2, val)
+
+    def test_value_mul(self):
+        self.assertEqual(6, ledger.Value(2) * ledger.Value(3))
+        self.assertEqual(6, ledger.Value(2) * 3)
+        self.assertEqual(6, 2 * ledger.Value(3))
+        self.assertEqual(6, ledger.Value(2) * ledger.Amount(3))
+        self.assertEqual(6, ledger.Amount(2) * ledger.Value(3))
+
+    def test_value_mul_assignment(self):
+
+        val = ledger.Value(2)
+        val *= ledger.Value(3)
+        self.assertEqual(6, val)
+
+        val = ledger.Value(2)
+        val *= 3
+        self.assertEqual(6, val)
+
+        val = ledger.Value(2)
+        val *= ledger.Amount(3)
+        self.assertEqual(6, val)
+
+    def test_value_div(self):
+        self.assertEqual(2, ledger.Value(6) / ledger.Value(3))
+        self.assertEqual(2, ledger.Value(6) / 3)
+        self.assertEqual(2, 6 / ledger.Value(3))
+        self.assertEqual(2, ledger.Value(6) / ledger.Value(ledger.Amount(3)))
+        self.assertEqual(2, ledger.Amount(6) / ledger.Value(3))
+
+    def test_value_div_assignment(self):
+
+        val = ledger.Value(6)
+        val /= ledger.Value(3)
+        self.assertEqual(2, val)
+
+        val = ledger.Value(6)
+        val /= 3
+        self.assertEqual(2, val)
+
+        val = ledger.Value(6)
+        val /= ledger.Amount(3)
+        self.assertEqual(2, val)
+
+
 # Amount tests
 
 class AmountTests(unittest.TestCase):
