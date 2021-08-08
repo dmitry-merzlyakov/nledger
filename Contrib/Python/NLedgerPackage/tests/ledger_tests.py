@@ -1431,6 +1431,165 @@ class ValueTests(unittest.TestCase):
         val /= ledger.Amount(3)
         self.assertEqual(2, val)
 
+    def test_value_negated(self):
+
+        val1 = ledger.Value(6)
+        val2 = val1.negated()
+        self.assertEqual(6, val1)
+        self.assertEqual(-6, val2)
+        self.assertTrue(isinstance(val2, ledger.Value))
+
+    def test_value_in_place_negate(self):
+
+        val1 = ledger.Value(6)
+        val1.in_place_negate()
+        self.assertEqual(-6, val1)
+        self.assertTrue(isinstance(val1, ledger.Value))
+
+    def test_value_in_place_not(self):
+
+        val1 = ledger.Value(False)
+        val1.in_place_negate()
+        self.assertEqual(True, val1)
+        self.assertTrue(isinstance(val1, ledger.Value))
+
+    def test_value_neg(self):
+
+        val1 = ledger.Value(6)
+        val2 = -val1
+        self.assertEqual(6, val1)
+        self.assertEqual(-6, val2)
+        self.assertTrue(isinstance(val2, ledger.Value))
+
+    def test_value_abs(self):
+
+        val1 = ledger.Value(-6)
+        val2 = val1.abs()
+        self.assertEqual(-6, val1)
+        self.assertEqual(6, val2)
+        self.assertTrue(isinstance(val2, ledger.Value))
+
+    def test_value_rounded(self):
+
+        amt = ledger.Amount("2.00 ZXC")
+        amt.keep_precision = True
+        
+        v1 = ledger.Value(amt)
+        v2 = v1 / 3
+
+        self.assertEqual("2.00 ZXC", str(v1))
+        self.assertEqual("0.66666667 ZXC", str(v2))
+        self.assertEqual("0.67 ZXC", str(v2.rounded()))
+        self.assertEqual("<class 'ledger.Value'>", str(type(v2.rounded())))
+
+    def test_value_in_place_round(self):
+
+        amt = ledger.Amount("2.00 ZXC")
+        amt.keep_precision = True
+
+        v1 = ledger.Value(amt)
+        v1 = v1 / 3
+        
+        self.assertEqual("0.66666667 ZXC", str(v1))
+        v1.in_place_round()
+        self.assertEqual("0.67 ZXC", str(v1))
+        self.assertEqual("<class 'ledger.Value'>", str(type(v1)))
+
+    def test_value_truncated(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXC"))
+        a2 = a1 / 3
+
+        self.assertEqual("2.00 ZXC", str(a1))
+        self.assertEqual("0.67 ZXC", str(a2))
+        self.assertEqual("0.67 ZXC", str(a2.truncated()))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a2.truncated())))
+
+    def test_value_in_place_truncate(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXC"))
+        a1 = a1 / 3
+        
+        a1.in_place_truncate()
+        self.assertEqual("0.67 ZXC", str(a1))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a1)))
+
+    def test_value_floored(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a2 = a1 / 3
+
+        self.assertEqual("2.00 ZXD", str(a1))
+        self.assertEqual("0.67 ZXD", str(a2))
+        self.assertEqual("0.00 ZXD", str(a2.floored()))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a2.floored())))
+
+    def test_value_in_place_floor(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a1 = a1 / 3
+        
+        a1.in_place_floor()
+        self.assertEqual("0.00 ZXD", str(a1))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a1)))
+
+    def test_value_unrounded(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a2 = a1 / 3
+
+        self.assertEqual("2.00 ZXD", str(a1))
+        self.assertEqual("0.67 ZXD", str(a2))
+        self.assertEqual("0.66666667 ZXD", str(a2.unrounded()))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a2.unrounded())))
+
+    def test_value_in_place_unround(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a1 = a1 / 3
+        
+        a1.in_place_unround()
+        self.assertEqual("0.66666667 ZXD", str(a1))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a1)))
+
+    def test_value_reduced(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a2 = a1 / 3
+
+        self.assertEqual("2.00 ZXD", str(a1))
+        self.assertEqual("0.67 ZXD", str(a2))
+        self.assertEqual("0.67 ZXD", str(a2.reduced()))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a2.reduced())))
+
+    def test_value_in_place_reduce(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a1 = a1 / 3
+        
+        a1.in_place_reduce()
+        self.assertEqual("0.67 ZXD", str(a1))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a1)))
+
+    def test_value_unreduced(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a2 = a1 / 3
+
+        self.assertEqual("2.00 ZXD", str(a1))
+        self.assertEqual("0.67 ZXD", str(a2))
+        self.assertEqual("0.67 ZXD", str(a2.unreduced()))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a2.unreduced())))
+
+    def test_value_in_place_unreduce(self):
+
+        a1 = ledger.Value(ledger.Amount("2.00 ZXD"))
+        a1 = a1 / 3
+        
+        a1.in_place_unreduce()
+        self.assertEqual("0.67 ZXD", str(a1))
+        self.assertEqual("<class 'ledger.Value'>", str(type(a1)))
+
 
 # Amount tests
 

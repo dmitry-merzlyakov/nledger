@@ -1187,10 +1187,68 @@ class Value:
     def __rtruediv__(self, o: object) -> 'Value':
         return Value.to_value(Value.to_value(o).origin / self.origin)
 
+    def negated(self) -> 'Value':
+        return Value.to_value(self.origin.Negated())
+
+    def in_place_negate(self):
+        self.origin.InPlaceNegate()
+
+    def in_place_not(self):
+        self.origin.InPlaceNot()
+
+    def __neg__(self) -> 'Value':
+        return Value.to_value(-self.origin)
+
+    def abs(self) -> 'Value':
+        return Value.to_value(self.origin.Abs())
+
+    __abs__ = abs
+
+    def rounded(self) -> 'Value':
+        return Value.to_value(self.origin.Rounded())
+
+    def in_place_round(self):
+        self.origin.InPlaceRound()
+
+    def truncated(self) -> 'Value':
+        return Value.to_value(self.origin.Truncated())
+
+    def in_place_truncate(self):
+        self.origin.InPlaceTruncate()
+
+    def floored(self) -> 'Value':
+        return Value.to_value(self.origin.Floored())
+
+    def in_place_floor(self):
+        self.origin.InPlaceFloor()
+
+    def unrounded(self) -> 'Value':
+        return Value.to_value(self.origin.Unrounded())
+
+    def in_place_unround(self):
+        self.origin.InPlaceUnround()
+
+    def reduced(self) -> 'Value':
+        return Value.to_value(self.origin.Reduced())
+
+    def in_place_reduce(self):
+        self.origin.InPlaceReduce()
+
+    def unreduced(self) -> 'Value':
+        return Value.to_value(self.origin.Unreduced())
+
+    def in_place_unreduce(self):
+        self.origin.InPlaceUnreduce()
+
     # TBC
 
     def to_amount(self) -> Amount:
         return Amount.from_origin(self.origin.AsAmount)
+
+    def to_string(self) -> str:
+        return self.origin.AsString
+
+    __str__ = to_string
 
 # Routine to acquire and release output streams
 
