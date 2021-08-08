@@ -1590,6 +1590,45 @@ class ValueTests(unittest.TestCase):
         self.assertEqual("0.67 ZXD", str(a1))
         self.assertEqual("<class 'ledger.Value'>", str(type(a1)))
 
+    def test_value_value(self):
+
+        amt = ledger.Amount("2.00 ZWS")
+        val = ledger.Value(amt)
+        v1 = val.value()
+        v2 = val.value(amt.commodity)
+        v3 = val.value(amt.commodity, date.today())
+        v4 = val.value(amt.commodity, datetime.today())
+        self.assertTrue(isinstance(v1, ledger.Value))
+        self.assertTrue(isinstance(v2, ledger.Value))
+        self.assertTrue(isinstance(v3, ledger.Value))
+        self.assertTrue(isinstance(v4, ledger.Value))
+
+    def test_value_exchange_commodities(self):
+
+        amt = ledger.Amount("2.00 ZWG")
+        val = ledger.Value(amt)
+        v1 = val.exchange_commodities("ZWG")
+        v2 = val.exchange_commodities("ZWG", True)
+        v3 = val.exchange_commodities("ZWG", False, date.today())
+        self.assertTrue(isinstance(v1, ledger.Value))
+        self.assertTrue(isinstance(v2, ledger.Value))
+        self.assertTrue(isinstance(v3, ledger.Value))
+
+    def test_value_is_nonzero(self):
+
+        self.assertTrue(ledger.Value(1).is_nonzero())
+        self.assertFalse(ledger.Value(0).is_nonzero())
+
+    def test_value_is_zero(self):
+
+        self.assertFalse(ledger.Value(1).is_zero())
+        self.assertTrue(ledger.Value(0).is_zero())
+
+    def test_value_is_null(self):
+
+        self.assertFalse(ledger.Value(1).is_null())
+        self.assertFalse(ledger.Value(0).is_null())
+        self.assertTrue(ledger.Value(ledger.OriginValue.Get[str](None)).is_null())  # ..Get(null) creates a Null (VOID) value
 
 # Amount tests
 

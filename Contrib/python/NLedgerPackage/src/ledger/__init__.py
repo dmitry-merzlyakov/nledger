@@ -1149,8 +1149,6 @@ class Value:
     def __bool__(self) -> bool:
         return self.origin.Bool
 
-    __nonzero__ = __bool__
-
     def __lt__(self, o: object) -> bool:
         return self.origin < Value.to_value(o).origin
 
@@ -1239,6 +1237,44 @@ class Value:
 
     def in_place_unreduce(self):
         self.origin.InPlaceUnreduce()
+
+    def value(self, in_terms_of : Commodity = None, moment = None) -> 'Value':
+
+        if in_terms_of is None:
+            return Value.to_value(self.origin.ValueOf(TimesCommon.Current.CurrentTime))
+
+        assert(isinstance(in_terms_of, Commodity))
+
+        if moment is None:
+            return Value.to_value(self.origin.ValueOf(TimesCommon.Current.CurrentTime, in_terms_of.origin))
+
+        return Value.to_value(self.origin.ValueOf(to_ndatetime(moment), in_terms_of.origin))
+
+    def exchange_commodities(self, commodities: str, addPrices: bool = None, moment = None) -> 'Value':
+
+        assert(not (commodities is None) and isinstance(commodities, str))
+        if addPrices is None:
+            return Value.to_value(self.origin.ExchangeCommodities(commodities, False, DateTime())) # default(DateTime) caused PythonNet issued, so arguments are populated explicitely
+
+        assert(isinstance(addPrices, bool))
+        if moment is None:
+            return Value.to_value(self.origin.ExchangeCommodities(commodities, addPrices, DateTime()))
+
+        return Value.to_value(self.origin.ExchangeCommodities(commodities, addPrices, to_ndatetime(moment)))
+
+    def is_nonzero(self) -> bool:
+        return self.origin.IsNonZero
+
+    __nonzero__ = is_nonzero
+
+    def is_realzero(self) -> bool:
+        return self.origin.IsRealZero
+
+    def is_zero(self) -> bool:
+        return self.origin.IsZero
+
+    def is_null(self) -> bool:
+        return OriginValue.IsNullOrEmpty(self.origin)
 
     # TBC
 
