@@ -1628,7 +1628,145 @@ class ValueTests(unittest.TestCase):
 
         self.assertFalse(ledger.Value(1).is_null())
         self.assertFalse(ledger.Value(0).is_null())
-        self.assertTrue(ledger.Value(ledger.OriginValue.Get[str](None)).is_null())  # ..Get(null) creates a Null (VOID) value
+        self.assertTrue(ledger.Value(ledger.NULL_VALUE.is_null()))
+
+    def test_value_type(self):
+
+        self.assertEqual(ledger.ValueType.Void, ledger.NULL_VALUE.type())
+        self.assertEqual(ledger.ValueType.Boolean, ledger.Value(True).type())
+        self.assertEqual(ledger.ValueType.Date, ledger.Value(date.today()).type())
+        self.assertEqual(ledger.ValueType.DateTime, ledger.Value(datetime.today()).type())
+        self.assertEqual(ledger.ValueType.Integer, ledger.Value(1).type())
+        self.assertEqual(ledger.ValueType.Amount, ledger.Value(1.0).type())
+        self.assertEqual(ledger.ValueType.Balance, ledger.Value(ledger.Balance(1)).type())
+        self.assertEqual(ledger.ValueType.String, ledger.string_value("A").type())
+        self.assertEqual(ledger.ValueType.Mask, ledger.Value(ledger.Mask("A")).type())
+
+    def test_value_is_type(self):
+
+        self.assertTrue(ledger.NULL_VALUE.is_type(ledger.ValueType.Void))
+        self.assertFalse(ledger.NULL_VALUE.is_type(ledger.ValueType.Boolean))
+
+        self.assertTrue(ledger.Value(True).is_type(ledger.ValueType.Boolean))
+        self.assertTrue(ledger.Value(date.today()).is_type(ledger.ValueType.Date))
+        self.assertTrue(ledger.Value(datetime.today()).is_type(ledger.ValueType.DateTime))
+        self.assertTrue(ledger.Value(1).is_type(ledger.ValueType.Integer))
+        self.assertTrue(ledger.Value(1.0).is_type(ledger.ValueType.Amount))
+        self.assertTrue(ledger.Value(ledger.Balance(1)).is_type(ledger.ValueType.Balance))
+        self.assertTrue(ledger.string_value("A").is_type(ledger.ValueType.String))
+        self.assertTrue(ledger.Value(ledger.Mask("A")).is_type(ledger.ValueType.Mask))
+
+    def test_value_is_boolean(self):
+
+        self.assertTrue(ledger.Value(False).is_boolean())
+        self.assertTrue(ledger.Value(True).is_boolean())
+        self.assertFalse(ledger.Value(1).is_boolean())
+
+    def test_value_set_boolean(self):
+
+        val = ledger.Value(10)
+        self.assertFalse(val.is_boolean())
+        val.set_boolean(False)
+        self.assertTrue(val.is_boolean())
+
+    def test_value_is_datetime(self):
+
+        self.assertTrue(ledger.Value(datetime.today()).is_datetime())
+        self.assertFalse(ledger.Value(1).is_datetime())
+
+    def test_value_set_datetime(self):
+
+        val = ledger.Value(10)
+        self.assertFalse(val.is_datetime())
+        val.set_datetime(datetime.today())
+        self.assertTrue(val.is_datetime())
+
+    def test_value_is_date(self):
+
+        self.assertTrue(ledger.Value(date.today()).is_date())
+        self.assertFalse(ledger.Value(1).is_date())
+
+    def test_value_set_date(self):
+
+        val = ledger.Value(10)
+        self.assertFalse(val.is_date())
+        val.set_date(date.today())
+        self.assertTrue(val.is_date())
+
+    def test_value_is_long(self):
+
+        self.assertTrue(ledger.Value(1).is_long())
+        self.assertFalse(ledger.Value(1.0).is_long())
+
+    def test_value_set_long(self):
+
+        val = ledger.Value(1.0)
+        self.assertFalse(val.is_long())
+        val.set_long(1)
+        self.assertTrue(val.is_long())
+
+    def test_value_is_amount(self):
+
+        self.assertTrue(ledger.Value(1.0).is_amount())
+        self.assertFalse(ledger.Value(1).is_amount())
+
+    def test_value_set_amount(self):
+
+        val = ledger.Value(1)
+        self.assertFalse(val.is_amount())
+        val.set_amount(ledger.Amount(1))
+        self.assertTrue(val.is_amount())
+
+    def test_value_is_balance(self):
+
+        self.assertTrue(ledger.Value(ledger.Balance(10)).is_balance())
+        self.assertFalse(ledger.Value(1).is_balance())
+
+    def test_value_set_balance(self):
+
+        val = ledger.Value(1)
+        self.assertFalse(val.is_balance())
+        val.set_balance(ledger.Balance(1))
+        self.assertTrue(val.is_balance())
+
+    def test_value_is_string(self):
+
+        self.assertTrue(ledger.string_value("A").is_string())
+        self.assertFalse(ledger.Value(1).is_string())
+
+    def test_value_set_string(self):
+
+        val = ledger.Value(1)
+        self.assertFalse(val.is_string())
+        val.set_string("A")
+        self.assertTrue(val.is_string())
+
+    def test_value_is_mask(self):
+
+        self.assertTrue(ledger.Value(ledger.Mask("A")).is_mask())
+        self.assertFalse(ledger.Value(1).is_mask())
+
+    def test_value_set_mask(self):
+
+        val = ledger.Value(1)
+        self.assertFalse(val.is_mask())
+        val.set_mask(ledger.Mask("A"))
+        self.assertTrue(val.is_mask())
+
+    def test_value_is_sequence(self):
+
+        seq = (ledger.Value(1), ledger.Value(2), ledger.Value(3))
+        val = ledger.Value(ledger.to_nvaluelist(seq))
+
+        self.assertTrue(val.is_sequence())
+        self.assertFalse(ledger.Value(1).is_sequence())
+
+    def test_value_set_sequence(self):
+
+        val = ledger.Value(1)
+        self.assertFalse(val.is_sequence())
+        val.set_sequence((ledger.Value(1),ledger.Value(2)))
+        self.assertTrue(val.is_sequence())
 
 # Amount tests
 

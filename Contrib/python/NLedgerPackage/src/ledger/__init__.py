@@ -1,3 +1,4 @@
+from typing import Iterable, List
 import ledger.conf
 from ledger.conf import clrRuntime
 from ledger.conf import ClrRuntime
@@ -102,8 +103,6 @@ ANNOTATION_DATE_CALCULATED = ExportedAnnotation.ANNOTATION_DATE_CALCULATED
 ANNOTATION_TAG_CALCULATED = ExportedAnnotation.ANNOTATION_TAG_CALCULATED
 ANNOTATION_VALUE_EXPR_CALCULATED = ExportedAnnotation.ANNOTATION_VALUE_EXPR_CALCULATED
 
-NULL_VALUE = ExportedValue.NULL_VALUE
-
 ACCOUNT_NORMAL = ExportedAccount.ACCOUNT_NORMAL
 ACCOUNT_KNOWN = ExportedAccount.ACCOUNT_KNOWN
 ACCOUNT_TEMP = ExportedAccount.ACCOUNT_TEMP
@@ -137,17 +136,6 @@ POST_EXT_VISITED = PostingXData.POST_EXT_VISITED
 POST_EXT_MATCHES = PostingXData.POST_EXT_MATCHES
 POST_EXT_CONSIDERED = PostingXData.POST_EXT_CONSIDERED
 
-
-def string_value(str):
-    return Value.string_value(str)
-
-def mask_value(str):
-    return Value.mask_value(str)
-
-def value_context(str):
-    return Value.value_context(str)
-
-# Session scope attributes and functions
 
 session = SessionScopeAttributes.session
 
@@ -205,6 +193,7 @@ from datetime import date
 from NLedger.Utility import Date
 from System import DateTime
 from System.Globalization import DateTimeStyles
+from System.Collections.Generic import List as NetList
 
 from NLedger.Times import TimesCommon
 
@@ -267,6 +256,14 @@ def to_ndatetime(value) -> DateTime:
         return DateTime(value.year, value.month, value.day)
     else:
         raise Exception("Date value is expected")
+
+# Converts Python iterable to .Net List of Values
+
+def to_nvaluelist(seq: Iterable) -> 'NetList[Value]':
+    target = NetList[OriginValue]()
+    for item in seq:
+        target.Add(Value.to_value(item).origin)
+    return target
 
 # Amounts
 
@@ -1276,6 +1273,66 @@ class Value:
     def is_null(self) -> bool:
         return OriginValue.IsNullOrEmpty(self.origin)
 
+    def type(self) -> ValueType:
+        return self.origin.Type
+
+    def is_type(self, type_enum: ValueType) -> bool:
+        return self.origin.Type == type_enum
+
+    def is_boolean(self) -> bool:
+        return self.origin.Type == ValueType.Boolean
+
+    def set_boolean(self, val: bool):
+        self.origin.SetBoolean(val)
+
+    def is_datetime(self) -> bool:
+        return self.origin.Type == ValueType.DateTime
+
+    def set_datetime(self, val: datetime):
+        self.origin.SetDateTime(to_ndatetime(val))
+
+    def is_date(self) -> bool:
+        return self.origin.Type == ValueType.Date
+
+    def set_date(self, val: date):
+        self.origin.SetDate(to_ndate(val))
+
+    def is_long(self) -> bool:
+        return self.origin.Type == ValueType.Integer
+
+    def set_long(self, val: int):
+        self.origin.SetLong(val)
+
+    def is_amount(self) -> bool:
+        return self.origin.Type == ValueType.Amount
+
+    def set_amount(self, val: Amount):
+        self.origin.SetAmount(val.origin)
+
+    def is_balance(self) -> bool:
+        return self.origin.Type == ValueType.Balance
+
+    def set_balance(self, val: Balance):
+        self.origin.SetBalance(val.origin)
+
+    def is_string(self) -> bool:
+        return self.origin.Type == ValueType.String
+
+    def set_string(self, val: str):
+        self.origin.SetString(val)
+
+    def is_mask(self) -> bool:
+        return self.origin.Type == ValueType.Mask
+
+    def set_mask(self, val: Mask):
+        self.origin.SetMask(val.origin)
+
+    def is_sequence(self) -> bool:
+        return self.origin.Type == ValueType.Sequence
+
+    def set_sequence(self, val: Iterable):
+        self.origin.SetSequence(to_nvaluelist(val))
+
     # TBC
 
     def to_amount(self) -> Amount:
@@ -1285,6 +1342,11 @@ class Value:
         return self.origin.AsString
 
     __str__ = to_string
+
+NULL_VALUE = Value(OriginValue.Empty)
+
+def string_value(s: str) -> Value:
+    return Value.to_value(OriginValue.StringValue(s))
 
 # Routine to acquire and release output streams
 
