@@ -265,6 +265,14 @@ def to_nvaluelist(seq: Iterable) -> 'NetList[Value]':
         target.Add(Value.to_value(item).origin)
     return target
 
+# Converts .Net List of Values to Python Iterable
+
+def to_pvaluelist(seq):
+    target = []
+    for item in seq:
+        target.append(Value.to_value(item))
+    return target
+
 # Amounts
 
 class Amount:
@@ -443,6 +451,10 @@ class Balance:
             self.origin = val
         else:
             self.origin = OriginBalance(val)
+
+    @classmethod
+    def from_origin(cls, origin) -> 'Balance':
+        return Balance(origin) if not origin is None else None
 
     # TBC
 
@@ -1102,6 +1114,10 @@ class Mask:
         else:
             self.origin = OriginMask(val)
 
+    @classmethod
+    def from_origin(cls, origin):
+        return Mask(origin) if not origin is None else None
+
     # TBC
 
 
@@ -1333,15 +1349,38 @@ class Value:
     def set_sequence(self, val: Iterable):
         self.origin.SetSequence(to_nvaluelist(val))
 
-    # TBC
+    def to_boolean(self) -> bool:
+        return self.origin.AsBoolean
+
+    def to_long(self) -> int:
+        return self.origin.AsLong
+
+    __int__ = to_long
+
+    def to_datetime(self) -> datetime:
+        return to_pdatetime(self.origin.AsDateTime)
+
+    def to_date(self) -> date:
+        return to_pdate(self.origin.AsDate)
 
     def to_amount(self) -> Amount:
         return Amount.from_origin(self.origin.AsAmount)
+
+    def to_balance(self) -> Balance:
+        return Balance.from_origin(self.origin.AsBalance)
 
     def to_string(self) -> str:
         return self.origin.AsString
 
     __str__ = to_string
+
+    def to_mask(self) -> Mask:
+        return Mask.from_origin(self.origin.AsMask)
+
+    def to_sequence(self) -> Iterable:
+        return to_pvaluelist(self.origin.AsSequence)
+
+    # TBC
 
 NULL_VALUE = Value(OriginValue.Empty)
 

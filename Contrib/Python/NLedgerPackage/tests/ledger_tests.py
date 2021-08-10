@@ -7,6 +7,7 @@ import os
 import os.path
 import sys
 import re
+import collections
 
 # We need to find path to the latest NLedger.Extensibility.Python.dll. 
 # Since this test is intended to be run on dev environment only, the function below looks for the dll by Debug/Release paths only
@@ -1767,6 +1768,67 @@ class ValueTests(unittest.TestCase):
         self.assertFalse(val.is_sequence())
         val.set_sequence((ledger.Value(1),ledger.Value(2)))
         self.assertTrue(val.is_sequence())
+
+    def test_value_to_boolean(self):
+
+        self.assertEqual(False, ledger.Value(False).to_boolean())
+        self.assertEqual(True, ledger.Value(True).to_boolean())
+        self.assertEqual(False, ledger.Value(0).to_boolean())
+        self.assertEqual(True, ledger.Value(1).to_boolean())
+
+    def test_value_to_long(self):
+
+        self.assertEqual(0, ledger.Value(False).to_long())
+        self.assertEqual(1, ledger.Value(True).to_long())
+        self.assertEqual(0, ledger.Value(0).to_long())
+        self.assertEqual(1, ledger.Value(1).to_long())
+
+    def test_value_to_datetime(self):
+
+        self.assertEqual(datetime(2021, 5, 22, 23, 55, 55), ledger.Value(datetime(2021, 5, 22, 23, 55, 55)).to_datetime())
+        self.assertEqual(datetime(2021, 5, 22, 0, 0, 0), ledger.Value(date(2021, 5, 22)).to_datetime())
+
+    def test_value_to_date(self):
+
+        self.assertEqual(date(2021, 5, 22), ledger.Value(datetime(2021, 5, 22, 0, 0, 0)).to_date())
+        self.assertEqual(date(2021, 5, 22), ledger.Value(date(2021, 5, 22)).to_date())
+
+    def test_value_to_amount(self):
+
+        self.assertEqual(ledger.Amount(1), ledger.Value(1).to_amount())
+        self.assertEqual(ledger.Amount(1), ledger.Value(1.0).to_amount())
+        self.assertEqual(ledger.Amount(1), ledger.Value(ledger.Amount(1)).to_amount())
+
+    def test_value_to_balance(self):
+
+        bal = ledger.Value(1).to_balance()
+        self.assertTrue(isinstance(bal, ledger.Balance))
+
+    def test_value_to_string(self):
+
+        self.assertEqual('false', ledger.Value(False).to_string())
+        self.assertEqual('true', ledger.Value(True).to_string())
+        self.assertEqual('0', ledger.Value(0).to_string())
+        self.assertEqual('1', ledger.Value(1).to_string())
+
+    def test_value_str(self):
+
+        self.assertEqual('false', str(ledger.Value(False)))
+        self.assertEqual('true', str(ledger.Value(True)))
+        self.assertEqual('0', str(ledger.Value(0)))
+        self.assertEqual('1', str(ledger.Value(1)))
+
+    def test_value_to_mask(self):
+
+        mask = ledger.string_value("A").to_mask()
+        self.assertTrue(isinstance(mask, ledger.Mask))
+
+    def test_value_to_sequence(self):
+
+        seq = ledger.string_value("A").to_sequence()
+        self.assertTrue(isinstance(seq, collections.abc.Iterable))
+        self.assertEqual("A", seq[0].to_string())
+        self.assertEqual(ledger.ValueType.String, seq[0].type())
 
 # Amount tests
 
