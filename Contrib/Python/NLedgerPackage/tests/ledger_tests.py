@@ -1830,6 +1830,137 @@ class ValueTests(unittest.TestCase):
         self.assertEqual("A", seq[0].to_string())
         self.assertEqual(ledger.ValueType.String, seq[0].type())
 
+    def test_value_repr(self):
+
+        self.assertEqual("10 UUP", repr(ledger.Value("10 UUP")))
+
+    def test_value_casted(self):
+
+        val = ledger.Value(1)
+        self.assertEqual(ledger.ValueType.String, val.casted(ledger.ValueType.String).type())
+        self.assertEqual(ledger.ValueType.Integer, val.casted(ledger.ValueType.Integer).type())
+
+    def test_value_in_place_cast(self):
+
+        val = ledger.Value(1)
+        self.assertEqual(ledger.ValueType.Integer, val.type())
+        val.in_place_cast(ledger.ValueType.String)
+        self.assertEqual(ledger.ValueType.String, val.type())
+
+    def test_value_simplified(self):
+
+        val = ledger.Value(ledger.Amount(0))
+        self.assertEqual(ledger.ValueType.Integer, val.simplified().type())
+
+    def test_value_in_place_simplify(self):
+
+        val = ledger.Value(ledger.Amount(0))
+        val.in_place_simplify()
+        self.assertEqual(ledger.ValueType.Integer, val.type())
+
+    def test_value_number(self):
+
+        val = ledger.Value(False).number()
+        self.assertEqual(ledger.ValueType.Integer, val.type())
+        self.assertEqual("0", str(val))
+
+        val = ledger.Value(True).number()
+        self.assertEqual(ledger.ValueType.Integer, val.type())
+        self.assertEqual("1", str(val))
+
+    def test_value_annotate_and_annotation(self):
+
+        ann = ledger.Annotation(OriginAnnotation(ledger.Amount(5), None, "tag"))
+        val = ledger.Value(ledger.Amount("10 TTR"))
+        
+        val.annotate(ann)
+        ann1 = val.annotation
+
+        self.assertEqual(ann, ann1)
+
+    def test_value_has_annotation(self):
+
+        ann = ledger.Annotation(OriginAnnotation(ledger.Amount(5), None, "tag"))
+        val = ledger.Value(ledger.Amount("10 TTR"))
+
+        self.assertFalse(val.has_annotation())        
+        val.annotate(ann)
+        self.assertTrue(val.has_annotation())        
+
+    def test_value_strip_annotations(self):
+
+        ann = ledger.Annotation(OriginAnnotation(ledger.Amount(5), None, "tag"))
+        val = ledger.Value(ledger.Amount("10 TTR"))
+        
+        self.assertFalse(val.has_annotation())        
+        val.annotate(ann)
+        self.assertTrue(val.has_annotation())
+        val.strip_annotations()
+        self.assertTrue(val.has_annotation())
+        keepDetails = ledger.KeepDetails()
+        val.strip_annotations(keepDetails)
+        self.assertTrue(val.has_annotation())
+
+    def test_value_push_back(self):
+
+        val = ledger.Value(1)
+        val.push_back(ledger.Value(2))
+        self.assertEqual(2, len(val.to_sequence()))
+
+    def test_value_pop_back(self):
+
+        val = ledger.Value(1)
+        val.push_back(ledger.Value(2))
+        self.assertEqual(2, len(val.to_sequence()))
+        val.pop_back()
+        self.assertEqual(1, len(val.to_sequence()))
+
+    def test_value_size(self):
+
+        val = ledger.Value(1)
+        val.push_back(ledger.Value(2))
+        self.assertEqual(2, val.size())
+        val.pop_back()
+        self.assertEqual(1, val.size())
+
+    def test_value_label(self):
+
+        self.assertEqual("a boolean", ledger.Value(True).label())
+        self.assertEqual("an integer", ledger.Value(1).label())
+
+    def test_value_valid(self):
+
+        self.assertTrue(ledger.Value(False).valid())
+
+    def test_value_basetype(self):
+
+        self.assertEqual(type(bool), ledger.Value(False).basetype())
+        self.assertEqual(type(int), ledger.Value(1).basetype())
+        self.assertEqual(type(str), ledger.string_value("A").basetype())
+
+    def test_string_value(self):
+
+        val = ledger.string_value("A")
+        self.assertTrue(isinstance(val, ledger.Value))
+        self.assertEqual(ledger.ValueType.String, val.type())
+        self.assertEqual("A", val.to_string())
+
+    def test_mask_value(self):
+
+        val = ledger.mask_value("A")
+        self.assertTrue(isinstance(val, ledger.Value))
+        self.assertEqual(ledger.ValueType.Mask, val.type())
+        self.assertEqual("A", val.to_string())
+
+    def test_value_context(self):
+
+        val = ledger.mask_value("A")
+        self.assertEqual('                 /A/', ledger.value_context(val))
+
+    def test_NULL_VALUE(self):
+
+        self.assertEqual(ledger.ValueType.Void, ledger.NULL_VALUE.type())
+
 # Amount tests
 
 class AmountTests(unittest.TestCase):

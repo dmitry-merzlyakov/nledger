@@ -440,6 +440,11 @@ class Amount:
 
     # TBC
 
+    @property
+    def annotation(self) -> 'Annotation':
+        return Annotation.from_origin(self.origin.Annotation)
+
+
 class Balance:
 
     origin = None
@@ -1139,6 +1144,8 @@ class Value:
 
     @classmethod
     def to_value(cls, val) -> 'Value':
+        if val is None:
+            return None
         return val if isinstance(val, Value) else Value(val)
 
     def type(self) -> ValueType:
@@ -1380,12 +1387,74 @@ class Value:
     def to_sequence(self) -> Iterable:
         return to_pvaluelist(self.origin.AsSequence)
 
-    # TBC
+    def __repr__(self) -> str:
+        return self.origin.Dump()
+
+    def casted(self, type: ValueType) -> 'Value':
+        return Value.to_value(self.origin.Casted(type))
+
+    def in_place_cast(self, type: ValueType):
+        self.origin.InPlaceCast(type)
+
+    def simplified(self) -> 'Value':
+        return Value.to_value(self.origin.Simplified())
+
+    def in_place_simplify(self):
+        self.origin.InPlaceSimplify()
+
+    def number(self) -> 'Value':
+        return Value.to_value(self.origin.Number())
+
+    def annotate(self, details: Annotation):
+        self.origin.Annotate(details.origin)
+
+    def has_annotation(self) -> bool:
+        return self.origin.HasAnnotation
+
+    @property
+    def annotation(self) -> Annotation:
+        return Annotation.from_origin(self.origin.Annotation)
+
+    def strip_annotations(self, keep_details: KeepDetails = None) -> 'Value':
+        if keep_details is None:
+            return Value.to_value(self.origin.StripAnnotations(OriginAnnotationKeepDetails()))
+        return Value.to_value(self.origin.StripAnnotations(keep_details.origin))
+
+    def push_back(self,val):
+        self.origin.PushBack(Value.to_value(val).origin)
+
+    def pop_back(self):
+        self.origin.PopBack()
+
+    def size(self) -> int:
+        return self.origin.Size
+
+    def label(self) -> str:
+        return self.origin.Label()
+
+    def valid(self) -> bool:
+        return self.origin.IsValid
+
+    def basetype(self):
+        if self.is_boolean():
+            return type(bool)
+        if self.is_long():
+            return type(int)
+        if self.is_string():
+            return type(str)
+
+        return self.origin.BaseType()
 
 NULL_VALUE = Value(OriginValue.Empty)
 
 def string_value(s: str) -> Value:
     return Value.to_value(OriginValue.StringValue(s))
+
+def mask_value(s: str) -> Value:
+    return Value.to_value(OriginValue.MaskValue(s))
+
+def value_context(val: Value) -> str:
+    return OriginValue.ValueContext(val.origin)
 
 # Routine to acquire and release output streams
 
