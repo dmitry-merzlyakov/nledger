@@ -2474,6 +2474,29 @@ class JournalItemTests(unittest.TestCase):
         self.assertFalse(item.has_flags(ledger.ITEM_GENERATED))
         self.assertTrue(item.has_flags(ledger.ITEM_TEMP))
 
+    def test_journalitem_description(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertEqual("generated posting", item.description)
+
+    def test_journalitem_type_context(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertEqual(ledger.ValueType.Void, item.type_context)
+
+    def test_journalitem_type_required(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertEqual(False, item.type_required)
+
+    def test_journalitem_note(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        item.note = "note-1"
+        self.assertEqual("note-1", item.note)
+        item.note = None
+        self.assertEqual(None, item.note)
+
 
 if __name__ == '__main__':
     unittest.main()

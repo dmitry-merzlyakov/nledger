@@ -1011,15 +1011,15 @@ class Scope:
 
     @property
     def description(self) -> str:
-        return self.Description
+        return self.origin.Description
 
     @property
     def type_context(self) -> ValueType:
-        return self.TypeContext
+        return self.origin.TypeContext
 
     @property
     def type_required(self) -> bool:
-        return self.TypeRequired
+        return self.origin.TypeRequired
 
 class Position:
 
@@ -1104,6 +1104,14 @@ class JournalItem(Scope):
 
     def drop_flags(self, value:int):
         self.flags &= ~value
+
+    @property
+    def note(self) -> str:
+        return self.origin.Note
+
+    @note.setter
+    def note(self, val: str):
+        self.origin.Note = val
 
 # Posts
 
