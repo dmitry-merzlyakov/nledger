@@ -67,7 +67,7 @@ from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountX
 from NLedger.Extensibility.Export import Balance as ExportedBalance
 from NLedger.Extensibility.Export import Expr
 from NLedger.Extensibility.Export import FileInfo
-from NLedger.Extensibility.Export import Position
+from NLedger.Extensibility.Export import Position as ExportedPosition
 from NLedger.Extensibility.Export import Journal
 from NLedger.Extensibility.Export import JournalItem
 from NLedger.Extensibility.Export import State
@@ -183,6 +183,7 @@ from NLedger.Values import ValueTypeEnum as ValueType
 from NLedger.Values import Value as OriginValue
 from NLedger import Balance as OriginBalance
 from NLedger import Mask as OriginMask
+from NLedger.Items import ItemPosition as OriginItemPosition
 
 
 # Manage date conversions
@@ -1016,6 +1017,64 @@ class Scope:
     @property
     def type_required(self) -> bool:
         return self.TypeRequired
+
+class Position:
+
+    origin: None
+
+    def __init__(self, origin = None) -> None:
+        if origin is None:
+            self.origin = OriginItemPosition()
+        else:
+            assert isinstance(origin, OriginItemPosition)
+            self.origin = origin
+
+    @classmethod
+    def from_origin(cls, origin) -> 'Position':
+        if origin is None:
+            return None
+
+        return Position(origin)
+
+    @property
+    def pathname(self) -> str:
+        return self.origin.PathName
+
+    @pathname.setter
+    def pathname(self, val: str):
+        self.origin.PathName = val
+
+    @property
+    def beg_pos(self) -> int:
+        return self.origin.BegPos
+
+    @beg_pos.setter
+    def beg_pos(self, val: int):
+        self.origin.BegPos = val
+
+    @property
+    def beg_line(self) -> int:
+        return self.origin.BegLine
+
+    @beg_line.setter
+    def beg_line(self, val: int):
+        self.origin.BegLine = val
+
+    @property
+    def end_pos(self) -> int:
+        return self.origin.EndPos
+
+    @end_pos.setter
+    def end_pos(self, val: int):
+        self.origin.EndPos = val
+
+    @property
+    def end_line(self) -> int:
+        return self.origin.EndLine
+
+    @end_line.setter
+    def end_line(self, val: int):
+        self.origin.EndLine = val
 
 class JournalItem(Scope):
 

@@ -2363,6 +2363,67 @@ class AmountTests(unittest.TestCase):
         a1.commodity = None
         self.assertIsNone(a1.commodity)
 
+class PositionTests(unittest.TestCase):
+
+    def test_position_constructor_allows_no_arguments(self):
+
+        pos = ledger.Position()
+        self.assertTrue(isinstance(pos,ledger.Position))
+        self.assertEqual(None, pos.pathname)
+        self.assertEqual(0, pos.beg_pos)
+        self.assertEqual(0, pos.beg_line)
+        self.assertEqual(0, pos.end_pos)
+        self.assertEqual(0, pos.end_line)
+
+    def test_position_constructor_takes_origin(self):
+
+        pos = ledger.Position(ledger.OriginItemPosition())
+        self.assertTrue(isinstance(pos,ledger.Position))
+        self.assertEqual(None, pos.pathname)
+        self.assertEqual(0, pos.beg_pos)
+        self.assertEqual(0, pos.beg_line)
+        self.assertEqual(0, pos.end_pos)
+        self.assertEqual(0, pos.end_line)
+
+    def test_position_pathname(self):
+
+        pos = ledger.Position()
+        pos.pathname = "some-name"
+        self.assertEqual("some-name", pos.pathname)
+        pos.pathname = None
+        self.assertEqual(None, pos.pathname)
+
+    def test_position_beg_pos(self):
+
+        pos = ledger.Position()
+        pos.beg_pos = 10
+        self.assertEqual(10, pos.beg_pos)
+        pos.beg_pos = 0
+        self.assertEqual(0, pos.beg_pos)
+
+    def test_position_beg_line(self):
+
+        pos = ledger.Position()
+        pos.beg_line = 10
+        self.assertEqual(10, pos.beg_line)
+        pos.beg_line = 0
+        self.assertEqual(0, pos.beg_line)
+
+    def test_position_end_pos(self):
+
+        pos = ledger.Position()
+        pos.end_pos = 10
+        self.assertEqual(10, pos.end_pos)
+        pos.end_pos = 0
+        self.assertEqual(0, pos.end_pos)
+
+    def test_position_end_line(self):
+
+        pos = ledger.Position()
+        pos.end_line = 10
+        self.assertEqual(10, pos.end_line)
+        pos.end_line = 0
+        self.assertEqual(0, pos.end_line)
 
 if __name__ == '__main__':
     unittest.main()
