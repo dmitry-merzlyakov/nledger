@@ -2425,5 +2425,55 @@ class PositionTests(unittest.TestCase):
         pos.end_line = 0
         self.assertEqual(0, pos.end_line)
 
+class JournalItemTests(unittest.TestCase):
+
+    def test_journalitem_flags(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.flags = ledger.ITEM_GENERATED
+        self.assertEqual(ledger.ITEM_GENERATED, item.flags)
+        item.flags = ledger.ITEM_TEMP
+        self.assertEqual(ledger.ITEM_TEMP, item.flags)
+
+    def test_journalitem_has_flags(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.flags = ledger.ITEM_GENERATED | ledger.ITEM_TEMP
+        self.assertTrue(item.has_flags(ledger.ITEM_GENERATED))
+        self.assertTrue(item.has_flags(ledger.ITEM_TEMP))
+        self.assertTrue(item.has_flags(ledger.ITEM_TEMP | ledger.ITEM_GENERATED))
+
+        item.flags = ledger.ITEM_GENERATED
+        self.assertTrue(item.has_flags(ledger.ITEM_GENERATED))
+        self.assertFalse(item.has_flags(ledger.ITEM_TEMP))
+
+    def test_journalitem_clear_flags(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        item.flags = ledger.ITEM_GENERATED | ledger.ITEM_TEMP
+
+        item.clear_flags()
+        self.assertTrue(item.flags == 0)
+
+    def test_journalitem_add_flags(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.flags = ledger.ITEM_GENERATED
+        item.add_flags(ledger.ITEM_TEMP)
+        self.assertTrue(item.has_flags(ledger.ITEM_GENERATED | ledger.ITEM_TEMP))
+
+    def test_journalitem_drop_flags(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.flags = ledger.ITEM_GENERATED | ledger.ITEM_TEMP
+        item.drop_flags(ledger.ITEM_GENERATED)
+        self.assertFalse(item.has_flags(ledger.ITEM_GENERATED))
+        self.assertTrue(item.has_flags(ledger.ITEM_TEMP))
+
+
 if __name__ == '__main__':
     unittest.main()

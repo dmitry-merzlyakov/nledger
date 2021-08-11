@@ -70,7 +70,7 @@ from NLedger.Extensibility.Export import FileInfo
 from NLedger.Extensibility.Export import Position as ExportedPosition
 from NLedger.Extensibility.Export import Journal
 from NLedger.Extensibility.Export import JournalItem
-from NLedger.Extensibility.Export import State
+from NLedger.Extensibility.Export import State as ExportedState 
 from NLedger.Extensibility.Export import Mask as ExportedMask
 from NLedger.Extensibility.Export import Posting
 from NLedger.Extensibility.Export import PostingXData
@@ -184,6 +184,9 @@ from NLedger.Values import Value as OriginValue
 from NLedger import Balance as OriginBalance
 from NLedger import Mask as OriginMask
 from NLedger.Items import ItemPosition as OriginItemPosition
+from NLedger.Items import ItemStateEnum as State
+from NLedger import Post as OriginPost
+from NLedger import SupportsFlagsEnum as OriginSupportsFlagsEnum
 
 
 # Manage date conversions
@@ -1081,6 +1084,26 @@ class JournalItem(Scope):
     def __init__(self, origin) -> None:
         assert isinstance(origin, OriginItem)
         super().__init__(origin)
+
+    @property
+    def flags(self) -> int:
+        return FlagsAdapter.SupportsFlagsToInt(self.origin.Flags)
+
+    @flags.setter
+    def flags(self, value:int):
+        self.origin.Flags = OriginSupportsFlagsEnum(value)
+
+    def has_flags(self, value:int) -> bool:
+        return (self.flags & value) == value
+
+    def clear_flags(self):
+        self.flags = 0
+
+    def add_flags(self, value:int):
+        self.flags |= value
+
+    def drop_flags(self, value:int):
+        self.flags &= ~value
 
 # Posts
 

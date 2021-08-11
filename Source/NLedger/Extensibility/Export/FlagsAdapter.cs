@@ -29,5 +29,7 @@ namespace NLedger.Extensibility.Export
         }
 
         public static int CommodityFlagsToInt(CommodityFlagsEnum flags) => (int)flags;
+
+        public static int SupportsFlagsToInt(SupportsFlagsEnum flags) => (int)flags;
     }
 }
