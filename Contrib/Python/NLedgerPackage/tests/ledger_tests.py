@@ -39,7 +39,7 @@ print("Found path to NLedger Python dll: " + nledger_dll_path)
 # Import ledger. Note: it is important to add path to source code to the first position to override already installed module
 sys.path.insert(0, ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '..', 'src'))
 import ledger
-from ledger import Amount
+from ledger import Amount, Position
 print("Module ledger is properly imported")
 
 from datetime import datetime
@@ -2497,6 +2497,192 @@ class JournalItemTests(unittest.TestCase):
         item.note = None
         self.assertEqual(None, item.note)
 
+    def test_journalitem_pos(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertTrue(isinstance(item.pos, Position))
+
+        pos = ledger.Position()
+        pos.end_line = 10
+
+        item.pos = pos
+        self.assertEqual(10, item.pos.end_line)
+        self.assertTrue(isinstance(item.pos, Position))
+
+        item.pos.end_line = 20
+        self.assertEqual(20, item.pos.end_line)
+
+    def test_journalitem_metadata(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertEqual(0, len(item.metadata))
+
+        item.set_tag("tag-1")
+        self.assertEqual(1, len(item.metadata))
+        self.assertTrue("tag-1" in item.metadata)
+        self.assertFalse(bool(item.metadata["tag-1"][0])) # Empty value
+        self.assertFalse(item.metadata["tag-1"][1])
+
+        val = ledger.string_value("some_value")
+        item.set_tag("tag-2", val)
+        self.assertEqual(2, len(item.metadata))
+        self.assertTrue("tag-2" in item.metadata)
+        self.assertEqual(val, item.metadata["tag-2"][0])
+        self.assertFalse(item.metadata["tag-2"][1])
+
+    def test_journalitem_copy_details(self):
+
+        item1 = ledger.JournalItem(ledger.OriginPost())
+        item1.note = "note-1"
+
+        item2 = ledger.JournalItem(ledger.OriginPost())
+        item2.copy_details(item1)
+        self.assertEqual("note-1", item2.note)
+
+    def test_journalitem_eq_ne(self):
+
+        item1 = ledger.JournalItem(ledger.OriginPost())
+        item2 = ledger.JournalItem(ledger.OriginPost())
+        self.assertTrue(item1 == item1)
+        self.assertFalse(item1 == item2)
+        self.assertFalse(item1 != item1)
+        self.assertTrue(item1 != item2)
+
+    def test_journalitem_has_tag(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        item.set_tag("tag-1")
+
+        self.assertTrue(item.has_tag("tag-1"))
+        self.assertFalse(item.has_tag("tag-2"))
+
+        self.assertTrue(item.has_tag(ledger.Mask("tag-1")))
+        self.assertFalse(item.has_tag(ledger.Mask("tag-2")))
+
+        item.set_tag("tag-2", ledger.string_value("some-value"))
+        self.assertFalse(item.has_tag(ledger.Mask("tag-1"), ledger.Mask("some-value")))
+        self.assertTrue(item.has_tag(ledger.Mask("tag-2"), ledger.Mask("some-value")))
+        self.assertFalse(item.has_tag(ledger.Mask("tag-2"), ledger.Mask("unknown-value")))
+
+    def test_journalitem_get_tag(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.set_tag("tag-1")
+        self.assertFalse(bool(item.get_tag("tag-1")))
+
+        item.set_tag("tag-2", ledger.string_value("some-value"))
+        self.assertEqual("some-value", str(item.get_tag("tag-2")))
+        self.assertEqual("some-value", str(item.get_tag(ledger.Mask("tag-2"))))
+        self.assertEqual("some-value", str(item.get_tag(ledger.Mask("tag-2"), ledger.Mask("some-value"))))
+        self.assertFalse(bool(item.get_tag(ledger.Mask("tag-2"), ledger.Mask("unknown-value"))))
+
+    def test_journalitem_tag(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.set_tag("tag-1")
+        self.assertFalse(bool(item.tag("tag-1")))
+
+        item.set_tag("tag-2", ledger.string_value("some-value"))
+        self.assertEqual("some-value", str(item.tag("tag-2")))
+        self.assertEqual("some-value", str(item.tag(ledger.Mask("tag-2"))))
+        self.assertEqual("some-value", str(item.tag(ledger.Mask("tag-2"), ledger.Mask("some-value"))))
+        self.assertFalse(bool(item.tag(ledger.Mask("tag-2"), ledger.Mask("unknown-value"))))
+
+    def test_journalitem_set_tag(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.set_tag("tag-1")
+        self.assertTrue(item.has_tag("tag-1"))
+
+        item.set_tag("tag-2", ledger.string_value("first-value"))
+        self.assertEqual("first-value", str(item.tag("tag-2")))
+
+        item.set_tag("tag-2", ledger.string_value("second-value"), True)
+        self.assertEqual("second-value", str(item.tag("tag-2")))
+
+    def test_journalitem_parse_tags(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        scope = ledger.JournalItem(ledger.OriginPost())
+
+        item.parse_tags("; Happy: Valley", scope)
+        self.assertEqual("Valley", str(item.tag("Happy")))
+
+        item.parse_tags("; Happy: More", scope, True)
+        self.assertEqual("More", str(item.tag("Happy")))
+
+    def test_journalitem_append_note(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        scope = ledger.JournalItem(ledger.OriginPost())
+
+        item.append_note("; Happy: Valley", scope)
+        self.assertEqual("Valley", str(item.tag("Happy")))
+
+        item.append_note("; Happy: More", scope, True)
+        self.assertEqual("More", str(item.tag("Happy")))
+
+    def test_journalitem_use_aux_date(self):
+
+        orig_value = ledger.JournalItem.use_aux_date
+
+        ledger.JournalItem.use_aux_date = False
+        self.assertFalse(ledger.JournalItem.use_aux_date)
+
+        ledger.JournalItem.use_aux_date = True
+        self.assertTrue(ledger.JournalItem.use_aux_date)
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.use_aux_date = False
+        self.assertFalse(item.use_aux_date)
+
+        item.use_aux_date = True
+        self.assertTrue(item.use_aux_date)
+
+        ledger.JournalItem.use_aux_date = orig_value
+
+    def test_journalitem_date(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        dt = date(2021, 5, 12)
+
+        item.date = dt
+        self.assertEqual(dt, item.date)
+
+    def test_journalitem_aux_date(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        dt = date(2021, 5, 15)
+
+        item.aux_date = dt
+        self.assertEqual(dt, item.aux_date)
+
+    def test_journalitem_state(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+
+        item.state = ledger.State.Uncleared
+        self.assertEqual(ledger.State.Uncleared, item.state)
+
+        item.state = ledger.State.Cleared
+        self.assertEqual(ledger.State.Cleared, item.state)
+
+        item.state = ledger.State.Pending
+        self.assertEqual(ledger.State.Pending, item.state)
+
+    def test_journalitem_lookup(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertIsNone(item.lookup(ledger.SymbolKind.FUNCTION, "unknown"))
+
+    def test_journalitem_valid(self):
+
+        item = ledger.JournalItem(ledger.OriginPost())
+        self.assertFalse(item.valid())
 
 if __name__ == '__main__':
     unittest.main()

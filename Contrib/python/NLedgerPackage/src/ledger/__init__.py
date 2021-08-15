@@ -1,4 +1,5 @@
-from typing import Iterable, List
+from typing import Iterable, List, Tuple
+import typing
 import ledger.conf
 from ledger.conf import clrRuntime
 from ledger.conf import ClrRuntime
@@ -74,7 +75,7 @@ from NLedger.Extensibility.Export import State as ExportedState
 from NLedger.Extensibility.Export import Mask as ExportedMask
 from NLedger.Extensibility.Export import Posting
 from NLedger.Extensibility.Export import PostingXData
-from NLedger.Extensibility.Export import SymbolKind
+from NLedger.Extensibility.Export import SymbolKind as ExportedSymbolKind
 from NLedger.Extensibility.Export import Session
 from NLedger.Extensibility.Export import SessionScopeAttributes
 from NLedger.Extensibility.Export import SortValue
@@ -176,7 +177,7 @@ from NLedger.Commodities import CommodityFlagsEnum
 from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 from NLedger.Accounts import Account as OriginAccount
-from NLedger.Scopus import SymbolKindEnum
+from NLedger.Scopus import SymbolKindEnum as SymbolKind
 from NLedger.Scopus import Scope as OriginScope
 from NLedger.Items import Item as OriginItem
 from NLedger.Values import ValueTypeEnum as ValueType
@@ -1112,6 +1113,123 @@ class JournalItem(Scope):
     @note.setter
     def note(self, val: str):
         self.origin.Note = val
+
+    @property
+    def pos(self) -> Position:
+        return Position(self.origin.Pos)
+
+    @pos.setter
+    def pos(self, val: Position):
+        self.origin.Pos = val.origin if not val is None else None
+
+    @property
+    def metadata(self) -> typing.Dict[str, Tuple]:
+        result = {}
+        data = self.origin.GetMetadata()
+        if not data is None:
+            for key_value in data:
+                result[key_value.Key] = (Value.to_value(key_value.Value.Value), bool(key_value.Value.IsParsed)) if not key_value.Value is None else None
+        return result
+
+    def copy_details(self, item: JournalItem):
+        assert isinstance(item, JournalItem)
+        self.origin.CopyDetails(item.origin)
+
+    def __eq__(self, o: object) -> bool:
+        if o is None:
+            return False
+        assert isinstance(o, JournalItem)
+        return self.origin == o.origin
+
+    def __ne__(self, o: object) -> bool:
+        if o is None:
+            return False
+        assert isinstance(o, JournalItem)
+        return self.origin != o.origin
+
+    def has_tag(self, tag, val = None) -> bool:
+        if isinstance(tag, str) and val is None:
+            return self.origin.HasTag(tag)
+        assert isinstance(tag, Mask)
+        if val is None:
+            return self.origin.HasTag(tag.origin)
+        assert isinstance(val, Mask)
+        return self.origin.HasTag(tag.origin, val.origin)
+
+    def get_tag(self, tag, val = None) -> 'Value':
+        if isinstance(tag, str) and val is None:
+            return Value.to_value(self.origin.GetTag(tag))
+        assert isinstance(tag, Mask)
+        if val is None:
+            return Value.to_value(self.origin.GetTag(tag.origin))
+        assert isinstance(val, Mask)
+        return Value.to_value(self.origin.GetTag(tag.origin, val.origin))
+
+    tag = get_tag
+
+    def set_tag(self, tag: str, val: 'Value' = None, overwrite_existing: bool = None):
+        if not overwrite_existing is None:
+            self.origin.SetTag(tag, Value.to_value(val).origin, overwrite_existing)
+        elif not val is None:
+            self.origin.SetTag(tag, Value.to_value(val).origin)
+        else:
+            self.origin.SetTag(tag)
+
+    def parse_tags(self, note: str, scope: Scope, overwrite_existing: bool = None):
+        assert isinstance(note, str)
+        assert isinstance(scope, Scope)
+        if overwrite_existing is None:
+            self.origin.ParseTags(note, scope.origin)
+        else:
+            assert isinstance(overwrite_existing, bool)
+            return self.origin.ParseTags(note, scope.origin, overwrite_existing)
+
+    def append_note(self, note: str, scope: Scope, overwrite_existing: bool = None):
+        assert isinstance(note, str)
+        assert isinstance(scope, Scope)
+        if overwrite_existing is None:
+            return self.origin.AppendNote(note, scope.origin)
+        else:
+            assert isinstance(overwrite_existing, bool)
+            return self.origin.AppendNote(note, scope.origin, overwrite_existing)
+
+    @classproperty
+    def use_aux_date(cls) -> bool:
+        return OriginItem.UseAuxDate
+
+    @use_aux_date.setter
+    def use_aux_date(cls, value: bool):
+        OriginItem.UseAuxDate = value
+
+    @property
+    def date(self) -> date:
+        return to_pdate(self.origin.GetDate())
+
+    @date.setter
+    def date(self, val: date):
+        self.origin.Date = to_ndate(val)
+
+    @property
+    def aux_date(self) -> date:
+        return to_pdate(self.origin.DateAux)
+
+    @aux_date.setter
+    def aux_date(self, val: date):
+        self.origin.DateAux = to_ndate(val)
+
+    @property
+    def state(self) -> date:
+        return self.origin.State
+
+    @state.setter
+    def state(self, val: State):
+        self.origin.State = val
+
+    def lookup(self, kind: SymbolKind, name: str):
+        return self.origin.Lookup(kind, name)
+
+    def valid(self):
+        return self.origin.Valid()
 
 # Posts
 
