@@ -964,7 +964,7 @@ class AnnotatedCommodityTests(unittest.TestCase):
         annotated_commodity = ledger.commodities.find_or_create("XYZ25", annotation)
         self.assertEqual(' (tag1)', annotated_commodity.write_annotations())
 
-class AccountCommodityTests(unittest.TestCase):
+class AccountTests(unittest.TestCase):
 
     def test_account_constructors(self):
         acc1 = ledger.Account()
@@ -1138,6 +1138,123 @@ class AccountCommodityTests(unittest.TestCase):
         self.assertEqual("account 1:account 2", str(res1))
 
         self.assertIsNone(acnt1.find_account_re("account 3"))
+
+# Posts
+
+class PostingXDataTests(unittest.TestCase):
+
+    def test_postingxdata_constructors(self):
+        pxd = ledger.PostingXData()
+        self.assertTrue(isinstance(pxd, ledger.PostingXData))
+        pxd = ledger.PostingXData(ledger.OriginPostXData())
+        self.assertTrue(isinstance(pxd, ledger.PostingXData))
+
+    def test_postingxdata_from_origin(self):
+        pxd = ledger.PostingXData.from_origin(None)
+        self.assertIsNone(pxd)
+
+        pxd = ledger.PostingXData.from_origin(ledger.OriginPostXData())
+        self.assertIsNotNone(pxd)
+        self.assertTrue(isinstance(pxd, ledger.PostingXData))
+
+    def test_postingxdata_flags(self):
+
+        pxd = ledger.PostingXData()
+        self.assertEqual(0, pxd.flags)
+        pxd.flags = ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC
+        self.assertEqual(ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC, pxd.flags)
+
+    def test_postingxdata_has_flags(self):
+
+        pxd = ledger.PostingXData()
+        pxd.flags = ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC
+
+        self.assertTrue(pxd.has_flags(ledger.POST_EXT_DISPLAYED))
+        self.assertTrue(pxd.has_flags(ledger.POST_EXT_SORT_CALC))
+        self.assertTrue(pxd.has_flags(ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC))
+        self.assertFalse(pxd.has_flags(ledger.POST_EXT_VISITED))
+
+    def test_postingxdata_clear_flags(self):
+
+        pxd = ledger.PostingXData()
+        pxd.flags = ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC
+
+        pxd.clear_flags()
+        self.assertEqual(0, pxd.flags)
+
+    def test_postingxdata_add_flags(self):
+
+        pxd = ledger.PostingXData()
+        pxd.flags = ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC
+
+        pxd.add_flags(ledger.POST_EXT_VISITED)
+        self.assertTrue(pxd.has_flags(ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_VISITED))
+
+    def test_postingxdata_drop_flags(self):
+
+        pxd = ledger.PostingXData()
+        pxd.flags = ledger.POST_EXT_DISPLAYED | ledger.POST_EXT_SORT_CALC
+
+        pxd.drop_flags(ledger.POST_EXT_DISPLAYED)
+        self.assertFalse(pxd.has_flags(ledger.POST_EXT_DISPLAYED))
+        self.assertTrue(pxd.has_flags(ledger.POST_EXT_SORT_CALC))
+
+    def test_postingxdata_visited_value(self):
+
+        pxd = ledger.PostingXData()
+        pxd.visited_value = ledger.Value(10)
+        self.assertEqual(ledger.Value(10), pxd.visited_value)
+        pxd.visited_value = None
+        self.assertEqual(None, pxd.visited_value)
+
+    def test_postingxdata_compound_value(self):
+
+        pxd = ledger.PostingXData()
+        pxd.compound_value = ledger.Value(10)
+        self.assertEqual(ledger.Value(10), pxd.compound_value)
+        pxd.compound_value = None
+        self.assertEqual(None, pxd.compound_value)
+
+    def test_postingxdata_total(self):
+
+        pxd = ledger.PostingXData()
+        pxd.total = ledger.Value(10)
+        self.assertEqual(ledger.Value(10), pxd.total)
+        pxd.total = None
+        self.assertEqual(None, pxd.total)
+
+    def test_postingxdata_count(self):
+
+        pxd = ledger.PostingXData()
+        pxd.count = 10
+        self.assertEqual(10, pxd.count)
+        pxd.count = 0
+        self.assertEqual(0, pxd.count)
+
+    def test_postingxdata_date(self):
+
+        pxd = ledger.PostingXData()
+        pxd.date = date(2021,5,22)
+        self.assertEqual(date(2021,5,22), pxd.date)
+        pxd.date = date(2021,5,25)
+        self.assertEqual(date(2021,5,25), pxd.date)
+
+    def test_postingxdata_datetime(self):
+
+        pxd = ledger.PostingXData()
+        pxd.datetime = datetime(2021,5,22, 22,25)
+        self.assertEqual(datetime(2021,5,22, 22,25), pxd.datetime)
+        pxd.datetime = datetime(2021,5,25)
+        self.assertEqual(datetime(2021,5,25), pxd.datetime)
+
+    def test_postingxdata_account(self):
+
+        acc = ledger.Account()
+        pxd = ledger.PostingXData()
+        pxd.account = acc
+        self.assertEqual(acc.origin, pxd.account.origin)
+        pxd.account = None
+        self.assertEqual(None, pxd.account)
 
 # Value tests
 

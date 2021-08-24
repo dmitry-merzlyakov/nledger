@@ -40,19 +40,7 @@ namespace NLedger.Extensibility.Export
         public Account account { get => Origin.Account; set => Origin.Account = value.Origin; }
         public IEnumerable<SortValue> sort_values => Origin?.SortValues?.Select(x => new SortValue(x)).ToList(); // [DM] Implemented as read-only
 
-        private static Lazy<FlagsConverter<NLedger.PostXData>> Flags = new Lazy<FlagsConverter<NLedger.PostXData>>(() =>
-        {
-            return new FlagsConverter<NLedger.PostXData>().
-                AddMapping(POST_EXT_RECEIVED, x => x.Received, (x, v) => x.Received = v).
-                AddMapping(POST_EXT_HANDLED, x => x.Handled, (x, v) => x.Handled = v).
-                AddMapping(POST_EXT_DISPLAYED, x => x.Displayed, (x, v) => x.Displayed = v).
-                AddMapping(POST_EXT_DIRECT_AMT, x => x.DirectAmt, (x, v) => x.DirectAmt = v).
-                AddMapping(POST_EXT_SORT_CALC, x => x.SortCalc, (x, v) => x.SortCalc = v).
-                AddMapping(POST_EXT_COMPOUND, x => x.Compound, (x, v) => x.Compound = v).
-                AddMapping(POST_EXT_VISITED, x => x.Visited, (x, v) => x.Visited = v).
-                AddMapping(POST_EXT_MATCHES, x => x.Matches, (x, v) => x.Matches = v).
-                AddMapping(POST_EXT_CONSIDERED, x => x.Considered, (x, v) => x.Considered = v);
-        }, true);
+        private static Lazy<FlagsConverter<NLedger.PostXData>> Flags = new Lazy<FlagsConverter<NLedger.PostXData>>(FlagsAdapter.PostXDataFlagsAdapter, true);
 
     }
 }

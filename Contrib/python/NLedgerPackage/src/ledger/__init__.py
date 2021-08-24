@@ -74,7 +74,7 @@ from NLedger.Extensibility.Export import JournalItem
 from NLedger.Extensibility.Export import State as ExportedState 
 from NLedger.Extensibility.Export import Mask as ExportedMask
 from NLedger.Extensibility.Export import Posting
-from NLedger.Extensibility.Export import PostingXData
+from NLedger.Extensibility.Export import PostingXData as ExportedPostingXData
 from NLedger.Extensibility.Export import SymbolKind as ExportedSymbolKind
 from NLedger.Extensibility.Export import Session
 from NLedger.Extensibility.Export import SessionScopeAttributes
@@ -127,15 +127,15 @@ POST_MUST_BALANCE = Posting.POST_MUST_BALANCE
 POST_CALCULATED = Posting.POST_CALCULATED
 POST_COST_CALCULATED = Posting.POST_COST_CALCULATED
 
-POST_EXT_RECEIVED = PostingXData.POST_EXT_RECEIVED
-POST_EXT_HANDLED = PostingXData.POST_EXT_HANDLED
-POST_EXT_DISPLAYED = PostingXData.POST_EXT_DISPLAYED
-POST_EXT_DIRECT_AMT = PostingXData.POST_EXT_DIRECT_AMT
-POST_EXT_SORT_CALC = PostingXData.POST_EXT_SORT_CALC
-POST_EXT_COMPOUND = PostingXData.POST_EXT_COMPOUND
-POST_EXT_VISITED = PostingXData.POST_EXT_VISITED
-POST_EXT_MATCHES = PostingXData.POST_EXT_MATCHES
-POST_EXT_CONSIDERED = PostingXData.POST_EXT_CONSIDERED
+POST_EXT_RECEIVED = ExportedPostingXData.POST_EXT_RECEIVED
+POST_EXT_HANDLED = ExportedPostingXData.POST_EXT_HANDLED
+POST_EXT_DISPLAYED = ExportedPostingXData.POST_EXT_DISPLAYED
+POST_EXT_DIRECT_AMT = ExportedPostingXData.POST_EXT_DIRECT_AMT
+POST_EXT_SORT_CALC = ExportedPostingXData.POST_EXT_SORT_CALC
+POST_EXT_COMPOUND = ExportedPostingXData.POST_EXT_COMPOUND
+POST_EXT_VISITED = ExportedPostingXData.POST_EXT_VISITED
+POST_EXT_MATCHES = ExportedPostingXData.POST_EXT_MATCHES
+POST_EXT_CONSIDERED = ExportedPostingXData.POST_EXT_CONSIDERED
 
 
 session = SessionScopeAttributes.session
@@ -187,6 +187,7 @@ from NLedger import Mask as OriginMask
 from NLedger.Items import ItemPosition as OriginItemPosition
 from NLedger.Items import ItemStateEnum as State
 from NLedger import Post as OriginPost
+from NLedger import PostXData as OriginPostXData
 from NLedger import SupportsFlagsEnum as OriginSupportsFlagsEnum
 
 
@@ -1233,16 +1234,111 @@ class JournalItem(Scope):
 
 # Posts
 
+class PostingXData:
+
+    origin = None
+    flags_adapter = FlagsAdapter.PostXDataFlagsAdapter()
+
+    def __init__(self, origin = None) -> None:
+        if origin is None:
+            self.origin = OriginPostXData()
+        else:
+            assert isinstance(origin, OriginPostXData)
+            self.origin = origin
+
+    @classmethod
+    def from_origin(cls, origin):
+        return PostingXData(origin=origin) if not origin is None else None
+
+    @property
+    def flags(self):
+        return self.flags_adapter.GetFlags(self.origin)
+
+    @flags.setter
+    def flags(self,value):
+        return self.flags_adapter.SetFlags(self.origin, value)
+
+    def has_flags(self,flag):
+        return self.flags_adapter.HasFlags(self.origin, flag)
+
+    def clear_flags(self):
+        return self.flags_adapter.ClearFlags(self.origin)
+
+    def add_flags(self,flag):
+        return self.flags_adapter.AddFlags(self.origin,flag)
+
+    def drop_flags(self,flag):
+        return self.flags_adapter.DropFlags(self.origin,flag)
+
+    @property
+    def visited_value(self) -> 'Value':
+        return Value.to_value(self.origin.VisitedValue)
+
+    @visited_value.setter
+    def visited_value(self, value: 'Value'):
+        self.origin.VisitedValue = value.origin if not value is None else None 
+
+    @property
+    def compound_value(self) -> 'Value':
+        return Value.to_value(self.origin.CompoundValue)
+
+    @compound_value.setter
+    def compound_value(self, value: 'Value'):
+        self.origin.CompoundValue = value.origin if not value is None else None 
+
+    @property
+    def total(self) -> 'Value':
+        return Value.to_value(self.origin.Total)
+
+    @total.setter
+    def total(self, value: 'Value'):
+        self.origin.Total = value.origin if not value is None else None 
+
+    @property
+    def count(self) -> 'int':
+        return self.origin.Count
+
+    @count.setter
+    def count(self, value: 'int'):
+        self.origin.Count = value
+
+    @property
+    def date(self) -> date:
+        return to_pdate(self.origin.Date)
+
+    @date.setter
+    def date(self, value: date):
+        self.origin.Date = to_ndate(value)
+
+    @property
+    def datetime(self) -> datetime:
+        return to_pdatetime(self.origin.Datetime)
+
+    @datetime.setter
+    def datetime(self, value: datetime):
+        self.origin.Datetime = to_ndatetime(value)
+
+    @property
+    def account(self) -> 'Account':
+        return Account.from_origin(self.origin.Account)
+
+    @account.setter
+    def account(self, value: 'Account'):
+        self.origin.Account = value.origin if not value is None else None 
+
+    # TBC
+
 class Posting(JournalItem):
 
     origin: None
 
-    def __init__(self) -> None:
-        raise Exception("Abstract class") 
+    def __init__(self, origin) -> None:
+        assert isinstance(origin, OriginPost)
+        super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
-        return Account(origin=origin) if not origin is None else None
+        return Posting(origin=origin) if not origin is None else None
 
     # TBC
 
