@@ -195,6 +195,7 @@ from NLedger import SupportsFlagsEnum as OriginSupportsFlagsEnum
 
 from datetime import datetime
 from datetime import date
+from collections.abc import MutableSequence
 
 from NLedger.Utility import Date
 from System import DateTime
@@ -263,27 +264,87 @@ def to_ndatetime(value) -> DateTime:
     else:
         raise Exception("Date value is expected")
 
-# Converts Python iterable to .Net List of Values
+# .Net List wrapper
 
-def to_nvaluelist(seq: Iterable) -> 'NetList[Value]':
-    target = NetList[OriginValue]()
-    for item in seq:
-        target.Add(Value.to_value(item).origin)
-    return target
+class NList(MutableSequence):
 
-# Converts .Net List of Values to Python Iterable
+    origin = None
+    nclass = None
 
-def to_pvaluelist(seq):
-    target = []
-    for item in seq:
-        target.append(Value.to_value(item))
-    return target
+    def __init__(self, origin = None) -> None:
+        super(NList, self).__init__()
+
+        self.nclass = self.get_nclass()
+        assert isinstance(self.nclass, type)
+
+        if origin is None:
+            self.origin = self.nclass()
+        elif isinstance(origin,Iterable):
+            self.origin = self.nclass()
+            for item in origin:
+                self.append(item)
+        else:
+            assert isinstance (origin, self.nclass)
+            self.origin = origin
+
+    def get_nclass(self) -> type:
+        raise Exception("This method should return .Net class for expected origin")
+
+    def to_nitem(self, item):
+        raise Exception("This method should convert a Python item to .Net item")
+
+    def to_pitem(self, item):
+        raise Exception("This method should convert a .Net item to Python item")
+
+    def __repr__(self):
+        return "<{0} {1}>".format(self.__class__.__name__, self.origin)
+
+    def __len__(self):
+        return self.origin.Count
+
+    def __getitem__(self, row):
+        item = self.origin[row] if row < self.origin.Count else None
+        return self.to_pitem(item) if not item is None else None
+
+    def __delitem__(self, row):
+        self.origin.RemoveAt(row)
+
+    def __setitem__(self, row, item):
+        item = self.to_nitem(item) if not item is None else None
+        self.origin[row] = item
+
+    def __str__(self):
+        return str(self.origin)
+
+    def insert(self, row, item):
+        item = self.to_nitem(item) if not item is None else None
+        self.origin.Insert(row, item)
+
+    def append(self, item):
+        item = self.to_nitem(item) if not item is None else None
+        self.origin.Add(item)
+
+# List of Values
+
+class ValueList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetList[OriginValue]
+
+    def to_nitem(self, item):
+        return Value.to_value(item).origin
+
+    def to_pitem(self, item):
+        return Value.to_value(item)
+
 
 # Amounts
 
 class Amount:
 
-    origin: None
+    origin = None
 
     def __init__(self,value,origin = None) -> None:
         if not (origin is None):
@@ -1439,7 +1500,7 @@ class Value:
             val = to_ndatetime(val)
         if isinstance(val, date):
             val = to_ndate(val)
-        if isinstance(val, Amount) or isinstance(val, Balance) or isinstance(val, Mask) or isinstance(val, Value):
+        if isinstance(val, Amount) or isinstance(val, Balance) or isinstance(val, Mask) or isinstance(val, Value) or isinstance(val, ValueList):
             val = val.origin
         if isinstance(val, OriginValue):
             self.origin = val
@@ -1658,7 +1719,7 @@ class Value:
         return self.origin.Type == ValueType.Sequence
 
     def set_sequence(self, val: Iterable):
-        self.origin.SetSequence(to_nvaluelist(val))
+        self.origin.SetSequence(ValueList(val).origin)
 
     def to_boolean(self) -> bool:
         return self.origin.AsBoolean
@@ -1689,7 +1750,7 @@ class Value:
         return Mask.from_origin(self.origin.AsMask)
 
     def to_sequence(self) -> Iterable:
-        return to_pvaluelist(self.origin.AsSequence)
+        return ValueList(self.origin.AsSequence)
 
     def __repr__(self) -> str:
         return self.origin.Dump()

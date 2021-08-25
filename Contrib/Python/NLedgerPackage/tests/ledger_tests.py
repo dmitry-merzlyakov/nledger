@@ -132,6 +132,95 @@ class LedgerModuleTests(unittest.TestCase):
         ndate = Date(2021, 5, 22)
         self.assertEqual(DateTime(2021, 5, 22), ledger.to_ndatetime(ndate))
 
+class ValueListTests(unittest.TestCase):
+
+    def test_valuelist_init_creates_new_collection(self):
+        vlist = ledger.ValueList()
+        self.assertIsInstance(vlist, ledger.ValueList)
+        self.assertIsInstance(vlist.origin, ledger.NetList[ledger.OriginValue])
+        self.assertEqual(0, len(vlist))
+
+    def test_valuelist_init_takes_sequence(self):
+        seq = (ledger.Value(5), ledger.Value(10), ledger.Value(15))
+        vlist = ledger.ValueList(seq)
+        self.assertIsInstance(vlist, ledger.ValueList)
+        self.assertIsInstance(vlist.origin, ledger.NetList[ledger.OriginValue])
+        self.assertEqual(3, len(vlist))
+
+    def test_valuelist_init_takes_dotnet_list(self):
+        nlist = ledger.NetList[ledger.OriginValue]()
+        nlist.Add(ledger.Value(5).origin)
+        nlist.Add(ledger.Value(10).origin)
+        vlist = ledger.ValueList(nlist)
+        self.assertIsInstance(vlist, ledger.ValueList)
+        self.assertIsInstance(vlist.origin, ledger.NetList[ledger.OriginValue])
+        self.assertEqual(2, len(vlist))
+
+    def test_valuelist_get_nclass_returns_net_type(self):
+        vlist = ledger.ValueList()
+        self.assertEqual(str(vlist.get_nclass()), str(ledger.NetList[ledger.OriginValue]))
+
+    def test_valuelist_to_nitem(self):
+        vlist = ledger.ValueList()
+        nval = vlist.to_nitem(ledger.Value(10))
+        self.assertIsInstance(nval, ledger.OriginValue)
+        self.assertEqual(10, nval.AsLong)
+
+    def test_valuelist_to_pitem(self):
+        vlist = ledger.ValueList()
+        pval = vlist.to_pitem(ledger.OriginValue(10))
+        self.assertIsInstance(pval, ledger.Value)
+        self.assertEqual(10, pval.to_long())
+
+    def test_valuelist_repr(self):
+        vlist = ledger.ValueList()
+        self.assertEqual("<ValueList System.Collections.Generic.List`1[NLedger.Values.Value]>", repr(vlist))
+
+    def test_valuelist_len(self):
+        vlist = ledger.ValueList()
+        self.assertEqual(0, len(vlist))
+        vlist.append(ledger.Value(10))
+        self.assertEqual(1, len(vlist))
+
+    def test_valuelist_getitem(self):
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        self.assertEqual(10, vlist[0].to_long())
+        self.assertEqual(20, vlist[1].to_long())
+
+    def test_valuelist_delitem(self):
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        vlist.pop(1)
+        vlist.pop(0)
+        self.assertEqual(0, len(vlist))
+
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        del vlist[1]
+        del vlist[0]
+        self.assertEqual(0, len(vlist))
+
+    def test_valuelist_setitem(self):
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        self.assertEqual(10, vlist[0].to_long())
+        vlist[0] = ledger.Value(30)
+        self.assertEqual(30, vlist[0].to_long())
+
+    def test_valuelist_str(self):
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        self.assertEqual("System.Collections.Generic.List`1[NLedger.Values.Value]", str(vlist))
+
+    def test_valuelist_insert(self):
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        vlist.insert(0, ledger.Value(30))
+        self.assertEqual(30, vlist[0].to_long())
+        self.assertEqual(10, vlist[1].to_long())
+        self.assertEqual(20, vlist[2].to_long())
+
+    def test_valuelist_append(self):
+        vlist = ledger.ValueList((ledger.Value(10), ledger.Value(20)))
+        vlist.append(ledger.Value(30))
+        self.assertEqual(10, vlist[0].to_long())
+        self.assertEqual(20, vlist[1].to_long())
+        self.assertEqual(30, vlist[2].to_long())
 
 # Commodities
 
@@ -1874,7 +1963,7 @@ class ValueTests(unittest.TestCase):
     def test_value_is_sequence(self):
 
         seq = (ledger.Value(1), ledger.Value(2), ledger.Value(3))
-        val = ledger.Value(ledger.to_nvaluelist(seq))
+        val = ledger.Value(ledger.ValueList(seq))
 
         self.assertTrue(val.is_sequence())
         self.assertFalse(ledger.Value(1).is_sequence())
