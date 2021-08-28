@@ -201,6 +201,8 @@ from NLedger.Utility import Date
 from System import DateTime
 from System.Globalization import DateTimeStyles
 from System.Collections.Generic import List as NetList
+from System import Tuple as NetTuple
+from NLedger.Extensibility.Export import ListAdapter as NetListAdapter
 
 from NLedger.Times import TimesCommon
 
@@ -331,13 +333,27 @@ class ValueList(NList):
         super().__init__(origin=origin)
 
     def get_nclass(self) -> type:
-        return NetList[OriginValue]
+        return NetListAdapter[OriginValue]
 
     def to_nitem(self, item):
         return Value.to_value(item).origin
 
     def to_pitem(self, item):
         return Value.to_value(item)
+
+class SortValueList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[NetTuple[OriginValue,bool]]
+
+    def to_nitem(self, item):
+        (value, inverted) = item
+        return NetTuple[OriginValue,bool](Value.to_value(value).origin,inverted)
+
+    def to_pitem(self, item):
+        return (Value.to_value(item.Item1), item.Item2)
 
 
 # Amounts
@@ -1387,7 +1403,9 @@ class PostingXData:
     def account(self, value: 'Account'):
         self.origin.Account = value.origin if not value is None else None 
 
-    # TBC
+    @property
+    def sort_values(self):
+        return SortValueList(NetListAdapter.GetPostXDataSortValues(self.origin))
 
 class Posting(JournalItem):
 
@@ -1500,9 +1518,12 @@ class Value:
             val = to_ndatetime(val)
         if isinstance(val, date):
             val = to_ndate(val)
-        if isinstance(val, Amount) or isinstance(val, Balance) or isinstance(val, Mask) or isinstance(val, Value) or isinstance(val, ValueList):
+        if isinstance(val, Amount) or isinstance(val, Balance) or isinstance(val, Mask) or isinstance(val, Value):
             val = val.origin
-        if isinstance(val, OriginValue):
+
+        if isinstance(val, ValueList):
+            self.origin = NetListAdapter.CreateValue(val.origin)
+        elif isinstance(val, OriginValue):
             self.origin = val
         else:
             self.origin = OriginValue(val)
@@ -1719,7 +1740,7 @@ class Value:
         return self.origin.Type == ValueType.Sequence
 
     def set_sequence(self, val: Iterable):
-        self.origin.SetSequence(ValueList(val).origin)
+        NetListAdapter.SetValueSequence(self.origin, ValueList(val).origin)
 
     def to_boolean(self) -> bool:
         return self.origin.AsBoolean
@@ -1750,7 +1771,7 @@ class Value:
         return Mask.from_origin(self.origin.AsMask)
 
     def to_sequence(self) -> Iterable:
-        return ValueList(self.origin.AsSequence)
+        return ValueList(NetListAdapter.GetValueSequence(self.origin))
 
     def __repr__(self) -> str:
         return self.origin.Dump()

@@ -137,14 +137,14 @@ class ValueListTests(unittest.TestCase):
     def test_valuelist_init_creates_new_collection(self):
         vlist = ledger.ValueList()
         self.assertIsInstance(vlist, ledger.ValueList)
-        self.assertIsInstance(vlist.origin, ledger.NetList[ledger.OriginValue])
+        self.assertIsInstance(vlist.origin, ledger.NetListAdapter[ledger.OriginValue])
         self.assertEqual(0, len(vlist))
 
     def test_valuelist_init_takes_sequence(self):
         seq = (ledger.Value(5), ledger.Value(10), ledger.Value(15))
         vlist = ledger.ValueList(seq)
         self.assertIsInstance(vlist, ledger.ValueList)
-        self.assertIsInstance(vlist.origin, ledger.NetList[ledger.OriginValue])
+        self.assertIsInstance(vlist.origin, ledger.NetListAdapter[ledger.OriginValue])
         self.assertEqual(3, len(vlist))
 
     def test_valuelist_init_takes_dotnet_list(self):
@@ -153,12 +153,12 @@ class ValueListTests(unittest.TestCase):
         nlist.Add(ledger.Value(10).origin)
         vlist = ledger.ValueList(nlist)
         self.assertIsInstance(vlist, ledger.ValueList)
-        self.assertIsInstance(vlist.origin, ledger.NetList[ledger.OriginValue])
+        self.assertIsInstance(vlist.origin, ledger.NetListAdapter[ledger.OriginValue])
         self.assertEqual(2, len(vlist))
 
     def test_valuelist_get_nclass_returns_net_type(self):
         vlist = ledger.ValueList()
-        self.assertEqual(str(vlist.get_nclass()), str(ledger.NetList[ledger.OriginValue]))
+        self.assertEqual(str(vlist.get_nclass()), str(ledger.NetListAdapter[ledger.OriginValue]))
 
     def test_valuelist_to_nitem(self):
         vlist = ledger.ValueList()
@@ -1345,6 +1345,17 @@ class PostingXDataTests(unittest.TestCase):
         pxd.account = None
         self.assertEqual(None, pxd.account)
 
+    def test_postingxdata_sort_values(self):
+
+        pxd = ledger.PostingXData()
+        sval = pxd.sort_values
+        sval.append((ledger.Value(10),True))
+        pxd.sort_values.append((ledger.Value(20),False))
+        self.assertEqual(2, len(pxd.sort_values))
+        self.assertEqual(10, pxd.sort_values[0][0].to_long())
+
+
+
 # Value tests
 
 class ValueTests(unittest.TestCase):
@@ -2035,6 +2046,13 @@ class ValueTests(unittest.TestCase):
         self.assertTrue(isinstance(seq, collections.abc.Iterable))
         self.assertEqual("A", seq[0].to_string())
         self.assertEqual(ledger.ValueType.String, seq[0].type())
+
+        seq = (ledger.Value(10),ledger.Value(20))
+        val = ledger.Value(ledger.ValueList(seq))
+        self.assertEqual(2, len(val.to_sequence()))
+        val.to_sequence().append(ledger.Value(30))
+        self.assertEqual(3, len(val.to_sequence()))
+
 
     def test_value_repr(self):
 
