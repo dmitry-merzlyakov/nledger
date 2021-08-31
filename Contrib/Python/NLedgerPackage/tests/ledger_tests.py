@@ -1354,7 +1354,45 @@ class PostingXDataTests(unittest.TestCase):
         self.assertEqual(2, len(pxd.sort_values))
         self.assertEqual(10, pxd.sort_values[0][0].to_long())
 
+class PostingTests(unittest.TestCase):
 
+    def test_posting_constructors(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertTrue(isinstance(pst, ledger.Posting))
+
+    def test_posting_from_origin(self):
+        pst = ledger.Posting.from_origin(None)
+        self.assertIsNone(pst)
+
+        pst = ledger.Posting.from_origin(ledger.OriginPost())
+        self.assertIsNotNone(pst)
+        self.assertTrue(isinstance(pst, ledger.Posting))
+
+    def test_posting_id(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertEqual("0", pst.id())
+
+    def test_posting_seq(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertEqual(0, pst.seq())
+
+    def test_posting_xact(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNone(pst.xact)
+
+        trx = ledger.Transaction()
+        pst.xact = trx
+        self.assertIsInstance(pst.xact, ledger.Transaction)
+        self.assertEqual(pst.xact.origin, trx.origin)
+
+    def test_posting_account(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNone(pst.account)
+
+        acc = ledger.Account()
+        pst.account = acc
+        self.assertIsInstance(pst.account, ledger.Account)
+        self.assertEqual(pst.account.origin, acc.origin)
 
 # Value tests
 

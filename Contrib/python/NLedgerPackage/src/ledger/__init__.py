@@ -73,14 +73,14 @@ from NLedger.Extensibility.Export import Journal
 from NLedger.Extensibility.Export import JournalItem
 from NLedger.Extensibility.Export import State as ExportedState 
 from NLedger.Extensibility.Export import Mask as ExportedMask
-from NLedger.Extensibility.Export import Posting
+from NLedger.Extensibility.Export import Posting as ExportedPosting
 from NLedger.Extensibility.Export import PostingXData as ExportedPostingXData
 from NLedger.Extensibility.Export import SymbolKind as ExportedSymbolKind
 from NLedger.Extensibility.Export import Session
 from NLedger.Extensibility.Export import SessionScopeAttributes
 from NLedger.Extensibility.Export import SortValue
 from NLedger.Extensibility.Export import Times
-from NLedger.Extensibility.Export import Transaction
+from NLedger.Extensibility.Export import Transaction as ExportedTransaction
 from NLedger.Extensibility.Export import AutomatedTransaction
 from NLedger.Extensibility.Export import PeriodicTransaction
 
@@ -122,10 +122,10 @@ ITEM_NORMAL = JournalItem.ITEM_NORMAL
 ITEM_GENERATED = JournalItem.ITEM_GENERATED
 ITEM_TEMP = JournalItem.ITEM_TEMP
 
-POST_VIRTUAL = Posting.POST_VIRTUAL
-POST_MUST_BALANCE = Posting.POST_MUST_BALANCE
-POST_CALCULATED = Posting.POST_CALCULATED
-POST_COST_CALCULATED = Posting.POST_COST_CALCULATED
+POST_VIRTUAL = ExportedPosting.POST_VIRTUAL
+POST_MUST_BALANCE = ExportedPosting.POST_MUST_BALANCE
+POST_CALCULATED = ExportedPosting.POST_CALCULATED
+POST_COST_CALCULATED = ExportedPosting.POST_COST_CALCULATED
 
 POST_EXT_RECEIVED = ExportedPostingXData.POST_EXT_RECEIVED
 POST_EXT_HANDLED = ExportedPostingXData.POST_EXT_HANDLED
@@ -189,6 +189,10 @@ from NLedger.Items import ItemStateEnum as State
 from NLedger import Post as OriginPost
 from NLedger import PostXData as OriginPostXData
 from NLedger import SupportsFlagsEnum as OriginSupportsFlagsEnum
+from NLedger.Xacts import XactBase as OriginXactBase
+from NLedger.Xacts import Xact as OriginXact
+from NLedger.Xacts import PeriodXact as OriginPeriodXact
+from NLedger.Xacts import AutoXact as OriginAutoXact
 
 
 # Manage date conversions
@@ -1082,7 +1086,7 @@ class Account:
 
 class Scope:
 
-    origin: None
+    origin = None
 
     def __init__(self,origin) -> None:
         assert isinstance(origin, OriginScope)
@@ -1409,8 +1413,6 @@ class PostingXData:
 
 class Posting(JournalItem):
 
-    origin: None
-
     def __init__(self, origin) -> None:
         assert isinstance(origin, OriginPost)
         super().__init__(origin)
@@ -1419,59 +1421,88 @@ class Posting(JournalItem):
     def from_origin(cls, origin):
         return Posting(origin=origin) if not origin is None else None
 
+    def id(self) -> str:
+        return self.origin.Id
+
+    def seq(self) -> int:
+        return self.origin.Seq
+
+    @property
+    def xact(self) -> 'Transaction':
+        return Transaction.from_origin(self.origin.Xact)
+
+    @xact.setter
+    def xact(self, trx: 'Transaction'):
+        self.origin.Xact = trx.origin if not trx is None else None
+
+    @property
+    def account(self) -> 'Account':
+        return Account.from_origin(self.origin.Account)
+
+    @account.setter
+    def account(self, acc: 'Account'):
+        self.origin.Account = acc.origin if not acc is None else None
+
     # TBC
 
 # Transactions
 
 class TransactionBase(JournalItem):
 
-    origin: None
-
-    def __init__(self) -> None:
-        raise Exception("Abstract class") 
+    def __init__(self, origin) -> None:
+        assert isinstance(origin, OriginXactBase)
+        super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
-        return Account(origin=origin) if not origin is None else None
+        if origin is None:
+            return None
+        if isinstance(origin, OriginXact):
+            return Transaction(origin=origin)
+        if isinstance(origin, OriginPeriodXact):
+            return PeriodicTransaction(origin=origin)
+        if isinstance(origin, OriginAutoXact):
+            return AutomatedTransaction(origin=origin)
+        raise Exception("Incorrect origin for transaction base")
 
     # TBC
 
 class Transaction(TransactionBase):
 
-    origin: None
-
-    def __init__(self) -> None:
-        raise Exception("Abstract class") 
+    def __init__(self, origin = None) -> None:
+        if not origin is None:
+            assert isinstance(origin, OriginXact)
+        else:
+            origin = OriginXact()
+        super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
-        return Account(origin=origin) if not origin is None else None
+        return Transaction(origin=origin) if not origin is None else None
 
     # TBC
 
 class PeriodicTransaction(TransactionBase):
 
-    origin: None
-
-    def __init__(self) -> None:
-        raise Exception("Abstract class") 
+    def __init__(self, origin) -> None:
+        assert isinstance(origin, OriginPeriodXact)
+        super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
-        return Account(origin=origin) if not origin is None else None
+        return PeriodicTransaction(origin=origin) if not origin is None else None
 
     # TBC
 
 class AutomatedTransaction(TransactionBase):
 
-    origin: None
-
-    def __init__(self) -> None:
-        raise Exception("Abstract class") 
+    def __init__(self, origin) -> None:
+        assert isinstance(origin, OriginAutoXact)
+        super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
-        return Account(origin=origin) if not origin is None else None
+        return AutomatedTransaction(origin=origin) if not origin is None else None
 
     # TBC
 
