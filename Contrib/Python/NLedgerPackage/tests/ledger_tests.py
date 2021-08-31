@@ -1385,6 +1385,9 @@ class PostingTests(unittest.TestCase):
         self.assertIsInstance(pst.xact, ledger.Transaction)
         self.assertEqual(pst.xact.origin, trx.origin)
 
+        pst.xact = None
+        self.assertIsNone(pst.xact)
+
     def test_posting_account(self):
         pst = ledger.Posting(ledger.OriginPost())
         self.assertIsNone(pst.account)
@@ -1393,6 +1396,140 @@ class PostingTests(unittest.TestCase):
         pst.account = acc
         self.assertIsInstance(pst.account, ledger.Account)
         self.assertEqual(pst.account.origin, acc.origin)
+
+        pst.account = None
+        self.assertIsNone(pst.account)
+
+    def test_posting_amount(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNone(pst.amount)
+
+        amt = ledger.Amount(10)
+        pst.amount = amt
+        self.assertIsInstance(pst.amount, ledger.Amount)
+        self.assertEqual(pst.amount, amt)
+
+        pst.amount = None
+        self.assertIsNone(pst.amount)
+
+    def test_posting_cost(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNone(pst.cost)
+
+        amt = ledger.Amount(10)
+        pst.cost = amt
+        self.assertIsInstance(pst.cost, ledger.Amount)
+        self.assertEqual(pst.cost, amt)
+
+        pst.cost = None
+        self.assertIsNone(pst.cost)
+
+    def test_posting_given_cost(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNone(pst.given_cost)
+
+        amt = ledger.Amount(10)
+        pst.given_cost = amt
+        self.assertIsInstance(pst.given_cost, ledger.Amount)
+        self.assertEqual(pst.given_cost, amt)
+
+        pst.given_cost = None
+        self.assertIsNone(pst.given_cost)
+
+    def test_posting_assigned_amount(self):
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNone(pst.assigned_amount)
+
+        amt = ledger.Amount(10)
+        pst.assigned_amount = amt
+        self.assertIsInstance(pst.assigned_amount, ledger.Amount)
+        self.assertEqual(pst.assigned_amount, amt)
+
+        pst.assigned_amount = None
+        self.assertIsNone(pst.assigned_amount)
+
+    def test_posting_has_tag(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+        pst.set_tag("tag-1")
+
+        self.assertTrue(pst.has_tag("tag-1"))
+        self.assertFalse(pst.has_tag("tag-2"))
+
+        self.assertTrue(pst.has_tag(ledger.Mask("tag-1")))
+        self.assertFalse(pst.has_tag(ledger.Mask("tag-2")))
+
+        pst.set_tag("tag-2", ledger.string_value("some-value"))
+        self.assertFalse(pst.has_tag(ledger.Mask("tag-1"), ledger.Mask("some-value")))
+        self.assertTrue(pst.has_tag(ledger.Mask("tag-2"), ledger.Mask("some-value")))
+        self.assertFalse(pst.has_tag(ledger.Mask("tag-2"), ledger.Mask("unknown-value")))
+
+    def test_posting_get_tag(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+
+        pst.set_tag("tag-1")
+        self.assertFalse(bool(pst.get_tag("tag-1")))
+
+        pst.set_tag("tag-2", ledger.string_value("some-value"))
+        self.assertEqual("some-value", str(pst.get_tag("tag-2")))
+        self.assertEqual("some-value", str(pst.get_tag(ledger.Mask("tag-2"))))
+        self.assertEqual("some-value", str(pst.get_tag(ledger.Mask("tag-2"), ledger.Mask("some-value"))))
+        self.assertFalse(bool(pst.get_tag(ledger.Mask("tag-2"), ledger.Mask("unknown-value"))))
+
+    def test_posting_date(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+        dt = date(2021, 5, 12)
+
+        pst.date = dt
+        self.assertEqual(dt, pst.date)
+
+    def test_posting_aux_date(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+        dt = date(2021, 5, 15)
+
+        pst.aux_date = dt
+        self.assertEqual(dt, pst.aux_date)
+
+    def test_posting_must_balance(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertTrue(pst.must_balance())
+
+    def test_posting_has_xdata(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertFalse(pst.has_xdata())
+
+        self.assertIsNotNone(pst.xdata())
+        self.assertTrue(pst.has_xdata())
+
+    def test_posting_clear_xdata(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+
+        self.assertIsNotNone(pst.xdata())
+        self.assertTrue(pst.has_xdata())
+
+        pst.clear_xdata()
+        self.assertFalse(pst.has_xdata())
+
+    def test_posting_xdata(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+        self.assertIsNotNone(pst.xdata())
+        self.assertIsInstance(pst.xdata(), ledger.PostingXData)
+
+    def test_posting_reported_account(self):
+
+        pst = ledger.Posting(ledger.OriginPost())
+
+        acc = ledger.Account(None, "acc-name")
+        pst.set_reported_account(acc)
+        self.assertIsInstance(pst.reported_account(), ledger.Account)
+        self.assertEqual("acc-name", pst.reported_account().name)
 
 # Value tests
 

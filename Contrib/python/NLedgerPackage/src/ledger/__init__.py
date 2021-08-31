@@ -1443,7 +1443,55 @@ class Posting(JournalItem):
     def account(self, acc: 'Account'):
         self.origin.Account = acc.origin if not acc is None else None
 
-    # TBC
+    @property
+    def amount(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Amount)
+
+    @amount.setter
+    def amount(self, amt: 'Amount'):
+        self.origin.Amount = amt.origin if not amt is None else None
+
+    @property
+    def cost(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Cost)
+
+    @cost.setter
+    def cost(self, amt: 'Amount'):
+        self.origin.Cost = amt.origin if not amt is None else None
+
+    @property
+    def given_cost(self) -> 'Amount':
+        return Amount.from_origin(self.origin.GivenCost)
+
+    @given_cost.setter
+    def given_cost(self, amt: 'Amount'):
+        self.origin.GivenCost = amt.origin if not amt is None else None
+
+    @property
+    def assigned_amount(self) -> 'Amount':
+        return Amount.from_origin(self.origin.AssignedAmount)
+
+    @assigned_amount.setter
+    def assigned_amount(self, amt: 'Amount'):
+        self.origin.AssignedAmount = amt.origin if not amt is None else None
+
+    def must_balance(self) -> bool:
+        return self.origin.MustBalance
+
+    def has_xdata(self) -> bool:
+        return self.origin.HasXData
+
+    def clear_xdata(self):
+        self.origin.ClearXData()
+
+    def xdata(self) -> PostingXData:
+        return PostingXData.from_origin(self.origin.XData)
+
+    def reported_account(self) -> Account:
+        return Account.from_origin(self.origin.ReportedAccount)
+
+    def set_reported_account(self, acc: Account):
+        self.origin.ReportedAccount = acc.origin if not acc is None else None
 
 # Transactions
 
