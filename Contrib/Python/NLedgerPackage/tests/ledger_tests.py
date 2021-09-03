@@ -2449,6 +2449,65 @@ class TransactionBaseTests(unittest.TestCase):
         for item in tbase:
             self.assertIsInstance(item, ledger.Posting)        
 
+class TransactionTests(unittest.TestCase):
+
+    def test_transaction_constructor(self):
+        trx = ledger.Transaction(ledger.OriginXact())
+        self.assertIsInstance(trx, ledger.Transaction)
+
+    def test_transaction_from_origin(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertIsInstance(trx, ledger.Transaction)
+
+        trx = ledger.Transaction.from_origin(None)
+        self.assertIsNone(trx)
+
+    def test_transaction_id(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertEqual("0", trx.id())
+
+    def test_transaction_seq(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertEqual(0, trx.seq())
+
+    def test_transaction_code(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertIsNone(trx.code)
+
+        trx.code = "code"
+        self.assertEqual("code", trx.code)
+
+        trx.code = None
+        self.assertIsNone(trx.code)
+
+    def test_transaction_payee(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertIsNone(trx.payee)
+
+        trx.payee = "payee"
+        self.assertEqual("payee", trx.payee)
+
+        trx.payee = None
+        self.assertIsNone(trx.payee)
+
+    def test_transaction_magnitude(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        magnitude = trx.magnitude()
+        self.assertIsInstance(magnitude, ledger.Value)
+        self.assertEqual(0, magnitude)
+
+    def test_transaction_has_xdata(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertFalse(trx.has_xdata())
+
+    def test_transaction_clear_xdata(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        trx.clear_xdata()
+        self.assertFalse(trx.has_xdata())
+
+    def test_transaction_str(self):
+        trx = ledger.Transaction.from_origin(ledger.OriginXact())
+        self.assertEqual("", str(trx))
 
 # Amount tests
 

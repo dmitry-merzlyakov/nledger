@@ -1580,7 +1580,39 @@ class Transaction(TransactionBase):
     def from_origin(cls, origin):
         return Transaction(origin=origin) if not origin is None else None
 
-    # TBC
+    def id(self) -> str:
+        return self.origin.Id
+
+    def seq(self) -> int:
+        return self.origin.Seq
+
+    @property
+    def code(self) -> str:
+        return self.origin.Code
+
+    @code.setter
+    def code(self, value: str):
+        self.origin.Code = value
+
+    @property
+    def payee(self) -> str:
+        return self.origin.Payee
+
+    @payee.setter
+    def payee(self, value: str):
+        self.origin.Payee = value
+
+    def magnitude(self) -> 'Value':
+        return Value.to_value(self.origin.Magnitude())
+
+    def has_xdata(self) -> bool:
+        return self.origin.HasXData
+
+    def clear_xdata(self):
+        self.origin.ClearXData()
+
+    def __str__(self) -> str:
+        return ""  # See py_xact.cc, py_xact_to_string, jww (2012-03-01)
 
 class PeriodicTransaction(TransactionBase):
 
