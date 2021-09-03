@@ -177,6 +177,7 @@ from NLedger.Commodities import CommodityFlagsEnum
 from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 from NLedger.Accounts import Account as OriginAccount
+from NLedger.Accounts import AccountXDataDetails as OriginAccountXDataDetails
 from NLedger.Scopus import SymbolKindEnum as SymbolKind
 from NLedger.Scopus import Scope as OriginScope
 from NLedger.Items import Item as OriginItem
@@ -1026,9 +1027,103 @@ class AnnotatedCommodity(Commodity):
 
 # Accounts
 
+class AccountXDataDetails:
+
+    origin = None
+
+    def __init__(self, origin = None) -> None:
+        if not(origin is None):
+            assert isinstance(origin, OriginAccountXDataDetails)
+            self.origin = origin
+        else:
+            self.origin = OriginAccountXDataDetails()
+
+    @classmethod
+    def from_origin(cls, origin):
+        return AccountXDataDetails(origin=origin) if not origin is None else None
+
+    @property
+    def total(self) -> 'Value':
+        return Value.to_value(self.origin.Total)
+
+    @property
+    def real_total(self) -> 'Value':
+        return Value.to_value(self.origin.RealTotal)
+
+    @property
+    def calculated(self) -> bool:
+        return self.origin.Calculated
+
+    @property
+    def gathered(self) -> bool:
+        return self.origin.Gathered
+
+    @property
+    def posts_count(self) -> int:
+        return self.origin.PostsCount
+
+    @property
+    def posts_virtuals_count(self) -> int:
+        return self.origin.PostsVirtualsCount
+
+    @property
+    def posts_cleared_count(self) -> int:
+        return self.origin.PostsClearedCount
+
+    @property
+    def posts_last_7_count(self) -> int:
+        return self.origin.PostsLast7Count
+
+    @property
+    def posts_last_30_count(self) -> int:
+        return self.origin.PostsLast30Count
+
+    @property
+    def posts_this_month_count(self) -> int:
+        return self.origin.PostsThisMountCount
+
+    @property
+    def earliest_post(self) -> date:
+        return to_pdate(self.origin.EarliestPost)
+
+    @property
+    def earliest_cleared_post(self) -> date:
+        return to_pdate(self.origin.EarliestClearedPost)
+
+    @property
+    def latest_post(self) -> date:
+        return to_pdate(self.origin.LatestPost)
+
+    @property
+    def latest_cleared_post(self) -> date:
+        return to_pdate(self.origin.LatestClearedPost)
+
+    @property
+    def filenames(self) -> Iterable:
+        return list(self.origin.Filenames)
+
+    @property
+    def accounts_referenced(self) -> Iterable:
+        return list(self.origin.AccountsReferenced)
+
+    @property
+    def payees_referenced(self) -> Iterable:
+        return list(self.origin.PayeesReferenced)
+
+    def __iadd__(self, o: object) -> 'Value':
+        assert isinstance(o, AccountXDataDetails)
+        self.origin.Add(o.origin)
+        return self
+
+    def update(self, post: 'Posting', gather_all: bool = None):
+        if gather_all is None:
+            self.origin.Update(post.origin)
+        else:
+            self.origin.Update(post.origin, gather_all)
+
 class Account:
 
-    origin: None
+    origin = None
     flags_adapter = FlagsAdapter.AccountFlagsAdapter()
 
     def __init__(self, parent: 'Account' = None, name: str = None, note: str = None, origin = None) -> None:

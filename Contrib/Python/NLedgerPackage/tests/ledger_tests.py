@@ -39,7 +39,7 @@ print("Found path to NLedger Python dll: " + nledger_dll_path)
 # Import ledger. Note: it is important to add path to source code to the first position to override already installed module
 sys.path.insert(0, ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '..', 'src'))
 import ledger
-from ledger import Amount, Position, TransactionBase
+from ledger import Amount, Position, TransactionBase, Value
 print("Module ledger is properly imported")
 
 from datetime import datetime
@@ -1052,6 +1052,210 @@ class AnnotatedCommodityTests(unittest.TestCase):
         annotation = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
         annotated_commodity = ledger.commodities.find_or_create("XYZ25", annotation)
         self.assertEqual(' (tag1)', annotated_commodity.write_annotations())
+
+class AccountXDataDetailsTests(unittest.TestCase):
+
+    def test_accountxdata_constructor(self):
+        xdata = ledger.AccountXDataDetails(ledger.OriginAccountXDataDetails())
+        self.assertIsInstance(xdata, ledger.AccountXDataDetails)
+
+    def test_accountxdata_from_origin(self):
+        xdata = ledger.AccountXDataDetails.from_origin(ledger.OriginAccountXDataDetails())
+        self.assertIsInstance(xdata, ledger.AccountXDataDetails)
+
+        xdata = ledger.AccountXDataDetails.from_origin(None)
+        self.assertIsNone(xdata)
+        
+    def test_accountxdata_total(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertIsInstance(xdata.total, ledger.Value)
+        self.assertTrue(xdata.total.is_zero())
+
+    def test_accountxdata_real_total(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertIsNone(xdata.real_total)
+
+    def test_accountxdata_calculated(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertFalse(xdata.calculated)
+
+    def test_accountxdata_gathered(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertFalse(xdata.gathered)
+
+    def test_accountxdata_posts_count(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, xdata.posts_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(1, xdata.posts_count)
+
+    def test_accountxdata_posts_virtuals_count(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, xdata.posts_virtuals_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(0, xdata.posts_virtuals_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.add_flags(ledger.POST_VIRTUAL)
+        xdata.update(post)
+        self.assertEqual(1, xdata.posts_virtuals_count)
+
+    def test_accountxdata_posts_cleared_count(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, xdata.posts_cleared_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(0, xdata.posts_cleared_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.state = ledger.State.Cleared
+        xdata.update(post)
+        self.assertEqual(1, xdata.posts_cleared_count)
+
+    def test_accountxdata_posts_last_7_count(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, xdata.posts_last_7_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(1, xdata.posts_last_7_count)
+
+    def test_accountxdata_posts_last_30_count(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, xdata.posts_last_30_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(1, xdata.posts_last_30_count)
+
+    def test_accountxdata_posts_this_month_count(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, xdata.posts_this_month_count)
+
+    def test_accountxdata_earliest_post(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(date(1,1,1), xdata.earliest_post)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(post.date, xdata.earliest_post)
+
+    def test_accountxdata_earliest_cleared_post(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(date(1,1,1), xdata.earliest_cleared_post)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.state = ledger.State.Cleared
+        xdata.update(post)
+        self.assertEqual(post.date, xdata.earliest_cleared_post)
+
+    def test_accountxdata_latest_post(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(date(1,1,1), xdata.latest_post)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(post.date, xdata.latest_post)
+
+    def test_accountxdata_latest_cleared_post(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(date(1,1,1), xdata.latest_cleared_post)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.state = ledger.State.Cleared
+        xdata.update(post)
+        self.assertEqual(post.date, xdata.latest_cleared_post)
+
+    def test_accountxdata_filenames(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, len(xdata.filenames))
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.pos = ledger.Position()
+        post.pos.pathname = "file-name"
+        post.account = ledger.Account(None, "account-name")
+        post.set_tag("Payee", ledger.string_value("payee-name"))
+        xdata.update(post, True)
+
+        self.assertEqual(1, len(xdata.filenames))
+        self.assertEqual("file-name", xdata.filenames[0])
+
+    def test_accountxdata_accounts_referenced(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, len(xdata.accounts_referenced))
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.pos = ledger.Position()
+        post.pos.pathname = "file-name"
+        post.account = ledger.Account(None, "account-name")
+        post.set_tag("Payee", ledger.string_value("payee-name"))
+        xdata.update(post, True)
+
+        self.assertEqual(1, len(xdata.accounts_referenced))
+        self.assertEqual("account-name", xdata.accounts_referenced[0])
+
+    def test_accountxdata_payees_referenced(self):
+        xdata = ledger.AccountXDataDetails()
+        self.assertEqual(0, len(xdata.payees_referenced))
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.pos = ledger.Position()
+        post.pos.pathname = "file-name"
+        post.account = ledger.Account(None, "account-name")
+        post.set_tag("Payee", ledger.string_value("payee-name"))
+        xdata.update(post, True)
+
+        self.assertEqual(1, len(xdata.payees_referenced))
+        self.assertEqual("payee-name", xdata.payees_referenced[0])
+
+    def test_accountxdata_iadd(self):
+        xdata1 = ledger.AccountXDataDetails()
+        xdata2 = ledger.AccountXDataDetails()
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata1.update(post)
+        xdata2.update(post)
+
+        xdata1 += xdata2
+        self.assertEqual(2, xdata1.posts_count)
+        self.assertEqual(1, xdata2.posts_count)
+
+    def test_accountxdata_update(self):
+        xdata = ledger.AccountXDataDetails()
+
+        post = ledger.Posting()
+        post.date = date.today()
+        xdata.update(post)
+        self.assertEqual(1, xdata.posts_count)
+
+        post = ledger.Posting()
+        post.date = date.today()
+        post.pos = ledger.Position()
+        post.pos.pathname = "file-name"
+        post.account = ledger.Account(None, "account-name")
+        post.set_tag("Payee", ledger.string_value("payee-name"))
+        xdata.update(post, True)
+        self.assertEqual(2, xdata.posts_count)
 
 class AccountTests(unittest.TestCase):
 
