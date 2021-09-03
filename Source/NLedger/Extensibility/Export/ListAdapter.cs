@@ -36,5 +36,6 @@ namespace NLedger.Extensibility.Export
         public static ListAdapter<Values.Value> GetValueSequence(Values.Value value) => new ListAdapter<Values.Value>(value?.AsSequence);
         public static void SetValueSequence(Values.Value value, ListAdapter<Values.Value> sequence) => value?.SetSequence(sequence?.Origin);
         public static Values.Value CreateValue(ListAdapter<Values.Value> sequence) => new Values.Value(sequence.Origin);
+        public static ListAdapter<Post> GetPosts(Xacts.XactBase xact) => new ListAdapter<Post>(xact?.Posts);
     }
 }

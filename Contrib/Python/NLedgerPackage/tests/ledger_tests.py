@@ -1,6 +1,6 @@
 # NLedger Python Extensibility module tests (ledger)
 
-from typing import Tuple
+from typing import Iterable, Tuple
 import unittest
 import ntpath
 import os
@@ -2359,6 +2359,96 @@ class ValueTests(unittest.TestCase):
     def test_NULL_VALUE(self):
 
         self.assertEqual(ledger.ValueType.Void, ledger.NULL_VALUE.type())
+
+# Transactions
+
+class TransactionBaseTests(unittest.TestCase):
+
+    def test_transactionbase_constructor(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        self.assertIsInstance(tbase, ledger.TransactionBase)
+
+    def test_transactionbase_from_origin(self):
+        tbase = ledger.TransactionBase.from_origin(ledger.OriginXact())
+        self.assertIsInstance(tbase, ledger.TransactionBase)
+
+        tbase = ledger.TransactionBase.from_origin(None)
+        self.assertIsNone(tbase)
+
+    def test_transactionbase_journal(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        self.assertIsNone(tbase.journal)
+
+        tbase.journal = ledger.Journal()
+        self.assertIsInstance(tbase.journal, ledger.Journal)
+
+        tbase.journal = None
+        self.assertIsNone(tbase.journal)
+
+    def test_transactionbase_len(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        self.assertEqual(0, len(tbase))
+
+        tbase.add_post(ledger.Posting())
+        self.assertEqual(1, len(tbase))
+
+    def test_transactionbase_getitem(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        post = ledger.Posting()
+
+        tbase.add_post(post)
+        self.assertEqual(post, tbase[0])
+        self.assertIsInstance(tbase[0], ledger.Posting)
+
+    def test_transactionbase_add_post(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        tbase.add_post(ledger.Posting())
+        tbase.add_post(ledger.Posting())
+        self.assertEqual(2, len(tbase))
+
+    def test_transactionbase_remove_post(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        post1 = ledger.Posting()
+        post2 = ledger.Posting()
+
+        tbase.add_post(post1)
+        tbase.add_post(post2)
+        self.assertEqual(2, len(tbase))
+        self.assertTrue(tbase.remove_post(post1))
+        self.assertEqual(1, len(tbase))
+        self.assertTrue(tbase.remove_post(post2))
+        self.assertEqual(0, len(tbase))
+        self.assertTrue(tbase.remove_post(post2))
+
+    def test_transactionbase_finalize(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        self.assertFalse(tbase.finalize())
+
+    def test_transactionbase_valid(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        self.assertFalse(tbase.valid())
+
+    def test_transactionbase_posts(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        tbase.add_post(ledger.Posting())
+        tbase.add_post(ledger.Posting())
+
+        posts = tbase.posts()
+        self.assertIsInstance(posts, Iterable)
+        self.assertEqual(2, len(posts))
+        for item in posts:
+            self.assertIsInstance(item, ledger.Posting)        
+    
+    def test_transactionbase_iter(self):
+        tbase = ledger.TransactionBase(ledger.OriginXact())
+        tbase.add_post(ledger.Posting())
+        tbase.add_post(ledger.Posting())
+
+        self.assertIsInstance(tbase, Iterable)
+        self.assertEqual(2, len(tbase))
+        for item in tbase:
+            self.assertIsInstance(item, ledger.Posting)        
+
 
 # Amount tests
 

@@ -193,6 +193,7 @@ from NLedger.Xacts import XactBase as OriginXactBase
 from NLedger.Xacts import Xact as OriginXact
 from NLedger.Xacts import PeriodXact as OriginPeriodXact
 from NLedger.Xacts import AutoXact as OriginAutoXact
+from NLedger.Journals import Journal as OriginJournal
 
 
 # Manage date conversions
@@ -305,8 +306,14 @@ class NList(MutableSequence):
     def __repr__(self):
         return "<{0} {1}>".format(self.__class__.__name__, self.origin)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.origin.Count
+
+    def __iter__(self):
+        lst = []
+        for index in range(len(self)):
+            lst.append(self.to_pitem(self.origin[index]))
+        return iter(lst)
 
     def __getitem__(self, row):
         item = self.origin[row] if row < self.origin.Count else None
@@ -359,6 +366,18 @@ class SortValueList(NList):
     def to_pitem(self, item):
         return (Value.to_value(item.Item1), item.Item2)
 
+class PostingList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginPost]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return Posting.from_origin(item)
 
 # Amounts
 
@@ -840,7 +859,7 @@ class PricePoint:
 
 class Commodity:
 
-    origin: None
+    origin = None
 
     def __init__(self,origin) -> None:
         assert isinstance(origin, OriginCommodity)
@@ -1413,8 +1432,12 @@ class PostingXData:
 
 class Posting(JournalItem):
 
-    def __init__(self, origin) -> None:
-        assert isinstance(origin, OriginPost)
+    def __init__(self, origin = None) -> None:
+        if not origin is None:
+            assert isinstance(origin, OriginPost)
+        else:
+            origin = OriginPost()
+
         super().__init__(origin)
 
     @classmethod
@@ -1513,7 +1536,36 @@ class TransactionBase(JournalItem):
             return AutomatedTransaction(origin=origin)
         raise Exception("Incorrect origin for transaction base")
 
-    # TBC
+    @property
+    def journal(self) -> 'Journal':
+        return Journal.from_origin(self.origin.Journal)
+
+    @journal.setter
+    def journal(self, value: 'Journal'):
+        self.origin.Journal = value.origin if not value is None else None
+
+    def __len__(self) -> int:
+        return NetListAdapter.GetPosts(self.origin).Count
+
+    def __getitem__(self, row):
+        return Posting.from_origin(NetListAdapter.GetPosts(self.origin)[row])
+
+    def add_post(self, post: Posting):
+        assert isinstance(post, Posting)
+        self.origin.AddPost(post.origin)
+
+    def remove_post(self, post: Posting) -> bool:
+        assert isinstance(post, Posting)
+        return self.origin.RemovePost(post.origin)
+
+    def finalize(self) -> bool:
+        return self.origin.FinalizeXact()
+
+    def posts(self) -> Iterable:
+        return PostingList(NetListAdapter.GetPosts(self.origin))
+
+    def __iter__(self):
+        return iter(self.posts())
 
 class Transaction(TransactionBase):
 
@@ -1553,6 +1605,30 @@ class AutomatedTransaction(TransactionBase):
         return AutomatedTransaction(origin=origin) if not origin is None else None
 
     # TBC
+
+# Journals
+
+class Journal:
+
+    origin = None
+
+    def __init__(self, origin = None) -> None:
+        if origin is None:
+            self.origin = OriginJournal()
+        else:
+            assert isinstance(origin, OriginJournal)
+            self.origin = origin
+
+    @classmethod
+    def from_origin(cls, origin):
+        if origin is None:
+            return None
+
+        assert isinstance(origin, OriginJournal)
+        return Journal(origin=origin)
+
+    # TBC
+
 
 # Session
 
