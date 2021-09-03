@@ -1533,6 +1533,45 @@ class PostingTests(unittest.TestCase):
 
 # Value tests
 
+class MaskTests(unittest.TestCase):
+
+    def test_mask_constructor(self):
+        mask = ledger.Mask()
+        self.assertIsInstance(mask, ledger.Mask)
+
+        mask = ledger.Mask(ledger.OriginMask())
+        self.assertIsInstance(mask, ledger.Mask)
+
+        mask = ledger.Mask("pattern")
+        self.assertIsInstance(mask, ledger.Mask)
+
+    def test_mask_from_origin(self):
+        mask = ledger.Mask.from_origin(ledger.OriginMask())
+        self.assertIsInstance(mask, ledger.Mask)
+
+        mask = ledger.Mask.from_origin(None)
+        self.assertIsNone(mask)
+
+    def test_mask_match(self):
+        mask = ledger.Mask("pattern")
+        self.assertTrue(mask.match("contains pattern"))
+        self.assertFalse(mask.match("does not contain"))
+
+    def test_mask_is_empty(self):
+        mask = ledger.Mask()
+        self.assertTrue(mask.is_empty)
+
+        mask = ledger.Mask("pattern")
+        self.assertFalse(mask.is_empty)
+
+    def test_mask_str_method(self):
+        mask = ledger.Mask("pattern")
+        self.assertEqual("pattern", mask.str())
+
+    def test_mask_str(self):
+        mask = ledger.Mask("pattern")
+        self.assertEqual("pattern", str(mask))
+
 class ValueTests(unittest.TestCase):
 
     def test_value_constructor_takes_bool(self):

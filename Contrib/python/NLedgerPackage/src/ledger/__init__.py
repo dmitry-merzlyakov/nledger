@@ -1701,8 +1701,10 @@ class Mask:
 
     origin = None
 
-    def __init__(self,val) -> None:
-        if isinstance(val, OriginMask):
+    def __init__(self, val = None) -> None:
+        if val is None:
+            self.origin = OriginMask()
+        elif isinstance(val, OriginMask):
             self.origin = val
         else:
             self.origin = OriginMask(val)
@@ -1711,8 +1713,17 @@ class Mask:
     def from_origin(cls, origin):
         return Mask(origin) if not origin is None else None
 
-    # TBC
+    def match(self, text: str) -> bool:
+        return self.origin.Match(text)
 
+    @property
+    def is_empty(self) -> bool:
+        return self.origin.IsEmpty
+
+    def str(self) -> str:
+        return self.origin.Str()
+
+    __str__ = str
 
 class Value:
 
