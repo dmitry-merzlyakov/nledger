@@ -39,7 +39,7 @@ print("Found path to NLedger Python dll: " + nledger_dll_path)
 # Import ledger. Note: it is important to add path to source code to the first position to override already installed module
 sys.path.insert(0, ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '..', 'src'))
 import ledger
-from ledger import Amount, Position
+from ledger import Amount, Position, TransactionBase
 print("Module ledger is properly imported")
 
 from datetime import datetime
@@ -2508,6 +2508,49 @@ class TransactionTests(unittest.TestCase):
     def test_transaction_str(self):
         trx = ledger.Transaction.from_origin(ledger.OriginXact())
         self.assertEqual("", str(trx))
+
+class PeriodicTransactionTests(unittest.TestCase):
+
+    def test_periodictransaction_constructor(self):
+        trx = ledger.PeriodicTransaction(ledger.OriginPeriodXact())
+        self.assertIsInstance(trx, ledger.PeriodicTransaction)
+
+    def test_periodictransaction_from_origin(self):
+        trx = ledger.PeriodicTransaction.from_origin(ledger.OriginPeriodXact())
+        self.assertIsInstance(trx, ledger.PeriodicTransaction)
+
+        trx = ledger.PeriodicTransaction.from_origin(None)
+        self.assertIsNone(trx)
+
+    def test_periodictransaction_from_origin(self):
+        trx = ledger.PeriodicTransaction(ledger.OriginPeriodXact())
+        self.assertIsNone(trx.period)
+
+    def test_periodictransaction_period_string(self):
+        trx = ledger.PeriodicTransaction(ledger.OriginPeriodXact())
+        self.assertIsNone(trx.period_string)
+
+class AutomatedTransactionTransactionTests(unittest.TestCase):
+
+    def test_autotransaction_constructor(self):
+        trx = ledger.AutomatedTransaction(ledger.OriginAutoXact())
+        self.assertIsInstance(trx, ledger.AutomatedTransaction)
+
+    def test_autotransaction_from_origin(self):
+        trx = ledger.AutomatedTransaction.from_origin(ledger.OriginAutoXact())
+        self.assertIsInstance(trx, ledger.AutomatedTransaction)
+
+        trx = ledger.AutomatedTransaction.from_origin(None)
+        self.assertIsNone(trx)
+
+    def test_autotransaction_predicate(self):
+        trx = ledger.AutomatedTransaction()
+        self.assertIsNone(trx.predicate)
+
+    def test_autotransaction_extend_xact(self):
+        trx = ledger.AutomatedTransaction()
+        trx.extend_xact(ledger.AutomatedTransaction())
+        self.assertTrue(trx.valid())
 
 # Amount tests
 

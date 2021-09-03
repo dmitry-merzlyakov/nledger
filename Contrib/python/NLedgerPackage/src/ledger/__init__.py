@@ -194,7 +194,7 @@ from NLedger.Xacts import Xact as OriginXact
 from NLedger.Xacts import PeriodXact as OriginPeriodXact
 from NLedger.Xacts import AutoXact as OriginAutoXact
 from NLedger.Journals import Journal as OriginJournal
-
+from NLedger import Predicate
 
 # Manage date conversions
 
@@ -210,6 +210,7 @@ from System import Tuple as NetTuple
 from NLedger.Extensibility.Export import ListAdapter as NetListAdapter
 
 from NLedger.Times import TimesCommon
+from NLedger.Times import DateInterval
 
 # Converts to Python date
 def to_pdate(value) -> date:
@@ -1616,27 +1617,44 @@ class Transaction(TransactionBase):
 
 class PeriodicTransaction(TransactionBase):
 
-    def __init__(self, origin) -> None:
-        assert isinstance(origin, OriginPeriodXact)
+    def __init__(self, origin = None) -> None:
+        if not origin is None:
+            assert isinstance(origin, OriginPeriodXact)
+        else:
+            origin = OriginPeriodXact()
         super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
         return PeriodicTransaction(origin=origin) if not origin is None else None
 
-    # TBC
+    @property
+    def period(self) -> DateInterval:
+        return self.origin.Period
+
+    @property
+    def period_string(self) -> DateInterval:
+        return self.origin.PeriodSting
 
 class AutomatedTransaction(TransactionBase):
 
-    def __init__(self, origin) -> None:
-        assert isinstance(origin, OriginAutoXact)
+    def __init__(self, origin = None) -> None:
+        if not origin is None:
+            assert isinstance(origin, OriginAutoXact)
+        else:
+            origin = OriginAutoXact()
         super().__init__(origin)
 
     @classmethod
     def from_origin(cls, origin):
         return AutomatedTransaction(origin=origin) if not origin is None else None
 
-    # TBC
+    @property
+    def predicate(self) -> Predicate:
+        return self.origin.Predicate
+
+    def extend_xact(self, xact_base: TransactionBase):
+        self.origin.ExtendXact(xact_base.origin, None)
 
 # Journals
 
