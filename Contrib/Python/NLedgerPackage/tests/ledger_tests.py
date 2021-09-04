@@ -1257,6 +1257,90 @@ class AccountXDataDetailsTests(unittest.TestCase):
         xdata.update(post, True)
         self.assertEqual(2, xdata.posts_count)
 
+class AccountXDataTests(unittest.TestCase):
+
+    def test_accountxdata_constructor(self):
+        xdata = ledger.AccountXData(ledger.OriginAccountXData())
+        self.assertIsInstance(xdata, ledger.AccountXData)
+
+    def test_accountxdata_from_origin(self):
+        xdata = ledger.AccountXData.from_origin(ledger.OriginAccountXData())
+        self.assertIsInstance(xdata, ledger.AccountXData)
+
+        xdata = ledger.AccountXData.from_origin(None)
+        self.assertIsNone(xdata)
+
+    def test_accountxdata_flags(self):
+
+        acnt = ledger.AccountXData()
+        self.assertEqual(0, acnt.flags)
+        acnt.flags = ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED
+        self.assertEqual(ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED, acnt.flags)
+
+    def test_accountxdata_has_flags(self):
+
+        acnt = ledger.AccountXData()
+        acnt.flags = ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED
+
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_EXT_MATCHING))
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_EXT_VISITED))
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED))
+        self.assertFalse(acnt.has_flags(ledger.ACCOUNT_EXT_TO_DISPLAY))
+
+    def test_accountxdata_clear_flags(self):
+
+        acnt = ledger.AccountXData()
+        acnt.flags = ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED
+
+        acnt.clear_flags()
+        self.assertEqual(0, acnt.flags)
+
+    def test_accountxdata_add_flags(self):
+
+        acnt = ledger.AccountXData()
+        acnt.flags = ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED
+
+        acnt.add_flags(ledger.ACCOUNT_EXT_TO_DISPLAY)
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_TO_DISPLAY))
+
+    def test_accountxdata_drop_flags(self):
+
+        acnt = ledger.AccountXData()
+        acnt.flags = ledger.ACCOUNT_EXT_MATCHING | ledger.ACCOUNT_EXT_VISITED
+
+        acnt.drop_flags(ledger.ACCOUNT_EXT_MATCHING)
+        self.assertFalse(acnt.has_flags(ledger.ACCOUNT_EXT_MATCHING))
+        self.assertTrue(acnt.has_flags(ledger.ACCOUNT_EXT_VISITED))
+
+    def test_accountxdata_self_details(self):
+
+        acnt = ledger.AccountXData()
+        self.assertIsInstance(acnt.self_details, ledger.AccountXDataDetails)
+
+    def test_accountxdata_family_details(self):
+
+        acnt = ledger.AccountXData()
+        self.assertIsInstance(acnt.family_details, ledger.AccountXDataDetails)
+
+    def test_accountxdata_reported_posts(self):
+
+        acnt = ledger.AccountXData()
+        self.assertEqual(0, len(acnt.reported_posts))
+
+        posts = acnt.reported_posts
+        posts.append(ledger.Posting())
+        self.assertEqual(1, len(acnt.reported_posts))
+
+    def test_accountxdata_sort_values(self):
+
+        acnt = ledger.AccountXData()
+        self.assertEqual(0, len(acnt.sort_values))
+
+        posts = acnt.sort_values
+        posts.append((ledger.Value(10),True))
+        self.assertEqual(1, len(acnt.sort_values))
+
+
 class AccountTests(unittest.TestCase):
 
     def test_account_constructors(self):

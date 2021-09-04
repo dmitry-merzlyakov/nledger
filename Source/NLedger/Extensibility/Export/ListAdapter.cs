@@ -33,9 +33,11 @@ namespace NLedger.Extensibility.Export
     public static class ListAdapter
     {
         public static ListAdapter<Tuple<Values.Value, bool>> GetPostXDataSortValues(PostXData postXData) => new ListAdapter<Tuple<Values.Value, bool>>(postXData?.SortValues);
+        public static ListAdapter<Tuple<Values.Value, bool>> GetAccountXDataSortValues(Accounts.AccountXData accountXData) => new ListAdapter<Tuple<Values.Value, bool>>(accountXData?.SortValues);
         public static ListAdapter<Values.Value> GetValueSequence(Values.Value value) => new ListAdapter<Values.Value>(value?.AsSequence);
         public static void SetValueSequence(Values.Value value, ListAdapter<Values.Value> sequence) => value?.SetSequence(sequence?.Origin);
         public static Values.Value CreateValue(ListAdapter<Values.Value> sequence) => new Values.Value(sequence.Origin);
         public static ListAdapter<Post> GetPosts(Xacts.XactBase xact) => new ListAdapter<Post>(xact?.Posts);
+        public static ListAdapter<Post> GetPosts(Accounts.AccountXData xdata) => new ListAdapter<Post>(xdata?.ReportedPosts);
     }
 }

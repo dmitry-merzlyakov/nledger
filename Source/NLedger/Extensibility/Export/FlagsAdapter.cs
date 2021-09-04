@@ -42,6 +42,19 @@ namespace NLedger.Extensibility.Export
                 AddMapping(PostingXData.POST_EXT_CONSIDERED, x => x.Considered, (x, v) => x.Considered = v);
         }
 
+        public static FlagsConverter<Accounts.AccountXData> AccountXDataFlagsAdapter()
+        {
+            return new FlagsConverter<Accounts.AccountXData>().
+                AddMapping(AccountXData.ACCOUNT_EXT_SORT_CALC, a => a.SortCalc, (a, v) => a.SortCalc = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_HAS_NON_VIRTUALS, a => a.HasNonVirtuals, (a, v) => a.HasNonVirtuals = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_HAS_UNB_VIRTUALS, a => a.HasUnbVirtuals, (a, v) => a.HasUnbVirtuals = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_AUTO_VIRTUALIZE, a => a.AutoVirtualize, (a, v) => a.AutoVirtualize = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_VISITED, a => a.Visited, (a, v) => a.Visited = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_MATCHING, a => a.Matching, (a, v) => a.Matching = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_TO_DISPLAY, a => a.ToDisplay, (a, v) => a.ToDisplay = v).
+                AddMapping(AccountXData.ACCOUNT_EXT_DISPLAYED, a => a.Displayed, (a, v) => a.Displayed = v);
+        }
+
         public static int CommodityFlagsToInt(CommodityFlagsEnum flags) => (int)flags;
 
         public static int SupportsFlagsToInt(SupportsFlagsEnum flags) => (int)flags;

@@ -34,18 +34,7 @@ namespace NLedger.Extensibility.Export
         public IList<Posting> reported_posts => Origin.ReportedPosts.Select(p => (Posting)p).ToList();
         public IList<SortValue> sort_values => Origin.SortValues.Select(t => new SortValue(t)).ToList();
 
-        public static Lazy<FlagsConverter<Accounts.AccountXData>> Flags = new Lazy<FlagsConverter<Accounts.AccountXData>>(() =>
-        {
-            return new FlagsConverter<Accounts.AccountXData>().
-                AddMapping(ACCOUNT_EXT_SORT_CALC, a => a.SortCalc, (a, v) => a.SortCalc = v).
-                AddMapping(ACCOUNT_EXT_HAS_NON_VIRTUALS, a => a.HasNonVirtuals, (a, v) => a.HasNonVirtuals = v).
-                AddMapping(ACCOUNT_EXT_HAS_UNB_VIRTUALS, a => a.HasUnbVirtuals, (a, v) => a.HasUnbVirtuals = v).
-                AddMapping(ACCOUNT_EXT_AUTO_VIRTUALIZE, a => a.AutoVirtualize, (a, v) => a.AutoVirtualize = v).
-                AddMapping(ACCOUNT_EXT_VISITED, a => a.Visited, (a, v) => a.Visited = v).
-                AddMapping(ACCOUNT_EXT_MATCHING, a => a.Matching, (a, v) => a.Matching = v).
-                AddMapping(ACCOUNT_EXT_TO_DISPLAY, a => a.ToDisplay, (a, v) => a.ToDisplay = v).
-                AddMapping(ACCOUNT_EXT_DISPLAYED, a => a.Displayed, (a, v) => a.Displayed = v);
-        }, true);
+        public static Lazy<FlagsConverter<Accounts.AccountXData>> Flags = new Lazy<FlagsConverter<Accounts.AccountXData>>(FlagsAdapter.AccountXDataFlagsAdapter, true);
 
     }
 }

@@ -178,6 +178,7 @@ from NLedger.Annotate import Annotation as OriginAnnotation
 from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 from NLedger.Accounts import Account as OriginAccount
 from NLedger.Accounts import AccountXDataDetails as OriginAccountXDataDetails
+from NLedger.Accounts import AccountXData as OriginAccountXData
 from NLedger.Scopus import SymbolKindEnum as SymbolKind
 from NLedger.Scopus import Scope as OriginScope
 from NLedger.Items import Item as OriginItem
@@ -1121,6 +1122,58 @@ class AccountXDataDetails:
         else:
             self.origin.Update(post.origin, gather_all)
 
+class AccountXData:
+
+    origin = None
+    flags_adapter = FlagsAdapter.AccountXDataFlagsAdapter()
+
+    def __init__(self, origin = None) -> None:
+        if not(origin is None):
+            assert isinstance(origin, OriginAccountXData)
+            self.origin = origin
+        else:
+            self.origin = OriginAccountXData()
+
+    @classmethod
+    def from_origin(cls, origin):
+        return AccountXData(origin=origin) if not origin is None else None
+
+    @property
+    def flags(self):
+        return self.flags_adapter.GetFlags(self.origin)
+
+    @flags.setter
+    def flags(self,value):
+        return self.flags_adapter.SetFlags(self.origin, value)
+
+    def has_flags(self,flag):
+        return self.flags_adapter.HasFlags(self.origin, flag)
+
+    def clear_flags(self):
+        return self.flags_adapter.ClearFlags(self.origin)
+
+    def add_flags(self,flag):
+        return self.flags_adapter.AddFlags(self.origin,flag)
+
+    def drop_flags(self,flag):
+        return self.flags_adapter.DropFlags(self.origin,flag)
+
+    @property
+    def self_details(self) -> AccountXDataDetails:
+        return AccountXDataDetails.from_origin(self.origin.SelfDetails)
+
+    @property
+    def family_details(self) -> AccountXDataDetails:
+        return AccountXDataDetails.from_origin(self.origin.FamilyDetails)
+
+    @property
+    def reported_posts(self) -> Iterable:
+        return PostingList(NetListAdapter.GetPosts(self.origin))
+
+    @property
+    def sort_values(self) -> Iterable:
+        return SortValueList(NetListAdapter.GetAccountXDataSortValues(self.origin))
+
 class Account:
 
     origin = None
@@ -1523,7 +1576,7 @@ class PostingXData:
         self.origin.Account = value.origin if not value is None else None 
 
     @property
-    def sort_values(self):
+    def sort_values(self) -> Iterable:
         return SortValueList(NetListAdapter.GetPostXDataSortValues(self.origin))
 
 class Posting(JournalItem):
