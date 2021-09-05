@@ -1578,6 +1578,133 @@ class AccountTests(unittest.TestCase):
 
         self.assertIsNone(acnt1.find_account_re("account 3"))
 
+    def test_account_add_post(self):
+
+        acnt = ledger.Account(None, "account")
+        post = ledger.Posting()
+
+        acnt.add_post(post)
+        self.assertEqual(post, acnt.posts()[0])
+
+    def test_account_remove_post(self):
+
+        acnt = ledger.Account(None, "account")
+        post = ledger.Posting()
+
+        self.assertEqual(0, len(acnt.posts()))
+        acnt.add_post(post)
+        self.assertEqual(1, len(acnt.posts()))
+        acnt.remove_post(post)
+        self.assertEqual(0, len(acnt.posts()))
+
+    def test_account_valid(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertTrue(acnt.valid())
+
+    def test_account_len(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+
+        self.assertEqual(0, len(acnt1))
+        acnt1.add_account(acnt2)
+        self.assertEqual(1, len(acnt1))
+        acnt1.remove_account(acnt2)
+        self.assertEqual(0, len(acnt1))
+
+    def test_account_getitem(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+        self.assertEqual(acnt2.origin, acnt1[0].origin)
+
+    def test_account_iter(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+        for item in acnt1:
+            self.assertIsInstance(item, ledger.Account)
+            self.assertEqual(item.origin, acnt2.origin)
+
+    def test_account_accounts(self):
+
+        acnt1 = ledger.Account(None, "account 1")
+        acnt2 = ledger.Account(acnt1, "account 2")
+        acnt1.add_account(acnt2)
+        for item in acnt1.accounts():
+            self.assertIsInstance(item, ledger.Account)
+            self.assertEqual(item.origin, acnt2.origin)
+
+    def test_account_posts(self):
+
+        acnt = ledger.Account(None, "account")
+        post = ledger.Posting()
+        acnt.add_post(post)
+        for item in acnt.posts():
+            self.assertIsInstance(item, ledger.Posting)
+            self.assertEqual(item.origin, post.origin)
+
+    def test_account_has_xdata(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertFalse(acnt.has_xdata())
+        acnt.xdata()
+        self.assertTrue(acnt.has_xdata())
+
+    def test_account_clear_xdata(self):
+
+        acnt = ledger.Account(None, "account")
+        acnt.xdata()
+        self.assertTrue(acnt.has_xdata())
+        acnt.clear_xdata()
+        self.assertFalse(acnt.has_xdata())
+
+    def test_account_xdata(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertIsInstance(acnt.xdata(), ledger.AccountXData)
+
+    def test_account_amount(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertIsInstance(acnt.amount(), ledger.Value)
+        self.assertTrue(acnt.amount().is_zero())
+        self.assertIsInstance(acnt.amount(ledger.Expr()), ledger.Value)
+        self.assertTrue(acnt.amount(ledger.Expr()).is_zero())
+
+    def test_account_total(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertIsInstance(acnt.total(), ledger.Value)
+        self.assertTrue(acnt.total().is_zero())
+        self.assertIsInstance(acnt.total(ledger.Expr()), ledger.Value)
+        self.assertTrue(acnt.total(ledger.Expr()).is_zero())
+
+    def test_account_self_details(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertIsInstance(acnt.self_details(), ledger.AccountXDataDetails)
+        self.assertIsInstance(acnt.self_details(True), ledger.AccountXDataDetails)
+
+    def test_account_family_details(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertIsInstance(acnt.family_details(), ledger.AccountXDataDetails)
+        self.assertIsInstance(acnt.family_details(True), ledger.AccountXDataDetails)
+
+    def test_account_has_xflags(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertFalse(acnt.has_xflags(ledger.ACCOUNT_EXT_VISITED))
+
+    def test_account_children_with_flags(self):
+
+        acnt = ledger.Account(None, "account")
+        self.assertEqual(0, acnt.children_with_flags(False, False))
+
 # Posts
 
 class PostingXDataTests(unittest.TestCase):

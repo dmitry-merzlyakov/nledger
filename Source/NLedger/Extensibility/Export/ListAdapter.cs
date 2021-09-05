@@ -39,5 +39,7 @@ namespace NLedger.Extensibility.Export
         public static Values.Value CreateValue(ListAdapter<Values.Value> sequence) => new Values.Value(sequence.Origin);
         public static ListAdapter<Post> GetPosts(Xacts.XactBase xact) => new ListAdapter<Post>(xact?.Posts);
         public static ListAdapter<Post> GetPosts(Accounts.AccountXData xdata) => new ListAdapter<Post>(xdata?.ReportedPosts);
+        public static ListAdapter<Post> GetPosts(Accounts.Account acnt) => new ListAdapter<Post>(acnt?.Posts);
+        public static ListAdapter<Accounts.Account> GetAccounts(Accounts.Account acnt) => new ListAdapter<Accounts.Account>(acnt?.Accounts.Values.ToList());
     }
 }

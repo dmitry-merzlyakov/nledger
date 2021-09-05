@@ -384,6 +384,19 @@ class PostingList(NList):
     def to_pitem(self, item):
         return Posting.from_origin(item)
 
+class AccountList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginAccount]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return Account.from_origin(item)
+
 # Expressions
 
 class Expr:
@@ -1303,7 +1316,72 @@ class Account:
     def find_account_re(self, regexp: str) -> 'Account':
         return Account.from_origin(self.origin.FindAccountRe(regexp))
 
-    # TBC
+    def add_post(self, post: 'Posting'):
+        assert isinstance(post, Posting)
+        self.origin.AddPost(post.origin)
+
+    def remove_post(self, post: 'Posting'):
+        assert isinstance(post, Posting)
+        self.origin.RemovePost(post.origin)
+
+    def valid(self) -> bool:
+        return self.origin.Valid()
+
+    def __len__(self) -> int:
+        return NetListAdapter.GetAccounts(self.origin).Count
+
+    def __getitem__(self, row: int) -> 'Account':
+        return Account.from_origin(NetListAdapter.GetAccounts(self.origin)[row])
+
+    def __iter__(self):
+        return iter(self.accounts())
+
+    def accounts(self) -> Iterable:
+        return AccountList(NetListAdapter.GetAccounts(self.origin))
+
+    def posts(self) -> Iterable:
+        return PostingList(NetListAdapter.GetPosts(self.origin))
+
+    def has_xdata(self) -> bool:
+        return self.origin.HasXData
+
+    def clear_xdata(self):
+        return self.origin.ClearXData()
+
+    def xdata(self) -> AccountXData:
+        return AccountXData.from_origin(self.origin.XData)
+
+    def amount(self, expr: Expr = None) -> 'Value':
+        if expr is None:
+            return Value.to_value(self.origin.Amount())
+        else:
+            assert isinstance(expr, Expr)
+            return Value.to_value(self.origin.Amount(False, expr.origin))
+
+    def total(self, expr: Expr = None) -> 'Value':
+        if expr is None:
+            return Value.to_value(self.origin.Total())
+        else:
+            assert isinstance(expr, Expr)
+            return Value.to_value(self.origin.Total(expr.origin))
+
+    def self_details(self, gather_all: bool = None) -> AccountXDataDetails:
+        if gather_all is None:
+            return AccountXDataDetails.from_origin(self.origin.SelfDetails())
+        else:
+            return AccountXDataDetails.from_origin(self.origin.SelfDetails(gather_all))
+
+    def family_details(self, gather_all: bool = None) -> AccountXDataDetails:
+        if gather_all is None:
+            return AccountXDataDetails.from_origin(self.origin.FamilyDetails())
+        else:
+            return AccountXDataDetails.from_origin(self.origin.FamilyDetails(gather_all))
+
+    def has_xflags(self, flags: int) -> bool:
+        return FlagsAdapter.AccountHasXFlags(self.origin, flags)
+
+    def children_with_flags(self, to_display: bool, visited: bool) -> int:
+        return self.origin.ChildrenWithFlags(to_display, visited)
 
 # Scope
 
