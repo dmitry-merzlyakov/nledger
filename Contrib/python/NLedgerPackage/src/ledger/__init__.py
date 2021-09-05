@@ -56,33 +56,33 @@ from NLedger.Extensibility.Export import Commodity as ExportedCommodity
 from NLedger.Extensibility.Export import KeepDetails as ExportedKeepDetails
 from NLedger.Extensibility.Export import PricePoint as ExportedPricePoint
 from NLedger.Extensibility.Export import Annotation as ExportedAnnotation
-from NLedger.Extensibility.Export import AnnotatedCommodity
+from NLedger.Extensibility.Export import AnnotatedCommodity as ExportedAnnotatedCommodity
 from NLedger.Extensibility.Export import Amount as ExportedAmount
-from NLedger.Extensibility.Export import ParseFlags
-from NLedger.Extensibility.Export import ValueType
+from NLedger.Extensibility.Export import ParseFlags as ExportedParseFlags
+from NLedger.Extensibility.Export import ValueType as ExportedValueType
 from NLedger.Extensibility.Export import Value as ExportedValue
 from NLedger.Extensibility.Export import ValueType as ExportedValueType
 from NLedger.Extensibility.Export import Account as ExportedAccount
 from NLedger.Extensibility.Export import AccountXData as ExportedAccountXData
 from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountXDataDetails
 from NLedger.Extensibility.Export import Balance as ExportedBalance
-from NLedger.Extensibility.Export import Expr
-from NLedger.Extensibility.Export import FileInfo
+from NLedger.Extensibility.Export import Expr as ExportedExpr
+from NLedger.Extensibility.Export import FileInfo as ExportedFileInfo
 from NLedger.Extensibility.Export import Position as ExportedPosition
-from NLedger.Extensibility.Export import Journal
-from NLedger.Extensibility.Export import JournalItem
+from NLedger.Extensibility.Export import Journal as ExportedJournal
+from NLedger.Extensibility.Export import JournalItem as ExportedJournalItem
 from NLedger.Extensibility.Export import State as ExportedState 
 from NLedger.Extensibility.Export import Mask as ExportedMask
 from NLedger.Extensibility.Export import Posting as ExportedPosting
 from NLedger.Extensibility.Export import PostingXData as ExportedPostingXData
 from NLedger.Extensibility.Export import SymbolKind as ExportedSymbolKind
-from NLedger.Extensibility.Export import Session
+from NLedger.Extensibility.Export import Session as ExportedSession
 from NLedger.Extensibility.Export import SessionScopeAttributes
-from NLedger.Extensibility.Export import SortValue
-from NLedger.Extensibility.Export import Times
+from NLedger.Extensibility.Export import SortValue as ExportedSortValue
+from NLedger.Extensibility.Export import Times as ExportedTimes
 from NLedger.Extensibility.Export import Transaction as ExportedTransaction
-from NLedger.Extensibility.Export import AutomatedTransaction
-from NLedger.Extensibility.Export import PeriodicTransaction
+from NLedger.Extensibility.Export import AutomatedTransaction as ExportedAutomatedTransaction
+from NLedger.Extensibility.Export import PeriodicTransaction as ExportedPeriodicTransaction
 
 #commodities = ExportedCommodityPool.commodities
 COMMODITY_STYLE_DEFAULTS = ExportedCommodityPool.COMMODITY_STYLE_DEFAULTS
@@ -118,9 +118,9 @@ ACCOUNT_EXT_MATCHING = ExportedAccountXData.ACCOUNT_EXT_MATCHING
 ACCOUNT_EXT_TO_DISPLAY = ExportedAccountXData.ACCOUNT_EXT_TO_DISPLAY
 ACCOUNT_EXT_DISPLAYED = ExportedAccountXData.ACCOUNT_EXT_DISPLAYED
 
-ITEM_NORMAL = JournalItem.ITEM_NORMAL
-ITEM_GENERATED = JournalItem.ITEM_GENERATED
-ITEM_TEMP = JournalItem.ITEM_TEMP
+ITEM_NORMAL = ExportedJournalItem.ITEM_NORMAL
+ITEM_GENERATED = ExportedJournalItem.ITEM_GENERATED
+ITEM_TEMP = ExportedJournalItem.ITEM_TEMP
 
 POST_VIRTUAL = ExportedPosting.POST_VIRTUAL
 POST_MUST_BALANCE = ExportedPosting.POST_MUST_BALANCE
@@ -181,6 +181,7 @@ from NLedger.Accounts import AccountXDataDetails as OriginAccountXDataDetails
 from NLedger.Accounts import AccountXData as OriginAccountXData
 from NLedger.Scopus import SymbolKindEnum as SymbolKind
 from NLedger.Scopus import Scope as OriginScope
+from NLedger.Scopus import Session as OriginSession
 from NLedger.Items import Item as OriginItem
 from NLedger.Values import ValueTypeEnum as ValueType
 from NLedger.Values import Value as OriginValue
@@ -197,6 +198,7 @@ from NLedger.Xacts import PeriodXact as OriginPeriodXact
 from NLedger.Xacts import AutoXact as OriginAutoXact
 from NLedger.Journals import Journal as OriginJournal
 from NLedger import Predicate
+from NLedger.Expressions import Expr as OriginExpr
 
 # Manage date conversions
 
@@ -381,6 +383,59 @@ class PostingList(NList):
 
     def to_pitem(self, item):
         return Posting.from_origin(item)
+
+# Expressions
+
+class Expr:
+
+    origin = None
+
+    def __init__(self, val = None) -> None:
+        if val is None:
+            self.origin = OriginExpr()
+        elif isinstance(val, str):
+            self.origin = OriginExpr(val)
+        elif isinstance(val, OriginExpr):
+            self.origin = val
+        else:
+            raise Exception("Unexpected parameter type")
+
+    @classmethod
+    def from_origin(cls, origin) -> 'Expr':
+        return Expr(origin) if not origin is None else None
+
+    def __bool__(self) -> bool:
+        return not self.origin.IsEmpty
+
+    __nonzero__ = __bool__
+
+    def text(self) -> str:
+        return self.origin.Text
+
+    def set_text(self, val: str):
+        self.origin.Text = val
+
+    def __call__(self, scope: 'Scope' = None) -> 'Value':
+        if scope is None:
+            return Value.to_value(self.origin.Calc())
+        else:
+            assert isinstance(scope, Scope)
+            return Value.to_value(self.origin.Calc(scope.origin))
+
+    @property
+    def context(self) -> 'Scope':
+        return Scope.from_origin(self.origin.Context)
+
+    @context.setter
+    def context(self, scope: 'Scope'):
+        self.origin.Context = scope.origin if not scope is None else None
+
+    def compile(self, scope: 'Scope'):
+        assert isinstance(scope, Scope)
+        self.origin.Compile(scope.origin)
+
+    def is_constant(self) -> bool:
+        return self.origin.IsConstant
 
 # Amounts
 
@@ -1260,6 +1315,18 @@ class Scope:
         assert isinstance(origin, OriginScope)
         self.origin = origin
 
+    @classmethod
+    def from_origin(cls, origin):
+        if origin is None:
+            return None
+        if isinstance(origin, OriginSession):
+            return Session.from_origin(origin)
+        if isinstance(origin, OriginPost):
+            return Posting.from_origin(origin)
+        if isinstance(origin, OriginXactBase):
+            return TransactionBase.from_origin(origin)
+        raise Exception("Unexpected origin type")
+
     @property
     def description(self) -> str:
         return self.origin.Description
@@ -1381,7 +1448,7 @@ class JournalItem(Scope):
                 result[key_value.Key] = (Value.to_value(key_value.Value.Value), bool(key_value.Value.IsParsed)) if not key_value.Value is None else None
         return result
 
-    def copy_details(self, item: JournalItem):
+    def copy_details(self, item: 'JournalItem'):
         assert isinstance(item, JournalItem)
         self.origin.CopyDetails(item.origin)
 

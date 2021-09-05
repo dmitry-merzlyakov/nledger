@@ -222,6 +222,69 @@ class ValueListTests(unittest.TestCase):
         self.assertEqual(20, vlist[1].to_long())
         self.assertEqual(30, vlist[2].to_long())
 
+# Expressions
+
+class ExprTests(unittest.TestCase):
+
+    def test_expr_constructor(self):
+        expr = ledger.Expr()
+        self.assertIsInstance(expr, ledger.Expr)
+
+        expr = ledger.Expr("2+2")
+        self.assertIsInstance(expr, ledger.Expr)
+
+        expr = ledger.Expr(ledger.OriginExpr())
+        self.assertIsInstance(expr, ledger.Expr)
+
+    def test_expr_from_origin(self):
+        expr = ledger.Expr.from_origin(ledger.OriginExpr())
+        self.assertIsInstance(expr, ledger.Expr)
+
+        expr = ledger.Expr.from_origin(None)
+        self.assertIsNone(expr)
+
+    def test_expr_bool(self):
+        expr = ledger.Expr()
+        self.assertFalse(bool(expr))
+
+        expr = ledger.Expr("2+2")
+        self.assertTrue(bool(expr))
+
+    def test_expr_text(self):
+        expr = ledger.Expr("2+2")
+        self.assertEqual("2+2", expr.text())
+
+    def test_expr_set_text(self):
+        expr = ledger.Expr("2+2")
+        self.assertEqual("2+2", expr.text())
+        expr.set_text("2+2+2")
+        self.assertEqual("2+2+2", expr.text())
+
+    def test_expr_call(self):
+        expr = ledger.Expr("2+2")
+        self.assertEqual(4, expr(ledger.Posting()))
+
+        expr.context = ledger.Posting()
+        self.assertEqual(4, expr())
+
+    def test_expr_context(self):
+        expr = ledger.Expr()
+        self.assertIsNone(expr.context)
+        expr.context = ledger.Posting()
+        self.assertIsInstance(expr.context, ledger.Posting)
+
+    def test_expr_compile(self):
+        expr = ledger.Expr("2+2")
+        expr.compile(ledger.Posting())
+        self.assertTrue(expr.origin.IsCompiled)
+
+    def test_expr_is_constant(self):
+        expr = ledger.Expr("2+2")
+        self.assertFalse(expr.is_constant())
+
+        expr = ledger.Expr("2")
+        self.assertTrue(expr.is_constant())
+
 # Commodities
 
 class CommodityPoolTests(unittest.TestCase):
@@ -1339,7 +1402,6 @@ class AccountXDataTests(unittest.TestCase):
         posts = acnt.sort_values
         posts.append((ledger.Value(10),True))
         self.assertEqual(1, len(acnt.sort_values))
-
 
 class AccountTests(unittest.TestCase):
 
