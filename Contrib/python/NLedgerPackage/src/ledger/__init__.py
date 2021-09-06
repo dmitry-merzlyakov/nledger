@@ -503,8 +503,6 @@ class Amount:
     def __bool__(self) -> bool:
         return self.origin.IsNonZero
 
-    __nonzero__ = __bool__
-
     def __add__(self, o: object) -> 'Amount':
         return Amount.from_origin(self.origin + Amount.to_amount(o).origin)
 
@@ -602,6 +600,33 @@ class Amount:
         self.origin.InPlaceUnreduce()
         return self
 
+    def value(self, in_terms_of: 'Commodity' = None, moment = None) -> 'Amount':
+        if in_terms_of is None:
+            assert moment is None
+            return Amount.from_origin(self.origin.Value(TimesCommon.Current.CurrentTime))
+        else:
+            assert isinstance(in_terms_of, Commodity)
+            if moment is None:
+                return Amount.from_origin(self.origin.Value(TimesCommon.Current.CurrentTime, in_terms_of.origin))
+            elif isinstance(moment, datetime):
+                return Amount.from_origin(self.origin.Value(to_ndatetime(moment), in_terms_of.origin))
+            elif isinstance(moment, date):
+                return Amount.from_origin(self.origin.Value(to_ndatetime(moment), in_terms_of.origin))
+            else:
+                raise Exception("Unexpected argument type: moment")
+
+    def price(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Price)
+
+    def sign(self) -> int:
+        return self.origin.Sign
+
+    def is_nonzero(self) -> bool:
+        return self.origin.IsNonZero
+
+    __nonzero__ = is_nonzero
+
+
     @property
     def commodity(self) -> 'Commodity':
         return Commodity.from_origin(self.origin.Commodity)
@@ -614,6 +639,10 @@ class Amount:
         return self.origin.ToString()
 
     __str__ =  to_string
+
+    def annotate(self, details: 'Annotation'):
+        assert isinstance(details, Annotation)
+        self.origin.Annotate(details.origin)
 
     # TBC
 
@@ -768,9 +797,12 @@ class Annotation:
     origin: None
     flags_adapter = FlagsAdapter.AnnotationFlagsAdapter()
 
-    def __init__(self,origin) -> None:
-        assert isinstance(origin, OriginAnnotation)
-        self.origin = origin
+    def __init__(self,origin=None) -> None:
+        if origin is None:
+            self.origin = OriginAnnotation()
+        else:
+            assert isinstance(origin, OriginAnnotation)
+            self.origin = origin
 
     @classmethod
     def from_origin(cls, origin) -> 'Annotation':

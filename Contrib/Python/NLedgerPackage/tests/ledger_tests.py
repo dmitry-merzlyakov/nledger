@@ -3462,6 +3462,45 @@ class AmountTests(unittest.TestCase):
         self.assertEqual("0.67 ZXD", str(a1))
         self.assertEqual("<class 'ledger.Amount'>", str(type(a1)))
 
+    def test_amount_value(self):
+
+        amnt = ledger.Amount("2.00 ZXR")
+        self.assertIsNone(amnt.value())
+        self.assertIsInstance(amnt.value(ledger.commodities.find("ZXR")), ledger.Amount)
+        self.assertIsInstance(amnt.value(ledger.commodities.find("ZXR"), date.today()), ledger.Amount)
+        self.assertIsInstance(amnt.value(ledger.commodities.find("ZXR"), datetime.now()), ledger.Amount)
+
+    def test_amount_price(self):
+
+        amnt = ledger.Amount("2.00 ZXR")
+        self.assertIsNone(amnt.price())
+
+        details = ledger.Annotation()
+        details.price = ledger.Amount("3.00 ZXR")
+        amnt.annotate(details)
+
+        self.assertIsInstance(amnt.price(), ledger.Amount)
+
+    def test_amount_sign(self):
+
+        amnt = ledger.Amount("2.00 ZXR")
+        self.assertEqual(1, amnt.sign())
+
+        amnt = ledger.Amount("-2.00 ZXR")
+        self.assertEqual(-1, amnt.sign())
+
+        amnt = ledger.Amount("0")
+        self.assertEqual(0, amnt.sign())
+
+    def test_amount_is_nonzero(self):
+
+        amnt = ledger.Amount("2.00 ZXR")
+        self.assertTrue(amnt.is_nonzero())
+
+        amnt = ledger.Amount("0")
+        self.assertFalse(amnt.is_nonzero())
+
+
     def test_amount_commodity(self):
 
         a1 = ledger.Amount("2.00 ZXD")
