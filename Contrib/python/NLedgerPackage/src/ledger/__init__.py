@@ -58,7 +58,7 @@ from NLedger.Extensibility.Export import PricePoint as ExportedPricePoint
 from NLedger.Extensibility.Export import Annotation as ExportedAnnotation
 from NLedger.Extensibility.Export import AnnotatedCommodity as ExportedAnnotatedCommodity
 from NLedger.Extensibility.Export import Amount as ExportedAmount
-from NLedger.Extensibility.Export import ParseFlags as ExportedParseFlags
+from NLedger.Extensibility.Export import ParseFlags
 from NLedger.Extensibility.Export import ValueType as ExportedValueType
 from NLedger.Extensibility.Export import Value as ExportedValue
 from NLedger.Extensibility.Export import ValueType as ExportedValueType
@@ -456,12 +456,15 @@ class Amount:
 
     origin = None
 
-    def __init__(self,value,origin = None) -> None:
+    def __init__(self,value = None, origin = None) -> None:
         if not (origin is None):
             assert isinstance(origin, OriginAmount)
             self.origin = origin
         else:
-            self.origin = OriginAmount(value)
+            if value is None:
+                self.origin = OriginAmount()
+            else:
+                self.origin = OriginAmount(value)
 
     @classmethod
     def from_origin(cls, origin) -> 'Amount':        
@@ -626,6 +629,40 @@ class Amount:
 
     __nonzero__ = is_nonzero
 
+    def is_zero(self) -> bool:
+        return self.origin.IsZero
+
+    def is_realzero(self) -> bool:
+        return self.origin.IsRealZero
+
+    def is_null(self) -> bool:
+        return OriginAmount.IsNullOrEmpty(self.origin)
+
+    def to_double(self) -> float:
+        return self.origin.ToDouble()
+
+    __float__ = to_double
+
+    def to_long(self) -> int:
+        return self.origin.ToLong()
+
+    __int__ = to_long
+
+    def fits_in_long(self) -> bool:
+        return self.origin.FitsInLong
+
+    def to_string(self) -> str:
+        return self.origin.ToString()
+
+    __str__ =  to_string
+
+    def to_fullstring(self) -> str:
+        return self.origin.ToFullString()
+
+    __repr__ = to_fullstring
+
+    def quantity_string(self) -> str:
+        return self.origin.QuantityString()
 
     @property
     def commodity(self) -> 'Commodity':
@@ -635,21 +672,49 @@ class Amount:
     def commodity(self, value: 'Commodity'):
         self.origin.Commodity = value.origin if not value is None else None
 
-    def to_string(self) -> str:
-        return self.origin.ToString()
+    def has_commodity(self) -> bool:
+        return self.origin.HasCommodity
 
-    __str__ =  to_string
+    def with_commodity(self, comm: 'Commodity') -> 'Amount':
+        return Amount.from_origin(self.origin.WithCommodity(comm.origin)) if not comm is None else Amount.from_origin(self.origin.WithCommodity(None))
+
+    def clear_commodity(self):
+        return self.origin.ClearCommodity()
+
+    def number(self) -> 'Amount':
+        return Amount.from_origin(self.origin.Number())
 
     def annotate(self, details: 'Annotation'):
         assert isinstance(details, Annotation)
         self.origin.Annotate(details.origin)
 
-    # TBC
+    def has_annotation(self) -> bool:
+        return self.origin.HasAnnotation
 
     @property
     def annotation(self) -> 'Annotation':
         return Annotation.from_origin(self.origin.Annotation)
 
+    def strip_annotations(self, what_to_keep: 'KeepDetails' = None) -> 'Amount':
+        if what_to_keep is None:
+            return Amount.from_origin(self.origin.StripAnnotations(OriginAnnotationKeepDetails()))
+        else:
+            assert isinstance(what_to_keep, KeepDetails)
+            return Amount.from_origin(self.origin.StripAnnotations(what_to_keep.origin))
+
+    def parse(self, s: str, flags: 'ParseFlags' = None):
+        if flags is None:
+            self.origin.Parse(s)
+        else:
+            assert isinstance(flags, ParseFlags)
+            self.origin.Parse(s, FlagsAdapter.ToAmountFlags(flags))
+
+    @classmethod
+    def parse_conversion(cls, larger_str: str, smaller_str: str):
+        return OriginAmount.ParseConversion(larger_str, smaller_str)
+
+    def valid(self) -> bool:
+        return self.origin.Valid()
 
 class Balance:
 

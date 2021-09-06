@@ -60,5 +60,7 @@ namespace NLedger.Extensibility.Export
         public static int SupportsFlagsToInt(SupportsFlagsEnum flags) => (int)flags;
 
         public static bool AccountHasXFlags(Accounts.Account account, uint flags) => account?.HasXFlags(axd => AccountXDataFlagsAdapter().HasFlags(axd, flags)) ?? false;
+
+        public static Amounts.AmountParseFlagsEnum ToAmountFlags(ParseFlags flags) => (Amounts.AmountParseFlagsEnum)flags;
     }
 }
