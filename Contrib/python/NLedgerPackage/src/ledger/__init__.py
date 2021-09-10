@@ -720,17 +720,92 @@ class Balance:
 
     origin = None
 
-    def __init__(self, val) -> None:
-        if isinstance(val,Balance) or isinstance(val,Amount):
-            val = val.origin
-        if isinstance(val, OriginBalance):
+    def __init__(self, val = None) -> None:
+        if val is None:
+            self.origin = OriginBalance()
+        elif isinstance(val, OriginBalance):
             self.origin = val
-        else:
+        elif isinstance(val, Amount) or isinstance(val, Balance):
+            self.origin = OriginBalance(val.origin)
+        elif isinstance(val, str) or isinstance(val, int) or isinstance(val, float):
             self.origin = OriginBalance(val)
+        else:
+            raise Exception("Unexpected argument type")
 
     @classmethod
     def from_origin(cls, origin) -> 'Balance':
         return Balance(origin) if not origin is None else None
+
+    def __add__(self, o: object) -> 'Balance':
+        if isinstance(o, Amount) or isinstance(o, Balance):
+            return Balance.from_origin(OriginBalance.op_Addition(self.origin, o.origin))
+        elif isinstance(o, int) or isinstance(o, float):
+            return Balance.from_origin(OriginBalance.op_Addition(self.origin, Amount.to_amount(o).origin))
+        else:
+            raise Exception("Unexpected argument type")
+
+    __iadd__ = __add__
+
+    def __sub__(self, o: object) -> 'Balance':    
+        if isinstance(o, Amount) or isinstance(o, Balance):
+            return Balance.from_origin(OriginBalance.op_Subtraction(self.origin, o.origin))
+        elif isinstance(o, int) or isinstance(o, float):
+            return Balance.from_origin(OriginBalance.op_Subtraction(self.origin, Amount.to_amount(o).origin))
+        else:
+            raise Exception("Unexpected argument type")
+
+    __isub__ = __sub__
+
+    def __mul__(self, o: object) -> 'Balance':
+        if isinstance(o, Amount):
+            return Balance.from_origin(OriginBalance.op_Multiply(self.origin, o.origin))
+        elif isinstance(o, int) or isinstance(o, float):
+            return Balance.from_origin(OriginBalance.op_Multiply(self.origin, Amount.to_amount(o).origin))
+        else:
+            raise Exception("Unexpected argument type")
+
+    __imul__ = __mul__
+
+    def __truediv__ (self, o: object) -> 'Balance':
+        if isinstance(o, Amount):
+            return Balance.from_origin(OriginBalance.op_Division(self.origin, o.origin))
+        elif isinstance(o, int) or isinstance(o, float):
+            return Balance.from_origin(OriginBalance.op_Division(self.origin, Amount.to_amount(o).origin))
+        else:
+            raise Exception("Unexpected argument type")
+
+    __itruediv__ = __truediv__
+
+    def __neg__(self) -> 'Balance':
+        return Balance.from_origin(OriginBalance.op_UnaryNegation(self.origin))
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, Value):
+            return o.__eq__(self)
+        if isinstance(o, Amount) or isinstance(o, Balance):
+            return OriginBalance.op_Equality(self.origin, o.origin)
+        elif isinstance(o, int) or isinstance(o, float):
+            return OriginBalance.op_Equality(self.origin, Amount.to_amount(o).origin)
+        else:
+            raise Exception("Unexpected argument type")
+
+    def __ne__(self, o: object) -> bool:
+        if isinstance(o, Value):
+            return o.__ne__(self)
+        if isinstance(o, Amount) or isinstance(o, Balance):
+            return OriginBalance.op_Inequality(self.origin, o.origin)
+        elif isinstance(o, int) or isinstance(o, float):
+            return OriginBalance.op_Inequality(self.origin, Amount.to_amount(o).origin)
+        else:
+            raise Exception("Unexpected argument type")
+
+    def __bool__(self) -> bool:
+        return OriginBalance.op_Explicit(self.origin)
+
+    def to_string(self) -> str:
+        return self.origin.ToString()
+
+    __str__ = to_string
 
     # TBC
 

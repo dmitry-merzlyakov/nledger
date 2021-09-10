@@ -3672,6 +3672,180 @@ class AmountTests(unittest.TestCase):
         amnt = ledger.Amount("2.00 ZXD")
         self.assertTrue(2, amnt.valid())
 
+class BalanceTests(unittest.TestCase):
+
+    def test_balance_constructor(self):
+        bal = ledger.Balance()
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance(ledger.OriginBalance())
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance(ledger.Amount(10))
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance(ledger.Balance())
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance("0")
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance(0)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance(0.0)
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_from_origin(self):
+        bal = ledger.Balance.from_origin(ledger.OriginBalance())
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = ledger.Balance.from_origin(None)
+        self.assertIsNone(bal)
+
+    def test_balance_add(self):
+        bal = ledger.Balance(10)
+
+        bal = bal + ledger.Balance(20)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal + ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal + 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal + 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_iadd(self):
+        bal = ledger.Balance(10)
+
+        bal += ledger.Balance(20)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal += ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal += 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal += 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_sub(self):
+        bal = ledger.Balance(10)
+
+        bal = bal - ledger.Balance(20)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal - ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal - 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal - 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_isub(self):
+        bal = ledger.Balance(10)
+
+        bal -= ledger.Balance(20)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal -= ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal -= 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal -= 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_mul(self):
+        bal = ledger.Balance(10)
+
+        bal = bal * ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal * 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal * 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_imul(self):
+        bal = ledger.Balance(10)
+
+        bal *= ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal *= 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal *= 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_div(self):
+        bal = ledger.Balance(10)
+
+        bal = bal / ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal / 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal = bal / 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_idiv(self):
+        bal = ledger.Balance(10)
+
+        bal /= ledger.Amount(10)
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal /= 10
+        self.assertIsInstance(bal, ledger.Balance)
+
+        bal /= 10.0
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_neg(self):
+        bal = ledger.Balance(10)
+
+        bal = -bal
+        self.assertIsInstance(bal, ledger.Balance)
+
+    def test_balance_eq(self):
+        bal = ledger.Balance(10)
+
+        self.assertTrue(bal == ledger.Balance(10))
+        self.assertTrue(bal == ledger.Amount(10))
+        self.assertTrue(bal == 10)
+
+    def test_balance_ne(self):
+        bal = ledger.Balance(10)
+
+        self.assertFalse(bal != ledger.Balance(10))
+        self.assertFalse(bal != ledger.Amount(10))
+        self.assertFalse(bal != 10)
+
+    def test_balance_bool(self):
+        bal = ledger.Balance(10)
+        self.assertTrue(bool(bal))
+        self.assertTrue(bal)
+        self.assertFalse(not bal)
+
+    def test_balance_to_string(self):
+        bal = ledger.Balance(10)
+        self.assertEqual("10          ", bal.to_string())
+
+    def test_balance_str(self):
+        bal = ledger.Balance(10)
+        self.assertEqual("10          ", str(bal))
+
+
 class PositionTests(unittest.TestCase):
 
     def test_position_constructor_allows_no_arguments(self):
