@@ -4452,6 +4452,58 @@ class SessionTests(unittest.TestCase):
         jrn = ledger.session.journal()
         self.assertIsInstance(jrn, ledger.Journal)
 
+# Journals
+
+class FileInfoTests(unittest.TestCase):
+
+    def test_fileinfo_constructor(self):
+        fileinfo = ledger.FileInfo()
+        self.assertIsInstance(fileinfo, ledger.FileInfo)
+
+        fileinfo = ledger.FileInfo(ledger.OriginJournalFileInfo())
+        self.assertIsInstance(fileinfo, ledger.FileInfo)
+
+        fileinfo = ledger.FileInfo(get_drewr3_dat_filename())
+        self.assertIsInstance(fileinfo, ledger.FileInfo)
+
+    def test_fileinfo_from_origin(self):
+        fileinfo = ledger.FileInfo.from_origin(ledger.OriginJournalFileInfo())
+        self.assertIsInstance(fileinfo, ledger.FileInfo)
+
+        fileinfo = ledger.FileInfo.from_origin(None)
+        self.assertIsNone(fileinfo)
+
+    def test_fileinfo_filename(self):
+        fileinfo = ledger.FileInfo()
+        self.assertIsNone(fileinfo.filename)
+
+        filename = get_drewr3_dat_filename()
+        fileinfo = ledger.FileInfo(filename)
+        self.assertEqual(filename, fileinfo.filename)
+
+    def test_fileinfo_size(self):
+        fileinfo = ledger.FileInfo()
+        self.assertEqual(0, fileinfo.size)
+
+        filename = get_drewr3_dat_filename()
+        fileinfo = ledger.FileInfo(filename)
+        self.assertNotEqual(0, fileinfo.size)
+
+    def test_fileinfo_modtime(self):
+        fileinfo = ledger.FileInfo()
+        self.assertEqual(fileinfo.modtime, datetime(1, 1, 1, 0, 0))
+
+        filename = get_drewr3_dat_filename()
+        fileinfo = ledger.FileInfo(filename)
+        self.assertIsInstance(fileinfo.modtime, datetime)
+
+    def test_fileinfo_from_stream(self):
+        fileinfo = ledger.FileInfo()
+        self.assertTrue(fileinfo.from_stream)
+
+        filename = get_drewr3_dat_filename()
+        fileinfo = ledger.FileInfo(filename)
+        self.assertFalse(fileinfo.from_stream)
 
 
 if __name__ == '__main__':

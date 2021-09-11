@@ -67,7 +67,6 @@ from NLedger.Extensibility.Export import AccountXData as ExportedAccountXData
 from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountXDataDetails
 from NLedger.Extensibility.Export import Balance as ExportedBalance
 from NLedger.Extensibility.Export import Expr as ExportedExpr
-from NLedger.Extensibility.Export import FileInfo as ExportedFileInfo
 from NLedger.Extensibility.Export import Position as ExportedPosition
 from NLedger.Extensibility.Export import Journal as ExportedJournal
 from NLedger.Extensibility.Export import JournalItem as ExportedJournalItem
@@ -189,6 +188,7 @@ from NLedger.Xacts import Xact as OriginXact
 from NLedger.Xacts import PeriodXact as OriginPeriodXact
 from NLedger.Xacts import AutoXact as OriginAutoXact
 from NLedger.Journals import Journal as OriginJournal
+from NLedger.Journals import JournalFileInfo as OriginJournalFileInfo
 from NLedger import Predicate
 from NLedger.Expressions import Expr as OriginExpr
 
@@ -2235,7 +2235,44 @@ class AutomatedTransaction(TransactionBase):
     def extend_xact(self, xact_base: TransactionBase):
         self.origin.ExtendXact(xact_base.origin, None)
 
-# Journals
+###########################
+# Ported from py_journal.cc
+
+class FileInfo:
+
+    origin = None
+
+    def __init__(self, val = None) -> None:
+        if val is None:
+            self.origin = OriginJournalFileInfo()
+        elif isinstance(val, OriginJournalFileInfo):
+            self.origin = val
+        elif isinstance(val, str):
+            self.origin = OriginJournalFileInfo(val)
+        else:
+            raise Exception("Unexpected argument type")
+
+    @classmethod
+    def from_origin(cls, origin):
+        return FileInfo(origin) if not origin is None else None
+
+    @property
+    def filename(self) -> str:
+        return self.origin.FileName
+
+    @property
+    def size(self) -> int:
+        return self.origin.Size
+
+    @property
+    def modtime(self) -> datetime:
+        return to_pdatetime(self.origin.ModTime)
+
+    @property
+    def from_stream(self) -> bool:
+        return self.origin.FromStream
+
+# Journal
 
 class Journal:
 
