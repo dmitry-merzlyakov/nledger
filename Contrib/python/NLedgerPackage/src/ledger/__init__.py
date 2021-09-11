@@ -77,7 +77,6 @@ from NLedger.Extensibility.Export import Posting as ExportedPosting
 from NLedger.Extensibility.Export import PostingXData as ExportedPostingXData
 from NLedger.Extensibility.Export import SymbolKind as ExportedSymbolKind
 from NLedger.Extensibility.Export import Session as ExportedSession
-from NLedger.Extensibility.Export import SessionScopeAttributes
 from NLedger.Extensibility.Export import SortValue as ExportedSortValue
 from NLedger.Extensibility.Export import Times as ExportedTimes
 from NLedger.Extensibility.Export import Transaction as ExportedTransaction
@@ -138,14 +137,6 @@ POST_EXT_MATCHES = ExportedPostingXData.POST_EXT_MATCHES
 POST_EXT_CONSIDERED = ExportedPostingXData.POST_EXT_CONSIDERED
 
 
-session = SessionScopeAttributes.session
-
-def read_journal(pathName):
-    return SessionScopeAttributes.read_journal(pathName)
-
-def read_journal_from_string(data):
-    return SessionScopeAttributes.read_journal_from_string(data)
-
 # Times functions
 
 def parse_datetime(str):
@@ -167,6 +158,7 @@ def times_shutdown():
 # a) when operation result is an object of .Net class and we need to wrap it up (e.g. overloaded operators like +); 
 # b) when an operation parameter is a python type and cannot be implicitly associated with a .Net method (e.g. datetime.datetime vs DateTime)
 
+from NLedger.Extensibility import ExtendedSession
 from NLedger.Extensibility.Export import FlagsAdapter
 from NLedger.Amounts import Amount as OriginAmount
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
@@ -2267,20 +2259,48 @@ class Journal:
     # TBC
 
 
+###########################
+# Ported from py_session.cc
+
 # Session
 
 class Session(Scope):
 
-    origin: None
+    origin = None
 
-    def __init__(self) -> None:
-        raise Exception("Abstract class") 
+    def __init__(self, origin) -> None:
+        assert isinstance(origin, OriginSession)
+        self.origin = origin
 
     @classmethod
     def from_origin(cls, origin):
-        return Account(origin=origin) if not origin is None else None
+        return Session(origin=origin) if not origin is None else None
 
-    # TBC
+    def read_journal(self, path_name: str) -> Journal:
+        return Journal.from_origin(self.origin.ReadJournal(path_name))
+
+    def read_journal_from_string(self, data: str) -> Journal:
+        return Journal.from_origin(self.origin.ReadJournalFromString(data))
+
+    def read_journal_files(self) -> Journal:
+        return Journal.from_origin(self.origin.ReadJournalFiles())
+
+    def close_journal_files(self):
+        self.origin.CloseJournalFiles()
+
+    def journal(self) -> Journal:
+        return Journal.from_origin(self.origin.Journal)
+
+session = Session(ExtendedSession.Current)
+
+def read_journal(path_name: str) -> Journal:
+    assert isinstance(session, Session)
+    session.close_journal_files()   # [DM] preventive cleaning added for simplifying repetitive readings
+    return session.read_journal(path_name)
+
+def read_journal_from_string(data: str) -> Journal:
+    assert isinstance(session, Session)
+    return session.read_journal_from_string(data)
 
 # Values
 

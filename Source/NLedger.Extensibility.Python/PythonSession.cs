@@ -34,6 +34,7 @@ namespace NLedger.Extensibility.Python
                 var pythonSession = new PythonSession();
                 context.SetExtendedSession(pythonSession);
                 Session.SetSessionContext(pythonSession);
+                Scope.DefaultScope = new Report(pythonSession);
             }
         }
 

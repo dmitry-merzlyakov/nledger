@@ -31,6 +31,12 @@ def get_nledger_dll_path():
 
     raise Exception("Cannot find MTX.dll by paths: " + debugDLL + " and " + releaseDLL)
 
+def get_drewr3_dat_filename():
+    filename = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), 'drewr3.dat'))
+    if not os.path.isfile(filename):
+        raise Exception('Cannot find file ' + filename)
+    return filename
+
 # Configure ledger module to use found NLedger.dll (it uses a pre-defined internal path by default)
 nledger_dll_path = get_nledger_dll_path()
 os.environ["nledger_extensibility_python_dll_path"] = nledger_dll_path
@@ -67,6 +73,25 @@ class LedgerModuleTests(unittest.TestCase):
 
         self.assertIsNotNone(0x1000, ledger.commodities)
         self.assertEqual("<class 'ledger.CommodityPool'>", str(type(ledger.commodities)))
+
+    def test_session_attribute(self):
+        self.assertIsInstance(ledger.session, ledger.Session)
+
+    def test_session_read_journal(self):
+        filename = get_drewr3_dat_filename()
+        jrn = ledger.read_journal(filename)
+        self.assertIsInstance(jrn, ledger.Journal)
+
+    def test_session_read_journal_from_string(self):
+        data = """
+        
+2010/12/01 * Checking balance
+  Assets:Checking                   $1,000.00
+  Equity:Opening Balances
+        
+        """
+        jrn = ledger.read_journal_from_string(data)
+        self.assertIsInstance(jrn, ledger.Journal)
 
     def test_to_pdate(self):
 
@@ -4370,6 +4395,64 @@ class JournalItemTests(unittest.TestCase):
 
         item = ledger.JournalItem(ledger.OriginPost())
         self.assertFalse(item.valid())
+
+# Sessions
+
+class SessionTests(unittest.TestCase):
+
+    def test_session_constructor(self):
+        ssn = ledger.Session(ledger.ExtendedSession.Current)
+        self.assertIsInstance(ssn, ledger.Session)
+
+    def test_session_from_origin(self):
+        ssn = ledger.Session.from_origin(ledger.ExtendedSession.Current)
+        self.assertIsInstance(ssn, ledger.Session)
+
+        ssn = ledger.Session.from_origin(None)
+        self.assertIsNone(ssn)
+
+    def test_session_read_journal(self):
+        ledger.session.close_journal_files()
+        filename = get_drewr3_dat_filename()
+
+        jrn = ledger.session.read_journal(filename)
+        self.assertIsInstance(jrn, ledger.Journal)
+
+    def test_session_read_journal_from_string(self):
+        data = """
+        
+2010/12/01 * Checking balance
+  Assets:Checking                   $1,000.00
+  Equity:Opening Balances
+        
+        """
+        jrn = ledger.session.read_journal_from_string(data)
+        self.assertIsInstance(jrn, ledger.Journal)
+
+    def test_session_read_journal_files(self):
+        ledger.session.close_journal_files()
+
+        jrn = ledger.session.read_journal_files()
+        self.assertIsInstance(jrn, ledger.Journal)
+
+    def test_session_close_journal_files(self):
+        filename = get_drewr3_dat_filename()
+        ledger.session.close_journal_files()
+
+        jrn = ledger.session.read_journal(filename)
+        self.assertIsInstance(jrn, ledger.Journal)
+
+        # It is essential to close journal before reading a new file
+        ledger.session.close_journal_files()
+
+        jrn = ledger.session.read_journal(filename)
+        self.assertIsInstance(jrn, ledger.Journal)
+
+    def test_session_journal(self):
+        jrn = ledger.session.journal()
+        self.assertIsInstance(jrn, ledger.Journal)
+
+
 
 if __name__ == '__main__':
     unittest.main()
