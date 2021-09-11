@@ -807,6 +807,54 @@ class Balance:
 
     __str__ = to_string
 
+    def negated(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Negated())
+
+    def abs(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Abs())
+
+    __abs__ = abs
+
+    def in_place_negate(self):
+        self.origin.InPlaceNegate()
+
+    def rounded(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Rounded())
+
+    def in_place_round(self):
+        self.origin.InPlaceRound()
+
+    def truncated(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Truncated())
+
+    def in_place_truncate(self):
+        self.origin.InPlaceTruncate()
+
+    def floored(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Floored())
+
+    def in_place_floor(self):
+        self.origin.InPlaceFloor()
+
+    def unrounded(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Unrounded())
+
+    def in_place_unround(self):
+        self.origin.InPlaceUnround()
+
+    def reduced(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Reduced())
+
+    def in_place_reduce(self):
+        self.origin.InPlaceReduce()
+
+    def unreduced(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Unreduced())
+
+    def in_place_unreduce(self):
+        self.origin.InPlaceUnreduce()
+
+
     # TBC
 
 # Commodities
