@@ -1141,6 +1141,8 @@ class AnnotatedCommodityTests(unittest.TestCase):
         annotated_commodity = ledger.commodities.find_or_create("XYZ25", annotation)
         self.assertEqual(' (tag1)', annotated_commodity.write_annotations())
 
+# Accounts
+
 class AccountXDataDetailsTests(unittest.TestCase):
 
     def test_accountxdata_constructor(self):
@@ -4504,6 +4506,84 @@ class FileInfoTests(unittest.TestCase):
         filename = get_drewr3_dat_filename()
         fileinfo = ledger.FileInfo(filename)
         self.assertFalse(fileinfo.from_stream)
+
+class JournalTests(unittest.TestCase):
+
+    def test_journal_constructor(self):
+        jrn = ledger.Journal()
+        self.assertIsInstance(jrn, ledger.Journal)
+
+        jrn = ledger.Journal(ledger.OriginJournal())
+        self.assertIsInstance(jrn, ledger.Journal)
+
+    def test_journal_from_origin(self):
+        jrn = ledger.Journal.from_origin(ledger.OriginJournal())
+        self.assertIsInstance(jrn, ledger.Journal)
+
+        jrn = ledger.Journal.from_origin(None)
+        self.assertIsNone(jrn)
+
+    def test_journal_master(self):
+        jrn = ledger.Journal()
+        self.assertIsInstance(jrn.master, ledger.Account)
+        jrn.master = ledger.Account(None, "accntname")
+        self.assertIsInstance(jrn.master, ledger.Account)
+        self.assertEqual(jrn.master.name, "accntname")
+
+    def test_journal_bucket(self):
+        jrn = ledger.Journal()
+        self.assertIsNone(jrn.bucket)
+        jrn.bucket = ledger.Account(None, "accntname")
+        self.assertIsInstance(jrn.bucket, ledger.Account)
+        self.assertEqual(jrn.bucket.name, "accntname")
+
+    def test_journal_add_account(self):
+        acc = ledger.Account(None, "accntname")
+        jrn = ledger.Journal()
+        jrn.add_account(acc)
+        self.assertEqual(jrn.find_account(acc.name).name, "accntname")
+
+    def test_journal_remove_account(self):
+        acc = ledger.Account(None, "accntname")
+        jrn = ledger.Journal()
+        jrn.add_account(acc)
+        self.assertTrue(jrn.remove_account(acc))
+        self.assertFalse(jrn.remove_account(acc))
+        self.assertIsNone(jrn.find_account("accntname", False))
+
+    def test_journal_find_account(self):
+        jrn = ledger.Journal()
+        self.assertIsInstance(jrn.find_account("accnt1"), ledger.Account)   # auto-creation
+        jrn.add_account(ledger.Account(None, "accnt2"))
+        self.assertIsInstance(jrn.find_account("accnt2", False), ledger.Account) 
+        self.assertIsInstance(jrn.find_account("accnt2", True), ledger.Account)
+        self.assertIsNone(jrn.find_account("accnt3", False), ledger.Account) # no auto-creation
+
+    def test_journal_find_account_re(self):
+        jrn = ledger.Journal()
+        jrn.add_account(ledger.Account(None, "accntname"))
+        self.assertIsInstance(jrn.find_account_re("accntname"), ledger.Account)
+        self.assertIsNone(jrn.find_account_re("unknown"))
+
+    def test_journal_register_account(self):
+        jrn = ledger.Journal()
+
+        acc = jrn.register_account("acc1", None)
+        self.assertIsInstance(acc, ledger.Account)
+
+        acc = jrn.register_account("acc1", ledger.Posting())
+        self.assertIsInstance(acc, ledger.Account)
+
+    def test_journal_expand_aliases(self):
+        acc = ledger.Account(None, "accntname")
+        jrn = ledger.Journal()        
+        jrn.add_account(acc)
+
+        jrn.origin.NoAliases = False
+        jrn.origin.AccountAliases.Add("alias1", acc.origin)
+
+        acc = jrn.expand_aliases("alias1")
+        self.assertIsInstance(acc, ledger.Account)
 
 
 if __name__ == '__main__':

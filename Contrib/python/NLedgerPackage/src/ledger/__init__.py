@@ -2287,13 +2287,52 @@ class Journal:
 
     @classmethod
     def from_origin(cls, origin):
-        if origin is None:
-            return None
+        return Journal(origin) if not origin is None else None
 
-        assert isinstance(origin, OriginJournal)
-        return Journal(origin=origin)
+    @property
+    def master(self) -> Account:
+        return Account.from_origin(self.origin.Master)
 
-    # TBC
+    @master.setter
+    def master(self, val: Account):
+        self.origin.Master = val.origin if not val is None else None
+
+    @property
+    def bucket(self) -> Account:
+        return Account.from_origin(self.origin.Bucket)
+
+    @bucket.setter
+    def bucket(self, val: Account):
+        self.origin.Bucket = val.origin if not val is None else None
+
+    def add_account(self, acct: Account):
+        assert isinstance(acct, Account)
+        self.origin.AddAccount(acct.origin)
+
+    def remove_account(self, acct: Account) -> bool:
+        assert isinstance(acct, Account)
+        return self.origin.RemoveAccount(acct.origin)
+
+    def find_account(self, name: str, auto_create: bool = None) -> Account:
+        assert isinstance(name, str)
+        if auto_create is None:
+            return Account.from_origin(self.origin.FindAccount(name))
+        else:
+            return Account.from_origin(self.origin.FindAccount(name, auto_create))
+
+    def find_account_re(self, regexp: str) -> Account:
+        assert isinstance(regexp, str)
+        return Account.from_origin(self.origin.FindAccountRe(regexp))
+
+    def register_account(self, name: str, post: Posting) -> Account:
+        assert isinstance(name, str) or name is None
+        assert isinstance(post, Posting) or post is None
+        master = self.master
+        return Account.from_origin(self.origin.RegisterAccount(name, (post.origin if not post is None else None), (master.origin if not master is None else None)))
+
+    def expand_aliases(self, name: str) -> Account:
+        assert isinstance(name, str)
+        return Account.from_origin(self.origin.ExpandAliases(name))
 
 
 ###########################
