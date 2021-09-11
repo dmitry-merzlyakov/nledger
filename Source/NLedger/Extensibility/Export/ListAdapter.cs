@@ -41,5 +41,6 @@ namespace NLedger.Extensibility.Export
         public static ListAdapter<Post> GetPosts(Accounts.AccountXData xdata) => new ListAdapter<Post>(xdata?.ReportedPosts);
         public static ListAdapter<Post> GetPosts(Accounts.Account acnt) => new ListAdapter<Post>(acnt?.Posts);
         public static ListAdapter<Accounts.Account> GetAccounts(Accounts.Account acnt) => new ListAdapter<Accounts.Account>(acnt?.Accounts.Values.ToList());
+        public static ListAdapter<Amounts.Amount> GetAmounts(NLedger.Balance bal) => new ListAdapter<Amounts.Amount>(bal?.Amounts.Values.ToList());
     }
 }

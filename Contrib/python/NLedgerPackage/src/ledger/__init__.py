@@ -397,6 +397,19 @@ class AccountList(NList):
     def to_pitem(self, item):
         return Account.from_origin(item)
 
+class AmountList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginAmount]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return Amount.from_origin(item)
+
 # Expressions
 
 class Expr:
@@ -815,6 +828,15 @@ class Balance:
 
     __abs__ = abs
 
+    def __len__(self) -> int:
+        return NetListAdapter.GetAmounts(self.origin).Count
+
+    def __getitem__(self, row: int) -> 'Amount':
+        return Amount.from_origin(NetListAdapter.GetAmounts(self.origin)[row])
+
+    def __iter__(self):
+        return iter(AmountList(NetListAdapter.GetAmounts(self.origin)))
+
     def in_place_negate(self):
         self.origin.InPlaceNegate()
 
@@ -854,8 +876,60 @@ class Balance:
     def in_place_unreduce(self):
         self.origin.InPlaceUnreduce()
 
+    def value(self, in_terms_of: 'Commodity' = None, moment = None) -> 'Balance':
+        if moment is None and in_terms_of is None:
+            return Balance.from_origin(self.origin.Value(TimesCommon.Current.CurrentTime))
+        elif moment is None:
+            assert isinstance(in_terms_of, Commodity)
+            return Balance.from_origin(self.origin.Value(TimesCommon.Current.CurrentTime, in_terms_of.origin))
+        elif isinstance(moment, date) or isinstance(moment, datetime):
+            assert isinstance(in_terms_of, Commodity)
+            return Balance.from_origin(self.origin.Value(to_ndatetime(moment), in_terms_of.origin))
+        else:
+            raise Exception("Unexpected argument type")
 
-    # TBC
+    def is_nonzero(self) -> bool:
+        return self.origin.IsNonZero
+
+    __nonzero__ = is_nonzero
+
+    def is_zero(self) -> bool:
+        return self.origin.IsZero
+
+    def is_realzero(self) -> bool:
+        return self.origin.IsRealZero
+
+    def is_empty(self) -> bool:
+        return self.origin.IsEmpty
+
+    def single_amount(self) -> 'Amount':
+        return Amount.from_origin(self.origin.SingleAmount)
+
+    def to_amount(self) -> 'Amount':
+        return Amount.from_origin(self.origin.ToAmount())
+
+    def commodity_count(self) -> int:
+        return self.origin.CommodityCount
+
+    def commodity_amount(self, commodity: 'Commodity' = None) -> 'Amount':
+        if commodity is None:
+            return Amount.from_origin(self.origin.CommodityAmount())
+        else:
+            assert isinstance(commodity, Commodity)
+            return Amount.from_origin(self.origin.CommodityAmount(commodity.origin))
+
+    def number(self) -> 'Balance':
+        return Balance.from_origin(self.origin.Number())
+
+    def strip_annotations(self, keep: 'KeepDetails' = None) -> 'Balance':
+        if keep is None:
+            return Balance.from_origin(self.origin.StripAnnotations(OriginAnnotationKeepDetails()))
+        else:
+            assert isinstance(keep, KeepDetails)
+            return Balance.from_origin(self.origin.StripAnnotations(keep.origin))
+
+    def valid(self) -> bool:
+        return self.origin.Valid()
 
 # Commodities
 

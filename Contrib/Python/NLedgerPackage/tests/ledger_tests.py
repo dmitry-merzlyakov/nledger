@@ -3858,6 +3858,22 @@ class BalanceTests(unittest.TestCase):
         self.assertIsInstance(bal, ledger.Balance)
         self.assertEqual("-10         ", str(bal))
 
+    def test_balance_len(self):
+        bal = ledger.Balance(-10)
+        self.assertEqual(1, len(bal))
+
+    def test_balance_getitem(self):
+        bal = ledger.Balance(10)
+        amt = bal[0]
+        self.assertIsInstance(amt, ledger.Amount)
+        self.assertEqual(10, amt)
+
+    def test_balance_iter(self):
+        bal = ledger.Balance(10)
+        for amt in bal:            
+            self.assertIsInstance(amt, ledger.Amount)
+            self.assertEqual(10, amt)
+
     def test_balance_abs(self):
         bal = ledger.Balance(-10)
         bal1 = bal.abs()
@@ -3944,6 +3960,95 @@ class BalanceTests(unittest.TestCase):
         self.assertIsInstance(bal, ledger.Balance)
         self.assertEqual("11          ", str(bal))
 
+    def test_balance_value(self):
+        amnt1 = ledger.Amount("2.00 BLT1")
+        amnt1.commodity.add_flags(ledger.COMMODITY_PRIMARY)
+
+        bal = ledger.Balance()
+        bal += amnt1
+
+        val = bal.value()
+        self.assertIsNone(val)
+
+        val = bal.value(amnt1.commodity)
+        self.assertIsInstance(bal, ledger.Balance)
+        self.assertEqual("2.00 BLT    ", str(bal))
+
+        val = bal.value(amnt1.commodity, date.today())
+        self.assertIsInstance(bal, ledger.Balance)
+        self.assertEqual("2.00 BLT    ", str(bal))
+
+        val = bal.value(amnt1.commodity, datetime.today())
+        self.assertIsInstance(bal, ledger.Balance)
+        self.assertEqual("2.00 BLT    ", str(bal))
+
+    def test_balance_is_nonzero(self):
+        bal = ledger.Balance(10)
+        self.assertTrue(bal.is_nonzero())
+
+        bal = ledger.Balance()
+        self.assertFalse(bal.is_nonzero())
+
+    def test_balance_is_zero(self):
+        bal = ledger.Balance(10)
+        self.assertFalse(bal.is_zero())
+
+        bal = ledger.Balance()
+        self.assertTrue(bal.is_zero())
+
+    def test_balance_is_realzero(self):
+        bal = ledger.Balance(10)
+        self.assertFalse(bal.is_realzero())
+
+        bal = ledger.Balance()
+        self.assertTrue(bal.is_realzero())
+
+    def test_balance_is_empty(self):
+        bal = ledger.Balance(10)
+        self.assertFalse(bal.is_empty())
+
+        bal = ledger.Balance()
+        self.assertTrue(bal.is_empty())
+
+    def test_balance_single_amount(self):
+        bal = ledger.Balance(10)
+        self.assertIsInstance(bal.single_amount(), ledger.Amount)
+        self.assertEqual(10, bal.single_amount())
+
+    def test_balance_to_amount(self):
+        bal = ledger.Balance(10)
+        self.assertIsInstance(bal.to_amount(), ledger.Amount)
+        self.assertEqual(10, bal.to_amount())
+
+    def test_balance_commodity_count(self):
+        bal = ledger.Balance()
+        self.assertEqual(0, bal.commodity_count())
+
+        bal += ledger.Amount("2 BLT1")
+        self.assertEqual(1, bal.commodity_count())
+
+    def test_balance_commodity_amount(self):
+        amnt = ledger.Amount("2 BLT1")
+        bal = ledger.Balance(amnt)
+        self.assertIsInstance(bal.commodity_amount(), ledger.Amount)
+        self.assertIsInstance(bal.commodity_amount(amnt.commodity), ledger.Amount)
+
+    def test_balance_number(self):
+        amnt = ledger.Amount("2 BLT1")
+        bal = ledger.Balance(amnt)
+        bal1 = bal.number()
+        self.assertIsInstance(bal1, ledger.Balance)
+        self.assertEqual("2           ", str(bal1))
+
+    def test_balance_strip_annotations(self):
+        amnt = ledger.Amount("2 BLT1")
+        bal = ledger.Balance(amnt)
+        self.assertIsInstance(bal.strip_annotations(), ledger.Balance)
+        self.assertIsInstance(bal.strip_annotations(ledger.KeepDetails(keepPrice=True)), ledger.Balance)
+
+    def test_balance_strip_valid(self):
+        bal = ledger.Balance()
+        self.assertTrue(bal.valid())
 
 class PositionTests(unittest.TestCase):
 
