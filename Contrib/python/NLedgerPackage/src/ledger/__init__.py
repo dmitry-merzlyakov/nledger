@@ -1,46 +1,86 @@
-from typing import Iterable, List, Tuple
-import typing
-import ledger.conf
-from ledger.conf import clrRuntime
-from ledger.conf import ClrRuntime
+####################################################################################
+# Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+# Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
+# 
+# This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
+# Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+# See LICENSE.LEDGER file included with the distribution for details and disclaimer.
+####################################################################################
 
-from clr_loader import get_coreclr
-from clr_loader import get_mono
-from clr_loader import get_netfx
+###########################
+# NLedger Python interface module
 
-from pythonnet import set_runtime
+from typing import Iterable, List, Tuple, Dict
+import os
+import ntpath
+import sys
 
-# Static property helper
+# Helper functions
+
+def getenv(name: str) -> str:
+    return os.environ[name] if name in os.environ else None
+
+def getpath(relative_path: str) -> str:
+    return ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), relative_path))
+
+# Static property attribute
 
 class classproperty(property):
     def __get__(self, cls, owner):
         return classmethod(self.fget).__get__(None, owner)()
 
-# Set preferrable runtime and load clr
+############################
+# CLR Runtime initialization
 
-if clrRuntime == ClrRuntime.core:
-    set_runtime(get_coreclr(ledger.conf.corefile))
-elif clrRuntime == ClrRuntime.mono:
-    set_runtime(get_mono())
-elif clrRuntime == ClrRuntime.netfx:
-    set_runtime(get_netfx())
+# In case of using PythonNet 3, CLR Runtime initialization can be optionally regulated by means of "nledger_python_clr_runtime" environment variable.
+# Possible values are: "netfx", "mono", "core". In case of "core", you should also specify a path to runtime config file ("nledger_python_clr_runtime_config" variable)
+# For older versions of PythonNet (e.g. 2.5.1), the variable "nledger_python_clr_runtime" should be empty.
+
+clr_runtime = getenv("nledger_python_clr_runtime")
+if bool(clr_runtime):
+    from pythonnet import set_runtime
+
+    if clr_runtime == "netfx":
+        from clr_loader import get_netfx
+        set_runtime(get_netfx())
+    elif clr_runtime == "mono":
+        from clr_loader import get_mono
+        set_runtime(get_mono())
+    elif clr_runtime == "core":
+        from clr_loader import get_coreclr
+        runtime_config = getenv("nledger_python_clr_runtime_config")
+        assert not bool(runtime_config)
+        set_runtime(get_coreclr(runtime_config))
+    else:
+        raise Exception("Unsupported CLR Runtime selector (environment variable 'nledger_python_clr_runtime_config'): " + clr_runtime)
 
 import clr
 
-# Load library dll
+############################
+# Load NLedger library
 
-#Adding path to runtime dll to PATH and sending only name fixes a problem in pythonnet:
-#it tries to use Assembly.Load for loading an assembly specified by path and name
-import ntpath
-import sys
+# The module looks for NLedger.dll in the local runtime folder until environment variable "nledger_extensibility_python_dll_path" is populated
 
-dllFolder = ntpath.dirname(ledger.conf.runtimefile)
-dllName = ntpath.splitext(ntpath.basename(ledger.conf.runtimefile))[0]
+nledger_extensibility_python_dll_path = getenv("nledger_extensibility_python_dll_path")
+if not bool(nledger_extensibility_python_dll_path):
+    nledger_extensibility_python_dll_path = getpath('../runtime/NLedger.Extensibility.Python.dll')
+assert ntpath.isfile(nledger_extensibility_python_dll_path)
+
+# Adding path to runtime dll to PATH and sending only name fixes a problem in pythonnet:
+# it tries to use Assembly.Load for loading an assembly specified by path and name
+
+dllFolder = ntpath.dirname(nledger_extensibility_python_dll_path)
+dllName = ntpath.splitext(ntpath.basename(nledger_extensibility_python_dll_path))[0]
 
 if not(dllFolder in sys.path):
    sys.path.append(dllFolder)
 
+# Load NLedger.Extensibility.Python.dll (and NLedger.dll respectively)
+
 clr.AddReference(dllName)
+
+############################
+# Import NLedger classes
 
 # Import library classes and specifying custom helper methods
 
@@ -1857,7 +1897,7 @@ class JournalItem(Scope):
         self.origin.Pos = val.origin if not val is None else None
 
     @property
-    def metadata(self) -> typing.Dict[str, Tuple]:
+    def metadata(self) -> Dict[str, Tuple]:
         result = {}
         data = self.origin.GetMetadata()
         if not data is None:
