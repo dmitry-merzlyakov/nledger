@@ -42,5 +42,10 @@ namespace NLedger.Extensibility.Export
         public static ListAdapter<Post> GetPosts(Accounts.Account acnt) => new ListAdapter<Post>(acnt?.Posts);
         public static ListAdapter<Accounts.Account> GetAccounts(Accounts.Account acnt) => new ListAdapter<Accounts.Account>(acnt?.Accounts.Values.ToList());
         public static ListAdapter<Amounts.Amount> GetAmounts(NLedger.Balance bal) => new ListAdapter<Amounts.Amount>(bal?.Amounts.Values.ToList());
+        public static ListAdapter<Xacts.Xact> GetXacts(Journals.Journal journal) => new ListAdapter<Xacts.Xact>(journal?.Xacts?.ToList());
+        public static ListAdapter<Xacts.AutoXact> GetAutoXacts(Journals.Journal journal) => new ListAdapter<Xacts.AutoXact>(journal?.AutoXacts?.ToList());
+        public static ListAdapter<Xacts.PeriodXact> GetPeriodXacts(Journals.Journal journal) => new ListAdapter<Xacts.PeriodXact>(journal?.PeriodXacts?.ToList());
+        public static ListAdapter<Journals.JournalFileInfo> GetFileInfos(Journals.Journal journal) => new ListAdapter<Journals.JournalFileInfo>(journal?.Sources?.ToList());
+        public static ListAdapter<Post> GetQuery(Journals.Journal journal, string query) => new ListAdapter<Post>(Journals.JournalExtensions.Query(journal, query).ToList());
     }
 }

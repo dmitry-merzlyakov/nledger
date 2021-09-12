@@ -334,7 +334,7 @@ class NList(MutableSequence):
         item = self.to_nitem(item) if not item is None else None
         self.origin.Add(item)
 
-# List of Values
+# Lists
 
 class ValueList(NList):
     def __init__(self, origin = None) -> None:
@@ -401,6 +401,59 @@ class AmountList(NList):
 
     def to_pitem(self, item):
         return Amount.from_origin(item)
+
+class TransactionList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginXact]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return Transaction.from_origin(item)
+
+class AutomatedTransactionList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginAutoXact]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return AutomatedTransaction.from_origin(item)
+
+class PeriodicTransactionList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginPeriodXact]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return PeriodicTransaction.from_origin(item)
+
+class FileInfoList(NList):
+    def __init__(self, origin = None) -> None:
+        super().__init__(origin=origin)
+
+    def get_nclass(self) -> type:
+        return NetListAdapter[OriginJournalFileInfo]
+
+    def to_nitem(self, item):
+        return item.origin if not item is None else None
+
+    def to_pitem(self, item):
+        return FileInfo.from_origin(item)
+
 
 # Expressions
 
@@ -2334,6 +2387,46 @@ class Journal:
         assert isinstance(name, str)
         return Account.from_origin(self.origin.ExpandAliases(name))
 
+    def add_xact(self, xact: Transaction) -> bool:
+        assert isinstance(xact, Transaction)
+        return self.origin.AddXact(xact.origin)
+
+    def remove_xact(self, xact: Transaction) -> bool:
+        assert isinstance(xact, Transaction)
+        return self.origin.RemoveXact(xact.origin)
+
+    def __len__(self) -> int:
+        return NetListAdapter.GetXacts(self.origin).Count
+
+    def __getitem__(self, row: int) -> 'Transaction':
+        return Transaction.from_origin(NetListAdapter.GetXacts(self.origin)[row])
+
+    def __iter__(self):
+        return iter(self.xacts())
+
+    def xacts(self) -> Iterable:
+        return TransactionList(NetListAdapter.GetXacts(self.origin))
+
+    def auto_xacts(self) -> Iterable:
+        return AutomatedTransactionList(NetListAdapter.GetAutoXacts(self.origin))
+
+    def period_xacts(self) -> Iterable:
+        return PeriodicTransactionList(NetListAdapter.GetPeriodXacts(self.origin))
+
+    def sources(self) -> Iterable:
+        return FileInfoList(NetListAdapter.GetFileInfos(self.origin))
+
+    def has_xdata(self) -> bool:
+        return self.origin.HasXData()
+
+    def clear_xdata(self):
+        self.origin.ClearXData()
+
+    def query(self, query_text:str) -> Iterable:
+        return PostingList(NetListAdapter.GetQuery(self.origin, query_text))
+
+    def valid(self) -> bool:
+        return self.origin.Valid()
 
 ###########################
 # Ported from py_session.cc

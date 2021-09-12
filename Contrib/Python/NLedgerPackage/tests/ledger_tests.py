@@ -53,8 +53,6 @@ from datetime import date
 from System import DateTime
 from NLedger.Utility import Date
 
-from NLedger.Annotate import Annotation as OriginAnnotation
-from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
 
 class LedgerModuleTests(unittest.TestCase):
 
@@ -385,7 +383,7 @@ class CommodityPoolTests(unittest.TestCase):
         self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
         self.assertEqual('"XYZ1"', commodity.symbol)
 
-        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        annotation = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag"))
         commodity = commodity_pool.create("XYZ2", annotation)
 
         self.assertIsNotNone(commodity)
@@ -406,7 +404,7 @@ class CommodityPoolTests(unittest.TestCase):
         self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
         self.assertEqual('"XYZ10"', commodity.symbol)
 
-        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        annotation = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag"))
 
         commodity = commodity_pool.find_or_create("XYZ11", annotation)
         self.assertIsNotNone(commodity)
@@ -431,7 +429,7 @@ class CommodityPoolTests(unittest.TestCase):
         self.assertEqual("<class 'ledger.Commodity'>", str(type(commodity)))
         self.assertEqual('"XYZ20"', commodity.symbol)
 
-        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        annotation = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag"))
         commodity_pool.find_or_create("XYZ20", annotation)
 
         commodity = commodity_pool.find("XYZ20", annotation)
@@ -564,38 +562,38 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_eq(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, None))
-        annotation2 = ledger.Annotation(OriginAnnotation(None, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
         self.assertTrue(annotation1 == annotation2)
         self.assertFalse(annotation1 != annotation2)
 
-        annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10), Date(2021, 5, 10), "tag"))
-        annotation2 = ledger.Annotation(OriginAnnotation(ledger.Amount(10), Date(2021, 5, 10), "tag"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(10), Date(2021, 5, 10), "tag"))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(10), Date(2021, 5, 10), "tag"))
         self.assertTrue(annotation1 == annotation2)
         self.assertFalse(annotation1 != annotation2)
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, Date(2021, 5, 10), "tag1"))
-        annotation2 = ledger.Annotation(OriginAnnotation(None, Date(2021, 5, 10), "tag2"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, Date(2021, 5, 10), "tag1"))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(None, Date(2021, 5, 10), "tag2"))
         self.assertFalse(annotation1 == annotation2)
         self.assertTrue(annotation1 != annotation2)
 
     def test_annotation_bool(self):
 
-        self.assertFalse(bool(ledger.Annotation(OriginAnnotation(None, None, None))))
-        self.assertTrue(bool(ledger.Annotation(OriginAnnotation(ledger.Amount(10).origin, None, None))))
-        self.assertTrue(bool(ledger.Annotation(OriginAnnotation(None, Date(2021, 5, 10), None))))
-        self.assertTrue(bool(ledger.Annotation(OriginAnnotation(None, None, "tag"))))
+        self.assertFalse(bool(ledger.Annotation(ledger.OriginAnnotation(None, None, None))))
+        self.assertTrue(bool(ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(10).origin, None, None))))
+        self.assertTrue(bool(ledger.Annotation(ledger.OriginAnnotation(None, Date(2021, 5, 10), None))))
+        self.assertTrue(bool(ledger.Annotation(ledger.OriginAnnotation(None, None, "tag"))))
 
     def test_annotation_flags(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
         self.assertEqual(0, annotation1.flags)
         annotation1.flags = ledger.ANNOTATION_DATE_CALCULATED | ledger.ANNOTATION_PRICE_FIXATED
         self.assertEqual(ledger.ANNOTATION_DATE_CALCULATED | ledger.ANNOTATION_PRICE_FIXATED, annotation1.flags)
 
     def test_annotation_has_flags(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
         annotation1.flags = ledger.ANNOTATION_DATE_CALCULATED | ledger.ANNOTATION_PRICE_FIXATED
 
         self.assertTrue(annotation1.has_flags(ledger.ANNOTATION_DATE_CALCULATED))
@@ -605,7 +603,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_clear_flags(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
         annotation1.flags = ledger.ANNOTATION_DATE_CALCULATED | ledger.ANNOTATION_PRICE_FIXATED
 
         annotation1.clear_flags()
@@ -613,7 +611,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_add_flags(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
         annotation1.flags = ledger.ANNOTATION_DATE_CALCULATED
 
         annotation1.add_flags(ledger.ANNOTATION_PRICE_FIXATED)
@@ -621,7 +619,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_drop_flags(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, None))
         annotation1.flags = ledger.ANNOTATION_DATE_CALCULATED | ledger.ANNOTATION_PRICE_FIXATED
 
         annotation1.drop_flags(ledger.ANNOTATION_PRICE_FIXATED)
@@ -630,7 +628,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_price(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10).origin, None, None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(10).origin, None, None))
         price = annotation1.price
         self.assertTrue(isinstance(price, ledger.Amount))
         self.assertEqual(ledger.Amount(10), price)
@@ -639,7 +637,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_date(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, Date(2021, 5, 22), None))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, Date(2021, 5, 22), None))
         date1 = annotation1.date
         self.assertTrue(isinstance(date1, date))
         self.assertEqual(date(2021, 5, 22), date1)
@@ -648,7 +646,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_tag(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag-1"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag-1"))
         tag1 = annotation1.tag
         self.assertTrue(isinstance(tag1, str))
         self.assertEqual("tag-1", tag1)
@@ -657,7 +655,7 @@ class AnnotationTests(unittest.TestCase):
 
     def test_annotation_valid(self):
 
-        annotation1 = ledger.Annotation(OriginAnnotation(ledger.Amount(10), None, "tag-1"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(10), None, "tag-1"))
         self.assertTrue(annotation1.valid())
 
 class PricePointTests(unittest.TestCase):
@@ -755,7 +753,7 @@ class KeepDetailsTests(unittest.TestCase):
 
     def test_keepdetails_from_origin(self):
 
-        origin = OriginAnnotationKeepDetails(True,True,True,True)
+        origin = ledger.OriginAnnotationKeepDetails(True,True,True,True)
         keepdetails = ledger.KeepDetails.from_origin(origin)
         self.assertTrue(keepdetails.keep_price)
         self.assertTrue(keepdetails.keep_date)
@@ -1062,11 +1060,11 @@ class AnnotatedCommodityTests(unittest.TestCase):
         self.assertTrue(isinstance(annotatedCommodity, ledger.AnnotatedCommodity))
 
     def test_annotatedcommodity_details(self):
-        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag"))
+        annotation = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag"))
         annotated_commodity = ledger.commodities.find_or_create("XYZ20", annotation)
         self.assertTrue(isinstance(annotated_commodity, ledger.AnnotatedCommodity))
 
-        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag2"))
         details = annotated_commodity.details
 
         annotated_commodity.details = annotation2
@@ -1076,8 +1074,8 @@ class AnnotatedCommodityTests(unittest.TestCase):
         self.assertEqual(annotation, annotated_commodity.details)
 
     def test_annotatedcommodity_equals(self):
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
-        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag1"))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag2"))
         annotated_commodity1 = ledger.commodities.find_or_create("XYZ21", annotation1)
         annotated_commodity1a = ledger.commodities.find_or_create("XYZ21", annotation1)
         annotated_commodity2 = ledger.commodities.find_or_create("XYZ21", annotation2)
@@ -1099,8 +1097,8 @@ class AnnotatedCommodityTests(unittest.TestCase):
         self.assertFalse(annotated_commodity1 == comm)
 
     def test_annotatedcommodity_referent(self):
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
-        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag1"))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag2"))
         annotated_commodity1 = ledger.commodities.find_or_create("XYZ23", annotation1)
         annotated_commodity2 = ledger.commodities.find_or_create("XYZ23", annotation2)
 
@@ -1116,8 +1114,8 @@ class AnnotatedCommodityTests(unittest.TestCase):
         self.assertEqual('"XYZ23"', str(referent1))
 
     def test_annotatedcommodity_strip_annotations(self):
-        annotation1 = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
-        annotation2 = ledger.Annotation(OriginAnnotation(None, None, "tag2"))
+        annotation1 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag1"))
+        annotation2 = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag2"))
         annotated_commodity1 = ledger.commodities.find_or_create("XYZ24", annotation1)
         annotated_commodity2 = ledger.commodities.find_or_create("XYZ24", annotation2)
 
@@ -1137,7 +1135,7 @@ class AnnotatedCommodityTests(unittest.TestCase):
         self.assertEqual('"XYZ24"', str(stripped))
 
     def test_annotatedcommodity_write_annotations(self):
-        annotation = ledger.Annotation(OriginAnnotation(None, None, "tag1"))
+        annotation = ledger.Annotation(ledger.OriginAnnotation(None, None, "tag1"))
         annotated_commodity = ledger.commodities.find_or_create("XYZ25", annotation)
         self.assertEqual(' (tag1)', annotated_commodity.write_annotations())
 
@@ -2812,7 +2810,7 @@ class ValueTests(unittest.TestCase):
 
     def test_value_annotate_and_annotation(self):
 
-        ann = ledger.Annotation(OriginAnnotation(ledger.Amount(5), None, "tag"))
+        ann = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(5), None, "tag"))
         val = ledger.Value(ledger.Amount("10 TTR"))
         
         val.annotate(ann)
@@ -2822,7 +2820,7 @@ class ValueTests(unittest.TestCase):
 
     def test_value_has_annotation(self):
 
-        ann = ledger.Annotation(OriginAnnotation(ledger.Amount(5), None, "tag"))
+        ann = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(5), None, "tag"))
         val = ledger.Value(ledger.Amount("10 TTR"))
 
         self.assertFalse(val.has_annotation())        
@@ -2831,7 +2829,7 @@ class ValueTests(unittest.TestCase):
 
     def test_value_strip_annotations(self):
 
-        ann = ledger.Annotation(OriginAnnotation(ledger.Amount(5), None, "tag"))
+        ann = ledger.Annotation(ledger.OriginAnnotation(ledger.Amount(5), None, "tag"))
         val = ledger.Value(ledger.Amount("10 TTR"))
         
         self.assertFalse(val.has_annotation())        
@@ -4584,6 +4582,136 @@ class JournalTests(unittest.TestCase):
 
         acc = jrn.expand_aliases("alias1")
         self.assertIsInstance(acc, ledger.Account)
+
+    def test_journal_add_xact(self):
+        jrn = ledger.Journal()
+        self.assertEqual(0, len(jrn.xacts()))
+
+        xact = ledger.Transaction();
+
+        post = ledger.Posting()
+        post.amount = ledger.Amount("22 JAX")
+        post.account = jrn.find_account("source")
+        xact.add_post(post)
+
+        post = ledger.Posting()
+        post.amount = ledger.Amount("-22 JAX")
+        post.account = jrn.find_account("destination")
+        xact.add_post(post)
+        
+        self.assertTrue(jrn.add_xact(xact))
+        self.assertEqual(1, len(jrn.xacts()))
+
+    def test_journal_remove_xact(self):
+        jrn = ledger.Journal()
+        xact = ledger.Transaction();
+
+        post = ledger.Posting()
+        post.amount = ledger.Amount("22 JAX")
+        post.account = jrn.find_account("source")
+        xact.add_post(post)
+
+        post = ledger.Posting()
+        post.amount = ledger.Amount("-22 JAX")
+        post.account = jrn.find_account("destination")
+        xact.add_post(post)
+        
+        self.assertTrue(jrn.add_xact(xact))
+        self.assertEqual(1, len(jrn.xacts()))
+
+        self.assertTrue(jrn.remove_xact(xact))
+        self.assertFalse(jrn.remove_xact(xact))
+        self.assertEqual(0, len(jrn.xacts()))
+
+    def test_journal_len(self):
+        jrn = ledger.Journal()
+
+        xact = ledger.Transaction();
+        post = ledger.Posting()
+        post.amount = ledger.Amount("22 JAX")
+        post.account = jrn.find_account("source")
+        xact.add_post(post)
+        post = ledger.Posting()
+        post.amount = ledger.Amount("-22 JAX")
+        post.account = jrn.find_account("destination")
+        xact.add_post(post)        
+        jrn.add_xact(xact)
+
+        self.assertEqual(1, len(jrn))
+
+    def test_journal_getitem(self):
+        jrn = ledger.Journal()
+
+        xact = ledger.Transaction();
+        post = ledger.Posting()
+        post.amount = ledger.Amount("22 JAX")
+        post.account = jrn.find_account("source")
+        xact.add_post(post)
+        post = ledger.Posting()
+        post.amount = ledger.Amount("-22 JAX")
+        post.account = jrn.find_account("destination")
+        xact.add_post(post)        
+        jrn.add_xact(xact)
+
+        self.assertIsInstance(jrn[0], ledger.Transaction)
+
+    def test_journal_iter(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        for xact in jrn:
+            self.assertIsInstance(xact, ledger.Transaction)
+
+    def test_journal_xacts(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        xacts = jrn.xacts()
+        self.assertEqual(11, len(xacts))
+        for xact in xacts:
+            self.assertIsInstance(xact, ledger.Transaction)
+
+    def test_journal_auto_xacts(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        xacts = jrn.auto_xacts()
+        self.assertEqual(1, len(xacts))
+        for xact in xacts:
+            self.assertIsInstance(xact, ledger.AutomatedTransaction)
+
+    def test_journal_period_xacts(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        xacts = jrn.period_xacts()
+        self.assertEqual(0, len(xacts))
+
+    def test_journal_sources(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        src = jrn.sources()
+        self.assertEqual(1, len(src))
+        for fileInfo in src:
+            self.assertIsInstance(fileInfo, ledger.FileInfo)
+
+    def test_journal_has_xdata(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        self.assertFalse(jrn.has_xdata())
+
+    def test_journal_clear_xdata(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        jrn.clear_xdata()
+        self.assertFalse(jrn.has_xdata())
+
+    def test_journal_query(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        for post in jrn.query("^expenses:"):
+            self.assertIsInstance(post, ledger.Posting)
+
+    def test_journal_valid(self):
+        ledger.session.close_journal_files()
+        jrn = ledger.session.read_journal(get_drewr3_dat_filename())
+        self.assertTrue(jrn.valid())
 
 
 if __name__ == '__main__':
