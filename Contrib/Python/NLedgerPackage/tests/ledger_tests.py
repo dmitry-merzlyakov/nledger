@@ -67,10 +67,32 @@ class LedgerModuleTests(unittest.TestCase):
         self.assertEqual(0x20, ledger.COMMODITY_BUILTIN)
         self.assertEqual(0x40, ledger.COMMODITY_WALKED)
         self.assertEqual(0x80, ledger.COMMODITY_KNOWN)
+        self.assertEqual(0x100, ledger.COMMODITY_PRIMARY)
         self.assertEqual(0x1000, ledger.COMMODITY_STYLE_TIME_COLON)
 
         self.assertIsNotNone(0x1000, ledger.commodities)
+        self.assertIsInstance(ledger.commodities, ledger.CommodityPool)
         self.assertEqual("<class 'ledger.CommodityPool'>", str(type(ledger.commodities)))
+
+    def test_account_scope_attributes(self):
+        self.assertEqual(0x01, ledger.ACCOUNT_EXT_SORT_CALC)
+        self.assertEqual(0x02, ledger.ACCOUNT_EXT_HAS_NON_VIRTUALS)
+        self.assertEqual(0x04, ledger.ACCOUNT_EXT_HAS_UNB_VIRTUALS)
+        self.assertEqual(0x08, ledger.ACCOUNT_EXT_AUTO_VIRTUALIZE)
+        self.assertEqual(0x10, ledger.ACCOUNT_EXT_VISITED)
+        self.assertEqual(0x20, ledger.ACCOUNT_EXT_MATCHING)
+        self.assertEqual(0x40, ledger.ACCOUNT_EXT_TO_DISPLAY)
+        self.assertEqual(0x80, ledger.ACCOUNT_EXT_DISPLAYED)
+
+        self.assertEqual(0x00, ledger.ACCOUNT_NORMAL)
+        self.assertEqual(0x01, ledger.ACCOUNT_KNOWN)
+        self.assertEqual(0x02, ledger.ACCOUNT_TEMP)
+        self.assertEqual(0x04, ledger.ACCOUNT_GENERATED)
+
+    def test_journalitem_scope_attributes(self):
+        self.assertEqual(0x00, ledger.ITEM_NORMAL)
+        self.assertEqual(0x01, ledger.ITEM_GENERATED)
+        self.assertEqual(0x02, ledger.ITEM_TEMP)
 
     def test_session_attribute(self):
         self.assertIsInstance(ledger.session, ledger.Session)

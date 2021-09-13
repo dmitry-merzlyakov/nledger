@@ -9,11 +9,6 @@ namespace NLedger.Extensibility.Export
 {
     public class Account : BaseExport<Accounts.Account>, IEnumerable<Account>
     {
-        public static readonly uint ACCOUNT_NORMAL = 0x00;
-        public static readonly uint ACCOUNT_KNOWN = 0x01;
-        public static readonly uint ACCOUNT_TEMP = 0x02;
-        public static readonly uint ACCOUNT_GENERATED = 0x04;
-
         public static implicit operator Account(Accounts.Account xdata) => new Account(xdata);
 
         protected Account(Accounts.Account origin) : base(origin)

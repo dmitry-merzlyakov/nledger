@@ -8,15 +8,6 @@ namespace NLedger.Extensibility.Export
 {
     public class AccountXData : BaseExport<Accounts.AccountXData>
     {
-        public static uint ACCOUNT_EXT_SORT_CALC = 0x01;
-        public static uint ACCOUNT_EXT_HAS_NON_VIRTUALS = 0x02;
-        public static uint ACCOUNT_EXT_HAS_UNB_VIRTUALS = 0x04;
-        public static uint ACCOUNT_EXT_AUTO_VIRTUALIZE = 0x08;
-        public static uint ACCOUNT_EXT_VISITED = 0x10;
-        public static uint ACCOUNT_EXT_MATCHING = 0x20;
-        public static uint ACCOUNT_EXT_TO_DISPLAY = 0x40;
-        public static uint ACCOUNT_EXT_DISPLAYED = 0x80;
-
         public static implicit operator AccountXData(Accounts.AccountXData xdata) => new AccountXData(xdata);
 
         protected AccountXData(Accounts.AccountXData origin) : base(origin)

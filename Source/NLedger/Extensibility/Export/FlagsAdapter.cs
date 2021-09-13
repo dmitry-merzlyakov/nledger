@@ -23,9 +23,9 @@ namespace NLedger.Extensibility.Export
         public static FlagsConverter<Accounts.Account> AccountFlagsAdapter()
         {
             return new FlagsConverter<Accounts.Account>().
-                AddMapping(Account.ACCOUNT_KNOWN, a => a.IsKnownAccount, (a, v) => a.IsKnownAccount = v).
-                AddMapping(Account.ACCOUNT_TEMP, a => a.IsTempAccount, (a, v) => a.IsTempAccount = v).
-                AddMapping(Account.ACCOUNT_GENERATED, a => a.IsGeneratedAccount, (a, v) => a.IsGeneratedAccount = v);
+                AddMapping(ExportedConsts.ACCOUNT_KNOWN, a => a.IsKnownAccount, (a, v) => a.IsKnownAccount = v).
+                AddMapping(ExportedConsts.ACCOUNT_TEMP, a => a.IsTempAccount, (a, v) => a.IsTempAccount = v).
+                AddMapping(ExportedConsts.ACCOUNT_GENERATED, a => a.IsGeneratedAccount, (a, v) => a.IsGeneratedAccount = v);
         }
 
         public static FlagsConverter<NLedger.PostXData> PostXDataFlagsAdapter()
@@ -45,14 +45,14 @@ namespace NLedger.Extensibility.Export
         public static FlagsConverter<Accounts.AccountXData> AccountXDataFlagsAdapter()
         {
             return new FlagsConverter<Accounts.AccountXData>().
-                AddMapping(AccountXData.ACCOUNT_EXT_SORT_CALC, a => a.SortCalc, (a, v) => a.SortCalc = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_HAS_NON_VIRTUALS, a => a.HasNonVirtuals, (a, v) => a.HasNonVirtuals = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_HAS_UNB_VIRTUALS, a => a.HasUnbVirtuals, (a, v) => a.HasUnbVirtuals = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_AUTO_VIRTUALIZE, a => a.AutoVirtualize, (a, v) => a.AutoVirtualize = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_VISITED, a => a.Visited, (a, v) => a.Visited = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_MATCHING, a => a.Matching, (a, v) => a.Matching = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_TO_DISPLAY, a => a.ToDisplay, (a, v) => a.ToDisplay = v).
-                AddMapping(AccountXData.ACCOUNT_EXT_DISPLAYED, a => a.Displayed, (a, v) => a.Displayed = v);
+                AddMapping(ExportedConsts.ACCOUNT_EXT_SORT_CALC, a => a.SortCalc, (a, v) => a.SortCalc = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_HAS_NON_VIRTUALS, a => a.HasNonVirtuals, (a, v) => a.HasNonVirtuals = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_HAS_UNB_VIRTUALS, a => a.HasUnbVirtuals, (a, v) => a.HasUnbVirtuals = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_AUTO_VIRTUALIZE, a => a.AutoVirtualize, (a, v) => a.AutoVirtualize = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_VISITED, a => a.Visited, (a, v) => a.Visited = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_MATCHING, a => a.Matching, (a, v) => a.Matching = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_TO_DISPLAY, a => a.ToDisplay, (a, v) => a.ToDisplay = v).
+                AddMapping(ExportedConsts.ACCOUNT_EXT_DISPLAYED, a => a.Displayed, (a, v) => a.Displayed = v);
         }
 
         public static int CommodityFlagsToInt(CommodityFlagsEnum flags) => (int)flags;

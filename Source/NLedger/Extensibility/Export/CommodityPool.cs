@@ -6,23 +6,11 @@ using System.Threading.Tasks;
 
 namespace NLedger.Extensibility.Export
 {
-    public class CommodityPool : BaseExport<Commodities.CommodityPool> // TODO - IDictionary<string,Commodity>
+    public class CommodityPool : BaseExport<Commodities.CommodityPool>
     {
         public static implicit operator CommodityPool(Commodities.CommodityPool commodityPool) => new CommodityPool(commodityPool);
 
         public static CommodityPool commodities => Commodities.CommodityPool.Current;
-
-        public static int COMMODITY_STYLE_DEFAULTS = (int)Commodities.CommodityFlagsEnum.COMMODITY_STYLE_DEFAULTS;
-        public static int COMMODITY_STYLE_SUFFIXED = (int)Commodities.CommodityFlagsEnum.COMMODITY_STYLE_SUFFIXED;
-        public static int COMMODITY_STYLE_SEPARATED = (int)Commodities.CommodityFlagsEnum.COMMODITY_STYLE_SEPARATED;
-        public static int COMMODITY_STYLE_DECIMAL_COMMA = (int)Commodities.CommodityFlagsEnum.COMMODITY_STYLE_DECIMAL_COMMA;
-        public static int COMMODITY_STYLE_TIME_COLON = (int)Commodities.CommodityFlagsEnum.COMMODITY_STYLE_TIME_COLON;
-        public static int COMMODITY_STYLE_THOUSANDS = (int)Commodities.CommodityFlagsEnum.COMMODITY_STYLE_THOUSANDS;
-        public static int COMMODITY_NOMARKET = (int)Commodities.CommodityFlagsEnum.COMMODITY_NOMARKET;
-        public static int COMMODITY_BUILTIN = (int)Commodities.CommodityFlagsEnum.COMMODITY_BUILTIN;
-        public static int COMMODITY_WALKED = (int)Commodities.CommodityFlagsEnum.COMMODITY_WALKED;
-        public static int COMMODITY_KNOWN = (int)Commodities.CommodityFlagsEnum.COMMODITY_KNOWN;
-        public static int COMMODITY_PRIMARY = (int)Commodities.CommodityFlagsEnum.COMMODITY_PRIMARY;
 
         protected CommodityPool(Commodities.CommodityPool origin): base(origin)
         { }
