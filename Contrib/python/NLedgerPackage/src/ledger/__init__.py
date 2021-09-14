@@ -11,6 +11,7 @@
 # NLedger Python interface module
 
 from typing import Iterable, List, Tuple, Dict
+import enum
 import os
 import ntpath
 import sys
@@ -63,8 +64,8 @@ import clr
 
 nledger_extensibility_python_dll_path = getenv("nledger_extensibility_python_dll_path")
 if not bool(nledger_extensibility_python_dll_path):
-    nledger_extensibility_python_dll_path = getpath('../runtime/NLedger.Extensibility.Python.dll')
-assert ntpath.isfile(nledger_extensibility_python_dll_path)
+    nledger_extensibility_python_dll_path = getpath('./runtime/NLedger.Extensibility.Python.dll')
+assert ntpath.isfile(nledger_extensibility_python_dll_path), "Cannot find NLedger binary file: " + nledger_extensibility_python_dll_path
 
 # Adding path to runtime dll to PATH and sending only name fixes a problem in pythonnet:
 # it tries to use Assembly.Load for loading an assembly specified by path and name
@@ -168,6 +169,7 @@ def times_shutdown():
 from NLedger.Extensibility import ExtendedSession
 from NLedger.Extensibility.Export import FlagsAdapter
 from NLedger.Amounts import Amount as OriginAmount
+from NLedger.Amounts import AmountParseFlagsEnum as OriginAmountParseFlagsEnum
 from NLedger.Commodities import CommodityPool as OriginCommodityPool
 from NLedger.Commodities import Commodity as OriginCommodity
 from NLedger.Annotate import AnnotatedCommodity as OriginAnnotatedCommodity
@@ -182,6 +184,7 @@ from NLedger.Scopus import SymbolKindEnum as SymbolKind
 from NLedger.Scopus import Scope as OriginScope
 from NLedger.Scopus import Session as OriginSession
 from NLedger.Items import Item as OriginItem
+from NLedger.Items import ItemStateEnum as OriginItemStateEnum
 from NLedger.Values import ValueTypeEnum as ValueType
 from NLedger.Values import Value as OriginValue
 from NLedger import Balance as OriginBalance
@@ -210,6 +213,7 @@ from System import DateTime
 from System.Globalization import DateTimeStyles
 from System.Collections.Generic import List as NetList
 from System import Tuple as NetTuple
+from System import Enum as NetEnum
 from NLedger.Extensibility.Export import ListAdapter as NetListAdapter
 from NLedger.Extensibility.Export import ExportedConsts
 
@@ -519,7 +523,15 @@ class Expr:
 ###########################
 # Ported from py_amount.cc
 
-from NLedger.Extensibility.Export import ParseFlags     # ParseFlags enum
+class ParseFlags(enum.IntFlag):     # ParseFlags enum
+    Default = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_DEFAULT)
+    Partial = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_PARTIAL)
+    Single = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_SINGLE)
+    NoMigrate = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_NO_MIGRATE)
+    NoReduce = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_NO_REDUCE)
+    NoAssign = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_NO_ASSIGN)
+    OpContext = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_OP_CONTEXT)
+    SoftFail = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_SOFT_FAIL)
 
 class Amount:
 
@@ -776,7 +788,7 @@ class Amount:
             self.origin.Parse(s)
         else:
             assert isinstance(flags, ParseFlags)
-            self.origin.Parse(s, FlagsAdapter.ToAmountFlags(flags))
+            self.origin.Parse(s, NetEnum.ToObject(OriginAmountParseFlagsEnum, flags.value))
 
     @classmethod
     def parse_conversion(cls, larger_str: str, smaller_str: str):
@@ -1160,7 +1172,7 @@ class Commodity:
 
     @property
     def flags(self) -> int:
-        return FlagsAdapter.CommodityFlagsToInt(self.origin.Flags)
+        return FlagsAdapter.EnumToInt(self.origin.Flags)
 
     @flags.setter
     def flags(self, value:int):
@@ -1861,7 +1873,10 @@ ITEM_NORMAL = ExportedConsts.ITEM_NORMAL
 ITEM_GENERATED = ExportedConsts.ITEM_GENERATED
 ITEM_TEMP = ExportedConsts.ITEM_TEMP
 
-from NLedger.Items import ItemStateEnum as State    # State enum
+class State(enum.Enum):  # State enum
+    Uncleared = FlagsAdapter.EnumToInt(OriginItemStateEnum.Uncleared)
+    Cleared = FlagsAdapter.EnumToInt(OriginItemStateEnum.Cleared)
+    Pending = FlagsAdapter.EnumToInt(OriginItemStateEnum.Pending)
 
 class JournalItem(Scope):
 
@@ -1871,7 +1886,7 @@ class JournalItem(Scope):
 
     @property
     def flags(self) -> int:
-        return FlagsAdapter.SupportsFlagsToInt(self.origin.Flags)
+        return FlagsAdapter.EnumToInt(self.origin.Flags)
 
     @flags.setter
     def flags(self, value:int):
@@ -2002,11 +2017,11 @@ class JournalItem(Scope):
 
     @property
     def state(self) -> date:
-        return self.origin.State
+        return State(FlagsAdapter.EnumToInt(self.origin.State))
 
     @state.setter
     def state(self, val: State):
-        self.origin.State = val
+        self.origin.State = NetEnum.ToObject(OriginItemStateEnum, val.value)
 
     def lookup(self, kind: SymbolKind, name: str):
         return self.origin.Lookup(kind, name)

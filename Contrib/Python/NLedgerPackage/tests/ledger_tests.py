@@ -3706,6 +3706,10 @@ class AmountTests(unittest.TestCase):
         amnt.parse("2.00 ZXD", ledger.ParseFlags.NoReduce)
         self.assertEqual(2, amnt.number())
 
+        amnt = ledger.Amount()
+        amnt.parse("2.00 ZXD", ledger.ParseFlags.NoReduce | ledger.ParseFlags.Partial)
+        self.assertEqual(2, amnt.number())
+
     def test_amount_parse_conversion(self):
 
         Amount.parse_conversion("100 FTR", "10 FTY")
@@ -3718,6 +3722,17 @@ class AmountTests(unittest.TestCase):
 
         amnt = ledger.Amount("2.00 ZXD")
         self.assertTrue(2, amnt.valid())
+
+class ParseFlagsTests(unittest.TestCase):
+    def test_parseflags_members(self):
+        self.assertEqual(ledger.ParseFlags.Default, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_DEFAULT, "d")))
+        self.assertEqual(ledger.ParseFlags.Partial, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_PARTIAL, "d")))
+        self.assertEqual(ledger.ParseFlags.Single, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_SINGLE, "d")))
+        self.assertEqual(ledger.ParseFlags.NoMigrate, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_NO_MIGRATE, "d")))
+        self.assertEqual(ledger.ParseFlags.NoReduce, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_NO_REDUCE, "d")))
+        self.assertEqual(ledger.ParseFlags.NoAssign, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_NO_ASSIGN, "d")))
+        self.assertEqual(ledger.ParseFlags.OpContext, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_OP_CONTEXT, "d")))
+        self.assertEqual(ledger.ParseFlags.SoftFail, int(ledger.NetEnum.Format(ledger.OriginAmountParseFlagsEnum, ledger.OriginAmountParseFlagsEnum.PARSE_SOFT_FAIL, "d")))
 
 class BalanceTests(unittest.TestCase):
 
@@ -4158,6 +4173,12 @@ class PositionTests(unittest.TestCase):
         self.assertEqual(10, pos.end_line)
         pos.end_line = 0
         self.assertEqual(0, pos.end_line)
+
+class StateTests(unittest.TestCase):
+    def test_parseflags_members(self):
+        self.assertEqual(ledger.State.Uncleared.value, int(ledger.NetEnum.Format(ledger.OriginItemStateEnum, ledger.OriginItemStateEnum.Uncleared, "d")))
+        self.assertEqual(ledger.State.Cleared.value, int(ledger.NetEnum.Format(ledger.OriginItemStateEnum, ledger.OriginItemStateEnum.Cleared, "d")))
+        self.assertEqual(ledger.State.Pending.value, int(ledger.NetEnum.Format(ledger.OriginItemStateEnum, ledger.OriginItemStateEnum.Pending, "d")))
 
 class JournalItemTests(unittest.TestCase):
 

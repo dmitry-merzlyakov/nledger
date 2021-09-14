@@ -55,12 +55,8 @@ namespace NLedger.Extensibility.Export
                 AddMapping(ExportedConsts.ACCOUNT_EXT_DISPLAYED, a => a.Displayed, (a, v) => a.Displayed = v);
         }
 
-        public static int CommodityFlagsToInt(CommodityFlagsEnum flags) => (int)flags;
-
-        public static int SupportsFlagsToInt(SupportsFlagsEnum flags) => (int)flags;
-
         public static bool AccountHasXFlags(Accounts.Account account, uint flags) => account?.HasXFlags(axd => AccountXDataFlagsAdapter().HasFlags(axd, flags)) ?? false;
 
-        public static Amounts.AmountParseFlagsEnum ToAmountFlags(ParseFlags flags) => (Amounts.AmountParseFlagsEnum)flags;
+        public static int EnumToInt(Enum enumValue) => ((IConvertible)enumValue).ToInt32(System.Globalization.CultureInfo.CurrentCulture);
     }
 }
