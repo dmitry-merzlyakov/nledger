@@ -101,7 +101,6 @@ from NLedger.Extensibility.Export import AnnotatedCommodity as ExportedAnnotated
 from NLedger.Extensibility.Export import Amount as ExportedAmount
 from NLedger.Extensibility.Export import ValueType as ExportedValueType
 from NLedger.Extensibility.Export import Value as ExportedValue
-from NLedger.Extensibility.Export import ValueType as ExportedValueType
 from NLedger.Extensibility.Export import Account as ExportedAccount
 from NLedger.Extensibility.Export import AccountXData as ExportedAccountXData
 from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountXDataDetails
@@ -121,44 +120,6 @@ from NLedger.Extensibility.Export import Times as ExportedTimes
 from NLedger.Extensibility.Export import Transaction as ExportedTransaction
 from NLedger.Extensibility.Export import AutomatedTransaction as ExportedAutomatedTransaction
 from NLedger.Extensibility.Export import PeriodicTransaction as ExportedPeriodicTransaction
-
-ANNOTATION_PRICE_CALCULATED = ExportedAnnotation.ANNOTATION_PRICE_CALCULATED
-ANNOTATION_PRICE_FIXATED = ExportedAnnotation.ANNOTATION_PRICE_FIXATED
-ANNOTATION_PRICE_NOT_PER_UNIT = ExportedAnnotation.ANNOTATION_PRICE_NOT_PER_UNIT
-ANNOTATION_DATE_CALCULATED = ExportedAnnotation.ANNOTATION_DATE_CALCULATED
-ANNOTATION_TAG_CALCULATED = ExportedAnnotation.ANNOTATION_TAG_CALCULATED
-ANNOTATION_VALUE_EXPR_CALCULATED = ExportedAnnotation.ANNOTATION_VALUE_EXPR_CALCULATED
-
-POST_VIRTUAL = ExportedPosting.POST_VIRTUAL
-POST_MUST_BALANCE = ExportedPosting.POST_MUST_BALANCE
-POST_CALCULATED = ExportedPosting.POST_CALCULATED
-POST_COST_CALCULATED = ExportedPosting.POST_COST_CALCULATED
-
-POST_EXT_RECEIVED = ExportedPostingXData.POST_EXT_RECEIVED
-POST_EXT_HANDLED = ExportedPostingXData.POST_EXT_HANDLED
-POST_EXT_DISPLAYED = ExportedPostingXData.POST_EXT_DISPLAYED
-POST_EXT_DIRECT_AMT = ExportedPostingXData.POST_EXT_DIRECT_AMT
-POST_EXT_SORT_CALC = ExportedPostingXData.POST_EXT_SORT_CALC
-POST_EXT_COMPOUND = ExportedPostingXData.POST_EXT_COMPOUND
-POST_EXT_VISITED = ExportedPostingXData.POST_EXT_VISITED
-POST_EXT_MATCHES = ExportedPostingXData.POST_EXT_MATCHES
-POST_EXT_CONSIDERED = ExportedPostingXData.POST_EXT_CONSIDERED
-
-
-# Times functions
-
-def parse_datetime(str):
-    return Times.parse_datetime(str)
-
-def parse_date(str):
-    return Times.parse_date(str)
-
-def times_initialize():
-    Times.times_initialize()
-
-def times_shutdown():
-    Times.times_shutdown()
-
 
 # Wrappers for NLedger exported classes
 # They extend base export definitions with Python-related specifics
@@ -185,7 +146,7 @@ from NLedger.Scopus import Scope as OriginScope
 from NLedger.Scopus import Session as OriginSession
 from NLedger.Items import Item as OriginItem
 from NLedger.Items import ItemStateEnum as OriginItemStateEnum
-from NLedger.Values import ValueTypeEnum as ValueType
+from NLedger.Values import ValueTypeEnum as OriginValueTypeEnum
 from NLedger.Values import Value as OriginValue
 from NLedger import Balance as OriginBalance
 from NLedger import Mask as OriginMask
@@ -465,6 +426,61 @@ class FileInfoList(NList):
 
     def to_pitem(self, item):
         return FileInfo.from_origin(item)
+
+###########################
+# Ported extras
+
+ANNOTATION_PRICE_CALCULATED = ExportedConsts.ANNOTATION_PRICE_CALCULATED
+ANNOTATION_PRICE_FIXATED = ExportedConsts.ANNOTATION_PRICE_FIXATED
+ANNOTATION_PRICE_NOT_PER_UNIT = ExportedConsts.ANNOTATION_PRICE_NOT_PER_UNIT
+ANNOTATION_DATE_CALCULATED = ExportedConsts.ANNOTATION_DATE_CALCULATED
+ANNOTATION_TAG_CALCULATED = ExportedConsts.ANNOTATION_TAG_CALCULATED
+ANNOTATION_VALUE_EXPR_CALCULATED = ExportedConsts.ANNOTATION_VALUE_EXPR_CALCULATED
+
+class Mask:
+
+    origin = None
+
+    def __init__(self, val = None) -> None:
+        if val is None:
+            self.origin = OriginMask()
+        elif isinstance(val, OriginMask):
+            self.origin = val
+        else:
+            self.origin = OriginMask(val)
+
+    @classmethod
+    def from_origin(cls, origin):
+        return Mask(origin) if not origin is None else None
+
+    def match(self, text: str) -> bool:
+        return self.origin.Match(text)
+
+    @property
+    def is_empty(self) -> bool:
+        return self.origin.IsEmpty
+
+    def str(self) -> str:
+        return self.origin.Str()
+
+    __str__ = str
+
+###########################
+# Ported from py_times.cc
+
+# Times functions
+
+def parse_datetime(str):
+    return Times.parse_datetime(str)
+
+def parse_date(str):
+    return Times.parse_date(str)
+
+def times_initialize():
+    Times.times_initialize()
+
+def times_shutdown():
+    Times.times_shutdown()
 
 ###########################
 # Ported from py_expr.cc
@@ -1804,8 +1820,8 @@ class Scope:
         return self.origin.Description
 
     @property
-    def type_context(self) -> ValueType:
-        return self.origin.TypeContext
+    def type_context(self) -> 'ValueType':
+        return ValueType(FlagsAdapter.EnumToInt(self.origin.TypeContext))
 
     @property
     def type_required(self) -> bool:
@@ -2029,7 +2045,18 @@ class JournalItem(Scope):
     def valid(self):
         return self.origin.Valid()
 
-# Posts
+###########################
+# Ported from py_post.cc
+
+POST_EXT_RECEIVED = ExportedConsts.POST_EXT_RECEIVED
+POST_EXT_HANDLED = ExportedConsts.POST_EXT_HANDLED
+POST_EXT_DISPLAYED = ExportedConsts.POST_EXT_DISPLAYED
+POST_EXT_DIRECT_AMT = ExportedConsts.POST_EXT_DIRECT_AMT
+POST_EXT_SORT_CALC = ExportedConsts.POST_EXT_SORT_CALC
+POST_EXT_COMPOUND = ExportedConsts.POST_EXT_COMPOUND
+POST_EXT_VISITED = ExportedConsts.POST_EXT_VISITED
+POST_EXT_MATCHES = ExportedConsts.POST_EXT_MATCHES
+POST_EXT_CONSIDERED = ExportedConsts.POST_EXT_CONSIDERED
 
 class PostingXData:
 
@@ -2127,6 +2154,11 @@ class PostingXData:
     def sort_values(self) -> Iterable:
         return SortValueList(NetListAdapter.GetPostXDataSortValues(self.origin))
 
+POST_VIRTUAL = ExportedConsts.POST_VIRTUAL
+POST_MUST_BALANCE = ExportedConsts.POST_MUST_BALANCE
+POST_CALCULATED = ExportedConsts.POST_CALCULATED
+POST_COST_CALCULATED = ExportedConsts.POST_COST_CALCULATED
+
 class Posting(JournalItem):
 
     def __init__(self, origin = None) -> None:
@@ -2213,7 +2245,8 @@ class Posting(JournalItem):
     def set_reported_account(self, acc: Account):
         self.origin.ReportedAccount = acc.origin if not acc is None else None
 
-# Transactions
+###########################
+# Ported from py_xact.cc
 
 class TransactionBase(JournalItem):
 
@@ -2389,8 +2422,6 @@ class FileInfo:
     def from_stream(self) -> bool:
         return self.origin.FromStream
 
-# Journal
-
 class Journal:
 
     origin = None
@@ -2495,8 +2526,6 @@ class Journal:
 ###########################
 # Ported from py_session.cc
 
-# Session
-
 class Session(Scope):
 
     origin = None
@@ -2535,35 +2564,22 @@ def read_journal_from_string(data: str) -> Journal:
     assert isinstance(session, Session)
     return session.read_journal_from_string(data)
 
-# Values
+###########################
+# Ported from py_value.cc
 
-class Mask:
-
-    origin = None
-
-    def __init__(self, val = None) -> None:
-        if val is None:
-            self.origin = OriginMask()
-        elif isinstance(val, OriginMask):
-            self.origin = val
-        else:
-            self.origin = OriginMask(val)
-
-    @classmethod
-    def from_origin(cls, origin):
-        return Mask(origin) if not origin is None else None
-
-    def match(self, text: str) -> bool:
-        return self.origin.Match(text)
-
-    @property
-    def is_empty(self) -> bool:
-        return self.origin.IsEmpty
-
-    def str(self) -> str:
-        return self.origin.Str()
-
-    __str__ = str
+class ValueType(enum.Enum):  # ValueType enum
+    Void = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Void)
+    Boolean = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Boolean)
+    DateTime = FlagsAdapter.EnumToInt(OriginValueTypeEnum.DateTime)
+    Date = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Date)
+    Integer = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Integer)
+    Amount = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Amount)
+    Balance = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Balance)
+    String = FlagsAdapter.EnumToInt(OriginValueTypeEnum.String)
+    Mask = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Mask)
+    Sequence = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Sequence)
+    Scope = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Scope)
+    Any = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Any)
 
 class Value:
 
@@ -2590,9 +2606,6 @@ class Value:
             return None
         return val if isinstance(val, Value) else Value(val)
 
-    def type(self) -> ValueType:
-        return self.origin.Type
-
     def is_equal_to(self, val) -> bool:
         return self.origin.IsEqualTo(val.origin)
 
@@ -2603,49 +2616,49 @@ class Value:
         return self.origin.IsGreaterThan(val.origin)
 
     def __eq__(self, o: object) -> bool:
-        return self.origin == Value.to_value(o).origin
+        return OriginValue.op_Equality(self.origin, Value.to_value(o).origin if not o is None else None)
 
     def __ne__(self, o: object) -> bool:
-        return self.origin != Value.to_value(o).origin
+        return OriginValue.op_Inequality(self.origin, Value.to_value(o).origin if not o is None else None)
 
     def __bool__(self) -> bool:
         return self.origin.Bool
 
     def __lt__(self, o: object) -> bool:
-        return self.origin < Value.to_value(o).origin
+        return OriginValue.op_LessThan(self.origin, Value.to_value(o).origin if not o is None else None)
 
     def __le__(self, o: object) -> bool:
-        return self.origin <= Value.to_value(o).origin
+        return OriginValue.op_LessThanOrEqual(self.origin, Value.to_value(o).origin if not o is None else None)
 
     def __gt__(self, o: object) -> bool:
-        return self.origin > Value.to_value(o).origin
+        return OriginValue.op_GreaterThan(self.origin, Value.to_value(o).origin if not o is None else None)
 
     def __ge__(self, o: object) -> bool:
-        return self.origin >= Value.to_value(o).origin
+        return OriginValue.op_GreaterThanOrEqual(self.origin, Value.to_value(o).origin if not o is None else None)
 
     def __add__(self, o: object) -> 'Value':
-        return Value.to_value(self.origin + Value.to_value(o).origin)
+        return Value.to_value(OriginValue.op_Addition(self.origin, Value.to_value(o).origin))
 
     def __radd__(self, o: object) -> 'Value':
-        return Value.to_value(Value.to_value(o).origin + self.origin)
+        return Value.to_value(OriginValue.op_Addition(Value.to_value(o).origin, self.origin))
 
     def __sub__(self, o: object) -> 'Value':
-        return Value.to_value(self.origin - Value.to_value(o).origin)
+        return Value.to_value(OriginValue.op_Subtraction(self.origin, Value.to_value(o).origin))
 
     def __rsub__(self, o: object) -> 'Value':
-        return Value.to_value(Value.to_value(o).origin - self.origin)
+        return Value.to_value(OriginValue.op_Subtraction(Value.to_value(o).origin, self.origin))
 
     def __mul__(self, o: object) -> 'Value':
-        return Value.to_value(self.origin * Value.to_value(o).origin)
+        return Value.to_value(OriginValue.op_Multiply(self.origin, Value.to_value(o).origin))
 
     def __rmul__(self, o: object) -> 'Value':
-        return Value.to_value(Value.to_value(o).origin * self.origin)
+        return Value.to_value(OriginValue.op_Multiply(Value.to_value(o).origin, self.origin))
 
     def __truediv__(self, o: object) -> 'Value':
-        return Value.to_value(self.origin / Value.to_value(o).origin)
+        return Value.to_value(OriginValue.op_Division(self.origin, Value.to_value(o).origin))
 
     def __rtruediv__(self, o: object) -> 'Value':
-        return Value.to_value(Value.to_value(o).origin / self.origin)
+        return Value.to_value(OriginValue.op_Division(Value.to_value(o).origin, self.origin))
 
     def negated(self) -> 'Value':
         return Value.to_value(self.origin.Negated())
@@ -2657,7 +2670,7 @@ class Value:
         self.origin.InPlaceNot()
 
     def __neg__(self) -> 'Value':
-        return Value.to_value(-self.origin)
+        return Value.to_value(OriginValue.op_UnaryNegation(self.origin))
 
     def abs(self) -> 'Value':
         return Value.to_value(self.origin.Abs())
@@ -2739,61 +2752,61 @@ class Value:
         return OriginValue.IsNullOrEmpty(self.origin)
 
     def type(self) -> ValueType:
-        return self.origin.Type
+        return ValueType(FlagsAdapter.EnumToInt(self.origin.Type))
 
     def is_type(self, type_enum: ValueType) -> bool:
-        return self.origin.Type == type_enum
+        return self.type() == type_enum
 
     def is_boolean(self) -> bool:
-        return self.origin.Type == ValueType.Boolean
+        return self.type() == ValueType.Boolean
 
     def set_boolean(self, val: bool):
         self.origin.SetBoolean(val)
 
     def is_datetime(self) -> bool:
-        return self.origin.Type == ValueType.DateTime
+        return self.type() == ValueType.DateTime
 
     def set_datetime(self, val: datetime):
         self.origin.SetDateTime(to_ndatetime(val))
 
     def is_date(self) -> bool:
-        return self.origin.Type == ValueType.Date
+        return self.type() == ValueType.Date
 
     def set_date(self, val: date):
         self.origin.SetDate(to_ndate(val))
 
     def is_long(self) -> bool:
-        return self.origin.Type == ValueType.Integer
+        return self.type() == ValueType.Integer
 
     def set_long(self, val: int):
         self.origin.SetLong(val)
 
     def is_amount(self) -> bool:
-        return self.origin.Type == ValueType.Amount
+        return self.type() == ValueType.Amount
 
     def set_amount(self, val: Amount):
         self.origin.SetAmount(val.origin)
 
     def is_balance(self) -> bool:
-        return self.origin.Type == ValueType.Balance
+        return self.type() == ValueType.Balance
 
     def set_balance(self, val: Balance):
         self.origin.SetBalance(val.origin)
 
     def is_string(self) -> bool:
-        return self.origin.Type == ValueType.String
+        return self.type() == ValueType.String
 
     def set_string(self, val: str):
         self.origin.SetString(val)
 
     def is_mask(self) -> bool:
-        return self.origin.Type == ValueType.Mask
+        return self.type() == ValueType.Mask
 
-    def set_mask(self, val: Mask):
+    def set_mask(self, val: 'Mask'):
         self.origin.SetMask(val.origin)
 
     def is_sequence(self) -> bool:
-        return self.origin.Type == ValueType.Sequence
+        return self.type() == ValueType.Sequence
 
     def set_sequence(self, val: Iterable):
         NetListAdapter.SetValueSequence(self.origin, ValueList(val).origin)
@@ -2823,7 +2836,7 @@ class Value:
 
     __str__ = to_string
 
-    def to_mask(self) -> Mask:
+    def to_mask(self) -> 'Mask':
         return Mask.from_origin(self.origin.AsMask)
 
     def to_sequence(self) -> Iterable:
@@ -2833,10 +2846,12 @@ class Value:
         return self.origin.Dump()
 
     def casted(self, type: ValueType) -> 'Value':
-        return Value.to_value(self.origin.Casted(type))
+        ntype = NetEnum.ToObject(OriginValueTypeEnum, type.value)
+        return Value.to_value(self.origin.Casted(ntype))
 
     def in_place_cast(self, type: ValueType):
-        self.origin.InPlaceCast(type)
+        ntype = NetEnum.ToObject(OriginValueTypeEnum, type.value)
+        self.origin.InPlaceCast(ntype)
 
     def simplified(self) -> 'Value':
         return Value.to_value(self.origin.Simplified())
@@ -2898,7 +2913,8 @@ def mask_value(s: str) -> Value:
 def value_context(val: Value) -> str:
     return OriginValue.ValueContext(val.origin)
 
-# Routine to acquire and release output streams
+###########################
+# Routine to acquire and release Python output streams
 
 from io import StringIO
 

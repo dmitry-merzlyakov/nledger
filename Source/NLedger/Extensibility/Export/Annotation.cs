@@ -14,13 +14,6 @@ namespace NLedger.Extensibility.Export
         public static bool operator ==(Annotation annLeft, Annotation annRight) => annLeft.Origin == annRight.Origin;
         public static bool operator !=(Annotation annLeft, Annotation annRight) => annLeft.Origin != annRight.Origin;
 
-        public const int ANNOTATION_PRICE_CALCULATED = 0x01;
-        public const int ANNOTATION_PRICE_FIXATED = 0x02;
-        public const int ANNOTATION_PRICE_NOT_PER_UNIT = 0x04;
-        public const int ANNOTATION_DATE_CALCULATED = 0x08;
-        public const int ANNOTATION_TAG_CALCULATED = 0x10;
-        public const int ANNOTATION_VALUE_EXPR_CALCULATED = 0x20;
-
         protected Annotation(Annotate.Annotation origin) : base(origin)
         { }
 

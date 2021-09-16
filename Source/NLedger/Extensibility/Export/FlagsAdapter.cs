@@ -12,12 +12,12 @@ namespace NLedger.Extensibility.Export
         public static FlagsConverter<Annotate.Annotation> AnnotationFlagsAdapter()
         {
             return new FlagsConverter<Annotate.Annotation>().
-                AddMapping(Annotation.ANNOTATION_PRICE_CALCULATED, a => a.IsPriceCalculated, (a, v) => a.IsPriceCalculated = v).
-                AddMapping(Annotation.ANNOTATION_PRICE_FIXATED, a => a.IsPriceFixated, (a, v) => a.IsPriceFixated = v).
-                AddMapping(Annotation.ANNOTATION_PRICE_NOT_PER_UNIT, a => a.IsPriceNotPerUnit, (a, v) => a.IsPriceNotPerUnit = v).
-                AddMapping(Annotation.ANNOTATION_DATE_CALCULATED, a => a.IsDateCalculated, (a, v) => a.IsDateCalculated = v).
-                AddMapping(Annotation.ANNOTATION_TAG_CALCULATED, a => a.IsTagCalculated, (a, v) => a.IsTagCalculated = v).
-                AddMapping(Annotation.ANNOTATION_VALUE_EXPR_CALCULATED, a => a.IsValueExprCalculated, (a, v) => a.IsValueExprCalculated = v);
+                AddMapping(ExportedConsts.ANNOTATION_PRICE_CALCULATED, a => a.IsPriceCalculated, (a, v) => a.IsPriceCalculated = v).
+                AddMapping(ExportedConsts.ANNOTATION_PRICE_FIXATED, a => a.IsPriceFixated, (a, v) => a.IsPriceFixated = v).
+                AddMapping(ExportedConsts.ANNOTATION_PRICE_NOT_PER_UNIT, a => a.IsPriceNotPerUnit, (a, v) => a.IsPriceNotPerUnit = v).
+                AddMapping(ExportedConsts.ANNOTATION_DATE_CALCULATED, a => a.IsDateCalculated, (a, v) => a.IsDateCalculated = v).
+                AddMapping(ExportedConsts.ANNOTATION_TAG_CALCULATED, a => a.IsTagCalculated, (a, v) => a.IsTagCalculated = v).
+                AddMapping(ExportedConsts.ANNOTATION_VALUE_EXPR_CALCULATED, a => a.IsValueExprCalculated, (a, v) => a.IsValueExprCalculated = v);
         }
 
         public static FlagsConverter<Accounts.Account> AccountFlagsAdapter()
@@ -31,15 +31,15 @@ namespace NLedger.Extensibility.Export
         public static FlagsConverter<NLedger.PostXData> PostXDataFlagsAdapter()
         {
             return new FlagsConverter<NLedger.PostXData>().
-                AddMapping(PostingXData.POST_EXT_RECEIVED, x => x.Received, (x, v) => x.Received = v).
-                AddMapping(PostingXData.POST_EXT_HANDLED, x => x.Handled, (x, v) => x.Handled = v).
-                AddMapping(PostingXData.POST_EXT_DISPLAYED, x => x.Displayed, (x, v) => x.Displayed = v).
-                AddMapping(PostingXData.POST_EXT_DIRECT_AMT, x => x.DirectAmt, (x, v) => x.DirectAmt = v).
-                AddMapping(PostingXData.POST_EXT_SORT_CALC, x => x.SortCalc, (x, v) => x.SortCalc = v).
-                AddMapping(PostingXData.POST_EXT_COMPOUND, x => x.Compound, (x, v) => x.Compound = v).
-                AddMapping(PostingXData.POST_EXT_VISITED, x => x.Visited, (x, v) => x.Visited = v).
-                AddMapping(PostingXData.POST_EXT_MATCHES, x => x.Matches, (x, v) => x.Matches = v).
-                AddMapping(PostingXData.POST_EXT_CONSIDERED, x => x.Considered, (x, v) => x.Considered = v);
+                AddMapping(ExportedConsts.POST_EXT_RECEIVED, x => x.Received, (x, v) => x.Received = v).
+                AddMapping(ExportedConsts.POST_EXT_HANDLED, x => x.Handled, (x, v) => x.Handled = v).
+                AddMapping(ExportedConsts.POST_EXT_DISPLAYED, x => x.Displayed, (x, v) => x.Displayed = v).
+                AddMapping(ExportedConsts.POST_EXT_DIRECT_AMT, x => x.DirectAmt, (x, v) => x.DirectAmt = v).
+                AddMapping(ExportedConsts.POST_EXT_SORT_CALC, x => x.SortCalc, (x, v) => x.SortCalc = v).
+                AddMapping(ExportedConsts.POST_EXT_COMPOUND, x => x.Compound, (x, v) => x.Compound = v).
+                AddMapping(ExportedConsts.POST_EXT_VISITED, x => x.Visited, (x, v) => x.Visited = v).
+                AddMapping(ExportedConsts.POST_EXT_MATCHES, x => x.Matches, (x, v) => x.Matches = v).
+                AddMapping(ExportedConsts.POST_EXT_CONSIDERED, x => x.Considered, (x, v) => x.Considered = v);
         }
 
         public static FlagsConverter<Accounts.AccountXData> AccountXDataFlagsAdapter()

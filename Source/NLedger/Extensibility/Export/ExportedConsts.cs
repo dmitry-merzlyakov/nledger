@@ -37,5 +37,27 @@ namespace NLedger.Extensibility.Export
         public static readonly uint ITEM_NORMAL = (uint)SupportsFlagsEnum.ITEM_NORMAL;
         public static readonly uint ITEM_GENERATED = (uint)SupportsFlagsEnum.ITEM_GENERATED;
         public static readonly uint ITEM_TEMP = (uint)SupportsFlagsEnum.ITEM_TEMP;
+
+        public static readonly uint POST_EXT_RECEIVED = 0x001;
+        public static readonly uint POST_EXT_HANDLED = 0x002;
+        public static readonly uint POST_EXT_DISPLAYED = 0x004;
+        public static readonly uint POST_EXT_DIRECT_AMT = 0x008;
+        public static readonly uint POST_EXT_SORT_CALC = 0x010;
+        public static readonly uint POST_EXT_COMPOUND = 0x020;
+        public static readonly uint POST_EXT_VISITED = 0x040;
+        public static readonly uint POST_EXT_MATCHES = 0x080;
+        public static readonly uint POST_EXT_CONSIDERED = 0x100;
+
+        public static readonly uint POST_VIRTUAL = (uint)SupportsFlagsEnum.POST_VIRTUAL;
+        public static readonly uint POST_MUST_BALANCE = (uint)SupportsFlagsEnum.POST_MUST_BALANCE;
+        public static readonly uint POST_CALCULATED = (uint)SupportsFlagsEnum.POST_CALCULATED;
+        public static readonly uint POST_COST_CALCULATED = (uint)SupportsFlagsEnum.POST_COST_CALCULATED;
+
+        public static readonly uint ANNOTATION_PRICE_CALCULATED = 0x01;
+        public static readonly uint ANNOTATION_PRICE_FIXATED = 0x02;
+        public static readonly uint ANNOTATION_PRICE_NOT_PER_UNIT = 0x04;
+        public static readonly uint ANNOTATION_DATE_CALCULATED = 0x08;
+        public static readonly uint ANNOTATION_TAG_CALCULATED = 0x10;
+        public static readonly uint ANNOTATION_VALUE_EXPR_CALCULATED = 0x20;
     }
 }

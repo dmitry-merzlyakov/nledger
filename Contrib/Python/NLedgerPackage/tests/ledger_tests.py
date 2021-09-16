@@ -94,6 +94,31 @@ class LedgerModuleTests(unittest.TestCase):
         self.assertEqual(0x01, ledger.ITEM_GENERATED)
         self.assertEqual(0x02, ledger.ITEM_TEMP)
 
+    def test_postingxdata_attributes(self):
+        self.assertEqual(0x01, ledger.POST_EXT_RECEIVED)
+        self.assertEqual(0x02, ledger.POST_EXT_HANDLED)
+        self.assertEqual(0x04, ledger.POST_EXT_DISPLAYED)
+        self.assertEqual(0x08, ledger.POST_EXT_DIRECT_AMT)
+        self.assertEqual(0x10, ledger.POST_EXT_SORT_CALC)
+        self.assertEqual(0x20, ledger.POST_EXT_COMPOUND)
+        self.assertEqual(0x40, ledger.POST_EXT_VISITED)
+        self.assertEqual(0x80, ledger.POST_EXT_MATCHES)
+        self.assertEqual(0x100, ledger.POST_EXT_CONSIDERED)
+
+    def test_posting_attributes(self):
+        self.assertEqual(0x10, ledger.POST_VIRTUAL)
+        self.assertEqual(0x20, ledger.POST_MUST_BALANCE)
+        self.assertEqual(0x40, ledger.POST_CALCULATED)
+        self.assertEqual(0x80, ledger.POST_COST_CALCULATED)
+
+    def test_annotation_attributes(self):
+        self.assertEqual(0x01, ledger.ANNOTATION_PRICE_CALCULATED)
+        self.assertEqual(0x02, ledger.ANNOTATION_PRICE_FIXATED)
+        self.assertEqual(0x04, ledger.ANNOTATION_PRICE_NOT_PER_UNIT)
+        self.assertEqual(0x08, ledger.ANNOTATION_DATE_CALCULATED)
+        self.assertEqual(0x10, ledger.ANNOTATION_TAG_CALCULATED)
+        self.assertEqual(0x20, ledger.ANNOTATION_VALUE_EXPR_CALCULATED)
+
     def test_session_attribute(self):
         self.assertIsInstance(ledger.session, ledger.Session)
 

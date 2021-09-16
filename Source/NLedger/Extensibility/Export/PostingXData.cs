@@ -9,16 +9,6 @@ namespace NLedger.Extensibility.Export
 {
     public class PostingXData : BaseExport<NLedger.PostXData>
     {
-        public static uint POST_EXT_RECEIVED = 0x001;
-        public static uint POST_EXT_HANDLED = 0x002;
-        public static uint POST_EXT_DISPLAYED = 0x004;
-        public static uint POST_EXT_DIRECT_AMT = 0x008;
-        public static uint POST_EXT_SORT_CALC = 0x010;
-        public static uint POST_EXT_COMPOUND = 0x020;
-        public static uint POST_EXT_VISITED = 0x040;
-        public static uint POST_EXT_MATCHES = 0x080;
-        public static uint POST_EXT_CONSIDERED = 0x100;
-
         public static implicit operator PostingXData(NLedger.PostXData postXData) => new PostingXData(postXData);
 
         protected PostingXData(NLedger.PostXData postXData) : base(postXData)
