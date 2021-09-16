@@ -122,6 +122,12 @@ class LedgerModuleTests(unittest.TestCase):
     def test_session_attribute(self):
         self.assertIsInstance(ledger.session, ledger.Session)
 
+    def test_times_parse_datetime(self):
+        self.assertEqual(datetime(2021, 5, 22, 18, 55, 59), ledger.parse_datetime("2021/5/22 18:55:59"))
+
+    def test_times_parse_date(self):
+        self.assertEqual(date(2021, 5, 22), ledger.parse_date("2021/5/22"))
+
     def test_session_read_journal(self):
         filename = get_drewr3_dat_filename()
         jrn = ledger.read_journal(filename)

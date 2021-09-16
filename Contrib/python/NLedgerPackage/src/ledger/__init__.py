@@ -81,105 +81,72 @@ if not(dllFolder in sys.path):
 clr.AddReference(dllName)
 
 ############################
-# Import NLedger classes
-
-# Import library classes and specifying custom helper methods
+# Import NLedger library
 
 # Module initialization
 
 from NLedger.Extensibility.Python import PythonSession
 PythonSession.PythonModuleInitialization()
 
-# Export Ledger classes and globals
+# Import origin NLedger classes and globals
 
-from NLedger.Extensibility.Export import CommodityPool as ExportedCommodityPool
-from NLedger.Extensibility.Export import Commodity as ExportedCommodity
-from NLedger.Extensibility.Export import KeepDetails as ExportedKeepDetails
-from NLedger.Extensibility.Export import PricePoint as ExportedPricePoint
-from NLedger.Extensibility.Export import Annotation as ExportedAnnotation
-from NLedger.Extensibility.Export import AnnotatedCommodity as ExportedAnnotatedCommodity
-from NLedger.Extensibility.Export import Amount as ExportedAmount
-from NLedger.Extensibility.Export import ValueType as ExportedValueType
-from NLedger.Extensibility.Export import Value as ExportedValue
-from NLedger.Extensibility.Export import Account as ExportedAccount
-from NLedger.Extensibility.Export import AccountXData as ExportedAccountXData
-from NLedger.Extensibility.Export import AccountXDataDetails as ExportedAccountXDataDetails
-from NLedger.Extensibility.Export import Balance as ExportedBalance
-from NLedger.Extensibility.Export import Expr as ExportedExpr
-from NLedger.Extensibility.Export import Position as ExportedPosition
-from NLedger.Extensibility.Export import Journal as ExportedJournal
-from NLedger.Extensibility.Export import JournalItem as ExportedJournalItem
-from NLedger.Extensibility.Export import State as ExportedState 
-from NLedger.Extensibility.Export import Mask as ExportedMask
-from NLedger.Extensibility.Export import Posting as ExportedPosting
-from NLedger.Extensibility.Export import PostingXData as ExportedPostingXData
-from NLedger.Extensibility.Export import SymbolKind as ExportedSymbolKind
-from NLedger.Extensibility.Export import Session as ExportedSession
-from NLedger.Extensibility.Export import SortValue as ExportedSortValue
-from NLedger.Extensibility.Export import Times as ExportedTimes
-from NLedger.Extensibility.Export import Transaction as ExportedTransaction
-from NLedger.Extensibility.Export import AutomatedTransaction as ExportedAutomatedTransaction
-from NLedger.Extensibility.Export import PeriodicTransaction as ExportedPeriodicTransaction
-
-# Wrappers for NLedger exported classes
-# They extend base export definitions with Python-related specifics
-# Basically, python code is needed to manage two cases: 
-# a) when operation result is an object of .Net class and we need to wrap it up (e.g. overloaded operators like +); 
-# b) when an operation parameter is a python type and cannot be implicitly associated with a .Net method (e.g. datetime.datetime vs DateTime)
-
-from NLedger.Extensibility import ExtendedSession
-from NLedger.Extensibility.Export import FlagsAdapter
-from NLedger.Amounts import Amount as OriginAmount
-from NLedger.Amounts import AmountParseFlagsEnum as OriginAmountParseFlagsEnum
-from NLedger.Commodities import CommodityPool as OriginCommodityPool
-from NLedger.Commodities import Commodity as OriginCommodity
-from NLedger.Annotate import AnnotatedCommodity as OriginAnnotatedCommodity
-from NLedger.Commodities import PricePoint as OriginPricePoint
-from NLedger.Commodities import CommodityFlagsEnum
-from NLedger.Annotate import Annotation as OriginAnnotation
-from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
-from NLedger.Accounts import Account as OriginAccount
-from NLedger.Accounts import AccountXDataDetails as OriginAccountXDataDetails
-from NLedger.Accounts import AccountXData as OriginAccountXData
-from NLedger.Scopus import SymbolKindEnum as SymbolKind
-from NLedger.Scopus import Scope as OriginScope
-from NLedger.Scopus import Session as OriginSession
-from NLedger.Items import Item as OriginItem
-from NLedger.Items import ItemStateEnum as OriginItemStateEnum
-from NLedger.Values import ValueTypeEnum as OriginValueTypeEnum
-from NLedger.Values import Value as OriginValue
 from NLedger import Balance as OriginBalance
 from NLedger import Mask as OriginMask
-from NLedger.Items import ItemPosition as OriginItemPosition
 from NLedger import Post as OriginPost
 from NLedger import PostXData as OriginPostXData
 from NLedger import SupportsFlagsEnum as OriginSupportsFlagsEnum
+from NLedger.Accounts import Account as OriginAccount
+from NLedger.Accounts import AccountXDataDetails as OriginAccountXDataDetails
+from NLedger.Accounts import AccountXData as OriginAccountXData
+from NLedger.Amounts import Amount as OriginAmount
+from NLedger.Amounts import AmountParseFlagsEnum as OriginAmountParseFlagsEnum
+from NLedger.Annotate import AnnotatedCommodity as OriginAnnotatedCommodity
+from NLedger.Annotate import Annotation as OriginAnnotation
+from NLedger.Annotate import AnnotationKeepDetails as OriginAnnotationKeepDetails
+from NLedger.Commodities import CommodityPool as OriginCommodityPool
+from NLedger.Commodities import Commodity as OriginCommodity
+from NLedger.Commodities import PricePoint as OriginPricePoint
+from NLedger.Commodities import CommodityFlagsEnum
+from NLedger.Expressions import Expr as OriginExpr
+from NLedger.Journals import Journal as OriginJournal
+from NLedger.Journals import JournalFileInfo as OriginJournalFileInfo
+from NLedger.Items import Item as OriginItem
+from NLedger.Items import ItemStateEnum as OriginItemStateEnum
+from NLedger.Items import ItemPosition as OriginItemPosition
+from NLedger.Scopus import Scope as OriginScope
+from NLedger.Scopus import Session as OriginSession
+from NLedger.Values import ValueTypeEnum as OriginValueTypeEnum
+from NLedger.Values import Value as OriginValue
 from NLedger.Xacts import XactBase as OriginXactBase
 from NLedger.Xacts import Xact as OriginXact
 from NLedger.Xacts import PeriodXact as OriginPeriodXact
 from NLedger.Xacts import AutoXact as OriginAutoXact
-from NLedger.Journals import Journal as OriginJournal
-from NLedger.Journals import JournalFileInfo as OriginJournalFileInfo
-from NLedger import Predicate
-from NLedger.Expressions import Expr as OriginExpr
 
-# Manage date conversions
+# Import unwrapped NLedger classes
+
+from NLedger import Predicate
+from NLedger.Extensibility import ExtendedSession
+from NLedger.Extensibility.Export import FlagsAdapter
+from NLedger.Extensibility.Export import ListAdapter as NetListAdapter
+from NLedger.Extensibility.Export import ExportedConsts
+from NLedger.Scopus import SymbolKindEnum as SymbolKind
+from NLedger.Times import TimesCommon
+from NLedger.Times import DateInterval
+from NLedger.Utility import Date
+
+# Import .Net classes
+
+from System import DateTime
+from System import Tuple as NetTuple
+from System import Enum as NetEnum
+from System.Collections.Generic import List as NetList
+from System.Globalization import DateTimeStyles
+
+###########################
+# Date/time conversions
 
 from datetime import datetime
 from datetime import date
-from collections.abc import MutableSequence
-
-from NLedger.Utility import Date
-from System import DateTime
-from System.Globalization import DateTimeStyles
-from System.Collections.Generic import List as NetList
-from System import Tuple as NetTuple
-from System import Enum as NetEnum
-from NLedger.Extensibility.Export import ListAdapter as NetListAdapter
-from NLedger.Extensibility.Export import ExportedConsts
-
-from NLedger.Times import TimesCommon
-from NLedger.Times import DateInterval
 
 # Converts to Python date
 def to_pdate(value) -> date:
@@ -240,6 +207,11 @@ def to_ndatetime(value) -> DateTime:
         return DateTime(value.year, value.month, value.day)
     else:
         raise Exception("Date value is expected")
+
+###########################
+# NLedger lists for Python
+
+from collections.abc import MutableSequence
 
 # .Net List wrapper
 
@@ -468,19 +440,17 @@ class Mask:
 ###########################
 # Ported from py_times.cc
 
-# Times functions
+def parse_datetime(str: str) -> datetime:
+    return to_pdatetime(TimesCommon.Current.ParseDateTime(str))
 
-def parse_datetime(str):
-    return Times.parse_datetime(str)
-
-def parse_date(str):
-    return Times.parse_date(str)
+def parse_date(str: str) -> date:
+    return to_pdate(TimesCommon.Current.ParseDate(str))
 
 def times_initialize():
-    Times.times_initialize()
+    TimesCommon.Current.TimesInitialize()
 
 def times_shutdown():
-    Times.times_shutdown()
+    TimesCommon.Current.TimesShutdown()
 
 ###########################
 # Ported from py_expr.cc
