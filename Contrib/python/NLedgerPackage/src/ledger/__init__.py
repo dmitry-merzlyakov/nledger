@@ -2527,7 +2527,6 @@ session = Session(ExtendedSession.Current)
 
 def read_journal(path_name: str) -> Journal:
     assert isinstance(session, Session)
-    session.close_journal_files()   # [DM] preventive cleaning added for simplifying repetitive readings
     return session.read_journal(path_name)
 
 def read_journal_from_string(data: str) -> Journal:

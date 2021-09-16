@@ -129,6 +129,7 @@ class LedgerModuleTests(unittest.TestCase):
         self.assertEqual(date(2021, 5, 22), ledger.parse_date("2021/5/22"))
 
     def test_session_read_journal(self):
+        ledger.session.close_journal_files()
         filename = get_drewr3_dat_filename()
         jrn = ledger.read_journal(filename)
         self.assertIsInstance(jrn, ledger.Journal)
