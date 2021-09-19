@@ -1,4 +1,18 @@
+####################################################################################
+# Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+# Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
+# 
+# This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
+# Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+# See LICENSE.LEDGER file included with the distribution for details and disclaimer.
+####################################################################################
+
 # NLedger Python Extensibility module tests (ledger)
+# Usage: [path_to_python_executable] ledger_tests.py
+
+# If it is run on development environment, it uses the latest compiled binaries and module source code (no needs to install the module for testing)
+# Otherwise, it imports module that was previously installed to the specified Python environment
+# Check output messages to ensure what was tested
 
 from typing import Iterable, Tuple
 import unittest
@@ -9,8 +23,9 @@ import sys
 import re
 import collections
 
-# We need to find path to the latest NLedger.Extensibility.Python.dll. 
-# Since this test is intended to be run on dev environment only, the function below looks for the dll by Debug/Release paths only
+# Find path to the latest NLedger.Extensibility.Python.dll on development environment. 
+# It returns path to either debug or release binaries depending what was built later.
+# If binaries are not found (so, it is likely non-development environment), the function returns None
 def get_nledger_dll_path():
     debugDLL = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '../../../../Source/NLedger.Extensibility.Python/bin/Debug/netstandard2.0/NLedger.Extensibility.Python.dll'))
     releaseDLL = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '../../../../Source/NLedger.Extensibility.Python/bin/Release/netstandard2.0/NLedger.Extensibility.Python.dll'))
@@ -29,7 +44,7 @@ def get_nledger_dll_path():
         if os.path.isfile(debugDLL):
             return debugDLL
 
-    raise Exception("Cannot find MTX.dll by paths: " + debugDLL + " and " + releaseDLL)
+    return None
 
 def get_drewr3_dat_filename():
     filename = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), 'drewr3.dat'))
@@ -37,22 +52,26 @@ def get_drewr3_dat_filename():
         raise Exception('Cannot find file ' + filename)
     return filename
 
-# Configure ledger module to use found NLedger.dll (it uses a pre-defined internal path by default)
+# Detecting environment configuration: if development binaries found, configure the module to use them
 nledger_dll_path = get_nledger_dll_path()
-os.environ["nledger_extensibility_python_dll_path"] = nledger_dll_path
-print("Found path to NLedger Python dll: " + nledger_dll_path)
+if nledger_dll_path:
+    print("Development environment detected. Found NLedger Python dll: " + nledger_dll_path)
+    os.environ["nledger_extensibility_python_dll_path"] = nledger_dll_path
 
-# Import ledger. Note: it is important to add path to source code to the first position to override already installed module
-sys.path.insert(0, ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '..', 'src'))
+    # Before importing ledger module, it is important to add path to source code to the first position to override already installed module
+    sys.path.insert(0, ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '..', 'src'))
+
 import ledger
 from ledger import Amount, Position, TransactionBase, Value
 print("Module ledger is properly imported")
+print("Path to NLedger Python dll: " + ledger.nledger_extensibility_python_dll_path)
 
 from datetime import datetime
 from datetime import date
 from System import DateTime
 from NLedger.Utility import Date
 
+# Test classes
 
 class LedgerModuleTests(unittest.TestCase):
 
