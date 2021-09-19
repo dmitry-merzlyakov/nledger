@@ -57,6 +57,8 @@ if bool(clr_runtime):
 
 import clr
 
+is_pythonnet_2 = clr.__version__ and clr.__version__.startswith("2.")
+
 ############################
 # Load NLedger library
 
@@ -228,7 +230,7 @@ class NList(MutableSequence):
 
         if origin is None:
             self.origin = self.nclass()
-        elif isinstance(origin,Iterable):
+        elif isinstance(origin,Iterable) and not isinstance (origin, self.nclass):
             self.origin = self.nclass()
             for item in origin:
                 self.append(item)
@@ -1162,7 +1164,7 @@ class Commodity:
 
     @flags.setter
     def flags(self, value:int):
-        self.origin.Flags = CommodityFlagsEnum(value)
+        self.origin.Flags = CommodityFlagsEnum(value) if not is_pythonnet_2 else value
 
     def has_flags(self, value:int) -> bool:
         return (self.flags & value) == value
@@ -1876,7 +1878,7 @@ class JournalItem(Scope):
 
     @flags.setter
     def flags(self, value:int):
-        self.origin.Flags = OriginSupportsFlagsEnum(value)
+        self.origin.Flags = OriginSupportsFlagsEnum(value) if not is_pythonnet_2 else value
 
     def has_flags(self, value:int) -> bool:
         return (self.flags & value) == value

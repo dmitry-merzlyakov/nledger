@@ -58,5 +58,6 @@ namespace NLedger.Extensibility.Export
         public static bool AccountHasXFlags(Accounts.Account account, uint flags) => account?.HasXFlags(axd => AccountXDataFlagsAdapter().HasFlags(axd, flags)) ?? false;
 
         public static int EnumToInt(Enum enumValue) => ((IConvertible)enumValue).ToInt32(System.Globalization.CultureInfo.CurrentCulture);
+        public static int EnumToInt(int intValue) => intValue;  // Method substitution for backward compatibility with PythonNet 2.5.x.
     }
 }
