@@ -128,6 +128,7 @@ from NLedger.Xacts import AutoXact as OriginAutoXact
 
 from NLedger import Predicate
 from NLedger.Extensibility import ExtendedSession
+from NLedger.Extensibility import SessionExtensions
 from NLedger.Extensibility.Export import FlagsAdapter
 from NLedger.Extensibility.Export import ListAdapter as NetListAdapter
 from NLedger.Extensibility.Export import ExportedConsts
@@ -403,6 +404,10 @@ class FileInfoList(NList):
 
 ###########################
 # Ported extras
+
+def execute_command(args, readJournalFiles = None) -> str:
+    assert isinstance(session, Session)
+    return SessionExtensions.ExecuteCommand(session.origin, args, False)
 
 ANNOTATION_PRICE_CALCULATED = ExportedConsts.ANNOTATION_PRICE_CALCULATED
 ANNOTATION_PRICE_FIXATED = ExportedConsts.ANNOTATION_PRICE_FIXATED
