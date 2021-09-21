@@ -1,6 +1,7 @@
 ﻿using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utility.Settings.CascadeSettings.Sources;
 using NLedger.Utils;
 using NLedger.Values;
 using Python.Runtime;
@@ -29,7 +30,12 @@ namespace NLedger.Extensibility.Python
             // Further code initializes global context for Python session.
             if (MainApplicationContext.Current == null)
             {
-                var context = new MainApplicationContext();   // TODO - read settings.
+                var context = new MainApplicationContext();
+
+                var envs = new EnvironmentVariablesSettingsSource("nledger");
+                context.SetEnvironmentVariables(envs.EnvironmentVariables);
+                context.IsAtty = String.Equals(envs.GetValue("IsAtty"), bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
+
                 context.AcquireCurrentThread(); // TODO - add release code.
                 var pythonSession = new PythonSession();
                 context.SetExtendedSession(pythonSession);

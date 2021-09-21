@@ -15,6 +15,9 @@ namespace NLedger.Extensibility
     /// </summary>
     public static class SessionExtensions
     {
+        /// <summary>
+        /// Command execution result object. It returns the output and/or error messages in separate text properties.
+        /// </summary>
         public class CommandExecutionResult
         {
             public static readonly CommandExecutionResult Empty = new CommandExecutionResult(null, null);
@@ -33,20 +36,30 @@ namespace NLedger.Extensibility
         }
 
         /// <summary>
-        /// Ignored options: OutputHandler, PagerHandler, OptionsHandler
+        /// Executes a Ledger command with arguments and returns the output as a text. Helpful for third-party integration software.
         /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static CommandExecutionResult ExecuteCommand(this Session session, string arg, bool readJournalFiles = false)
+        /// <param name="session">Current session instance</param>
+        /// <param name="args">String that contains a command with arguments</param>
+        /// <param name="readJournalFiles">Optional flag indicating whether it shoudl read journal files before executing teh command</param>
+        /// <returns>Command execution result (output text and/or error messages)</returns>
+        /// <remarks>This method is composed from Main.Execute, GlobalScope.ExecuteCommandWrapper and GlobalScope.ExecuteCommand.
+        /// The main purppose is to allow command execution in integration mode (when GlobalScope is not initialized).
+        /// It supports all Ledger capabilities excepting Output, Pager and Options flags that are managed on GlobalScope layer.</remarks>
+        public static CommandExecutionResult ExecuteCommand(this Session session, string args, bool readJournalFiles = false)
         {
-            return ExecuteCommand(session, new string[] { arg }, readJournalFiles);
+            return ExecuteCommand(session, CommandLine.PreprocessSingleQuotes(args), readJournalFiles);
         }
 
         /// <summary>
-        /// Ignored options: OutputHandler, PagerHandler, OptionsHandler
+        /// Executes a Ledger command with arguments and returns the output as a text. Helpful for third-party integration software.
         /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
+        /// <param name="session">Current session instance</param>
+        /// <param name="args">Enuemrable of strings that contains a command with arguments</param>
+        /// <param name="readJournalFiles">Optional flag indicating whether it shoudl read journal files before executing teh command</param>
+        /// <returns>Command execution result (output text and/or error messages)</returns>
+        /// <remarks>This method is composed from Main.Execute, GlobalScope.ExecuteCommandWrapper and GlobalScope.ExecuteCommand.
+        /// The main purppose is to allow command execution in integration mode (when GlobalScope is not initialized).
+        /// It supports all Ledger capabilities excepting Output, Pager and Options flags that are managed on GlobalScope layer.</remarks>
         public static CommandExecutionResult ExecuteCommand(this Session session, IEnumerable<string> args, bool readJournalFiles = false)
         {
             if (session == null)

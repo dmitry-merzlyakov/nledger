@@ -147,6 +147,46 @@ class LedgerModuleTests(unittest.TestCase):
     def test_times_parse_date(self):
         self.assertEqual(date(2021, 5, 22), ledger.parse_date("2021/5/22"))
 
+    def test_config_attribute(self):
+        self.assertIsInstance(ledger.config, ledger.Config)
+
+    def test_execute_command(self):
+        ledger.session.close_journal_files()
+        filename = get_drewr3_dat_filename()
+        jrn = ledger.read_journal(filename)
+        
+        cmd_result = ledger.execute_command("bal ^Expenses")
+        cmd_output = cmd_result.Output
+        cmd_error = cmd_result.Error
+        self.assertIsInstance(cmd_output, str)
+        self.assertIsInstance(cmd_error, str)
+        self.assertTrue(cmd_output)     # contains some text
+        self.assertFalse(cmd_error)     # empty string
+
+        cmd_result = ledger.execute_command("bal ^Expenses", False)
+        cmd_output = cmd_result.Output
+        cmd_error = cmd_result.Error
+        self.assertIsInstance(cmd_output, str)
+        self.assertIsInstance(cmd_error, str)
+        self.assertTrue(cmd_output)     # contains some text
+        self.assertFalse(cmd_error)     # empty string
+
+        cmd_result = ledger.execute_command(["bal", "^Expenses"])
+        cmd_output = cmd_result.Output
+        cmd_error = cmd_result.Error
+        self.assertIsInstance(cmd_output, str)
+        self.assertIsInstance(cmd_error, str)
+        self.assertTrue(cmd_output)     # contains some text
+        self.assertFalse(cmd_error)     # empty string
+
+        cmd_result = ledger.execute_command(["bal", "^Expenses"], False)
+        cmd_output = cmd_result.Output
+        cmd_error = cmd_result.Error
+        self.assertIsInstance(cmd_output, str)
+        self.assertIsInstance(cmd_error, str)
+        self.assertTrue(cmd_output)     # contains some text
+        self.assertFalse(cmd_error)     # empty string
+
     def test_session_read_journal(self):
         ledger.session.close_journal_files()
         filename = get_drewr3_dat_filename()
@@ -227,6 +267,35 @@ class LedgerModuleTests(unittest.TestCase):
 
         ndate = Date(2021, 5, 22)
         self.assertEqual(DateTime(2021, 5, 22), ledger.to_ndatetime(ndate))
+
+class ConfigTests(unittest.TestCase):
+
+    def test_config_is_atty(self):
+
+        config = ledger.Config()
+        is_atty = config.is_atty
+
+        config.is_atty = True
+        self.assertTrue(config.is_atty)
+
+        config.is_atty = False
+        self.assertFalse(config.is_atty)
+
+        config.is_atty = is_atty
+
+    def test_config_get_env(self):
+
+        ledger.MainApplicationContext.Current.EnvironmentVariables["test-env-var"] = "test-env-val"
+        config = ledger.Config()
+        self.assertIsNone(config.get_env("this-variable-does-not-exist"))
+        self.assertEqual("test-env-val", config.get_env("test-env-var"))
+
+    def test_config_set_env(self):
+        ledger.MainApplicationContext.Current.EnvironmentVariables.Remove("test-env-var")
+        config = ledger.Config()
+        self.assertIsNone(config.get_env("test-env-var"))
+        config.set_env("test-env-var", "test-env-val")
+        self.assertEqual("test-env-val", config.get_env("test-env-var"))
 
 class ValueListTests(unittest.TestCase):
 

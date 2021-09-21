@@ -127,6 +127,7 @@ from NLedger.Xacts import AutoXact as OriginAutoXact
 # Import unwrapped NLedger classes
 
 from NLedger import Predicate
+from NLedger import MainApplicationContext
 from NLedger.Extensibility import ExtendedSession
 from NLedger.Extensibility import SessionExtensions
 from NLedger.Extensibility.Export import FlagsAdapter
@@ -142,6 +143,7 @@ from NLedger.Utility import Date
 from System import DateTime
 from System import Tuple as NetTuple
 from System import Enum as NetEnum
+from System import String as NetString
 from System.Collections.Generic import List as NetList
 from System.Globalization import DateTimeStyles
 
@@ -405,9 +407,28 @@ class FileInfoList(NList):
 ###########################
 # Ported extras
 
-def execute_command(args, readJournalFiles = None) -> str:
+def execute_command(args, readJournalFiles: bool = None) -> str:
     assert isinstance(session, Session)
-    return SessionExtensions.ExecuteCommand(session.origin, args, False)
+
+    if isinstance(args, str):
+        return SessionExtensions.ExecuteCommand(session.origin, args) if readJournalFiles is None else SessionExtensions.ExecuteCommand(session.origin, args, readJournalFiles)
+
+    if isinstance(args, Iterable):
+        args_list = NetList[NetString]()
+        for arg in args:
+            assert isinstance(arg, str)
+            args_list.Add(NetString(arg))
+        return SessionExtensions.ExecuteCommand(session.origin, args_list) if readJournalFiles is None else SessionExtensions.ExecuteCommand(session.origin, args_list, readJournalFiles)
+
+    raise Exception("Unexpected argument type")
+
+def print_command(args, readJournalFiles: bool = None) -> str:
+    cmd_result = execute_command(args, readJournalFiles)
+
+    if (cmd_result.Error):
+        raise Exception(cmd_result.Error)
+
+    print(cmd_result.Output)
 
 ANNOTATION_PRICE_CALCULATED = ExportedConsts.ANNOTATION_PRICE_CALCULATED
 ANNOTATION_PRICE_FIXATED = ExportedConsts.ANNOTATION_PRICE_FIXATED
@@ -443,6 +464,24 @@ class Mask:
         return self.origin.Str()
 
     __str__ = str
+
+class Config:
+
+    @property
+    def is_atty(self) -> bool:
+        return MainApplicationContext.Current.IsAtty
+
+    @is_atty.setter
+    def is_atty(self, val: bool):
+        MainApplicationContext.Current.IsAtty = val
+
+    def get_env(self, name: str) -> str:
+        return MainApplicationContext.Current.EnvironmentVariables[name] if MainApplicationContext.Current.EnvironmentVariables.ContainsKey(name) else None
+
+    def set_env(self, name: str, val: str):
+        MainApplicationContext.Current.EnvironmentVariables[name] = val
+
+config = Config()
 
 ###########################
 # Ported from py_times.cc
