@@ -92,7 +92,7 @@ namespace NLedger.Accounts
 
             PostsCount++;
 
-            if (post.Flags.HasFlag(SupportsFlagsEnum.POST_COST_VIRTUAL))
+            if (post.Flags.HasFlag(SupportsFlagsEnum.POST_VIRTUAL))
                 PostsVirtualsCount++;
 
             if (gatherAll && post.HasPos)

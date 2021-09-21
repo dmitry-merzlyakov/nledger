@@ -824,7 +824,7 @@ namespace NLedger.Values
                 return new IntegerValueStorage(AsLong / valueStorage.AsLong);
 
             if (valueStorage.SafeType() == ValueTypeEnum.Amount)
-                return new AmountValueStorage(valueStorage.AsAmount / AsAmount);
+                return new AmountValueStorage(AsAmount / valueStorage.AsAmount);
 
             return base.DivideValueStorage(valueStorage);
         }

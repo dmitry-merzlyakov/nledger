@@ -156,7 +156,7 @@ namespace NLedger.Extensibility.Export
         public bool is_null() => Values.Value.IsNullOrEmpty(Origin);
 
         public Values.ValueTypeEnum type() => Origin.Type;
-        public bool type(Values.ValueTypeEnum typeEnum) => Origin.Type == typeEnum;
+        public bool is_type(Values.ValueTypeEnum typeEnum) => Origin.Type == typeEnum;
 
         public bool is_boolean() => Origin.Type == Values.ValueTypeEnum.Boolean;
         public void set_boolean(bool value) => Origin.SetBoolean(value);

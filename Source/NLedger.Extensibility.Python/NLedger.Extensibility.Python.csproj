@@ -16,6 +16,7 @@
     <RepositoryUrl>https://github.com/dmitry-merzlyakov/nledger</RepositoryUrl>
     <PackageTags>ledger;plaintext-accounting;accounting;cli;csharp;dotnet</PackageTags>
     <PackageLicenseExpression>BSD-3-Clause-Clear</PackageLicenseExpression>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>

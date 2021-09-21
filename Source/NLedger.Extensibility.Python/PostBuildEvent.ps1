@@ -32,7 +32,8 @@ if (!$settings) {throw "Python environment is not properly configured (GetPython
 
 Write-Verbose "Building NLedger Python package"
 
-$packageBinaryFiles = [string]::Join(";",(Get-ChildItem -Path "$TargetDir/NLedger.*" -Exclude "*.pdb" | ForEach-Object { $_.FullName }))
+$binaryFiles = Get-ChildItem -Path "$TargetDir/*.dll" | Where-Object { $_.Name.StartsWith("NLedger.") -or ($_.Name -eq "Python.Runtime.dll") } | ForEach-Object { $_.FullName }
+$packageBinaryFiles = [string]::Join(";",$binaryFiles)
 $packageVersion = $VersionPrefix
 
 $null = (. $Script:pythonBuild -pyExecutable $settings.PyExecutable -packageBinaryFiles $packageBinaryFiles -packageVersion $packageVersion -installPackage)

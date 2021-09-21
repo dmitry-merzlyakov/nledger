@@ -9,16 +9,6 @@ namespace NLedger.Extensibility.Export
 {
     public class PostingXData : BaseExport<NLedger.PostXData>
     {
-        public static uint POST_EXT_RECEIVED = 0x001;
-        public static uint POST_EXT_HANDLED = 0x002;
-        public static uint POST_EXT_DISPLAYED = 0x004;
-        public static uint POST_EXT_DIRECT_AMT = 0x008;
-        public static uint POST_EXT_SORT_CALC = 0x010;
-        public static uint POST_EXT_COMPOUND = 0x020;
-        public static uint POST_EXT_VISITED = 0x040;
-        public static uint POST_EXT_MATCHES = 0x080;
-        public static uint POST_EXT_CONSIDERED = 0x100;
-
         public static implicit operator PostingXData(NLedger.PostXData postXData) => new PostingXData(postXData);
 
         protected PostingXData(NLedger.PostXData postXData) : base(postXData)
@@ -40,19 +30,7 @@ namespace NLedger.Extensibility.Export
         public Account account { get => Origin.Account; set => Origin.Account = value.Origin; }
         public IEnumerable<SortValue> sort_values => Origin?.SortValues?.Select(x => new SortValue(x)).ToList(); // [DM] Implemented as read-only
 
-        private static Lazy<FlagsConverter<NLedger.PostXData>> Flags = new Lazy<FlagsConverter<NLedger.PostXData>>(() =>
-        {
-            return new FlagsConverter<NLedger.PostXData>().
-                AddMapping(POST_EXT_RECEIVED, x => x.Received, (x, v) => x.Received = v).
-                AddMapping(POST_EXT_HANDLED, x => x.Handled, (x, v) => x.Handled = v).
-                AddMapping(POST_EXT_DISPLAYED, x => x.Displayed, (x, v) => x.Displayed = v).
-                AddMapping(POST_EXT_DIRECT_AMT, x => x.DirectAmt, (x, v) => x.DirectAmt = v).
-                AddMapping(POST_EXT_SORT_CALC, x => x.SortCalc, (x, v) => x.SortCalc = v).
-                AddMapping(POST_EXT_COMPOUND, x => x.Compound, (x, v) => x.Compound = v).
-                AddMapping(POST_EXT_VISITED, x => x.Visited, (x, v) => x.Visited = v).
-                AddMapping(POST_EXT_MATCHES, x => x.Matches, (x, v) => x.Matches = v).
-                AddMapping(POST_EXT_CONSIDERED, x => x.Considered, (x, v) => x.Considered = v);
-        }, true);
+        private static Lazy<FlagsConverter<NLedger.PostXData>> Flags = new Lazy<FlagsConverter<NLedger.PostXData>>(FlagsAdapter.PostXDataFlagsAdapter, true);
 
     }
 }

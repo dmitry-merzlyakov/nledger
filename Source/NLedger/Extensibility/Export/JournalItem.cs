@@ -22,10 +22,6 @@ namespace NLedger.Extensibility.Export
 
     public class JournalItem : Scope
     {
-        public static readonly uint ITEM_NORMAL = (uint)SupportsFlagsEnum.ITEM_NORMAL;
-        public static readonly uint ITEM_GENERATED = (uint)SupportsFlagsEnum.ITEM_GENERATED;
-        public static readonly uint ITEM_TEMP = (uint)SupportsFlagsEnum.ITEM_TEMP;
-
         public static implicit operator JournalItem(Items.Item item) => new JournalItem(item);
 
         public static bool operator ==(JournalItem left, JournalItem right) => left.Origin == right.Origin;

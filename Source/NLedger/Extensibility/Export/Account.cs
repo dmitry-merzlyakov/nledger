@@ -9,11 +9,6 @@ namespace NLedger.Extensibility.Export
 {
     public class Account : BaseExport<Accounts.Account>, IEnumerable<Account>
     {
-        public static readonly uint ACCOUNT_NORMAL = 0x00;
-        public static readonly uint ACCOUNT_KNOWN = 0x01;
-        public static readonly uint ACCOUNT_TEMP = 0x02;
-        public static readonly uint ACCOUNT_GENERATED = 0x02;
-
         public static implicit operator Account(Accounts.Account xdata) => new Account(xdata);
 
         protected Account(Accounts.Account origin) : base(origin)
@@ -67,13 +62,7 @@ namespace NLedger.Extensibility.Export
 
         public override string ToString() => Origin.ToString();
 
-        private static Lazy<FlagsConverter<Accounts.Account>> Flags = new Lazy<FlagsConverter<Accounts.Account>>(() =>
-        {
-            return new FlagsConverter<Accounts.Account>().
-                AddMapping(ACCOUNT_KNOWN, a => a.IsKnownAccount, (a, v) => a.IsKnownAccount = v).
-                AddMapping(ACCOUNT_TEMP, a => a.IsTempAccount, (a, v) => a.IsTempAccount = v).
-                AddMapping(ACCOUNT_GENERATED, a => a.IsGeneratedAccount, (a, v) => a.IsGeneratedAccount = v);
-        }, true);
+        private static Lazy<FlagsConverter<Accounts.Account>> Flags = new Lazy<FlagsConverter<Accounts.Account>>(FlagsAdapter.AccountFlagsAdapter, true);
 
     }
 }

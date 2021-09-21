@@ -8,11 +8,6 @@ namespace NLedger.Extensibility.Export
 {
     public class Posting : JournalItem
     {
-        public static readonly uint POST_VIRTUAL = (uint)SupportsFlagsEnum.POST_VIRTUAL;
-        public static readonly uint POST_MUST_BALANCE = (uint)SupportsFlagsEnum.POST_MUST_BALANCE;
-        public static readonly uint POST_CALCULATED = (uint)SupportsFlagsEnum.POST_CALCULATED;
-        public static readonly uint POST_COST_CALCULATED = (uint)SupportsFlagsEnum.POST_COST_CALCULATED;
-
         public static implicit operator Posting(NLedger.Post post) => new Posting(post);
 
         protected Posting(NLedger.Post origin) : base(origin)

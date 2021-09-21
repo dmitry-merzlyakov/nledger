@@ -1,6 +1,7 @@
 ﻿using NLedger.Expressions;
 using NLedger.Scopus;
 using NLedger.Utility;
+using NLedger.Utility.Settings.CascadeSettings.Sources;
 using NLedger.Utils;
 using NLedger.Values;
 using Python.Runtime;
@@ -29,18 +30,29 @@ namespace NLedger.Extensibility.Python
             // Further code initializes global context for Python session.
             if (MainApplicationContext.Current == null)
             {
-                var context = new MainApplicationContext();   // TODO - read settings.
+                var context = new MainApplicationContext();
+
+                var envs = new EnvironmentVariablesSettingsSource("nledger");
+                context.SetEnvironmentVariables(envs.EnvironmentVariables);
+                context.IsAtty = String.Equals(envs.GetValue("IsAtty"), bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
+
                 context.AcquireCurrentThread(); // TODO - add release code.
                 var pythonSession = new PythonSession();
                 context.SetExtendedSession(pythonSession);
                 Session.SetSessionContext(pythonSession);
+                Scope.DefaultScope = new Report(pythonSession);
             }
+        }
+
+        public PythonSession()
+        {
+            PythonValueConverter = new PythonValueConverter(this);
         }
 
         public bool IsSessionInitialized { get; private set; }
         public PythonModule MainModule { get; private set; }
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
-        public IPythonValueConverter PythonValueConverter { get; } = new PythonValueConverter();
+        public IPythonValueConverter PythonValueConverter { get; }
         public PyModule LedgerModule { get; private set; }
 
         public IDisposable GIL() => Py.GIL();

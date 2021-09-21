@@ -50,7 +50,7 @@ namespace NLedger.Extensibility.Export
         public void remove_price(DateTime date, Commodity commodity) => Origin.RemovePrice(date, commodity.Origin);
         public PricePoint find_price(Commodity commodity = null, DateTime moment = default(DateTime), DateTime oldest = default(DateTime)) => Origin.FindPrice(commodity?.Origin, moment, oldest);
         public PricePoint check_for_updated_price(PricePoint point = null, DateTime moment = default(DateTime), Commodity inTermsOf = null) => Origin.CheckForUpdatedPrice(point?.Origin, moment, inTermsOf?.Origin);
-        public void Valid() => Origin.Valid();
+        public void valid() => Origin.Valid();
 
         public override bool Equals(object obj) => Origin.Equals((obj as Commodity)?.Origin);
         public override int GetHashCode() => Origin.GetHashCode();

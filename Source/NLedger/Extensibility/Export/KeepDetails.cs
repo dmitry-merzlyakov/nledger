@@ -22,9 +22,9 @@ namespace NLedger.Extensibility.Export
         public bool keep_tag { get => Origin.KeepTag; set => Origin.KeepTag = value; }
         public bool only_actuals { get => Origin.OnlyActuals; set => Origin.OnlyActuals = value; }
 
-        public void keep_all() => Origin.KeepAll();
-        public void keep_all(Commodity comm) => Origin.KeepAll(comm.Origin);
-        public void keep_any() => Origin.KeepAny();
-        public void keep_any(Commodity comm) => Origin.KeepAny(comm.Origin);
+        public bool keep_all() => Origin.KeepAll();
+        public bool keep_all(Commodity comm) => Origin.KeepAll(comm.Origin);
+        public bool keep_any() => Origin.KeepAny();
+        public bool keep_any(Commodity comm) => Origin.KeepAny(comm.Origin);
     }
 }
