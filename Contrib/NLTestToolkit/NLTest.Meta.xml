@@ -14,6 +14,9 @@
             <test file="regress\B21BF389_py.test" />
             <test file="regress\xact_code_py.test" />            
         </category>
+        <category name="python-deprecated">     <!-- Deprecated Python 2 Integration tests -->
+            <test file="baseline\feat-value_py2.test" />
+        </category>
         <category name="datetime-error">        <!-- Tests that check specific error messages related to date and time processing -->
             <test file="regress\BF3C1F82.test" />
         </category>
@@ -25,6 +28,7 @@
         </category>
     </categories>
     <actions>
+        <ignore categories="python-deprecated" reason="Python 2 support is deprecated. Corresponded test is ignored." />
         <ignore categories="datetime-error" reason=".Net DateTime runtime does not generate such messages as it is expected. Disabled for further decision." />
         <!-- Configure integration tests -->
         <variable categories="*" varname="nledgerExtensionProvider" value="" />

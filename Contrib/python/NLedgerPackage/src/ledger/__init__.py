@@ -919,7 +919,7 @@ class Balance:
         return OriginBalance.op_Explicit(self.origin)
 
     def to_string(self) -> str:
-        return self.origin.ToString()
+        return self.origin.Print()
 
     __str__ = to_string
 

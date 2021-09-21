@@ -4021,24 +4021,24 @@ class BalanceTests(unittest.TestCase):
 
     def test_balance_to_string(self):
         bal = ledger.Balance(10)
-        self.assertEqual("10          ", bal.to_string())
+        self.assertEqual("10", bal.to_string())
 
     def test_balance_str(self):
         bal = ledger.Balance(10)
-        self.assertEqual("10          ", str(bal))
+        self.assertEqual("10", str(bal))
 
     def test_balance_negated(self):
         bal = ledger.Balance(10)
         bal1 = bal.negated()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("-10         ", str(bal1))
-        self.assertEqual("10          ", str(bal))
+        self.assertEqual("-10", str(bal1))
+        self.assertEqual("10", str(bal))
 
     def test_balance_in_place_negate(self):
         bal = ledger.Balance(10)
         bal.in_place_negate()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("-10         ", str(bal))
+        self.assertEqual("-10", str(bal))
 
     def test_balance_len(self):
         bal = ledger.Balance(-10)
@@ -4060,87 +4060,87 @@ class BalanceTests(unittest.TestCase):
         bal = ledger.Balance(-10)
         bal1 = bal.abs()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("-10         ", str(bal))
-        self.assertEqual("10          ", str(bal1))
-        self.assertEqual("10          ", str(abs(bal)))
+        self.assertEqual("-10", str(bal))
+        self.assertEqual("10", str(bal1))
+        self.assertEqual("10", str(abs(bal)))
 
     def test_balance_rounded(self):
         bal = ledger.Balance(10.7)
         bal1 = bal.rounded()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("11          ", str(bal1))
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal1))
+        self.assertEqual("11", str(bal))
 
     def test_balance_in_place_round(self):
         bal = ledger.Balance(10.7)
         bal.in_place_round()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal))
 
     def test_balance_truncated(self):
         bal = ledger.Balance(10.7)
         bal1 = bal.truncated()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("11          ", str(bal1))
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal1))
+        self.assertEqual("11", str(bal))
 
     def test_balance_in_place_truncate(self):
         bal = ledger.Balance(10.7)
         bal.in_place_truncate()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal))
 
     def test_balance_floored(self):
         bal = ledger.Balance(10.7)
         bal1 = bal.floored()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("10          ", str(bal1))
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("10", str(bal1))
+        self.assertEqual("11", str(bal))
 
     def test_balance_in_place_floor(self):
         bal = ledger.Balance(10.7)
         bal.in_place_floor()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("10          ", str(bal))
+        self.assertEqual("10", str(bal))
 
     def test_balance_unrounded(self):
         bal = ledger.Balance(10.7)
         bal1 = bal.unrounded()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("11          ", str(bal1))
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal1))
+        self.assertEqual("11", str(bal))
 
     def test_balance_in_place_unround(self):
         bal = ledger.Balance(10.7)
         bal.in_place_unround()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal))
 
     def test_balance_reduced(self):
         bal = ledger.Balance(10.7)
         bal1 = bal.reduced()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("11          ", str(bal1))
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal1))
+        self.assertEqual("11", str(bal))
 
     def test_balance_in_place_reduce(self):
         bal = ledger.Balance(10.7)
         bal.in_place_reduce()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal))
 
     def test_balance_unreduced(self):
         bal = ledger.Balance(10.7)
         bal1 = bal.unreduced()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("11          ", str(bal1))
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal1))
+        self.assertEqual("11", str(bal))
 
     def test_balance_in_place_unreduce(self):
         bal = ledger.Balance(10.7)
         bal.in_place_unreduce()
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("11          ", str(bal))
+        self.assertEqual("11", str(bal))
 
     def test_balance_value(self):
         amnt1 = ledger.Amount("2.00 BLT1")
@@ -4154,15 +4154,15 @@ class BalanceTests(unittest.TestCase):
 
         val = bal.value(amnt1.commodity)
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("2.00 BLT    ", str(bal))
+        self.assertEqual("2.00 BLT", str(bal))
 
         val = bal.value(amnt1.commodity, date.today())
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("2.00 BLT    ", str(bal))
+        self.assertEqual("2.00 BLT", str(bal))
 
         val = bal.value(amnt1.commodity, datetime.today())
         self.assertIsInstance(bal, ledger.Balance)
-        self.assertEqual("2.00 BLT    ", str(bal))
+        self.assertEqual("2.00 BLT", str(bal))
 
     def test_balance_is_nonzero(self):
         bal = ledger.Balance(10)
@@ -4220,7 +4220,7 @@ class BalanceTests(unittest.TestCase):
         bal = ledger.Balance(amnt)
         bal1 = bal.number()
         self.assertIsInstance(bal1, ledger.Balance)
-        self.assertEqual("2           ", str(bal1))
+        self.assertEqual("2", str(bal1))
 
     def test_balance_strip_annotations(self):
         amnt = ledger.Amount("2 BLT1")
