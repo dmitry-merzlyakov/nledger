@@ -23,11 +23,19 @@ void GenerateSet(string folderName, string pathToTests = @"..\..\Contrib", strin
 	var ignoreXElements = metaXDoc.XPathSelectElements("/nltest-metadata/actions/ignore");
 	var ignores = ignoreXElements.ToDictionary(x => x.Attribute("categories").Value, x => x.Attribute("reason").Value);
 
+	// Collect extensibility variables as a dictionary
+	var actionsXElements = metaXDoc.XPathSelectElements("/nltest-metadata/actions/variable");
+	var providers = actionsXElements.Where(x => x.Attribute("varname").Value == "nledgerExtensionProvider").
+		ToDictionary(x => x.Attribute("categories").Value, x => x.Attribute("value").Value);
+
 	// Helper functions
 	Func<string,bool> hasCategory = (fileName) => tests.ContainsKey(fileName);
 	Func<string,string> getCategory = (fileName) => hasCategory(fileName) ? tests[fileName] : null;
 	Func<string,bool> hasIgnoredReason = (fileName) => hasCategory(fileName) && ignores.ContainsKey(getCategory(fileName));
 	Func<string,string> getIgnoredReason = (fileName) => hasIgnoredReason(fileName) ? ignores[getCategory(fileName)] : null;
+	Func<string,bool> hasProviderName = (fileName) => hasCategory(fileName) && providers.ContainsKey(getCategory(fileName));
+	Func<string,string> getProviderName = (fileName) => hasProviderName(fileName) ? "\"" + providers[getCategory(fileName)] + "\"" : String.Empty;
+	Func<string,bool> isPython = (fileName) => getProviderName(fileName) == "\"python\"";
 
 #>
 // **********************************************************************************
@@ -48,12 +56,12 @@ var shortFileName = System.IO.Path.GetFileName(file);
 var methodName = System.IO.Path.GetFileNameWithoutExtension(shortFileName).Replace("-", "_");
 var longFileName = folderName + @"\" + shortFileName; #>
 
-<#+ if(!hasIgnoredReason(longFileName)) { #>        [Fact]<#+ } else { #>        [Fact(Skip="<#= getIgnoredReason(longFileName) #>")]<#+ } #>
+<#+ if(!hasIgnoredReason(longFileName)) { #>        [<#= isPython(longFileName) ? "PythonFact" : "Fact" #>]<#+ } else { #>        [Fact(Skip="<#= getIgnoredReason(longFileName) #>")]<#+ } #>
 
         [Trait("Category", "Integration")]
         public void IntegrationTest_<#= folderName.Replace(@"\", "_") #>_<#= methodName #>()
         {
-            new TestRunner(@"<#= folderName.Replace(@"\", "/") + @"/" + shortFileName #>").Run();
+            new TestRunner(@"<#= folderName.Replace(@"\", "/") + @"/" + shortFileName #>").Run(<#= getProviderName(longFileName) #>);
         }
 
 <#+ } #>

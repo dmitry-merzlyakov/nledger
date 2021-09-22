@@ -43,7 +43,7 @@ namespace NLedger.IntegrationTests
         public string FileName { get; private set; }
         public IEnumerable<TestCase> TestCases { get; private set; }
 
-        public void Run()
+        public void Run(string extensionProviderName = null)
         {
 
             foreach (var testCase in TestCases)
@@ -110,7 +110,14 @@ namespace NLedger.IntegrationTests
                         {
                             using (var errWriter = new StringWriter())
                             {
-                                var appServiceProvider = new ApplicationServiceProvider(virtualConsoleProviderFactory: () => new TestConsoleProvider(inReader, outWriter, errWriter));
+                                var extensionProviderSelector = new Extensibility.ExtensionProviderSelector().
+                                    AddProvider("dotnet", () => new Extensibility.Net.NetExtensionProvider()).
+                                    AddProvider("python", () => new Extensibility.Python.PythonExtensionProvider());
+
+                                var appServiceProvider = new ApplicationServiceProvider(
+                                    virtualConsoleProviderFactory: () => new TestConsoleProvider(inReader, outWriter, errWriter),
+                                    extensionProviderFactory: extensionProviderSelector.GetProvider(extensionProviderName));
+
                                 var context = new MainApplicationContext(appServiceProvider);
                                 context.IsAtty = false; // Simulating pipe redirection in original tests
                                 context.TimeZone = PreferredTimeZone; // Either "Central Standard Time" for Windows or "America/Chicago" for other systems
