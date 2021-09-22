@@ -6,7 +6,6 @@
             <test file="baseline\dir-import_py.test" />
             <test file="baseline\dir-python_py.test" />
             <test file="baseline\feat-option_py.test" />
-            <test file="baseline\feat-value_py2.test" />
             <test file="baseline\feat-value_py3.test" />
             <test file="regress\4D9288AE_py.test" />
             <test file="regress\78AB4B87_py.test" />

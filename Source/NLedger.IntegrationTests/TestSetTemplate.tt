@@ -4,41 +4,59 @@
 <#@ Assembly Name="System.Xml.Linq.dll" #>  
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Xml.XPath" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <#+
-void GenerateSet(string folderName, string pathToTests = @"..\..\Contrib", string ignoreListPath = @"..\..\Contrib\NLTestToolkit\NLTest.IgnoreList.xml") {
+void GenerateSet(string folderName, string pathToTests = @"..\..\Contrib", string metaPath = @"..\..\Contrib\NLTestToolkit\NLTest.Meta.xml") {
 	var searchPattern = "*.test";
 	var absFolderName = this.Host.ResolvePath(System.IO.Path.Combine(pathToTests, folderName));
 	var testFiles = System.IO.Directory.GetFiles(absFolderName, searchPattern);
-	var ignoreListXDoc = XDocument.Load(this.Host.ResolvePath(ignoreListPath));
-	var ignoreList = ignoreListXDoc.Descendants(XName.Get("ignore")).ToDictionary(x => @"test\" + x.Attribute("test").Value, x => x.Attribute("reason").Value);
+	var metaXDoc = XDocument.Load(this.Host.ResolvePath(metaPath));
+
+	// Collect list of tests as a dictionary with file names as keys and corresponded categories as values
+	var testsXElements = metaXDoc.XPathSelectElements("/nltest-metadata/categories/category/test");
+	var tests = testsXElements.ToDictionary(x => @"test\" + x.Attribute("file").Value, x => ((XElement)x.Parent).Attribute("name").Value);
+
+	// Collect ignore actions as a dictionary with categories as keys and reasons as values
+	var ignoreXElements = metaXDoc.XPathSelectElements("/nltest-metadata/actions/ignore");
+	var ignores = ignoreXElements.ToDictionary(x => x.Attribute("categories").Value, x => x.Attribute("reason").Value);
+
+	// Helper functions
+	Func<string,bool> hasCategory = (fileName) => tests.ContainsKey(fileName);
+	Func<string,string> getCategory = (fileName) => hasCategory(fileName) ? tests[fileName] : null;
+	Func<string,bool> hasIgnoredReason = (fileName) => hasCategory(fileName) && ignores.ContainsKey(getCategory(fileName));
+	Func<string,string> getIgnoredReason = (fileName) => hasIgnoredReason(fileName) ? ignores[getCategory(fileName)] : null;
+
 #>
 // **********************************************************************************
-// Copyright (c) 2015-2020, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2020, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Xunit;
 namespace NLedger.IntegrationTests
 {
-    // [DeploymentItem(@"<#= folderName #>", @"<#= folderName #>")]
-    public class TestSet1_<#= folderName.Replace(@"\", "_") #>
+    public class TestSet_<#= folderName.Replace(@"\", "_") #>
     {
-		<#+ foreach (var file in testFiles) { 
-		var shortFileName = System.IO.Path.GetFileName(file);
-		var methodName = System.IO.Path.GetFileNameWithoutExtension(shortFileName).Replace("-", "_"); #>
-<#+ if(!ignoreList.ContainsKey(folderName + @"\" + shortFileName)) { #>        [Fact]<#+ } else { #>        [Fact(Skip="<#= ignoreList[folderName + @"\" + shortFileName] #>")]<#+ } #>
+<#+ foreach (var file in testFiles) { 
+var shortFileName = System.IO.Path.GetFileName(file);
+var methodName = System.IO.Path.GetFileNameWithoutExtension(shortFileName).Replace("-", "_");
+var longFileName = folderName + @"\" + shortFileName; #>
+
+<#+ if(!hasIgnoredReason(longFileName)) { #>        [Fact]<#+ } else { #>        [Fact(Skip="<#= getIgnoredReason(longFileName) #>")]<#+ } #>
+
         [Trait("Category", "Integration")]
         public void IntegrationTest_<#= folderName.Replace(@"\", "_") #>_<#= methodName #>()
         {
             new TestRunner(@"<#= folderName.Replace(@"\", "/") + @"/" + shortFileName #>").Run();
         }
-		<#+ } #>
+
+<#+ } #>
 
     }
 }
