@@ -12,6 +12,8 @@ namespace NLedger.Extensibility.Python
     public class PythonHostConnector
     {
         public static PythonHostConnector Current => _Current.Value;
+        public static string PythonHostSettingsName => Path.GetFullPath($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/NLedger/NLedger.Extensibility.Python.settings.xml");
+        public static bool HasConfiguration => File.Exists(PythonHostSettingsName);
 
         public static void Reconnect()
         {
@@ -32,7 +34,6 @@ namespace NLedger.Extensibility.Python
             }
         }
 
-        public string PythonHostSettingsName => Path.GetFullPath($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/NLedger/NLedger.Extensibility.Python.settings.xml");
         public bool IsInitialized => PythonHost != null;
 
         public PythonHost PythonHost { get; }

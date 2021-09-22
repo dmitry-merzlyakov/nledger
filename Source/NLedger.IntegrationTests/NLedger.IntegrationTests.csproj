@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'True'">netcoreapp3.1</TargetFrameworks>
     <AssemblyTitle>NLedger</AssemblyTitle>
     <Company>Dmitry Merzlyakov</Company>
@@ -39,6 +39,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NLedger.Extensibility.Python\NLedger.Extensibility.Python.csproj" />
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
   <ItemGroup>
