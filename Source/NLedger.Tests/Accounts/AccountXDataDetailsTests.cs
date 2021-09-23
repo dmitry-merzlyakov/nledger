@@ -72,7 +72,7 @@ namespace NLedger.Tests.Accounts
             details.Update(post);
 
             Assert.Equal(1, details.PostsCount);
-            Assert.Equal(1, details.PostsVirtualsCount);
+            Assert.Equal(0, details.PostsVirtualsCount);
             Assert.Equal(1, details.PostsThisMountCount);
             Assert.Equal(1, details.PostsLast30Count);
             Assert.Equal(1, details.PostsLast7Count);
@@ -132,7 +132,7 @@ namespace NLedger.Tests.Accounts
             AccountXDataDetails details = details2.Add(details1);
 
             Assert.Equal(5, details.PostsCount);
-            Assert.Equal(5, details.PostsVirtualsCount);
+            Assert.Equal(0, details.PostsVirtualsCount);
             Assert.Equal(5, details.PostsClearedCount);
             Assert.Equal(5, details.PostsLast7Count);
             Assert.Equal(5, details.PostsLast30Count);
