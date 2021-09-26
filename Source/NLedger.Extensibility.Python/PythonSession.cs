@@ -38,6 +38,8 @@ namespace NLedger.Extensibility.Python
 
                 context.AcquireCurrentThread(); // TODO - add release code.
                 var pythonSession = new PythonSession();
+                pythonSession.IsPythonHost = true;
+
                 context.SetExtendedSession(pythonSession);
                 Session.SetSessionContext(pythonSession);
                 Scope.DefaultScope = new Report(pythonSession);
@@ -50,10 +52,15 @@ namespace NLedger.Extensibility.Python
         }
 
         public bool IsSessionInitialized { get; private set; }
+        public bool IsPythonHost { get; private set; }
         public PythonModule MainModule { get; private set; }
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
         public IPythonValueConverter PythonValueConverter { get; }
         public PyModule LedgerModule { get; private set; }
+
+        // Python Stream Acquiring reference counter.
+        // Note: concurrent access to this variable is regulated by means of GIL
+        public static int PythonStreamAcquiringCounter { get; private set; }
 
         public IDisposable GIL() => Py.GIL();
 
@@ -127,11 +134,12 @@ namespace NLedger.Extensibility.Python
                     if (!PythonEngine.IsInitialized)
                         throw new InvalidOperationException("assert(Py_IsInitialized());");
 
-                    MainModule = new PythonModule(this, "__main__", Py.Import("__main__"));
-                    LedgerModule = Py.Import("ledger");
+                    MainModule = new PythonModule(this, "__main__", Py.CreateScope());
+                    LedgerModule = MainModule.ModuleObject.Import("ledger");
 
-                    // [DM] Redirecting output streams
-                    LedgerModule.Exec("acquire_output_streams()");
+                    // [DM] Ensure that Python output streams are redirected (only for NLedger hosted runtime)
+                    if (!IsPythonHost && PythonStreamAcquiringCounter++ == 0)
+                        LedgerModule.Exec("acquire_output_streams()");
 
                     IsSessionInitialized = true;
                 }
@@ -153,8 +161,25 @@ namespace NLedger.Extensibility.Python
 
         public override void Dispose()
         {
-            using(GIL())
-              LedgerModule?.Exec("release_output_streams()");  // TOSO - check PyEngine status
+            if (IsSessionInitialized)
+            {
+                using (GIL())
+                {
+                    // Restore output streams if no more active Python sessions
+                    if (PythonStreamAcquiringCounter > 0)
+                    {
+                        if (--PythonStreamAcquiringCounter == 0)
+                            LedgerModule?.Exec("release_output_streams()");  // TOSO - check PyEngine status
+                    }
+
+                    // Release main scope
+                    MainModule.ModuleObject.Dispose();
+                }
+
+                LedgerModule = null;
+                MainModule = null;
+                IsSessionInitialized = false;
+            }
 
             base.Dispose();
         }
@@ -188,9 +213,9 @@ namespace NLedger.Extensibility.Python
                     // expects to have variable __file___ populated with running Python file name (because Ledger uses Py_Main for this command).
                     // For compatibility purposes, let's populate this variable with proper name.
                     var fileName = System.IO.Path.GetFullPath(argv[1]);
-                    LedgerModule.SetAttr("__file__", new PyString(fileName));
+                    MainModule.ModuleObject.SetAttr("__file__", new PyString(fileName));
 
-                    LedgerModule.Exec(System.IO.File.ReadAllText(fileName));
+                    MainModule.ModuleObject.Exec(System.IO.File.ReadAllText(fileName));
                     status = 0;
                 }
                 catch (Exception ex)

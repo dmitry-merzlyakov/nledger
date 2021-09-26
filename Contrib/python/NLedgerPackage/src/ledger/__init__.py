@@ -405,6 +405,24 @@ class FileInfoList(NList):
         return FileInfo.from_origin(item)
 
 ###########################
+# Base wrapper class (origin keeper)
+
+class OriginKeeper:
+
+    _origin = None
+
+    @property
+    def origin(self):
+        return self._origin if not self._origin is None else self.get_origin()
+
+    @origin.setter
+    def origin(self, value):
+        self._origin = value
+
+    def get_origin(self):
+        raise Exception("Method 'get_origin' should be defined in derived class if 'origin' value is not specified explicitely.")
+
+###########################
 # Ported extras
 
 def execute_command(args, readJournalFiles: bool = None) -> str:
@@ -437,9 +455,7 @@ ANNOTATION_DATE_CALCULATED = ExportedConsts.ANNOTATION_DATE_CALCULATED
 ANNOTATION_TAG_CALCULATED = ExportedConsts.ANNOTATION_TAG_CALCULATED
 ANNOTATION_VALUE_EXPR_CALCULATED = ExportedConsts.ANNOTATION_VALUE_EXPR_CALCULATED
 
-class Mask:
-
-    origin = None
+class Mask(OriginKeeper):
 
     def __init__(self, val = None) -> None:
         if val is None:
@@ -501,9 +517,7 @@ def times_shutdown():
 ###########################
 # Ported from py_expr.cc
 
-class Expr:
-
-    origin = None
+class Expr(OriginKeeper):
 
     def __init__(self, val = None) -> None:
         if val is None:
@@ -565,9 +579,7 @@ class ParseFlags(enum.IntFlag):     # ParseFlags enum
     OpContext = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_OP_CONTEXT)
     SoftFail = FlagsAdapter.EnumToInt(OriginAmountParseFlagsEnum.PARSE_SOFT_FAIL)
 
-class Amount:
-
-    origin = None
+class Amount(OriginKeeper):
 
     def __init__(self,value = None, origin = None) -> None:
         if not (origin is None):
@@ -832,9 +844,7 @@ class Amount:
 ###########################
 # Ported from py_balance.cc
 
-class Balance:
-
-    origin = None
+class Balance(OriginKeeper):
 
     def __init__(self, val = None) -> None:
         if val is None:
@@ -1037,13 +1047,15 @@ class Balance:
 ###########################
 # Ported from py_commodity.cc
 
-class CommodityPool:
+class CommodityPool(OriginKeeper):
 
-    origin: None
+    def __init__(self, origin = None) -> None:
+        if not origin is None:
+            assert isinstance(origin, OriginCommodityPool)
+            self.origin = origin
 
-    def __init__(self,origin) -> None:
-        assert isinstance(origin, OriginCommodityPool)
-        self.origin = origin
+    def get_origin(self):
+        return OriginCommodityPool.Current
 
     @property
     def null_commodity(self):
@@ -1156,7 +1168,7 @@ class CommodityPool:
     def __iter__(self):
         return iter(self.keys())
 
-commodities = CommodityPool(OriginCommodityPool.Current)
+commodities = CommodityPool()
 
 COMMODITY_STYLE_DEFAULTS = ExportedConsts.COMMODITY_STYLE_DEFAULTS
 COMMODITY_STYLE_SUFFIXED = ExportedConsts.COMMODITY_STYLE_SUFFIXED
@@ -1170,9 +1182,7 @@ COMMODITY_WALKED = ExportedConsts.COMMODITY_WALKED
 COMMODITY_KNOWN = ExportedConsts.COMMODITY_KNOWN
 COMMODITY_PRIMARY = ExportedConsts.COMMODITY_PRIMARY
 
-class Commodity:
-
-    origin = None
+class Commodity(OriginKeeper):
 
     def __init__(self,origin) -> None:
         assert isinstance(origin, OriginCommodity)
@@ -1316,9 +1326,8 @@ class Commodity:
     def valid(self):
         self.origin.Valid()
 
-class Annotation:
+class Annotation(OriginKeeper):
 
-    origin = None
     flags_adapter = FlagsAdapter.AnnotationFlagsAdapter()
 
     def __init__(self,origin=None) -> None:
@@ -1390,9 +1399,7 @@ class Annotation:
     def valid(self) -> bool:
         return True # valid() is not implemented in NLedger's annotation
 
-class KeepDetails:
-
-    origin = None
+class KeepDetails(OriginKeeper):
 
     def __init__(self, keepPrice = False, keepDate = False, keepTag = False, onlyActuals = False, origin = None) -> None:
 
@@ -1444,9 +1451,7 @@ class KeepDetails:
     def keep_any(self, comm = None):
         return self.origin.KeepAny() if comm is None else self.origin.KeepAny(comm.origin)
 
-class PricePoint:
-
-    origin = None
+class PricePoint(OriginKeeper):
 
     def __init__(self, when, price, origin = None) -> None:
 
@@ -1486,8 +1491,6 @@ class PricePoint:
 
 class AnnotatedCommodity(Commodity):
 
-    origin = None
-
     def __init__(self,origin) -> None:
         assert isinstance(origin, OriginAnnotatedCommodity)
         self.origin = origin
@@ -1516,9 +1519,7 @@ ACCOUNT_EXT_MATCHING = ExportedConsts.ACCOUNT_EXT_MATCHING
 ACCOUNT_EXT_TO_DISPLAY = ExportedConsts.ACCOUNT_EXT_TO_DISPLAY
 ACCOUNT_EXT_DISPLAYED = ExportedConsts.ACCOUNT_EXT_DISPLAYED
 
-class AccountXDataDetails:
-
-    origin = None
+class AccountXDataDetails(OriginKeeper):
 
     def __init__(self, origin = None) -> None:
         if not(origin is None):
@@ -1610,9 +1611,8 @@ class AccountXDataDetails:
         else:
             self.origin.Update(post.origin, gather_all)
 
-class AccountXData:
+class AccountXData(OriginKeeper):
 
-    origin = None
     flags_adapter = FlagsAdapter.AccountXDataFlagsAdapter()
 
     def __init__(self, origin = None) -> None:
@@ -1667,9 +1667,8 @@ ACCOUNT_KNOWN = ExportedConsts.ACCOUNT_KNOWN
 ACCOUNT_TEMP = ExportedConsts.ACCOUNT_TEMP
 ACCOUNT_GENERATED = ExportedConsts.ACCOUNT_GENERATED
 
-class Account:
+class Account(OriginKeeper):
 
-    origin = None
     flags_adapter = FlagsAdapter.AccountFlagsAdapter()
 
     def __init__(self, parent: 'Account' = None, name: str = None, note: str = None, origin = None) -> None:
@@ -1811,9 +1810,7 @@ class Account:
 ###########################
 # Ported from py_item.cc
 
-class Scope:
-
-    origin = None
+class Scope(OriginKeeper):
 
     def __init__(self,origin) -> None:
         assert isinstance(origin, OriginScope)
@@ -1843,9 +1840,7 @@ class Scope:
     def type_required(self) -> bool:
         return self.origin.TypeRequired
 
-class Position:
-
-    origin: None
+class Position(OriginKeeper):
 
     def __init__(self, origin = None) -> None:
         if origin is None:
@@ -2074,9 +2069,8 @@ POST_EXT_VISITED = ExportedConsts.POST_EXT_VISITED
 POST_EXT_MATCHES = ExportedConsts.POST_EXT_MATCHES
 POST_EXT_CONSIDERED = ExportedConsts.POST_EXT_CONSIDERED
 
-class PostingXData:
+class PostingXData(OriginKeeper):
 
-    origin = None
     flags_adapter = FlagsAdapter.PostXDataFlagsAdapter()
 
     def __init__(self, origin = None) -> None:
@@ -2404,9 +2398,7 @@ class AutomatedTransaction(TransactionBase):
 ###########################
 # Ported from py_journal.cc
 
-class FileInfo:
-
-    origin = None
+class FileInfo(OriginKeeper):
 
     def __init__(self, val = None) -> None:
         if val is None:
@@ -2438,9 +2430,7 @@ class FileInfo:
     def from_stream(self) -> bool:
         return self.origin.FromStream
 
-class Journal:
-
-    origin = None
+class Journal(OriginKeeper):
 
     def __init__(self, origin = None) -> None:
         if origin is None:
@@ -2544,15 +2534,17 @@ class Journal:
 
 class Session(Scope):
 
-    origin = None
-
-    def __init__(self, origin) -> None:
-        assert isinstance(origin, OriginSession)
-        self.origin = origin
+    def __init__(self, origin = None) -> None:
+        if not origin is None:
+            assert isinstance(origin, OriginSession)
+            self.origin = origin
 
     @classmethod
     def from_origin(cls, origin):
         return Session(origin=origin) if not origin is None else None
+
+    def get_origin(self):
+        return ExtendedSession.Current
 
     def read_journal(self, path_name: str) -> Journal:
         return Journal.from_origin(self.origin.ReadJournal(path_name))
@@ -2569,7 +2561,7 @@ class Session(Scope):
     def journal(self) -> Journal:
         return Journal.from_origin(self.origin.Journal)
 
-session = Session(ExtendedSession.Current)
+session = Session()
 
 def read_journal(path_name: str) -> Journal:
     assert isinstance(session, Session)
@@ -2596,9 +2588,7 @@ class ValueType(enum.Enum):  # ValueType enum
     Scope = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Scope)
     Any = FlagsAdapter.EnumToInt(OriginValueTypeEnum.Any)
 
-class Value:
-
-    origin = None
+class Value(OriginKeeper):
 
     def __init__(self,val) -> None:
         if isinstance(val, datetime):
@@ -2947,8 +2937,11 @@ _stdout = sys.stdout
 _stderr = sys.stderr
 
 def acquire_output_streams():
-    sys.stdout = RedirectWrapperIO(False)
-    sys.stderr = RedirectWrapperIO(True)
+    if sys.stdout == _stdout:
+        sys.stdout = RedirectWrapperIO(False)
+
+    if sys.stderr == _stderr:
+        sys.stderr = RedirectWrapperIO(True)
 
 def release_output_streams():
     sys.stdout = _stdout

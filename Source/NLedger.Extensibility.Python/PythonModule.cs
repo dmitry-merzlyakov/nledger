@@ -22,7 +22,7 @@ namespace NLedger.Extensibility.Python
             ImportModule(name);
         }
 
-        public PythonModule(PythonSession pythonSession, string name, PyModule obj)
+        public PythonModule(PythonSession pythonSession, string name, PyScope obj)
         {
             PythonSession = pythonSession;
             ModuleName = name;
@@ -32,7 +32,7 @@ namespace NLedger.Extensibility.Python
 
         public PythonSession PythonSession { get; }
         public string ModuleName { get; }
-        public PyModule ModuleObject { get; private set; }
+        public PyScope ModuleObject { get; private set; }
         public PyDict ModuleGlobals { get; private set; }
 
         public override string Description => ModuleName;
@@ -47,7 +47,7 @@ namespace NLedger.Extensibility.Python
         {
             using (PythonSession.GIL())
             {
-                var mod = Py.Import(name) ?? throw new RuntimeError($"Module import failed (couldn't find {name})");
+                var mod = PythonSession.MainModule.ModuleObject.Import(name) ?? throw new RuntimeError($"Module import failed (couldn't find {name})");
                 var globals = mod.GetAttr("__dict__") ?? throw new RuntimeError($"Module import failed (couldn't find {name})");
 
                 if (!importDirect)

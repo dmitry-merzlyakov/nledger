@@ -19,6 +19,12 @@ namespace NLedger.IntegrationTests
             {
                 Skip = $"NLedger Python Extension is not configured (no file {PythonHostConnector.PythonHostSettingsName}). Test is skipped.";
             }
+
+            var isFramework = AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName.Contains(".NETFramework");
+            if (isFramework)
+            {
+                Skip = $"PythonNet has an initialization problem when it is run on .Net Framework in xUnit context. Python tests are ignored.";
+            }
         }
     }
 }
