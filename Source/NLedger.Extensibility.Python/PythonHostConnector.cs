@@ -15,8 +15,11 @@ namespace NLedger.Extensibility.Python
         public static string PythonHostSettingsName => Path.GetFullPath($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/NLedger/NLedger.Extensibility.Python.settings.xml");
         public static bool HasConfiguration => File.Exists(PythonHostSettingsName);
 
-        public static void Reconnect()
+        public static void Reconnect(bool disposeCurrentConnection = false)
         {
+            if (disposeCurrentConnection && _Current.IsValueCreated)
+                _Current.Value.PythonHost.Dispose();
+
             _Current = new Lazy<PythonHostConnector>(true);
         }
 

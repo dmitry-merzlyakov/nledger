@@ -7,9 +7,10 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Xunit;
+using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_test_regress
+    public class TestSet_test_regress : IDisposable
     {
         [Fact]
         [Trait("Category", "Integration")]
@@ -1250,6 +1251,9 @@ namespace NLedger.IntegrationTests
             new TestRunner(@"test/regress/xact_code_py.test").Run("python");
         }
 
-
+        public void Dispose()
+        {
+            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
+        }
     }
 }

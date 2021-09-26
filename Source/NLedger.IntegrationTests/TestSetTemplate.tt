@@ -47,9 +47,10 @@ void GenerateSet(string folderName, string pathToTests = @"..\..\Contrib", strin
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Xunit;
+using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_<#= folderName.Replace(@"\", "_") #>
+    public class TestSet_<#= folderName.Replace(@"\", "_") #> : IDisposable
     {
 <#+ foreach (var file in testFiles) { 
 var shortFileName = System.IO.Path.GetFileName(file);
@@ -65,7 +66,10 @@ var longFileName = folderName + @"\" + shortFileName; #>
         }
 
 <#+ } #>
-
+        public void Dispose()
+        {
+            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
+        }
     }
 }
 <#+ } #>

@@ -7,9 +7,10 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using Xunit;
+using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_test_nledger
+    public class TestSet_test_nledger : IDisposable
     {
         [Fact]
         [Trait("Category", "Integration")]
@@ -67,6 +68,9 @@ namespace NLedger.IntegrationTests
             new TestRunner(@"test/nledger/opt-download.test").Run();
         }
 
-
+        public void Dispose()
+        {
+            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
+        }
     }
 }
