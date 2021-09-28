@@ -20,15 +20,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\NLedger.Extensibility.Python.Module\src\**\*.*" Exclude="..\NLedger.Extensibility.Python.Module\src\**\ledger.egg-info\*.*" LinkBase="pymodules">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="pythonnet" Version="3.0.0-preview2021-04-03" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy RemoteSigned $(ProjectDir)PostBuildEvent.ps1 -TargetDir $(TargetDir) -VersionPrefix $(VersionPrefix)" />
-  </Target>
 
 </Project>
