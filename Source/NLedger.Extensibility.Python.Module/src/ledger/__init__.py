@@ -62,25 +62,31 @@ is_pythonnet_2 = clr.__version__ and clr.__version__.startswith("2.")
 ############################
 # Load NLedger library
 
-# The module looks for NLedger.dll in the local runtime folder until environment variable "nledger_extensibility_python_dll_path" is populated
+# Check whether the module is running under NLedger host (NLedger.Extensibility.Python.dll is the granparent folder indicates it)
+is_nledger_host = ntpath.isfile(getpath('./../../NLedger.Extensibility.Python.dll'))
 
-nledger_extensibility_python_dll_path = getenv("nledger_extensibility_python_dll_path")
-if not bool(nledger_extensibility_python_dll_path):
-    nledger_extensibility_python_dll_path = getpath('./runtime/NLedger.Extensibility.Python.dll')
-assert ntpath.isfile(nledger_extensibility_python_dll_path), "Cannot find NLedger binary file: " + nledger_extensibility_python_dll_path
+# Load NLedger library if it is not NLedger host
+if not is_nledger_host:
 
-# Adding path to runtime dll to PATH and sending only name fixes a problem in pythonnet:
-# it tries to use Assembly.Load for loading an assembly specified by path and name
+    # The module looks for NLedger.dll in the local runtime folder until environment variable "nledger_extensibility_python_dll_path" is populated
 
-dllFolder = ntpath.dirname(nledger_extensibility_python_dll_path)
-dllName = ntpath.splitext(ntpath.basename(nledger_extensibility_python_dll_path))[0]
+    nledger_extensibility_python_dll_path = getenv("nledger_extensibility_python_dll_path")
+    if not bool(nledger_extensibility_python_dll_path):
+        nledger_extensibility_python_dll_path = getpath('./runtime/NLedger.Extensibility.Python.dll')
+    assert ntpath.isfile(nledger_extensibility_python_dll_path), "Cannot find NLedger binary file: " + nledger_extensibility_python_dll_path
 
-if not(dllFolder in sys.path):
-   sys.path.append(dllFolder)
+    # Adding path to runtime dll to PATH and sending only name fixes a problem in pythonnet:
+    # it tries to use Assembly.Load for loading an assembly specified by path and name
 
-# Load NLedger.Extensibility.Python.dll (and NLedger.dll respectively)
+    dllFolder = ntpath.dirname(nledger_extensibility_python_dll_path)
+    dllName = ntpath.splitext(ntpath.basename(nledger_extensibility_python_dll_path))[0]
 
-clr.AddReference(dllName)
+    if not(dllFolder in sys.path):
+        sys.path.append(dllFolder)
+
+    # Load NLedger.Extensibility.Python.dll (and NLedger.dll respectively)
+
+    clr.AddReference(dllName)
 
 ############################
 # Import NLedger library
