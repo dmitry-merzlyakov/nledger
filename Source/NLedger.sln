@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NLedger.IntegrationTests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B75D944A-6385-4188-9D38-CE46D313B020}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLedger.Extensibility.Python", "NLedger.Extensibility.Python\NLedger.Extensibility.Python.csproj", "{150059CD-AE05-4BD4-BC40-5F81D600CC7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NLedger.Extensibility.Python", "NLedger.Extensibility.Python\NLedger.Extensibility.Python.csproj", "{150059CD-AE05-4BD4-BC40-5F81D600CC7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLedger.Extensibility.Python.Tests", "NLedger.Extensibility.Python.Tests\NLedger.Extensibility.Python.Tests.csproj", "{2498BA3B-76A3-4E0D-9BFA-A73BA2FFADE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{150059CD-AE05-4BD4-BC40-5F81D600CC7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{150059CD-AE05-4BD4-BC40-5F81D600CC7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{150059CD-AE05-4BD4-BC40-5F81D600CC7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2498BA3B-76A3-4E0D-9BFA-A73BA2FFADE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2498BA3B-76A3-4E0D-9BFA-A73BA2FFADE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2498BA3B-76A3-4E0D-9BFA-A73BA2FFADE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2498BA3B-76A3-4E0D-9BFA-A73BA2FFADE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

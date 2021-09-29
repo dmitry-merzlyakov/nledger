@@ -61,7 +61,7 @@ namespace NLedger.Tests
             TestInitialize();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             TestCleanup();
         }
