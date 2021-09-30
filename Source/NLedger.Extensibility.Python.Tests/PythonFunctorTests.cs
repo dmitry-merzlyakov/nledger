@@ -12,15 +12,18 @@ namespace NLedger.Extensibility.Python.Tests
         {
             using (var session = new PythonSession())
             {
-                var converter = new PythonValueConverter(session);
-                var obj = PyObject.FromManagedObject("some-string");
-                var name = "some-name";
+                using (session.GIL())
+                {
+                    var converter = new PythonValueConverter(session);
+                    var obj = PyObject.FromManagedObject("some-string");
+                    var name = "some-name";
 
-                var functor = new PythonFunctor(name, obj, converter);
+                    var functor = new PythonFunctor(name, obj, converter);
 
-                Assert. Equal(name, functor.Name);
-                Assert.Equal(obj.ToString(), functor.Obj.ToString());
-                Assert.Equal(converter, functor.PythonValueConverter);
+                    Assert.Equal(name, functor.Name);
+                    Assert.Equal(obj.ToString(), functor.Obj.ToString());
+                    Assert.Equal(converter, functor.PythonValueConverter);
+                }
             }
                 
         }

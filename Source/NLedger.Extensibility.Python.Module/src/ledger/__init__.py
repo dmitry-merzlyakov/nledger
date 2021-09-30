@@ -88,6 +88,11 @@ if not is_nledger_host:
 
     clr.AddReference(dllName)
 
+else:
+
+    nledger_extensibility_python_dll_path = "[Embedded]"
+
+
 ############################
 # Import NLedger library
 
