@@ -19,11 +19,17 @@ namespace NLedger.Extensibility.Python
 
         public override void OnConnected(bool isPlatformInitialization)
         {
-            MainModule = new PythonModule(PythonSession, "__main__", Py.CreateScope());
-            LedgerModule = MainModule.ModuleObject.Import("ledger");
+            if (!PythonEngine.IsInitialized)
+                throw new InvalidOperationException("assert(Py_IsInitialized());");
 
-            if (!PythonSession.IsPythonHost && isPlatformInitialization)
-                LedgerModule.Exec("acquire_output_streams()");
+            using (PythonSession.GIL())
+            {
+                MainModule = new PythonModule(PythonSession, "__main__", Py.CreateScope());
+                LedgerModule = MainModule.ModuleObject.Import("ledger");
+
+                if (!PythonSession.IsPythonHost && isPlatformInitialization)
+                    LedgerModule.Exec("acquire_output_streams()");
+            }
         }
 
         public override void OnDisconnected(bool isPlatformDisposing)

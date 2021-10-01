@@ -122,24 +122,16 @@ namespace NLedger.Extensibility.Python
 
             var trace = Logger.Current.TraceContext("python_init", 1)?.Message("Initialized Python").Start(); // TRACE_START
 
-            using (GIL())
+            try
             {
-                try
-                {
-                    Logger.Current.Debug("python.interp", () => "Initializing Python");
-
-                    if (!PythonEngine.IsInitialized)
-                        throw new InvalidOperationException("assert(Py_IsInitialized());");
-
-                    PythonSessionConnectionContext = Platform.PythonConnector.Current.Connect(connector => new PythonSessionConnectionContext(connector, this));
-
-                }
-                catch (Exception ex)
-                {
-                    // TODO PyErr_Print();
-                    ErrorContext.Current.AddErrorContext(ex.ToString());
-                    throw new RuntimeError("Python failed to initialize");
-                }
+                Logger.Current.Debug("python.interp", () => "Initializing Python");
+                PythonSessionConnectionContext = Platform.PythonConnector.Current.Connect(connector => new PythonSessionConnectionContext(connector, this));
+            }
+            catch (Exception ex)
+            {
+                // TODO PyErr_Print();
+                ErrorContext.Current.AddErrorContext(ex.ToString());
+                throw new RuntimeError("Python failed to initialize");
             }
 
             trace?.Finish(); // TRACE_FINISH

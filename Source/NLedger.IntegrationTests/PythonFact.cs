@@ -1,4 +1,5 @@
 ﻿using NLedger.Extensibility.Python;
+using NLedger.Extensibility.Python.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,9 @@ namespace NLedger.IntegrationTests
     {
         public PythonFact()
         {
-            if (!PythonHostConnector.HasConfiguration)
+            if (!PythonConnector.Current.IsAvailable)
             {
-                Skip = $"NLedger Python Extension is not configured (no file {PythonHostConnector.PythonHostSettingsName}). Test is skipped.";
+                Skip = $"NLedger Python Extension is not configured (no file {XmlFilePythonConfigurationReader.DefaultFileName}). Test is skipped.";
             }
         }
     }
