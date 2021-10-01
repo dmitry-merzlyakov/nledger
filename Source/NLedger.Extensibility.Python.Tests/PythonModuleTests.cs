@@ -1,4 +1,5 @@
 ﻿using NLedger.Abstracts.Impl;
+using NLedger.Extensibility.Python.Platform;
 using Python.Runtime;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,16 @@ namespace NLedger.Extensibility.Python.Tests
     {
         public PythonModuleTests()
         {
-            Assert.True(PythonHostConnector.Current.IsInitialized);
+            Assert.True(PythonConnector.Current.IsAvailable);
+            PythonConnectionContext = PythonConnector.Current.Connect();
+            PythonConnector.Current.KeepAlive = false;
         }
+
+        public PythonConnectionContext PythonConnectionContext { get; }
 
         public void Dispose()
         {
-            PythonEngine.Shutdown();
+            PythonConnectionContext.Dispose();
         }
 
         /// <summary>

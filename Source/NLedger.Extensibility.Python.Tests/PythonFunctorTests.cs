@@ -1,3 +1,4 @@
+using NLedger.Extensibility.Python.Platform;
 using NLedger.Tests;
 using Python.Runtime;
 using System;
@@ -7,6 +8,21 @@ namespace NLedger.Extensibility.Python.Tests
 {
     public class PythonFunctorTests : TestFixture
     {
+        public PythonFunctorTests()
+        {
+            Assert.True(PythonConnector.Current.IsAvailable);
+            PythonConnectionContext = PythonConnector.Current.Connect();
+            PythonConnector.Current.KeepAlive = false;
+        }
+
+        public PythonConnectionContext PythonConnectionContext { get; }
+
+        public override void Dispose()
+        {
+            PythonConnectionContext.Dispose();
+            base.Dispose();
+        }
+
         [PythonFact]
         public void PythonFunctor_Constructor_PopulatesProperties()
         {
@@ -26,18 +42,6 @@ namespace NLedger.Extensibility.Python.Tests
                 }
             }
                 
-        }
-
-        public PythonFunctorTests() 
-            : base()
-        {
-            Assert.True(PythonHostConnector.Current.IsInitialized);
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            PythonHostConnector.Reconnect(disposeCurrentConnection: true);
         }
     }
 }

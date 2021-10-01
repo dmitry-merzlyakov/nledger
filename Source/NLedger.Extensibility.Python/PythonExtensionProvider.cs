@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLedger.Extensibility.Python.Platform;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace NLedger.Extensibility.Python
     {
         public ExtendedSession CreateExtendedSession()
         {
-            if (!PythonHostConnector.Current.IsInitialized)
+            if (!PythonConnector.Current.IsAvailable)
                 return null;
 
             return new PythonSession();

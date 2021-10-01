@@ -51,16 +51,13 @@ namespace NLedger.Extensibility.Python
             PythonValueConverter = new PythonValueConverter(this);
         }
 
-        public bool IsSessionInitialized { get; private set; }
         public bool IsPythonHost { get; private set; }
-        public PythonModule MainModule { get; private set; }
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
         public IPythonValueConverter PythonValueConverter { get; }
-        public PyModule LedgerModule { get; private set; }
 
-        // Python Stream Acquiring reference counter.
-        // Note: concurrent access to this variable is regulated by means of GIL
-        public static int PythonStreamAcquiringCounter { get; private set; }
+        public PythonSessionConnectionContext PythonSessionConnectionContext { get; private set; }
+        public PythonModule MainModule => PythonSessionConnectionContext?.MainModule;
+        public PyModule LedgerModule => PythonSessionConnectionContext?.LedgerModule;
 
         public IDisposable GIL() => Py.GIL();
 
@@ -134,14 +131,8 @@ namespace NLedger.Extensibility.Python
                     if (!PythonEngine.IsInitialized)
                         throw new InvalidOperationException("assert(Py_IsInitialized());");
 
-                    MainModule = new PythonModule(this, "__main__", Py.CreateScope());
-                    LedgerModule = MainModule.ModuleObject.Import("ledger");
+                    PythonSessionConnectionContext = Platform.PythonConnector.Current.Connect(connector => new PythonSessionConnectionContext(connector, this));
 
-                    // [DM] Ensure that Python output streams are redirected (only for NLedger hosted runtime)
-                    if (!IsPythonHost && PythonStreamAcquiringCounter++ == 0)
-                        LedgerModule.Exec("acquire_output_streams()");
-
-                    IsSessionInitialized = true;
                 }
                 catch (Exception ex)
                 {
@@ -156,31 +147,12 @@ namespace NLedger.Extensibility.Python
 
         public override bool IsInitialized()
         {
-            return IsSessionInitialized;
+            return PythonSessionConnectionContext != null;
         }
 
         public override void Dispose()
         {
-            if (IsSessionInitialized)
-            {
-                using (GIL())
-                {
-                    // Restore output streams if no more active Python sessions
-                    if (PythonStreamAcquiringCounter > 0)
-                    {
-                        if (--PythonStreamAcquiringCounter == 0)
-                            LedgerModule?.Exec("release_output_streams()");  // TOSO - check PyEngine status
-                    }
-
-                    // Release main scope
-                    MainModule.ModuleObject.Dispose();
-                }
-
-                LedgerModule = null;
-                MainModule = null;
-                IsSessionInitialized = false;
-            }
-
+            PythonSessionConnectionContext?.Dispose();
             base.Dispose();
         }
 
