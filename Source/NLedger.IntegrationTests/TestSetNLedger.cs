@@ -10,8 +10,13 @@ using Xunit;
 using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_test_nledger : IDisposable
+    public class TestSet_test_nledger
     {
+        public TestSet_test_nledger()
+        {
+            Extensibility.Python.Platform.PythonConnector.Current.KeepAlive = false;
+        }
+
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_nledger_gh_issues_5()
@@ -68,9 +73,5 @@ namespace NLedger.IntegrationTests
             new TestRunner(@"test/nledger/opt-download.test").Run();
         }
 
-        public void Dispose()
-        {
-            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
-        }
     }
 }

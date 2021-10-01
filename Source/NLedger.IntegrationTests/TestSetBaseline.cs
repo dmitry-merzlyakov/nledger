@@ -10,8 +10,13 @@ using Xunit;
 using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_test_baseline : IDisposable
+    public class TestSet_test_baseline
     {
+        public TestSet_test_baseline()
+        {
+            Extensibility.Python.Platform.PythonConnector.Current.KeepAlive = false;
+        }
+
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_baseline_cmd_accounts()
@@ -1447,9 +1452,5 @@ namespace NLedger.IntegrationTests
             new TestRunner(@"test/baseline/opt-yearly.test").Run();
         }
 
-        public void Dispose()
-        {
-            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
-        }
     }
 }

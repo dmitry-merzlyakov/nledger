@@ -10,8 +10,13 @@ using Xunit;
 using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_test_regress : IDisposable
+    public class TestSet_test_regress
     {
+        public TestSet_test_regress()
+        {
+            Extensibility.Python.Platform.PythonConnector.Current.KeepAlive = false;
+        }
+
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_regress_012ADB60()
@@ -1251,9 +1256,5 @@ namespace NLedger.IntegrationTests
             new TestRunner(@"test/regress/xact_code_py.test").Run("python");
         }
 
-        public void Dispose()
-        {
-            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
-        }
     }
 }

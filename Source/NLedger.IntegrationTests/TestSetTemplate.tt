@@ -50,8 +50,13 @@ using Xunit;
 using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_<#= folderName.Replace(@"\", "_") #> : IDisposable
+    public class TestSet_<#= folderName.Replace(@"\", "_") #>
     {
+        public TestSet_<#= folderName.Replace(@"\", "_") #>()
+        {
+            Extensibility.Python.Platform.PythonConnector.Current.KeepAlive = false;
+        }
+
 <#+ foreach (var file in testFiles) { 
 var shortFileName = System.IO.Path.GetFileName(file);
 var methodName = System.IO.Path.GetFileNameWithoutExtension(shortFileName).Replace("-", "_");
@@ -66,10 +71,6 @@ var longFileName = folderName + @"\" + shortFileName; #>
         }
 
 <#+ } #>
-        public void Dispose()
-        {
-            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
-        }
     }
 }
 <#+ } #>

@@ -10,8 +10,13 @@ using Xunit;
 using System;
 namespace NLedger.IntegrationTests
 {
-    public class TestSet_test_manual : IDisposable
+    public class TestSet_test_manual
     {
+        public TestSet_test_manual()
+        {
+            Extensibility.Python.Platform.PythonConnector.Current.KeepAlive = false;
+        }
+
         [Fact]
         [Trait("Category", "Integration")]
         public void IntegrationTest_test_manual_transaction_codes_1()
@@ -82,9 +87,5 @@ namespace NLedger.IntegrationTests
             new TestRunner(@"test/manual/transaction-status-4.test").Run();
         }
 
-        public void Dispose()
-        {
-            Extensibility.Python.PythonHostConnector.Reconnect(disposeCurrentConnection: true);
-        }
     }
 }
