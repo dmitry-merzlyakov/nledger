@@ -24,6 +24,9 @@ namespace NLedger.Extensibility.Python
             return s?.Length ?? 0;
         }
 
+        /// <summary>
+        /// Entry point for Python module initialization
+        /// </summary>
         public static void PythonModuleInitialization()
         {
             // MainApplicationContext is empty only if Python module is being initialized in Python session (not in NLedger process).
@@ -36,9 +39,9 @@ namespace NLedger.Extensibility.Python
                 context.SetEnvironmentVariables(envs.EnvironmentVariables);
                 context.IsAtty = String.Equals(envs.GetValue("IsAtty"), bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
 
-                context.AcquireCurrentThread(); // TODO - add release code.
+                var threadAcquirer = context.AcquireCurrentThread();
                 var pythonSession = new PythonSession();
-                pythonSession.IsPythonHost = true;
+                pythonSession.PythonHostThreadAcquirer = threadAcquirer;
 
                 context.SetExtendedSession(pythonSession);
                 Session.SetSessionContext(pythonSession);
@@ -46,12 +49,23 @@ namespace NLedger.Extensibility.Python
             }
         }
 
+        /// <summary>
+        /// Entry point for Python module shutdown (releasing current session, optional)
+        /// </summary>
+        public static void PythonModuleShutdown()
+        {
+            var pythonSession = Current as PythonSession;
+            pythonSession?.PythonHostThreadAcquirer?.Dispose();
+        }
+
         public PythonSession()
         {
             PythonValueConverter = new PythonValueConverter(this);
         }
 
-        public bool IsPythonHost { get; private set; }
+        public bool IsPythonHost => PythonHostThreadAcquirer != null;
+        public IDisposable PythonHostThreadAcquirer { get; private set; }
+
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
         public IPythonValueConverter PythonValueConverter { get; }
 
@@ -88,6 +102,7 @@ namespace NLedger.Extensibility.Python
             }
             catch (Exception ex)
             {
+                // [DM] PyErr_Print() is omitted
                 ErrorContext.Current.AddErrorContext(ex.ToString());
                 throw new RuntimeError("Failed to evaluate Python code");
             }
@@ -110,6 +125,7 @@ namespace NLedger.Extensibility.Python
             }
             catch (PythonException ex)
             {
+                // [DM] PyErr_Print() is omitted
                 ErrorContext.Current.AddErrorContext(ex.ToString());
                 throw new RuntimeError($"Python failed to import: {str}");
             }
@@ -129,7 +145,7 @@ namespace NLedger.Extensibility.Python
             }
             catch (Exception ex)
             {
-                // TODO PyErr_Print();
+                // [DM] PyErr_Print() is omitted
                 ErrorContext.Current.AddErrorContext(ex.ToString());
                 throw new RuntimeError("Python failed to initialize");
             }
@@ -148,6 +164,9 @@ namespace NLedger.Extensibility.Python
             base.Dispose();
         }
 
+        /// <summary>
+        /// Ported from value_t python_interpreter_t::python_command(call_scope_t& args)
+        /// </summary>
         public override Value PythonCommand(CallScope args)
         {
             if (!IsInitialized())
@@ -155,7 +174,7 @@ namespace NLedger.Extensibility.Python
 
             var argv = new List<string>();
 
-            argv.Add(Environment.GetCommandLineArgs().FirstOrDefault());  // TODO
+            argv.Add(Environment.GetCommandLineArgs().FirstOrDefault());
 
             for (int i = 0; i < args.Size; i++)
                 argv.Add(args.Get<string>(i));
@@ -166,11 +185,11 @@ namespace NLedger.Extensibility.Python
             {
                 try
                 {
-                    //[DM] TODO - Commented piece of code below (...Runtime.Py_Main...) is ported from original Ledger.
-                    // However, using Py_Main requires re-initialization of Python context when it finishes because Py_Main finalizes the context at the end.
-                    // It is acceptable for a command-line utility but cannot be followed in a software library.
-                    // The temporal workaround is just to execute target script (w/o parameters) by means of Exec as a script block.
-                    // Proper solution is to run this stuff (...Runtime.Py_Main...) in a separated app domain and will be considered further.
+                    //[DM] Commented piece of code below (...Runtime.Py_Main...) was initially ported from original Ledger.
+                    // However, Py_Main finalizes the context at the end of execution and the current AppDomain becomes unusable.
+                    // It is acceptable for a command-line utility but it is not a case for a software library.
+                    // The workaround is to execute the target script (w/o parameters) by means of Exec as a script block.
+                    // This solution works fine unless you have command-line arguments; they are not supported.
                     //status = Runtime.Py_Main(argv.Count, argv.ToArray());
 
                     //[DM] Some tests (e.g. regress\B21BF389_py.test) indicate that Python code executed by Ledger's 'python' command
@@ -184,20 +203,60 @@ namespace NLedger.Extensibility.Python
                 }
                 catch (Exception ex)
                 {
+                    // [DM] PyErr_Print() is omitted
                     ErrorContext.Current.AddErrorContext(ex.ToString());
                     throw new RuntimeError("Failed to execute Python module");
                 }
             }
 
             if (status != 0)
-                throw new Exception(status.ToString()); // TODO
+                throw new Exception(status.ToString());
 
             return Value.Empty;
         }
 
+        /// <summary>
+        /// Ported from value_t python_interpreter_t::server_command(call_scope_t& args)
+        /// </summary>
         public override Value ServerCommand(CallScope args)
         {
-            throw new NotImplementedException("TODO2");
+            using (GIL())
+            {
+                PyModule serverModule = null;
+
+                try
+                {
+                    serverModule = MainModule.ModuleObject.Import("ledger.server");
+                }
+                catch
+                {
+                    // [DM] PyErr_Print() is omitted
+                    throw new RuntimeError("Could not import ledger.server; please check your PYTHONPATH");
+                }
+
+                if (serverModule == null)
+                    throw new RuntimeError("Could not import ledger.server; please check your PYTHONPATH");
+
+                using (serverModule)
+                {
+                    var mainFunction = serverModule.GetAttr("main");
+                    if (mainFunction == null)
+                        throw new RuntimeError("The ledger.server module is missing its main() function!");
+
+                    var func = new PythonFunctor("main", mainFunction, PythonValueConverter);
+
+                    try
+                    {
+                        func.ExprFunctor(this);
+                        return Value.True;
+                    }
+                    catch
+                    {
+                        // [DM] PyErr_Print() is omitted
+                        throw new RuntimeError("Error while invoking ledger.server's main() function");
+                    }
+                }
+            }
         }
 
         protected override ExprOp LookupFunction(string name)

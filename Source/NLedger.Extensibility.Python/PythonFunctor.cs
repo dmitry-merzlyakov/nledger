@@ -29,6 +29,9 @@ namespace NLedger.Extensibility.Python
 
         public ExprFunc ExprFunctor => ExprFunc;
 
+        /// <summary>
+        /// Ported from value_t python_interpreter_t::functor_t::operator()(call_scope_t& args)
+        /// </summary>
         public Value ExprFunc(Scope args)
         {
             if (!Obj.IsCallable())
