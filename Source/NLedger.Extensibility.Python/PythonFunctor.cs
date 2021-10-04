@@ -34,27 +34,30 @@ namespace NLedger.Extensibility.Python
         /// </summary>
         public Value ExprFunc(Scope args)
         {
-            if (!Obj.IsCallable())
+            using (Py.GIL())
             {
-                var val = PythonValueConverter.GetValue(Obj);
-                Logger.Current.Debug("python.interp", () => $"Value of Python '{Name}': {val.ToString()}");
-                return val;
-            }
-            else
-            {
-                var arglist = GetParamList((CallScope)args).ToArray();
-                var val = Obj.Invoke(arglist);
-
-                try
+                if (!Obj.IsCallable())
                 {
-                    var xval = PythonValueConverter.GetValue(val);
-                    Logger.Current.Debug("python.interp", () => $"Return from Python '{Name}': {val.ToString()}");
-                    return xval;
+                    var val = PythonValueConverter.GetValue(Obj);
+                    Logger.Current.Debug("python.interp", () => $"Value of Python '{Name}': {val.ToString()}");
+                    return val;
                 }
-                catch (Exception ex)
+                else
                 {
-                    ErrorContext.Current.AddErrorContext(ex.ToString());
-                    throw new CalcError($"Failed call to Python function 'Name'");
+                    var arglist = GetParamList((CallScope)args).ToArray();
+                    var val = Obj.Invoke(arglist);
+
+                    try
+                    {
+                        var xval = PythonValueConverter.GetValue(val);
+                        Logger.Current.Debug("python.interp", () => $"Return from Python '{Name}': {val.ToString()}");
+                        return xval;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorContext.Current.AddErrorContext(ex.ToString());
+                        throw new CalcError($"Failed call to Python function 'Name'");
+                    }
                 }
             }
         }

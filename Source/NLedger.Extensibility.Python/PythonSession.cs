@@ -56,9 +56,9 @@ namespace NLedger.Extensibility.Python
         /// </summary>
         public static void PythonModuleShutdown()
         {
-            var puthonSession = Current;
-            puthonSession?.PythonHostThreadAcquirer?.Dispose();
-            puthonSession?.Dispose();
+            var pythonSession = Current;
+            pythonSession?.PythonHostThreadAcquirer?.Dispose();
+            pythonSession?.Dispose();
         }
 
         public PythonSession()

@@ -34,10 +34,13 @@ namespace NLedger.Extensibility.Python
 
         public override void OnDisconnected(bool isPlatformDisposing)
         {
-            if (!PythonSession.IsPythonHost && isPlatformDisposing)
-                LedgerModule?.Exec("release_output_streams()");
+            using (PythonSession.GIL())
+            {
+                if (!PythonSession.IsPythonHost && isPlatformDisposing)
+                    LedgerModule?.Exec("release_output_streams()");
 
-            MainModule.ModuleObject.Dispose();
+                MainModule.ModuleObject.Dispose();
+            }
         }
     }
 }
