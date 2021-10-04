@@ -14,6 +14,8 @@ namespace NLedger.Extensibility.Python
 {
     public class PythonSession : ExtendedSession
     {
+        public static new PythonSession Current => ExtendedSession.Current as PythonSession;
+
         /// <summary>
         /// Helper static method that routes text to Virtual Console standard output. Used by Python Ledger module to redirect output stream.
         /// </summary>
@@ -54,8 +56,9 @@ namespace NLedger.Extensibility.Python
         /// </summary>
         public static void PythonModuleShutdown()
         {
-            var pythonSession = Current as PythonSession;
-            pythonSession?.PythonHostThreadAcquirer?.Dispose();
+            var puthonSession = Current;
+            puthonSession?.PythonHostThreadAcquirer?.Dispose();
+            puthonSession?.Dispose();
         }
 
         public PythonSession()
@@ -64,8 +67,6 @@ namespace NLedger.Extensibility.Python
         }
 
         public bool IsPythonHost => PythonHostThreadAcquirer != null;
-        public IDisposable PythonHostThreadAcquirer { get; private set; }
-
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
         public IPythonValueConverter PythonValueConverter { get; }
 
@@ -293,5 +294,7 @@ namespace NLedger.Extensibility.Python
             var module = new PythonModule(this, name);
             MainModule.DefineGlobal(name, module.ModuleObject);
         }
+
+        private IDisposable PythonHostThreadAcquirer { get; set; }
     }
 }

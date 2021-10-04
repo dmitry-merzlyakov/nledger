@@ -121,6 +121,9 @@ namespace NLedger.Extensibility.Python
                 if (pythonTypeName == "Value")
                     return obj.GetAttr("origin").As<Value>();
 
+                if (obj.GetPythonTypeName() == "list" && !(obj is PyList))
+                    obj = new PyList(obj);
+
                 if (obj is PyList)
                 {
                     var values = new List<Value>();
@@ -136,30 +139,30 @@ namespace NLedger.Extensibility.Python
             }
         }
 
-        public PyObject GetPyDate(Date date) => GetPyObject("to_pdate", date);
-        public PyObject GetPyDateTime(DateTime dateTime) => GetPyObject("to_pdatetime", dateTime);
-        public PyObject GetPyBool(bool val) => GetPyObject("bool", val);
-        public PyObject GetPyInt(long val) => GetPyObject("int", val);
+        public PyObject GetPyDate(Date date) => GetPyObject("to_pdate(value)", date);
+        public PyObject GetPyDateTime(DateTime dateTime) => GetPyObject("to_pdatetime(value)", dateTime);
+        public PyObject GetPyBool(bool val) => GetPyObject("bool(str(value)=='True')", val);
+        public PyObject GetPyInt(long val) => GetPyObject("int(str(value))", val);
 
-        public PyObject GetPyAmount(Amounts.Amount amount) => GetPyObject("Amount.from_origin", amount);
-        public PyObject GetPyBalance(Balance balance) => GetPyObject("Balance.from_origin", balance);
-        public PyObject GetPyPost(Post post) => GetPyObject("Posting.from_origin", post);
-        public PyObject GetPyXact(Xact xact) => GetPyObject("Transaction.from_origin", xact);
-        public PyObject GetPyPeriodXact(PeriodXact periodXact) => GetPyObject("PeriodicTransaction.from_origin", periodXact);
-        public PyObject GetPyAutoXact(AutoXact autoXact) => GetPyObject("AutomatedTransaction.from_origin", autoXact);
-        public PyObject GetPyAccount(Account account) => GetPyObject("Account.from_origin", account);
-        public PyObject GetPyValue(Value val) => GetPyObject("Value.to_value", val);
+        public PyObject GetPyAmount(Amounts.Amount amount) => GetPyObject("Amount.from_origin(value)", amount);
+        public PyObject GetPyBalance(Balance balance) => GetPyObject("Balance.from_origin(value)", balance);
+        public PyObject GetPyPost(Post post) => GetPyObject("Posting.from_origin(value)", post);
+        public PyObject GetPyXact(Xact xact) => GetPyObject("Transaction.from_origin(value)", xact);
+        public PyObject GetPyPeriodXact(PeriodXact periodXact) => GetPyObject("PeriodicTransaction.from_origin(value)", periodXact);
+        public PyObject GetPyAutoXact(AutoXact autoXact) => GetPyObject("AutomatedTransaction.from_origin(value)", autoXact);
+        public PyObject GetPyAccount(Account account) => GetPyObject("Account.from_origin(value)", account);
+        public PyObject GetPyValue(Value val) => GetPyObject("Value.to_value(value)", val);
 
-        public Date GetDate(PyObject val) => GetPyObject("to_ndate", val).As<Date>();
-        public DateTime GetDateTime(PyObject val) => GetPyObject("to_ndatetime", val).As<DateTime>();
+        public Date GetDate(PyObject val) => GetPyObject("to_ndate(value)", val).As<Date>();
+        public DateTime GetDateTime(PyObject val) => GetPyObject("to_ndatetime(value)", val).As<DateTime>();
 
         private PyObject GetPyObject(string init_method, object val)
         {
             using (PythonSession.GIL())
             {
                 var dict = new PyDict();
-                dict["value"] = PyObject.FromManagedObject(val);
-                return PythonSession.LedgerModule.Eval($"{init_method}(value)", dict);
+                dict["value"] = (val as PyObject) ?? PyObject.FromManagedObject(val);
+                return PythonSession.LedgerModule.Eval(init_method, dict);
             }
         }
 
