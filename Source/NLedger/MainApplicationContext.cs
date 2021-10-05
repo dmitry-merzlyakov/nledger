@@ -88,6 +88,12 @@ namespace NLedger
             set { _CommodityPool = value; }
         }
 
+        public Commodity.CommodityDefaults CommodityDefaults
+        {
+            get { return _CommodityDefaults ?? (_CommodityDefaults = new Commodity.CommodityDefaults()); }
+            set { _CommodityDefaults = value; }
+        }
+
         // For FileSystem
         public bool IsAtty { get; set; } = true;
 
@@ -168,6 +174,7 @@ namespace NLedger
             context.ArgsOnly = ArgsOnly;
             context.InitFile = InitFile;
             context.CommodityPool = CommodityPool;
+            context.CommodityDefaults = CommodityDefaults;
             context.IsAtty = IsAtty;
             context.TimesCommon = TimesCommon;
             context.DefaultScope = DefaultScope;
@@ -208,6 +215,7 @@ namespace NLedger
         private static readonly IDictionary<string, string> Empty = new Dictionary<string, string>();
 
         private CommodityPool _CommodityPool;
+        private Commodity.CommodityDefaults _CommodityDefaults;
         private IApplicationServiceProvider _ApplicationServiceProvider;
         private IDictionary<string, string> _EnvironmentVariables;
     }

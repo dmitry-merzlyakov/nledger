@@ -56,26 +56,28 @@ namespace NLedger.Commodities
         #region Commodity Defaults
         public class CommodityDefaults
         {
+            /// <summary>
+            /// Ported bool decimal_comma_by_default
+            /// </summary>
             public bool DecimalCommaByDefault { get; set; }
+
+            /// <summary>
+            /// Ported bool time_colon_by_default
+            /// </summary>
             public bool TimeColonByDefault { get; set; }
         }
 
-        public static CommodityDefaults Defaults
-        {
-            get { return _Defaults ?? (_Defaults = new CommodityDefaults()); }
-        }
+        public static CommodityDefaults Defaults => MainApplicationContext.Current?.CommodityDefaults;
 
         public static void Initialize()
         {
-            _Defaults = null;
+            MainApplicationContext.Current.CommodityDefaults = null;
         }
 
         public static void Shutdown()
         {
-            _Defaults = null;
+            MainApplicationContext.Current.CommodityDefaults = null;
         }
-
-        private static CommodityDefaults _Defaults;
         #endregion
 
         public static readonly string DebugCommodityCompare = "commodity.compare";
