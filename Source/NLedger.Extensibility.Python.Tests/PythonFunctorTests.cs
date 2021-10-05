@@ -40,8 +40,26 @@ namespace NLedger.Extensibility.Python.Tests
                     Assert.Equal(obj.ToString(), functor.Obj.ToString());
                     Assert.Equal(converter, functor.PythonValueConverter);
                 }
-            }
-                
+            }                
         }
+
+        [PythonFact]
+        public void PythonFunctor_ExprFunc_ReturnsValue()
+        {
+            using (var session = new PythonSession())
+            {
+                using (session.GIL())
+                {
+                    var converter = new PythonValueConverter(session);
+                    var obj = PyObject.FromManagedObject("some-string");
+                    var functor = new PythonFunctor("some-name", obj, converter);
+
+                    var val = functor.ExprFunctor(session);
+
+                    Assert.Equal("some-string", val.AsString);
+                }
+            }
+        }
+
     }
 }

@@ -43,33 +43,44 @@ namespace NLedger.Extensibility.Python.Tests
             Assert.True(File.Exists(moduleTestFile));
             var moduleTestFolder = Path.GetDirectoryName(moduleTestFile);
 
-            using (Py.GIL())
+            PythonSession.PythonModuleInitialization();
+            try
             {
-                using (var scope = Py.CreateScope("ledger_tests"))
+                PythonSession.Current.Initialize();
+
+                using (Py.GIL())
                 {
-                    // Unit tests are executed in local scope. Since Python unit test runner can only manage "main" scope,
-                    // it is necessary to run it explicitely (unittest.main(...)) specifying a test file name as a parameter
-                    // Finally, get a boolean value that indicates whether all tests passed well or not (...result.wasSuccessful())
+                    using (var scope = Py.CreateScope("ledger_tests"))
+                    {
+                        // Unit tests are executed in local scope. Since Python unit test runner can only manage "main" scope,
+                        // it is necessary to run it explicitely (unittest.main(...)) specifying a test file name as a parameter
+                        // Finally, get a boolean value that indicates whether all tests passed well or not (...result.wasSuccessful())
 
-                    // Test runner parameters are: 
-                    // exit=False - supresses exiting the current process when all tests are done
-                    // module=None - supresses module importing (basically, "main")
-                    // argv[0] - just a string indicating the current process name (required)
-                    // argv[1] - name of a unit test file (should be searchable by Python paths)
+                        // Test runner parameters are: 
+                        // exit=False - supresses exiting the current process when all tests are done
+                        // module=None - supresses module importing (basically, "main")
+                        // argv[0] - just a string indicating the current process name (required)
+                        // argv[1] - name of a unit test file (should be searchable by Python paths)
 
-                    // This method only use a final boolean value (Yes/No) to check whether tests are passed without any diagnostics.
-                    // If it is neccessary to troubleshoot this step, it is recommended to extract a test result object and go through detected errors
-                    // FOr example: var res = scope.Eval(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result");
+                        // This method only use a final boolean value (Yes/No) to check whether tests are passed without any diagnostics.
+                        // If it is neccessary to troubleshoot this step, it is recommended to extract a test result object and go through detected errors
+                        // FOr example: var res = scope.Eval(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result");
 
-                    scope.Set("module_test_folder", moduleTestFolder);
+                        scope.Set("module_test_folder", moduleTestFolder);
 
-                    scope.Import("sys");
-                    scope.Exec(@"sys.path.insert(0, module_test_folder)");
+                        scope.Import("sys");
+                        scope.Exec(@"sys.path.insert(0, module_test_folder)");
 
-                    scope.Import("unittest");
-                    Assert.True(scope.Eval<bool>(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result.wasSuccessful()"));
+                        scope.Import("unittest");
+                        Assert.True(scope.Eval<bool>(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result.wasSuccessful()"));
+                    }
                 }
             }
+            finally
+            {
+                PythonSession.PythonModuleShutdown();
+            }
         }
+
     }
 }

@@ -6,8 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
+// Unit test "PythonModule_ExecuteUnitTests" (Python unit tests) is not compatible with .Net Threading model
+// Parallelization is disabled for tests in this assembly (though all other tests pass well with Parallelization)
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace NLedger.Extensibility.Python.Tests
 {
+
     /// <summary>
     /// The fact requires NLedger Python connection configured. Otherwise, the test is skipped.
     /// </summary>

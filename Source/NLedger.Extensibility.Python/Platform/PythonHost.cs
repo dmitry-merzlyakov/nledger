@@ -55,10 +55,14 @@ namespace NLedger.Extensibility.Python.Platform
             // Initialize Python
 
             PythonEngine.Initialize();
+            ThreadState = PythonEngine.BeginAllowThreads();
         }
+
+        public IntPtr ThreadState { get; }
 
         public void Dispose()
         {
+            PythonEngine.EndAllowThreads(ThreadState);
             PythonEngine.Shutdown();
         }
 
