@@ -291,3 +291,9 @@ __pycache__/
 /Contrib/python/NLedgerPackage/build/
 /Contrib/python/NLedgerPackage/dist/
 /Contrib/python/NLedgerPackage/src/ledger.egg-info/
+/Contrib/Python/drewr3.dat
+/Contrib/Python/ledger-*.whl
+/Contrib/Python/ledger_tests.py
+/Source/NLedger.Extensibility.Python.Module/build
+/Source/NLedger.Extensibility.Python.Module/dist
+/Source/NLedger.Extensibility.Python.Module/src/ledger.egg-info
