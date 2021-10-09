@@ -64,7 +64,7 @@ $pyNetModule = "PythonNet"
 $pyLedgerModule = "Ledger"
 $pyEmbedVersion = "3.8.1"
 $pyNetPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/pythonnet-3.0.0.dev1-py3-none-any.whl")
-if (!(Test-Path -LiteralPath $pyNetPath -PathType Leaf)) { throw "Cannot find required file $pyNetPath" }
+#if (!(Test-Path -LiteralPath $pyNetPath -PathType Leaf)) { throw "Cannot find required file $pyNetPath" }
 $pyLedgerPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/ledger-0.8.3-py3-none-any.whl")
 
 [string]$Script:localAppData = [Environment]::GetFolderPath("LocalApplicationData")
@@ -185,67 +185,48 @@ function Get-PyInfo {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$True)][string]$pyExecutable)
 
-    Write-Verbose "Getting Python deployment information for path $pyExecutable"
+    Write-Verbose "Getting Python deployment information located by path $pyExecutable"
 
-    $Private:info = [PSCustomObject]@{
-        error = ""
-        warning =""
-        pyExecutable = $pyExecutable
-        pyVersion = $null
-        pipVersion = $null
-        pyHome = ""
-        pyPath = ""
-        pyDll = ""
-        pyNetModuleInfo = $null
-        pyNetRuntimeDll = ""
-        pyLedgerModuleInfo = $null
-    }
+    $Private:info = @{}
 
     if (Test-Path -LiteralPath $pyExecutable -PathType Leaf) {
-        $Private:info.pyVersion = Get-PyExpandedVersion -pyExe $pyExecutable
-        if ($Private:info.pyVersion) {
-            #TODO check Python platform
-            $Private:info.pipVersion = Get-PipVersion -pyExe $pyExecutable
-            if ($Private:info.pipVersion) {
-                $Private:info.pyHome = Split-Path $pyExecutable
-                $Private:info.pyPath = [String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
-                $Private:info.pyDll = "python$($Private:info.pyVersion.Major)$($Private:info.pyVersion.Minor)"
-                #TODO check pyDll
-                $Private:info.pyNetModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
-                if ($Private:info.pyNetModuleInfo) {
-                    if ($Private:info.pyNetModuleInfo.MajorVersion -ge 3) {
-                        $Private:info.pyNetRuntimeDll = [System.IO.Path]::GetFullPath("$($Private:info.pyNetModuleInfo.Location.Trim())/pythonnet/runtime/Python.Runtime.dll")
-                        if(Test-Path -LiteralPath $Private:info.pyNetRuntimeDll -PathType Leaf) {
-                            #TODO check PythonNet runtime platform (x86 vs x64)
-                            $Private:info.pyLedgerModuleInfo = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyLedgerModule
-                        } else { $Private:info.error = "Pythonnet runtime dll not found: $pyNetRuntimeDll" }
-                    } else { $Private:info.error = "Required PythonNet version is 3 or higher. Current version is $($pyNetModuleInfo.Version). Please, upgrade it manually" }
-                } else { $Private:info.warning = "PythonNet is not installed. 'link' command can install it automatically." }
-            } else { $Private:info.error = "Pip is not installed. Please, refer to Python documentation or to https://bootstrap.pypa.io for installation instructions" }
-        } else { $Private:info.error = "Cannot get Python version ($pyExecutable)" }
-    } else { $Private:info.error = "Python executable file $pyExecutable not found" }
+        $Private:info["pyExecutable"] = [System.IO.Path]::GetFullPath($pyExecutable)
+        $Private:pyVersion = Get-PyExpandedVersion -pyExecutable $pyExecutable
+        if ($Private:pyVersion) {
+            $Private:info["pyVersion"] = $Private:pyVersion
+            $Private:info["pyPlatform"] = Get-PyPlatform -pyExecutable $pyExecutable
+            $Private:pipVersion = Get-PipVersion -pyExecutable $pyExecutable
+            if ($Private:pipVersion) {
+                $Private:info["pipVersion"] = $Private:pipVersion
+                $Private:info["pyHome"] = Split-Path $pyExecutable
+                $Private:info["pyPath"] = [String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
+                $Private:info["pyDll"] = "python$($Private:info.pyVersion.Major)$($Private:info.pyVersion.Minor)"
+                $Private:info["pyNetModuleInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
+                $Private:info["pyLedgerModuleInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyLedgerModule
+            } else { $Private:info["status_error"] = "Pip is not installed. Please, refer to Python documentation or to https://bootstrap.pypa.io for installation instructions" }
+        } else { $Private:info["status_error"] = "Cannot get Python version ($pyExecutable)" }
+    } else { $Private:info["status_error"] = "Python executable file '$pyExecutable' not found" }
 
-    return $Private:info
+    return [PSCustomObject]$Private:info
 }
 
 function Write-PyInfo {
-    [CmdletBinding()]
-    Param([Parameter(Mandatory=$True)]$info)
-
-    Write-Output "Python executable path: $($info.pyExecutable)"
-    if($info.pyVersion) { Write-Output "Python version: $($info.pyVersion.Major).$($info.pyVersion.Minor).$($info.pyVersion.Patch)"}
-    if($info.pipVersion) { Write-Output "Pip version: $($info.pipVersion)"}
-    if($info.pyHome) { Write-Output "Python HOME: $($info.pyHome)"}
-    if($info.pyHome) { Write-Output "Python PATHS: $($info.pyPath)"}
-    if($info.pyHome) { Write-Output "Python dll: $($info.pyDll)"}
-    if($info.pyNetModuleInfo) { Write-Output "Python.Net installed. Version: $($info.pyNetModuleInfo.Version)"}
-    if($info.pyNetRuntimeDll) { Write-Output "Python.Net runtime dll: $($info.pyNetRuntimeDll)"}
-    if($info.pyLedgerModuleInfo) { Write-Output "Ledger Python module installed. Version: $($info.pyLedgerModuleInfo.Version)"}
-    if($info.error) { Write-Console "{c:DarkRed}[NOT READY]{c:Gray} This Python deployment cannot be configured (manual actions are probably needed): $($info.error)"}
-    else {
-        if($info.warning) { Write-Console "{c:DarkYellow}[WARNING]{c:Gray} $($info.warning)"; Write-Console "{c:DarkYellow}[READY]{c:Gray} This Python can be configured for NLedger."}
-        else { Write-Console "{c:DarkGreen}[READY]{c:Gray} This Python is ready for NLedger" }
+    Begin { $Private:infos = @() }
+    Process { 
+        $Private:pyInfo = [ordered]@{}
+        if ($_.pyExecutable) { $Private:pyInfo["Python Executable"] = $_.pyExecutable}
+        if ($_.pyVersion) { $Private:pyInfo["Python Version"] = "$($_.pyVersion.Major).$($_.pyVersion.Minor).$($_.pyVersion.Patch)"}
+        if ($_.pyPlatform) { $Private:pyInfo["Python Platform"] = $_.pyPlatform}
+        if ($_.pipVersion) { $Private:pyInfo["Pip Version"] = $_.pipVersion}
+        if ($_.pyHome) { $Private:pyInfo["Python HOME"] = $_.pyHome}
+        if ($_.pyPath) { $Private:pyInfo["Python PATH"] = (($_.pyPath -split ";") -join "`n")}
+        if ($_.pyDll) { $Private:pyInfo["Python Dll"] = $_.pyDll}
+        if ($_.pyNetModuleInfo) { $Private:pyInfo["PythonNet Module Version"] = $_.pyNetModuleInfo.Version}
+        if ($_.pyLedgerModuleInfo) { $Private:pyInfo["Ledger Module Version"] = $_.pyLedgerModuleInfo.Version}
+        if ($_.status_error) { $Private:pyInfo["Status"] = ("{c:DarkRed}[Unreliable environment]{f:Normal} $($_.status_error)" | Out-AnsiString) }
+        $Private:infos += [PSCustomObject]$Private:pyInfo
     }
+    End { $Private:infos | Format-List }
 }
 
 function Get-StatusInfo {
@@ -348,37 +329,38 @@ function Discover {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$path)
   
-    Write-Console ""
+    Write-Output ""
     if($path) {
-        Write-Console "{c:DarkCyan}[Local Python]{c:Gray} Testing Python by path: $path"
-        Write-PyInfo (Get-PyInfo -pyExecutable $path)
-        Write-Console ""
+        Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Testing Python by path: $path" | Out-AnsiString )
+        Get-PyInfo -pyExecutable $path | Write-PyInfo
+        Write-Output ""
       
     } else {
         Write-Verbose "Search local Python"
         $path = Search-PyExecutable
         if ($path) {
-            Write-Console "{c:DarkCyan}[Local Python]{c:Gray} Found by path: $path"
-            Write-PyInfo (Get-PyInfo -pyExecutable $path)
-        } else { Write-Console "{c:DarkCyan}[Local Python]{c:Gray} Not found"}
-        Write-Console ""
+            Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Found by path: $path" | Out-AnsiString )
+            Get-PyInfo -pyExecutable $path | Write-PyInfo
+        } else { Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Not found" | Out-AnsiString )}
+        Write-Output ""
   
         Write-Verbose "Search embed Python"
         $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
-        if (!$embeds) { Write-Console "{c:DarkCyan}[Embed Python]{c:Gray} $(if($Script:isWindowsPlatform){"Not found"}else{"Not available"})";Write-Output "" }
-        $embeds | ForEach-Object {
-            Write-Console "{c:DarkCyan}[Embed Python]{c:Gray} Found by path: $_"
-            Write-PyInfo (Get-PyInfo -pyExecutable $_)
-            Write-Console ""
+        if (!$embeds) { 
+            Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} $(if($Script:isWindowsPlatform){"Not found"}else{"Not available"})" | Out-AnsiString )
+        } else {
+            Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
+            $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
         }
-  
+          
         Write-Verbose "Check NLedger Python settings"
         $settings = Get-PythonIntegrationSettings
         if($settings) {
-            Write-Console "{c:DarkCyan}[NLedger Settings]{c:Gray} Found ($Script:settingsFileName); configured Python: $($settings.PyExecutable)"
-            Write-PyInfo (Get-PyInfo -pyExecutable $settings.PyExecutable)
-        } else { Write-Console "{c:DarkCyan}[NLedger Settings]{c:Gray} Not found (no file $Script:settingsFileName)" }
-        Write-Console ""
+            Write-Output ( "{c:DarkCyan}[NLedger Settings]{f:Normal} Found connection settings file: $Script:settingsFileName" | Out-AnsiString )
+            Write-Output "Configured path to Python executable: $($settings.PyExecutable)"
+            Get-PyInfo -pyExecutable $settings.PyExecutable | Write-PyInfo
+        } else { Write-Output ("{c:DarkCyan}[NLedger Settings]{f:Normal} Not found (no file $Script:settingsFileName)" | Out-AnsiString ) }
+        Write-Output ""
     }  
 }
 

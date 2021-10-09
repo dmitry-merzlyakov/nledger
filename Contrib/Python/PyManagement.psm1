@@ -64,6 +64,16 @@ function Get-PyExpandedVersion {
     } else {$null}
 }
 
+function Get-PyPlatform {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)][string]$pyExecutable)
+
+    if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
+    [string]$Private:result = $(& "$pyExecutable" '-c' '"import sys;print(sys.maxsize > 2**32)"') 2>&1
+    Write-Verbose "Python returned: $Private:result"
+    return $(if($Private:result -eq "True"){"x64"}else{"x86"})
+}
+
 function Get-PipVersion {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$True)][string]$pyExecutable)
