@@ -56,11 +56,7 @@ function Get-PyExpandedVersion {
     Param([Parameter(Mandatory=$True)][string]$pyExecutable)
 
     if($(Get-PyVersion -pyExecutable $pyExecutable) -match '(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)'){
-        [PSCustomObject]@{
-            Major = $Matches["major"]
-            Minor = $Matches["minor"]
-            Patch = $Matches["patch"]
-        }
+        [System.Version]::new($Matches["major"],$Matches["minor"],$Matches["patch"],0)
     } else {$null}
 }
 
@@ -107,11 +103,11 @@ function Test-PyModuleInstalled {
             Location = $(if($Private:result -match "\nLocation:\s*(?<loc>.*)\n") { $Matches["loc"]} else {""})
             Requires = $(if($Private:result -match "\nRequires:(?<req>.*)\n") { $Matches["req"]} else {""})
             RequiredBy = $(if($Private:result -match "\nRequired-by:\s*(?<rby>.*)$") { $Matches["rby"]} else {""})
-            MajorVersion = 0
+            ExpandedVersion = $null
         }
 
-        if($Private:packageInfo.Version -match "^(?<major>\d+)\.") {
-            $Private:packageInfo.MajorVersion = [int]$Matches["major"]
+        if($Private:packageInfo.Version -match "^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)") {
+            $Private:packageInfo.ExpandedVersion = [System.Version]::new($Matches["major"],$Matches["minor"],$Matches["patch"],0)
         } else {throw "Incorrect package version $($pyNetModuleInfo.Version)"}    
     
         Write-Verbose "Module info: $Private:packageInfo"

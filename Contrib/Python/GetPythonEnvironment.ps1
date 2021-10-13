@@ -229,40 +229,88 @@ function Write-PyInfo {
     End { $Private:infos | Format-List }
 }
 
+function Get-LatestAvailableLedgerModule {
+    [CmdletBinding()]
+    Param()
+
+    Get-ChildItem -LiteralPath $Script:ScriptPath -Filter "ledger-*-py*-none-any.whl" | 
+        ForEach-Object { @{ FileName=$_.FullName; Version=[System.Version](($_.Name | Select-String -Pattern "ledger-(?<ver>\d+\.\d+\.\d+)-py\d-none-any\.whl").Matches.Groups[1].Value) } } |
+        Sort-Object -Property Version -Descending |
+        Select-Object -First 1
+}
+
 function Get-StatusInfo {
     [CmdletBinding()]
     Param()
 
-    $Private:info = [PSCustomObject]@{
-        settings = (Get-PythonIntegrationSettings)
-        pyInfo = $null
-        extensionProvider = ""
-        enabled = $false
-        validated = $false
-        message = ""
-    }
+    $Private:info = @{}
 
-    if ($Private:info.settings) { $Private:info.pyInfo = Get-PyInfo -pyExecutable $Private:info.settings.PyExecutable }
-
-    $Private:info.extensionProvider = ($(GetConfigData).Settings | Where-Object { $_.Name -eq "ExtensionProvider" } | Select-Object -First 1).EffectiveSettingValue
-    $Private:info.enabled = $Private:info.extensionProvider -eq "python"
-
-    if ($Private:info.enabled) {
-        if (!$Private:info.settings) { $Private:info.message = "Python extension is enabled but connection settings file does not exist or unusable ($Script:settingsFileName). Use 'link' command to actualize settings." }
+    $Private:info["py_settings_filename"] = $Script:settingsFileName
+    $Private:info["py_settings"] = (Get-PythonIntegrationSettings)
+    if ($Private:info["py_settings"]) { 
+        $Private:info["py_executable"] = $Private:info["py_settings"].PyExecutable
+        $Private:info["py_info"] = (Get-PyInfo -pyExecutable $Private:info["py_settings"].PyExecutable)
+        $Private:info["is_py_info_valid"] = !($Private:info["py_info"].status_error)
+        if ($Private:info["is_py_info_valid"]) {
+            $Private:info["pynet_module_version"] = $Private:info["py_info"].pyNetModuleInfo.Version
+            $Private:info["pyledger_module_version"] = $Private:info["py_info"].pyLedgerModuleInfo.Version
+            $Private:info["pyledger_module_expanded_version"] = $Private:info["py_info"].pyLedgerModuleInfo.ExpandedVersion
+            $Private:info["latest_pyledger_module_version"] = (Get-LatestAvailableLedgerModule).Version
+        }
         else {
-            if ($Private:info.pyInfo.error) { $Private:info.message = "Python extension is enabled but connection settings point at unusable Python (Error: $($Private:info.pyInfo.error)). Use 'link' command to actualize settings." }
-            else { 
-                if (!$Private:info.pyInfo.pyNetModuleInfo) { $Private:info.message = "Python extension is enabled but connected Python does not have PythonNet module"}
-                else  {
-                    if (!$Private:info.pyInfo.pyLedgerModuleInfo) { $Private:info.message = "Python extension is enabled but connected Python does not have Ledger module"}
-                    else { $Private:info.validated = $true }
-                }                
-            }
+            $Private:info["py_status_error"] = $Private:info["py_info"].status_error
         }
     }
+    $Private:info["nledger_binaries"] = (Test-NLedgerBinaryLoaded)
+    if ($Private:info["nledger_binaries"]) {
+        $Private:info["extension_provider"] = ($(GetConfigData).Settings | Where-Object { $_.Name -eq "ExtensionProvider" } | Select-Object -First 1).EffectiveSettingValue
+        $Private:info["is_python_extension_enabled"] = $Private:info["extension_provider"] -eq "python"
+    }
 
-    return $Private:info
+    return [PSCustomObject]$Private:info
 }
+
+function Write-StatusInfo {
+    Begin { $Private:infos = @() }
+    Process { 
+        $Private:info = [ordered]@{}
+        if ($_.py_settings) {
+            if ($_.is_py_info_valid) {
+                $Private:info["Python Connection"] = ("{c:DarkGreen}[Enabled]{f:Normal} Connection is configured and active" | Out-AnsiString)
+                $Private:info["Connection Settings"] = ( $_.py_settings_filename )
+                $Private:info["Python Executable"] = ( $_.py_executable )
+                $Private:info["PythonNet Module"] = $( if($_.pynet_module_version){$_.pynet_module_version}else{"Not installed"} )
+                $Private:ledgerAvailable = $(if ($_.latest_pyledger_module_version -and $_.pyledger_module_expanded_version -lt $_.latest_pyledger_module_version) {"`nLedger Module $($_.latest_pyledger_module_version.ToString(3)) is available and can be installed"} else {""})
+                $Private:info["Ledger Module"] = $( if($_.pyledger_module_version){"$($_.pyledger_module_version)$Private:ledgerAvailable"}else{"Not installed$Private:ledgerAvailable"} )
+            } else {
+                $Private:info["Python Connection"] = ("{c:DarkRed}[Disabled]{f:Normal} Connection is configured but referenced Python is not valid" | Out-AnsiString)
+                $Private:info["Connection Settings"] = ( $_.py_settings_filename )
+                $Private:info["Python Executable"] = ( $_.py_executable )
+                $Private:info["Python Status"] = ("{c:DarkYellow}[Not Valid]{f:Normal} $($_.py_status_error)`nConfigure connection to another Python environment" | Out-AnsiString)
+            }
+        } else {
+            $Private:info["Python Connection"] = ("{c:DarkRed}[Disabled]{f:Normal} Connection is not configured" | Out-AnsiString)
+            $Private:info["Connection Settings"] = ("{c:DarkYellow}[File not found]{f:Normal} $($_.py_settings_filename)`nUse Set-PythonConnection command to create a connection file" | Out-AnsiString)
+        }
+        if ($_.nledger_binaries) {
+            if ($_.is_python_extension_enabled) {
+                $Private:info["Python Extension"] = ("{c:DarkGreen}[Enabled]{f:Normal} Extension is active" | Out-AnsiString)
+            } else {
+                if ($_.extension_provider) {
+                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Extension provider is not set.`nUse Enable-PythonExtension command to set correct provider." | Out-AnsiString)
+                } else {
+                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Current extension provider is '$($_.extension_provider)'' whereas 'python' expected`nUse Enable-PythonExtension command to set correct provider." | Out-AnsiString)
+                }
+            }
+        } else {
+            $Private:info["Python Extension"] = ("{c:DarkRed}[Not Available]{f:Normal} NLedger binaries not found`nBuild binaries or correct deployment issues" | Out-AnsiString)
+        }
+
+        $Private:infos += [PSCustomObject]$Private:info
+    }
+    End { $Private:infos | Format-List }
+}
+
 
 function Test-Link {
     [CmdletBinding()]
@@ -472,21 +520,11 @@ function Status {
     [CmdletBinding()]
     Param()
 
-    $Private:info = Get-StatusInfo
+    Write-Output ("`n{c:DarkCyan}[Python Extension Status]{f:Normal}`n" | Out-AnsiString )
+    Write-Output "'Python Connection' status indicates whether the reference to Python is properly configured"
+    Write-Output "'Python Extension' status indicates whether NLedger uses the referenced Python"
 
-    Write-Console ""
-    Write-Console "NLedger Python extension: $(if($Private:info.enabled){'{c:DarkGreen}[ENABLED]{c:Gray}'}else{'{c:DarkRed}[DISABLED]{c:Gray}'}) ('ExtensionProvider' setting value in NLedger configuration: '$($Private:info.extensionProvider)')"
-    if ($Private:info.enabled -and !$Private:info.validated) {Write-Console "[WARNING] NLedger Python extension is unusable: $($Private:info.message)" }
-    Write-Console "NLedger Python connection settings: $(if($Private:info.settings){'{c:DarkGreen}[EXISTS]{c:Gray}'}else{'{c:DarkRed}[NOT EXIST]{c:Gray}'}) File: $Script:settingsFileName"
-    if ($Private:info.settings) {
-        Write-Console "  Python path: $($Private:info.pyInfo.pyExecutable)"
-        if ($Private:info.pyInfo.error) { Write-Console "  Python deployment status: {c:DarkRed}[ERROR]{c:Gray} - $($Private:info.pyInfo.error)" }
-        else {
-            if ($Private:info.pyInfo.warning) { Write-Console "  Python deployment status: {c:DarkYellow}[WARNING]{c:Gray} - $($Private:info.pyInfo.warning)" }
-            else { Write-Console "  Python deployment status: {c:DarkGreen}[OK]{c:Gray}" }
-        }
-    }
-    Write-Console ""
+    Get-StatusInfo | Write-StatusInfo
 }
 
 <#

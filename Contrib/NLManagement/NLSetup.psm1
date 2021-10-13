@@ -26,6 +26,8 @@ function GetConfigData {
     [CmdletBinding()]
     Param()
 
+    if (!$Script:nledgerBinaryLoaded) { throw "NLedger binaries not loaded. GetConfigData is not available."}
+
     $private:appConfigFile = [System.IO.Path]::GetFullPath($Script:AppSettingsFile)
     setAppConfigFile $private:appConfigFile | Out-Null
 
@@ -149,7 +151,7 @@ function UpdateConfigXml {
     if (!($xml.DocumentElement.Name -eq "configuration")) { throw "Unexpected root element. Only 'configuration' is expected" }
 
     $Private:appSettings = ($xml.DocumentElement.GetElementsByTagName("appSettings"))[0]
-    if ($Private:appSettings -eq $null) {
+    if (!$Private:appSettings) {
         $Private:appSettings  = $xml.CreateElement("appSettings")
         $xml.DocumentElement.AppendChild($Private:appSettings) | Out-Null
     }
@@ -292,17 +294,32 @@ function SetPlatform {
     return get-success "Current platform is $(if($Script:IsCorePlatform){".Net Core"}else{".Net Framework"}) [App config file is $($Script:AppSettingsFile)]"
 }
 
+function Test-NLedgerBinaryLoaded { return $Script:nledgerBinaryLoaded }
+
 # Module Initialization
 
+[bool]$Script:nledgerBinaryLoaded = $False
+
 if (!$Script:nledgerPath) {
-    Write-Verbose "NLedger path is not specified; calling NLedgerLocation..."
-    $Script:nledgerPath = NLedgerLocation
+    Write-Verbose "NLedger path is not specified; calling Get-NLedgerPath..."
+    $private:path = Get-NLedgerPath
+    if (!$private:path) { 
+        Write-Verbose "NLedger binaries not found; NLSetup functionality is limited"
+        return
+    }
+    $Script:nledgerPath = [System.IO.Path]::GetDirectoryName($private:path)
 }
 
 Write-Verbose "NLedger path is $Script:nledgerPath"
 
 Write-Verbose "Loading NLedger binaries..."
 $Script:NLedgerAssembly = [System.Reflection.Assembly]::LoadFrom("$Script:nledgerPath\NLedger.dll")
+
+if (!$Script:NLedgerAssembly) {
+    Write-Verbose "Cannot load NLedger binaries; NLSetup functionality is limited"
+    return
+}
+$Script:nledgerBinaryLoaded = $true
 
 Write-Verbose "Looking for NLedger configuration class"
 $Script:NLedgerConfigurationType = $Script:NLedgerAssembly.GetType("NLedger.Utility.Settings.NLedgerConfiguration")
