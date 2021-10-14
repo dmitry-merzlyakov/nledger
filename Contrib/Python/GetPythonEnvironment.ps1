@@ -87,7 +87,6 @@ function Get-PythonIntegrationSettings {
         PyHome = $Private:xmlContent.'nledger-python-settings'.'py-home'
         PyPath = $Private:xmlContent.'nledger-python-settings'.'py-path'
         PyDll = $Private:xmlContent.'nledger-python-settings'.'py-dll'
-        PyNetRuntimeDll = $Private:xmlContent.'nledger-python-settings'.'py-net-runtime-dll'
     }
     Write-Verbose "Read settings: $Private:settings"
     return $Private:settings
@@ -116,10 +115,6 @@ function Set-PythonIntegrationSettings {
 
     $Private:elm = $Private:doc.CreateElement("py-dll")
     $Private:elm.InnerText = $settings.PyDll
-    $null = $Private:root.AppendChild($Private:elm)
-
-    $Private:elm = $Private:doc.CreateElement("py-net-runtime-dll")
-    $Private:elm.InnerText = $settings.PyNetRuntimeDll
     $null = $Private:root.AppendChild($Private:elm)
 
     $null = $Private:doc.AppendChild($Private:root)
@@ -153,8 +148,7 @@ function Update-PythonEnvironmentSettings {
         [Parameter(Mandatory=$True)][string]$pyExecutable,
         [Parameter(Mandatory=$True)][string]$pyHome,
         [Parameter(Mandatory=$True)][string]$pyPath,
-        [Parameter(Mandatory=$True)][string]$pyDll,
-        [Parameter(Mandatory=$True)][string]$PyNetRuntimeDll
+        [Parameter(Mandatory=$True)][string]$pyDll
     )
 
     $Private:settings = Get-PythonIntegrationSettings
@@ -164,14 +158,12 @@ function Update-PythonEnvironmentSettings {
             PyHome = $pyHome
             PyPath = $pyPath
             PyDll = $pyDll
-            PyNetRuntimeDll = $PyNetRuntimeDll
         }    
     } else {
         $Private:settings.PyExecutable = $pyExecutable
         $Private:settings.PyHome = $pyHome
         $Private:settings.PyPath = $pyPath
         $Private:settings.PyDll = $pyDll
-        $Private:settings.PyNetRuntimeDll = $PyNetRuntimeDll
     }
 
     $null = Set-PythonIntegrationSettings $Private:settings
@@ -296,10 +288,10 @@ function Write-StatusInfo {
             if ($_.is_python_extension_enabled) {
                 $Private:info["Python Extension"] = ("{c:DarkGreen}[Enabled]{f:Normal} Extension is active" | Out-AnsiString)
             } else {
-                if ($_.extension_provider) {
-                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Extension provider is not set.`nUse Enable-PythonExtension command to set correct provider." | Out-AnsiString)
+                if ([String]::IsNullOrEmpty($_.extension_provider)) {
+                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Extension provider is not set.`nUse {c:DarkYellow}enable{f:Normal} command to set correct provider." | Out-AnsiString)
                 } else {
-                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Current extension provider is '$($_.extension_provider)'' whereas 'python' expected`nUse Enable-PythonExtension command to set correct provider." | Out-AnsiString)
+                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Current extension provider is '$($_.extension_provider)' whereas 'python' expected`nUse {c:DarkYellow}enable{f:Normal} command to set correct provider." | Out-AnsiString)
                 }
             }
         } else {
@@ -446,7 +438,7 @@ Optional parameter containing a version of embedded Python.
 The command will install and use the specified embedded Python to establish the connection.
 
 #>
-function Link {
+function Connect {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$False)][string]$path,
@@ -455,23 +447,22 @@ function Link {
 
     if ($path -and $embed) { throw "Link command cannot get both 'path' and 'embed' parameters at the same time."}
 
-    Write-Console ""
+    Write-Output ""
     $Private:settings = Get-PythonIntegrationSettings
 
     if (!$path -and !$embed) {
-        Write-Verbose "Auto-configuring Link parameters. Checking settings first."
+        Write-Verbose "Auto-configuring parameters. Checking existing settings first."
         if ($Private:settings) {
             $path = $settings.PyExecutable
-            Write-Output "Auto-linking: use path '$path'"
-            Write-Output "  specified in NLedger Python settings ($Script:settingsFileName)"
+            Write-Output "Found path '$path' specified in NLedger Python settings ($Script:settingsFileName)"
         } else {
             Write-Verbose "No settings file. Searching local Python"
             $path = Search-PyExecutable
             if (!$path) {
                 if ($Script:isWindowsPlatform) {
                     $embed = $pyEmbedVersion
-                    Write-Output "Auto-linking: use embed Python $pyEmbedVersion (since local Python not found and no settings file)"
-                } else { throw "Auto-linking is not possible: local Python not found and no settings file. Specify 'path' parameter." }
+                    Write-Output "Auto-configuring: use embed Python $pyEmbedVersion (since local Python not found and no settings file)"
+                } else { throw "Auto-configuring is not possible: local Python not found and no settings file. Specify 'path' parameter." }
             }
         }        
     }
@@ -479,30 +470,20 @@ function Link {
     if ($embed) {
         Write-Verbose "Installing embedded python $embed"
         $path = Search-PyExecutable -pyHome (Get-PyEmbed -appPrefix $appPrefix -pyVersion $embed -pyPlatform $pyPlatform)
-        Write-Output "Link: installed embed Python $embed by path $path"
+        Write-Output "Installed embed Python $embed by path $path"
     }
 
     $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.error) { throw "Linking error: cannot use Python by path $path (Error: $($Private:info.error))" }
-
-    if (!$Private:info.pyNetModuleInfo) {
-        Write-Verbose "PythonNet not installed, installing..."
-        $null = Install-PyModule -pyExe $path -pyModule $pyNetPath
-
-        $Private:info = Get-PyInfo -pyExecutable $path
-        if ($Private:info.error -or !$Private:info.pyNetModuleInfo) { throw "Linking error: cannot install PythonNet (Error: $($Private:info.error))" }
-        Write-Output "PythonNet has been installed"
-    }
+    if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.error))" }
 
     Write-Verbose "Update or create settings"
-    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyHome -ne $Private:info.pyHome -or $settings.PyPath -ne $Private:info.pyPath -or $settings.PyDll -ne $Private:info.pyDll -or $settings.PyNetRuntimeDll -ne $Private:info.pyNetRuntimeDll)) {
+    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyHome -ne $Private:info.pyHome -or $settings.PyPath -ne $Private:info.pyPath -or $settings.PyDll -ne $Private:info.pyDll)) {
         Write-Verbose "Settings file is outdated"
-        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyHome $Private:info.pyHome -pyPath $Private:info.pyPath -pyDll $Private:info.pyDll -pyNetRuntimeDll $Private:info.pyNetRuntimeDll
+        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyHome $Private:info.pyHome -pyPath $Private:info.pyPath -pyDll $Private:info.pyDll
         Write-Output "Settings file ($Script:settingsFileName) is updated"
     } else { Write-Verbose "Settings file $Script:settingsFileName is actual"}
 
-    Write-Console "NLedger Python link is {c:DarkYellow}active{c:Gray} (Settings file: $Script:settingsFileName)"
-    Write-Console ""
+    Write-Output ("NLedger Python connection is {c:DarkYellow}active{f:Normal} (Settings file: $Script:settingsFileName)`n" | Out-AnsiString)
 }
 
 <#
@@ -542,18 +523,14 @@ function Enable {
     Param()
     
     $Private:info = Get-StatusInfo
-    if ($Private:info.extensionProvider -and $Private:info.extensionProvider -ne "python") {throw "Cannot enable Python extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
+    if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot enable Python extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
-    Link
-
-    Install-LedgerModule
-    Write-Output "Ledger module is re-installed."
-
-    if ($Private:info.extensionProvider -ne "python") { $null = SetConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
+    Connect
+    if ($Private:info.extension_provider -ne "python") { $null = SetConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
 
     $Private:info = Get-StatusInfo
-    if (!$Private:info.validated) { Write-Console "{c:DarkRed}Cannot enable Python extension{c:Gray}; validation message: $($Private:info.message)" }
-    else { Write-Console "NLedger Python extension is {c:DarkGreen}enabled{c:Gray}" }
+    if ($Private:info.extension_provider -ne "python") { Write-Output ("{c:DarkRed}Cannot enable Python extension{f:Normal}" | Out-AnsiString) }
+    else { Write-Output ("NLedger Python extension is {c:DarkGreen}enabled{f:Normal}" | Out-AnsiString)}
     Write-Output ""
 }
 
@@ -570,13 +547,13 @@ function Disable {
     
     Write-Output ""
     $Private:info = Get-StatusInfo
-    if ($Private:info.extensionProvider -and $Private:info.extensionProvider -ne "python") {throw "Cannot disable extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
+    if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot disable extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
-    if ($Private:info.extensionProvider -eq "python") { $null = RemoveConfigValue -scope "user" -settingName "ExtensionProvider" }
+    if ($Private:info.extension_provider -eq "python") { $null = RemoveConfigValue -scope "user" -settingName "ExtensionProvider" }
 
     $Private:info = Get-StatusInfo
-    if ($Private:info.enabled) { Write-Console "{c:DarkRed}Cannot disable extension{c:Gray}; use NLedger Configuration console to sort out the issue manually" }
-    else { Write-Console "NLedger Python extension is {c:DarkRed}disabled{c:Gray}" }
+    if ($Private:info.extension_provider -eq "python") { Write-Output ("{c:DarkRed}Cannot disable extension{f:Normal}; use NLedger Configuration console to sort out the issue manually" | Out-AnsiString) }
+    else { Write-Output ("NLedger Python extension is {c:DarkRed}disabled{f:Normal}" | Out-AnsiString) }
     Write-Output ""
 }
 
@@ -587,17 +564,16 @@ Removes NLedger Python connection settings
 .DESCRIPTION
 If Python extension is disabled, removes settings file
 #>
-function Unlink {
+function Disconnect {
     [CmdletBinding()]
     Param()
     
-    Write-Console ""
+    Write-Output ""
     $Private:info = Get-StatusInfo
-    if ($Private:info.extensionProvider -eq "python") {throw "Cannot unlink Python connection because Python extension is currently active ('ExtensionProvider' setting value in NLedger configuration is 'python'). Disable extension first using 'disable' command"}
+    if ($Private:info.extension_provider -eq "python") {throw "Cannot unlink Python connection because Python extension is currently active ('ExtensionProvider' setting value in NLedger configuration is 'python'). Disable extension first using 'disable' command"}
 
     Remove-PythonIntegrationSettings
-    Write-Console "NLedger Python link is {c:DarkYellow}not active{c:Gray} (settings file $Script:settingsFileName is removed)"
-    Write-Console ""
+    Write-Output ("NLedger Python connection is {c:DarkYellow}not active{c:Gray} (settings file $Script:settingsFileName is removed)`n" | Out-AnsiString)
 }
 
 <#
@@ -651,19 +627,20 @@ function Help {
     [CmdletBinding()]
     Param()
 
-    Write-Console "{c:Gray}Available commands:"
-    Write-Console " {c:Yellow}discover{c:Gray} - find and show status of local Python deployments"
-    Write-Console " {c:Yellow}status{c:Gray} - validate and show connection status"
-    Write-Console " {c:Yellow}link{c:Gray} - create NLedger Python connection settings. Installs missing required software"
-    Write-Console " {c:Yellow}enable{c:Gray} - enables Python extension in NLedger configuration; creates connection settings if missed"
-    Write-Console " {c:Yellow}disable{c:Gray} - disables Python extension in NLedger configuration"
-    Write-Console " {c:Yellow}unlink{c:Gray} - removes NLedger Python connection settings"
-    Write-Console " {c:Yellow}install{c:Gray} - install embed Python (Windows only)"
-    Write-Console " {c:Yellow}uninstall{c:Gray} - uninstall embed Python (Windows only)"
-    Write-Console " {c:Yellow}testlink{c:Gray} - validates and returns NLedger Python connection settings in technical format"
-    Write-Console "Use 'get-help [command]' to get more information about individual commands"
-    Write-Console "Use 'exit' to close console window"
-    Write-Console ""    
+    $Private:commands = [ordered]@{
+        ("{c:Yellow}discover{f:Normal}" | Out-AnsiString) = "find Python deployments on the local machine"
+        ("{c:Yellow}status{f:Normal}" | Out-AnsiString) = "show NLedger Python integration status"
+        ("{c:Yellow}connect{f:Normal}" | Out-AnsiString) = "create a connection file that references to Python deployment"
+        ("{c:Yellow}disconnect{f:Normal}" | Out-AnsiString) = "remove the connection file"
+        ("{c:Yellow}enable{f:Normal}" | Out-AnsiString) = "enable Python extension in NLedger settings"
+        ("{c:Yellow}disable{f:Normal}" | Out-AnsiString) = "disable Python extension in NLedger settings"
+        ("{c:Yellow}help{f:Normal}" | Out-AnsiString) = "shows this help text"
+        ("{c:Yellow}get-help{f:Normal} [command]" | Out-AnsiString) = "get additioanl information for a specified command"
+        ("{c:Yellow}exit{f:Normal}" | Out-AnsiString) = "close console window"
+    }
+
+    Write-Output "Available commands:"
+    ([PSCustomObject]$Private:commands) | Format-List
 }
 
 
@@ -674,12 +651,12 @@ if ($embed -and $command -in @("discover","status","disable","unlink","testlink"
 if ($path -and $embed) { throw "'path' and 'embed' cannot be specified both at the same time" }
 
 if (!$command) {
-    Write-Console ""
-    Write-Console "{c:White}NLedger Python Connection Console"
-    Write-Console "*********************************"
-    Write-Console "{c:Gray}This script manages NLedger Python Extension settings"
-    Write-Console "It can discover environment details, configure and validate NLedger settings, install or configure dependent software."
-    Write-Console ""
+    Write-Output ""
+    Write-Output ("{c:White}NLedger Python Toolset Console" | Out-AnsiString)
+    Write-Output ("******************************{f:Normal}" | Out-AnsiString)
+    Write-Output "This script manages NLedger Python Extension settings"
+    Write-Output "It can discover environment details, configure and validate NLedger settings, install or configure dependent software."
+    Write-Output ""
     Help
     return
 }
