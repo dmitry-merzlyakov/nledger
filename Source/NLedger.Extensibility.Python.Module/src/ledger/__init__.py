@@ -841,10 +841,10 @@ class Amount(OriginKeeper):
 
     def parse(self, s: str, flags: 'ParseFlags' = None):
         if flags is None:
-            self.origin.Parse(s)
+            self.origin.ParseString(s)
         else:
             assert isinstance(flags, ParseFlags)
-            self.origin.Parse(s, NetEnum.ToObject(OriginAmountParseFlagsEnum, flags.value))
+            self.origin.ParseString(s, NetEnum.ToObject(OriginAmountParseFlagsEnum, flags.value))
 
     @classmethod
     def parse_conversion(cls, larger_str: str, smaller_str: str):

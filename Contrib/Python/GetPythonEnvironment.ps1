@@ -762,7 +762,7 @@ function Help {
         ("{c:DarkYellow}uninstall-{f:Normal}[target]" | Out-AnsiString) = "Uninstall listed targets"
         ("{c:DarkYellow}test-ledger{f:Normal}" | Out-AnsiString) = "Run tests for installed Ledger module"
         ("{c:DarkYellow}help{f:Normal}" | Out-AnsiString) = "Shows this help text"
-        ("{c:DarkYellow}get-help{f:Normal} [command]" | Out-AnsiString) = "Get additioanl information for a specified command"
+        ("{c:DarkYellow}get-help{f:Normal} [command]" | Out-AnsiString) = "Get additional information for a specified command"
         ("{c:DarkYellow}exit{f:Normal}" | Out-AnsiString) = "Close console window"
     }
 
