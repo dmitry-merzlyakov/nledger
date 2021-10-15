@@ -207,7 +207,7 @@ function Write-PyInfo {
     Process { 
         $Private:pyInfo = [ordered]@{}
         if ($_.pyExecutable) { $Private:pyInfo["Python Executable"] = $_.pyExecutable}
-        if ($_.pyVersion) { $Private:pyInfo["Python Version"] = "$($_.pyVersion.Major).$($_.pyVersion.Minor).$($_.pyVersion.Patch)"}
+        if ($_.pyVersion) { $Private:pyInfo["Python Version"] = "$($_.pyVersion.Major).$($_.pyVersion.Minor).$($_.pyVersion.Build)"}
         if ($_.pyPlatform) { $Private:pyInfo["Python Platform"] = $_.pyPlatform}
         if ($_.pipVersion) { $Private:pyInfo["Pip Version"] = $_.pipVersion}
         if ($_.pyHome) { $Private:pyInfo["Python HOME"] = $_.pyHome}
@@ -474,7 +474,7 @@ function Connect {
     }
 
     $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.error))" }
+    if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.status_error))" }
 
     Write-Verbose "Update or create settings"
     if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyHome -ne $Private:info.pyHome -or $settings.PyPath -ne $Private:info.pyPath -or $settings.PyDll -ne $Private:info.pyDll)) {
@@ -651,10 +651,15 @@ function Install-PythonNet {
         $Private:packageName = $Private:pyNet3Package.LocalFile
     }
 
-    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet"
-    $null = Install-PyModule -pyExe $path -pyModule $Private:packageName
+    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
+    $null = Install-PyModule -pyExe $path -pyModule $Private:packageName -Verbose:$VerbosePreference
+    $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "pythonnet"
 
-    Write-Output "PythonNet is installed ($path)"
+    if($Private:packageInfo){
+        Write-Output ("PythonNet {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
+    } else {
+        Write-Output ("PythonNet {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+    }
 }
 
 function Uninstall-PythonNet {
@@ -670,7 +675,7 @@ function Uninstall-PythonNet {
     $Private:info = Get-PyInfo -pyExecutable $path
     if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet"
+    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
 
     Write-Output "PythonNet is uninstalled ($path)"
 }
@@ -691,10 +696,15 @@ function Install-Ledger {
     $Private:info = Get-PyInfo -pyExecutable $path
     if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger"
-    $null = Install-PyModule -pyExe $path -pyModule $Private:ledgerPackage
+    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger" -Verbose:$VerbosePreference
+    $null = Install-PyModule -pyExe $path -pyModule $Private:ledgerPackage -Verbose:$VerbosePreference
+    $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "ledger"
 
-    Write-Output "Ledger is installed ($path)"
+    if($Private:packageInfo){
+        Write-Output ("Ledger {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
+    } else {
+        Write-Output ("Ledger {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+    }
 }
 
 function Uninstall-Ledger {
@@ -710,7 +720,7 @@ function Uninstall-Ledger {
     $Private:info = Get-PyInfo -pyExecutable $path
     if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger"
+    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger" -Verbose:$VerbosePreference
 
     Write-Output "Ledger is uninstalled ($path)"
 }

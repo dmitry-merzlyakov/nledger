@@ -126,6 +126,7 @@ function Install-PyModule {
     )
 
     if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
+
     Write-Verbose "Installing Python module: $pyModule"
     [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "install" $pyModule) 2>&1 | Out-String )
     Write-Verbose "Python returned: $Private:result"
@@ -139,9 +140,12 @@ function Uninstall-PyModule {
     )
 
     if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
-    Write-Verbose "Uninstalling Python module: $pyModule"
-    [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "uninstall" $pyModule "-y") 2>&1 | Out-String )
-    Write-Verbose "Python returned: $Private:result"
+    if (Test-PyModuleInstalled -pyExecutable $pyExecutable -pyModule $pyModule) {
+        Write-Verbose "Uninstalling Python module: $pyModule"
+        [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "uninstall" $pyModule "-y") 2>&1 | Out-String )
+        Write-Verbose "Python returned: $Private:result"
+        if (Test-PyModuleInstalled -pyExecutable $pyExecutable -pyModule $pyModule) {throw "Cannot uninstall module $pyModule ($pyExecutable)"}
+    }
 }
 
 function Get-PyPath {
@@ -497,7 +501,7 @@ function Get-PythonNet3 {
             if ($Private:artifact) {
                 $Private:url = "https://ci.appveyor.com/api/buildjobs/$($Private:job.jobId)/artifacts/$($Private:artifact.filename)"
                 if ($download) {
-                    $Private:localFile = "$([System.IO.Path]::GetTempPath())\$([System.IO.Path]::GetFileName($Private:url))"
+                    $Private:localFile = [System.IO.Path]::GetFullPath("$([System.IO.Path]::GetTempPath())/$([System.IO.Path]::GetFileName($Private:url))")
                     $null = Invoke-RestMethod -Method Get -Uri $Private:url -OutFile $Private:localFile
                 }
                 return [PSCustomObject]@{
