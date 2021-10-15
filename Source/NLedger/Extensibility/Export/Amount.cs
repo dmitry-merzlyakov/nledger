@@ -134,10 +134,6 @@ namespace NLedger.Extensibility.Export
         public Amount strip_annotations() => Origin.StripAnnotations(new Annotate.AnnotationKeepDetails());
         public Amount strip_annotations(KeepDetails whatToKeep) => Origin.StripAnnotations(whatToKeep.Origin);
 
-        // TODO - stream-based parse methods not implemented
-        public void parse(string str) => Origin.Parse(str);
-        public void parse(string str, ParseFlags flags) => Origin.Parse(str, (Amounts.AmountParseFlagsEnum)flags);
-
         public static void parse_conversion(string largerStr, string smallerStr) => Amounts.Amount.ParseConversion(largerStr, smallerStr);
         public bool valid() => Origin.Valid();
 

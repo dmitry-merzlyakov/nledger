@@ -104,7 +104,7 @@ namespace NLedger.Amounts
         public static Amount Exact(string value)
         {
             Amount temp = new Amount();
-            temp.Parse(value, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
+            temp.Parse(ref value, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
             return temp;
         }
 
@@ -667,7 +667,10 @@ namespace NLedger.Amounts
             return true;
         }
 
-        public bool Parse(string line, AmountParseFlagsEnum parseFlags = AmountParseFlagsEnum.PARSE_DEFAULT)
+        /// <summary>
+        /// Semantic equivalent of the Parse method, which sends a string parameter as a value (the string does not change during parsing)
+        /// </summary>
+        public bool ParseString(string line, AmountParseFlagsEnum parseFlags = AmountParseFlagsEnum.PARSE_DEFAULT)
         {
             return Parse(ref line, parseFlags);
         }
