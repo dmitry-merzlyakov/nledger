@@ -25,7 +25,7 @@ namespace NLedger.Extensibility.Python
             using (PythonSession.GIL())
             {
                 MainModule = new PythonModule(PythonSession, "__main__", Py.CreateScope());
-                LedgerModule = MainModule.ModuleObject.Import("ledger");
+                LedgerModule = (PyModule)MainModule.ModuleObject.Import("ledger");
 
                 if (!PythonSession.IsPythonHost && isPlatformInitialization)
                     LedgerModule.Exec("acquire_output_streams()");

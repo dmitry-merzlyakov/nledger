@@ -227,7 +227,7 @@ namespace NLedger.Extensibility.Python
 
                 try
                 {
-                    serverModule = MainModule.ModuleObject.Import("ledger.server");
+                    serverModule = (PyModule)MainModule.ModuleObject.Import("ledger.server");
                 }
                 catch
                 {

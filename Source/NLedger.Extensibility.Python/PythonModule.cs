@@ -22,7 +22,7 @@ namespace NLedger.Extensibility.Python
             ImportModule(name);
         }
 
-        public PythonModule(PythonSession pythonSession, string name, PyScope obj)
+        public PythonModule(PythonSession pythonSession, string name, PyModule obj)
         {
             PythonSession = pythonSession;
             ModuleName = name;
@@ -32,7 +32,7 @@ namespace NLedger.Extensibility.Python
 
         public PythonSession PythonSession { get; }
         public string ModuleName { get; }
-        public PyScope ModuleObject { get; private set; }
+        public PyModule ModuleObject { get; private set; }
         public PyDict ModuleGlobals { get; private set; }
 
         public override string Description => ModuleName;
@@ -52,7 +52,7 @@ namespace NLedger.Extensibility.Python
 
                 if (!importDirect)
                 {
-                    ModuleObject = mod;
+                    ModuleObject = (PyModule)mod;
                     ModuleGlobals = new PyDict(globals);
                 }
                 else
@@ -76,7 +76,7 @@ namespace NLedger.Extensibility.Python
                         {
                             if (obj.IsModule())
                             {
-                                var objModule = new PyModule(obj);
+                                var objModule = (PyModule)PyModule.Import(obj.GetAttr("__name__").ToString());
                                 var pythonModule = PythonSession.GetOrCreateModule(objModule, name);
                                 return ExprOp.WrapValue(Value.ScopeValue(pythonModule));
                             }
