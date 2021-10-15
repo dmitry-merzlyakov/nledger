@@ -152,6 +152,7 @@ from NLedger.Utility import Date
 # Import .Net classes
 
 from System import DateTime
+from System import Boolean
 from System import Tuple as NetTuple
 from System import Enum as NetEnum
 from System import String as NetString
@@ -2606,6 +2607,8 @@ class Value(OriginKeeper):
             val = to_ndatetime(val)
         if isinstance(val, date):
             val = to_ndate(val)
+        if isinstance(val, bool):
+            val = Boolean(val)
         if isinstance(val, Amount) or isinstance(val, Balance) or isinstance(val, Mask) or isinstance(val, Value):
             val = val.origin
 
