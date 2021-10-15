@@ -478,3 +478,40 @@ function Get-PyEmbed {
     Write-Verbose "Embedded python is available by path $Private:pyHome"
     return $Private:pyHome
 }
+
+function Get-PythonNet3 {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$False)][string]$pyVersion = "3.9",
+        [Parameter(Mandatory=$False)][string]$pyPlatform = "x64",
+        [Switch]$download = $False
+    )
+
+    $Private:history = Invoke-RestMethod -Uri https://ci.appveyor.com/api/projects/pythonnet/pythonnet/history?recordsNumber=100
+    foreach($Private:build in $Private:history.builds) {
+        $Private:extendedBuild = Invoke-RestMethod -Uri "https://ci.appveyor.com/api/projects/pythonnet/pythonnet/build/$($Private:build.version)"
+        $Private:job = ($Private:extendedBuild.build.jobs | Where-Object{$_.status -eq "success" -and $_.artifactsCount -eq 2 -and $_.name -eq "Environment: PYTHON_VERSION=$($pyVersion); Platform: $($pyPlatform)"} | Select-Object -First 1)
+        if ($Private:job) {
+            $Private:artifacts = Invoke-RestMethod -Method Get -Uri "https://ci.appveyor.com/api/buildjobs/$($Private:job.jobId)/artifacts"
+            $Private:artifact = ($Private:artifacts | Where-Object{$_.fileName -and $_.fileName.EndsWith(".whl")} | Select-Object -First 1 )
+            if ($Private:artifact) {
+                $Private:url = "https://ci.appveyor.com/api/buildjobs/$($Private:job.jobId)/artifacts/$($Private:artifact.filename)"
+                if ($download) {
+                    $Private:localFile = "$([System.IO.Path]::GetTempPath())\$([System.IO.Path]::GetFileName($Private:url))"
+                    $null = Invoke-RestMethod -Method Get -Uri $Private:url -OutFile $Private:localFile
+                }
+                return [PSCustomObject]@{
+                    BuildURL = "https://ci.appveyor.com/project/pythonnet/pythonnet/builds/$($Private:build.buildId)"
+                    BuildID = $Private:build.buildId
+                    BuildVersion = $Private:build.version
+                    BuildNumber = $Private:build.buildNumber
+                    Branch = $Private:build.branch
+                    Committed = $Private:build.committed
+                    JobName = $Private:job.name
+                    PackageURL = $Private:url
+                    LocalFile = $Private:localFile
+                }
+            }
+        }
+    }
+}

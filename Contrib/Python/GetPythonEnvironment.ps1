@@ -44,7 +44,7 @@ Param(
 )
 
 trap 
-{ 
+{
   write-error $_ 
   exit 1 
 }
@@ -63,9 +63,9 @@ $pyPlatform = "amd64"
 $pyNetModule = "PythonNet"
 $pyLedgerModule = "Ledger"
 $pyEmbedVersion = "3.8.1"
-$pyNetPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/pythonnet-3.0.0.dev1-py3-none-any.whl")
+#$pyNetPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/pythonnet-3.0.0.dev1-py3-none-any.whl")
 #if (!(Test-Path -LiteralPath $pyNetPath -PathType Leaf)) { throw "Cannot find required file $pyNetPath" }
-$pyLedgerPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/ledger-0.8.3-py3-none-any.whl")
+#$pyLedgerPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/ledger-0.8.3-py3-none-any.whl")
 
 [string]$Script:localAppData = [Environment]::GetFolderPath("LocalApplicationData")
 [string]$Script:settingsFileName = [System.IO.Path]::GetFullPath($(Join-Path $Script:localAppData "NLedger/NLedger.Extensibility.Python.settings.xml"))
@@ -523,6 +523,7 @@ function Enable {
     Param()
     
     $Private:info = Get-StatusInfo
+    if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}
     if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot enable Python extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
     Connect
@@ -547,6 +548,7 @@ function Disable {
     
     Write-Output ""
     $Private:info = Get-StatusInfo
+    if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}    
     if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot disable extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
     if ($Private:info.extension_provider -eq "python") { $null = RemoveConfigValue -scope "user" -settingName "ExtensionProvider" }
@@ -587,7 +589,7 @@ Downloads and installs embedded Python for NLedger in user data folder
 Optional parameter containing a version of embedded Python.
 Will use a default (3.8.1) version otherwise
 #>
-function Install {
+function Install-Python {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
@@ -607,7 +609,7 @@ Removes embedded Python for NLedger if it is not in use in current Python connec
 Optional parameter containing a version of embedded Python.
 Will use a default (3.8.1) version otherwise
 #>
-function Uninstall {
+function Uninstall-Python {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
@@ -623,20 +625,135 @@ function Uninstall {
     Write-Output ""
 }
 
+function Install-PythonNet {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$False)][string]$path,
+        [Switch]$v3 = $False
+    )
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+    $Private:packageName = "pythonnet"
+    if($v3) {
+        Write-Output "Looking for the latest PythonNet 3 package on Appveyor"
+        $Private:pyNet3Package = Get-PythonNet3 -download
+        if (!$Private:pyNet3Package) { throw "Cannot find the latest PythonNet3 package" }
+        Write-Output "Found PythonNet 3 package:"
+        $Private:pyNet3Package | Format-List
+        $Private:packageName = $Private:pyNet3Package.LocalFile
+    }
+
+    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet"
+    $null = Install-PyModule -pyExe $path -pyModule $Private:packageName
+
+    Write-Output "PythonNet is installed ($path)"
+}
+
+function Uninstall-PythonNet {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$path)
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet"
+
+    Write-Output "PythonNet is uninstalled ($path)"
+}
+
+function Install-Ledger {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$path)
+
+    $Private:ledgerPackage = (Get-LatestAvailableLedgerModule).FileName
+    if (!$Private:ledgerPackage) {throw "Ledger package not found. Build NLedger or correct deployment issues"}
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger"
+    $null = Install-PyModule -pyExe $path -pyModule $Private:ledgerPackage
+
+    Write-Output "Ledger is installed ($path)"
+}
+
+function Uninstall-Ledger {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$path)
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger"
+
+    Write-Output "Ledger is uninstalled ($path)"
+}
+
+function Test-Ledger {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$path)
+
+    [string]$Private:ledgerTests = [System.IO.Path]::GetFullPath("$Script:ScriptPath/ledger_tests.py")
+    if(!(Test-Path -LiteralPath $Private:ledgerTests -PathType Leaf)) {throw "File $($Private:ledgerTests) not found"}
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+    if (!$Private:info.pyLedgerModuleInfo) { throw "Ledger module is not installed by path $path" }
+
+    & $path $Private:ledgerTests
+    if ($LASTEXITCODE -ne 0) {throw "Python unit tests failed (Exit code: $LASTEXITCODE)."}
+}
+
+
 function Help {
     [CmdletBinding()]
     Param()
 
     $Private:commands = [ordered]@{
-        ("{c:Yellow}discover{f:Normal}" | Out-AnsiString) = "find Python deployments on the local machine"
-        ("{c:Yellow}status{f:Normal}" | Out-AnsiString) = "show NLedger Python integration status"
-        ("{c:Yellow}connect{f:Normal}" | Out-AnsiString) = "create a connection file that references to Python deployment"
-        ("{c:Yellow}disconnect{f:Normal}" | Out-AnsiString) = "remove the connection file"
-        ("{c:Yellow}enable{f:Normal}" | Out-AnsiString) = "enable Python extension in NLedger settings"
-        ("{c:Yellow}disable{f:Normal}" | Out-AnsiString) = "disable Python extension in NLedger settings"
-        ("{c:Yellow}help{f:Normal}" | Out-AnsiString) = "shows this help text"
-        ("{c:Yellow}get-help{f:Normal} [command]" | Out-AnsiString) = "get additioanl information for a specified command"
-        ("{c:Yellow}exit{f:Normal}" | Out-AnsiString) = "close console window"
+        ("{c:Yellow}discover{f:Normal}" | Out-AnsiString) = "Find Python deployments on the local machine"
+        ("{c:Yellow}status{f:Normal}" | Out-AnsiString) = "Show NLedger Python integration status"
+        ("{c:Yellow}connect{f:Normal}" | Out-AnsiString) = "Create a connection file that references to a Python deployment"
+        ("{c:Yellow}disconnect{f:Normal}" | Out-AnsiString) = "Remove the connection file"
+        ("{c:Yellow}enable{f:Normal}" | Out-AnsiString) = "Enable Python extension in NLedger settings"
+        ("{c:Yellow}disable{f:Normal}" | Out-AnsiString) = "Disable Python extension in NLedger settings"
+        ("{c:DarkYellow}install-{f:Normal}[target]" | Out-AnsiString) = "Install embedded Python (install-python) or PythonNet (install-pythonnet) or Ledger module (install-ledger)"
+        ("{c:DarkYellow}uninstall-{f:Normal}[target]" | Out-AnsiString) = "Uninstall listed targets"
+        ("{c:DarkYellow}test-ledger{f:Normal}" | Out-AnsiString) = "Run tests for installed Ledger module"
+        ("{c:DarkYellow}help{f:Normal}" | Out-AnsiString) = "Shows this help text"
+        ("{c:DarkYellow}get-help{f:Normal} [command]" | Out-AnsiString) = "Get additioanl information for a specified command"
+        ("{c:DarkYellow}exit{f:Normal}" | Out-AnsiString) = "Close console window"
     }
 
     Write-Output "Available commands:"
