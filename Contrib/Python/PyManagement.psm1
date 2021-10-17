@@ -3,7 +3,7 @@
 Powershell functions for managing local Python deployments
 
 .DESCRIPTION
-Provides a collection of functions that provide:
+Provides a collection of functions:
 - Python-specific actions: searhing and discovering Python deployment details; managing Python modules by means of Pip;
 - Managing Embedded Python deployments;
 - Auxiliary functions to support integration custom software with Python.

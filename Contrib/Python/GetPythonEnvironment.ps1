@@ -3,44 +3,52 @@
 Getting NLedger Python extension ready to work
 
 .DESCRIPTION
-This script manages NLedger Python connection settings and involved external software to make them properly linked. It is responsible for:
-- Validating local Python deployment to confirm compliance with NLedger requirements
+This script manages NLedger Python connection settings and dependent external software. Basic responsibilities are:
+- Validating local Python deployment to check compliance with NLedger requirements
 - Optional installing and configuring embedded Python deployment (any versions; Windows only)
-- Installing and verification connectivity software (Python.Net and Ledger modules)
-- Producing NLedger Python Extension settings file
+- Producing NLedger Python Extension settings file that allows NLedger to connect and use Python 
 - Enabling Python Extension in NLedger configuration settings
+- Optional installing NLedger Python module to Python environment that allows to use NLedger capabilities in Python session
 
-The provided commands allow you to configure the connection both automatically and at a more detailed level. The commands are:
-- discover - find and show status of local Python deployments
-- status - validate and show connection status
-- link - create NLedger Python connection settings. Installs missing required software
-- enable - enables Python extension in NLedger configuration; creates connection settings if missed
-- disable - disables Python extension in NLedger configuration
-- unlink - removes NLedger Python connection settings
-- install - install embed Python (Windows only)
-- uninstall - uninstall embed Python (Windows only)
-- testlink - validates and returns NLedger Python connection settings in technical format
+The provided commands allow you configure the connection either automatically or with any needed granularity. The commands are:
+Informational functions:
+- discover - Find Python deployments on the local machine
+- status - Show NLedger Python integration status
+Connection management function:
+- connect - Create a connection file that references to a Python deployment
+- disconnect - Remove the connection file
+- enable - Enable Python extension in NLedger settings (creates connection settings if they were not created yet)
+- disable - Disable Python extension in NLedger settings
+Technical functions for advanced configuring:
+- install-python - Install an isolated embedded Python (Windows only)
+- uninstall-python - Uninstall embedded Python
+- install-pythonnet - Install PythonNet module
+- uninstall-pythonnet - Uninstall PythonNet module
+- install-ledger - Install Ledger module (and PythonNet if it has not been installed yet)
+- uninstall-ledger - Uninstall Ledger module
+- test-ledger - Run Ledger module tests (ledger_tests.py)
+- test-connection - Return NLedger Python connection settings in a technical format
 
-Quick guide hint: in most cases, you only need to execute 'enable' command to configure and enable Python integration.
-The commands can be executed by running the script with '-command' parameter or in console mode just by typing a command.
+Hint: in most cases, you only need to execute 'enable' command to configure and enable Python integration.
+The commands can be executed by running the script with '-command' parameter or in console mode by typing a command name.
 
 .PARAMETER command
-Command to execute. Further information for every command you can get in console by typing 'get-help [command]'
+Command to execute. You can get detail information for every command by typing 'get-help [command]' in the console
 
 .PARAMETER path
-Optional path to Python executable file (for 'discover' and 'link' commands)
+Optional path to Python executable file
 
-.PARAMETER embed
-Optional version of embedded Python (for commands 'link', 'install', 'uninstall')
+.PARAMETER version
+Optional version of dependent software
 
 Note: use 'set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process' to run the script in dev terminal
 
 #>
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory=$False)][ValidateSet("discover","status","link","enable","testlink","disable","unlink","install","uninstall")]$command,
+    [Parameter(Mandatory=$False)][ValidateSet("discover","status","connect","disconnect","enable","disable","test-connection","install-python","install-pythonnet","install-ledger","uninstall-python","uninstall-pythonnet","uninstall-ledger","test-ledger")]$command,
     [Parameter(Mandatory=$False)][string]$path,
-    [Parameter(Mandatory=$False)][string]$embed
+    [Parameter(Mandatory=$False)][string]$version
 )
 
 trap 
@@ -63,9 +71,6 @@ $pyPlatform = "amd64"
 $pyNetModule = "PythonNet"
 $pyLedgerModule = "Ledger"
 $pyEmbedVersion = "3.8.1"
-#$pyNetPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/pythonnet-3.0.0.dev1-py3-none-any.whl")
-#if (!(Test-Path -LiteralPath $pyNetPath -PathType Leaf)) { throw "Cannot find required file $pyNetPath" }
-#$pyLedgerPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Packages/ledger-0.8.3-py3-none-any.whl")
 
 [string]$Script:localAppData = [Environment]::GetFolderPath("LocalApplicationData")
 [string]$Script:settingsFileName = [System.IO.Path]::GetFullPath($(Join-Path $Script:localAppData "NLedger/NLedger.Extensibility.Python.settings.xml"))
@@ -169,7 +174,6 @@ function Update-PythonEnvironmentSettings {
     $null = Set-PythonIntegrationSettings $Private:settings
     return $Private:settings
 }
-
 
 ### Functions ###
 
@@ -303,66 +307,55 @@ function Write-StatusInfo {
     End { $Private:infos | Format-List }
 }
 
-
-function Test-Link {
+function Test-Connection {
     [CmdletBinding()]
     Param()
 
     $Private:settings = Get-PythonIntegrationSettings
     if ($Private:settings) {
         $Private:pyInfo = Get-PyInfo -pyExecutable $Private:settings.PyExecutable
-        if ($Private:pyInfo) {
-            if(!$Private:pyInfo.error) {
-                if(!$Private:pyInfo.warning) {
-                    return $Private:settings
-                } else { Write-Verbose "Test-link: settings exist but validating Python envirnment exposed a warning: $($Private:pyInfo.warning)." }
-            } else { Write-Verbose "Test-link: settings exist but validating Python envirnment exposed an error: $($Private:pyInfo.error)." }
-        } else { Write-Verbose "Test-link: settings exist but cannot validate Python environment." }
+        return [PSCustomObject]@{
+            Settings = $Private:settings
+            PyInfo = $Private:pyInfo
+            IsConnectionValid = -not [Boolean]$Private:pyInfo.status_error
+            IsPythonNetInstalled = [Boolean]$Private:pyInfo.pyNetModuleInfo
+        }
     }
-
     return $null
 }
-
-function Install-LedgerModule {
-    [CmdletBinding()]
-    Param()
-
-    $Private:info = Get-StatusInfo
-    if (!$Private:info.pyInfo -or $Private:info.pyInfo.error -or $Private:info.pyInfo.warning) { throw "Python is not ready for re-installing Ledger module ($($Private:info.pyInfo.error)$($Private:info.pyInfo.warning))" }
-
-    if(!(Test-Path -LiteralPath $pyLedgerPath -PathType Leaf)) { throw "File $pyLedgerPath not found."}
-
-    Write-Verbose "Uninstall Ledger package"
-    if (Test-PyModuleInstalled -pyExecutable $Private:info.pyInfo.pyExecutable -pyModule $pyLedgerModule) {
-        $null = Uninstall-PyModule -pyExecutable $Private:info.pyInfo.pyExecutable -pyModule $pyLedgerModule
-        if (Test-PyModuleInstalled -pyExecutable $Private:info.pyInfo.pyExecutable -pyModule $pyLedgerModule) { throw "Cannot uninstall Python module '$pyLedgerModule'" }
-    }
-
-    Write-Verbose "Install Ledger package"
-    $null = Install-PyModule -pyExecutable $Private:info.pyInfo.pyExecutable -pyModule $pyLedgerPath
-    if (!(Test-PyModuleInstalled -pyExecutable $Private:info.pyInfo.pyExecutable -pyModule $pyLedgerModule)) { throw "Cannot uninstall Python module '$pyLedgerPath'" }
-
-    Write-Verbose "Package is re-installed"
-}
-
 
 ### Commands ###
 
 <#
 .SYNOPSIS
-Discovering available local Python deployments
+Discovers available Python installations on the local machine
 
 .DESCRIPTION
-Looks for local Python deployments and validates whether they are ready for NLedger Python integration.
-Observable sources:
-- folders listed in PATH environment variable (looks for a local Python deployment)
-- folders that might contain embed Python deployments for NLedger (in user data folder)
-- folder that is specified in current NLedger Python settings (if exists)
+Looks for local Python installations and checks whether they are ready for NLedger Python integration.
 
-If you would like to check Python status in another folder, use 'path' parameter.
+It observes the following locations:
+- folders listed in PATH environment variable (local Python deployment)
+- the folder with isolated embedded Python deployments for NLedger (NLedger application data folder)
+- the folder that is specified in NLedger Python extension settings (if they exist)
+
+If you would like to check Python deployment in a specific folder, use 'path' parameter.
+
+If Python installation is detected, the command returns the following information:
+- full path to Python executable file
+- Python version
+- Python platform (x86 or x64)
+- Pip version (if installed)
+- Python HOME and PATH variables
+- Python dll name
+- PythonNet module version (if installed)
+- Ledger module version (if installed)
+
+The minimal required indicator that Python installation can be used by NLedger is returned valid Python version.
+It is also essential to check that Python platform matches NLedger process (x64 in default configuration).
+PythonNet and Ledger modules are optional and needs to be installed if you want to use NLedger capabilities in Python session.
 
 .PARAMETER path
-Optional parameter containing a full path to Python executable file.
+Optional parameter containing a full path to a Python executable file.
 
 #>
 function Discover {
@@ -406,36 +399,31 @@ function Discover {
 
 <#
 .SYNOPSIS
-Creating or verifying NLedger Python extension settings
+Creates or updates NLedger Python extension settings
 
 .DESCRIPTION
-The command is responsible to create NLedger Python extension settings or validate/reconfigure them if they exist.
-If it finishes well, it guarantees that the settings are valid and the environment ready for integration.
+NLedger Python extension settings describe which Python deployment will be used by NLedger.
+They are incorporated into a single XML file in a pre-defined location (NLedger.Extensibility.Python.settings.xml in NLedger application data folder).
+Settings include a full path to a Python executable file, Python HOME and PATH variables and the name of Python dll.
 
-As the first step, the command determines the Python location that will be used for integration:
-- explicitely, if 'path' parameter is specified - will use Python environment located by this path
-- explicitely, if 'embed' parameter is specified - will install and use the specified version of embedded Python
-- implicitely, if no parameters specified. 
+The command is intended to create NLedger Python extension settings automatically by extracting needed information from an existing Python deployment.
 
-In the latter case:
-- it uses the currently configured Python by checking NLedger Python extension settings (if it exists)
-- otherwise, it looks for a local Python checking folders in PATH variable
-- if a local Python not found, it installs an embed Python (on Windows) or raises an exception (on other platforms)
+In the first step, it determines the location of Python deployment in the following order:
+- If 'path' parameter is specified, it uses the parameter value explicitely
+- If 'embed' parameter is specified, it installs an embedded Python in NLedger application folder and refers to it
+- If extension settings file already exists, it extracts the path from the file
+- Otherwise, it tries to find a local Python installation.
 
-When Python path is found, it verifies:
-- whether Python is functioning (by checking its version)
-- whether Pip is installed
-- whether Python.Net is installed (and installs otherwise)
-
-If all validations passed, it actualizes NLedger Python extension settings - the environment is ready for integration
+When Python deployment is found, it checks whether it is in valid state and creates the settings file.
 
 .PARAMETER path
 Optional parameter containing a full path to Python executable file.
 The command will use the specified Python deployment to establish the connection.
 
 .PARAMETER embed
-Optional parameter containing a version of embedded Python.
-The command will install and use the specified embedded Python to establish the connection.
+Optional parameter containing a version of embedded Python. 
+If this parameter is specified, the command installs and refers to the specified embedded Python to establish the connection.
+This parameter is available on Windows only.
 
 #>
 function Connect {
@@ -445,7 +433,7 @@ function Connect {
         [Parameter(Mandatory=$False)][string]$embed
     )
 
-    if ($path -and $embed) { throw "Link command cannot get both 'path' and 'embed' parameters at the same time."}
+    if ($path -and $embed) { throw "Connect command cannot get both 'path' and 'embed' parameters at the same time."}
 
     Write-Output ""
     $Private:settings = Get-PythonIntegrationSettings
@@ -488,14 +476,20 @@ function Connect {
 
 <#
 .SYNOPSIS
-Checks current status of NLedger Python integration
+Shows current status of NLedger Python integration
 
 .DESCRIPTION
-The command observes local environments and shows the follwoing indicators:
-- whether Python extension is enabled in NLedger configuration
-- whether Python extension is usable (shows validation errors otherwise)
-- whether NLedger Python extesion settings file exist
-- whether configured settings are valid (shows validation errors otherwise)
+NLedger Python integration works when two conditions are satisfied:
+- Python Extension settings are configured and refer to a valid Python deployment (Python Connection)
+- Python Extension is enabled in NLedger settings (Python Extension)
+
+This command checks both conditions and returns a final status. 
+If both indicators are Green, NLedger can process Python extensions in data files and manage python-related commands.
+
+In addition, information about installed Python modules (PythonNet and Ledger) 
+indicates whether Ledger capabilities can be used in a Python session (both modules should be installed).
+Remember that Python sessions work isolately and do not need for any settings actually.
+
 #>
 function Status {
     [CmdletBinding()]
@@ -773,10 +767,6 @@ function Help {
 
 # Manage parameters
 
-if ($path -and $command -in @("status","disable","unlink","install","uninstall","testlink")) { throw "'path' parameter is not allowed for command '$command'"}
-if ($embed -and $command -in @("discover","status","disable","unlink","testlink")) { throw "'embed' parameter is not allowed for command '$command'"}
-if ($path -and $embed) { throw "'path' and 'embed' cannot be specified both at the same time" }
-
 if (!$command) {
     Write-Output ""
     Write-Output ("{c:White}NLedger Python Toolset Console" | Out-AnsiString)
@@ -788,24 +778,72 @@ if (!$command) {
     return
 }
 
-if ($command -eq 'discover') { Discover -path $path }
-if ($command -eq 'status') { Status }
+if ($command -eq 'discover') { 
+    if($version){throw "Command 'discover' does not accept 'version' parameter"}
+    Discover -path $path 
+}
 
-if ($command -eq 'link') {
-    if ($embed) {Link -embed $embed} else {
-        if ($path) {Link -path $path} else { Link }
-    }
+if ($command -eq 'status') { 
+    if($path -or $version){throw "Command 'status' does not accept any parameters"}
+    Status 
+}
+
+if ($command -eq 'connect') {
+    Connect -path $path -embed $version
+}
+
+if ($command -eq 'disconnect') { 
+    if($path -or $version){throw "Command 'disconnect' does not accept any parameters"}
+    Disconnect 
 }
 
 if ($command -eq 'enable') {
-    if ($embed) {Link -embed $embed} else {
-        if ($path) {Link -path $path} else { Link }
-    }
+    if($path -or $version){throw "Command 'enable' does not accept any parameters"}
     Enable
 }
 
-if ($command -eq 'disable') { Disable }
-if ($command -eq 'unlink') { Unlink }
-if ($command -eq 'install') { if ($embed) {Install -version $embed}else{Install} }
-if ($command -eq 'uninstall') { if ($embed) {Uninstall -version $embed}else{Unnstall} }
-if ($command -eq 'testlink') { Test-Link }
+if ($command -eq 'disable') {
+    if($path -or $version){throw "Command 'disable' does not accept any parameters"}
+    Disable
+}
+
+if ($command -eq 'test-connection') {
+    if($path -or $version){throw "Command 'test-connection' does not accept any parameters"}
+    Test-Connection
+}
+
+if ($command -eq 'install-python') {
+    if($path){throw "Command 'install-python' does not accept 'path' parameters"}
+    Install-Python -version $version
+}
+
+if ($command -eq 'install-pythonnet') {
+    if($version -and $version -ne "v3"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'v3'"}
+    Install-PythonNet -path $path -v3:($version -eq "v3")
+}
+
+if ($command -eq 'install-ledger') {
+    if ($version) {throw "Command 'install-ledger' does not accept 'version' parameter"}
+    Install-Ledger -path $path
+}
+
+if ($command -eq 'uninstall-python') {
+    if($path){throw "Command 'uninstall-python' does not accept 'path' parameters"}
+    if(!$version){throw "Command 'uninstall-python' requires 'version' parameters"}
+    Uninstall-Python -version $version
+}
+
+if ($command -eq 'uninstall-pythonnet') {
+    if($version){throw "Command 'uninstall-pythonnet' does not accept 'version' parameters"}
+    Uninstall-PythonNet -path $path
+}
+
+if ($command -eq 'uninstall-ledger') {
+    if ($version) {throw "Command 'uninstall-ledger' does not accept 'version' parameter"}
+    Uninstall-Ledger -path $path
+}
+
+if ($command -eq 'test-ledger') {
+    if ($version) {throw "Command 'test-ledger' does not accept 'version' parameter"}
+    Test-Ledger -path $path
+}
