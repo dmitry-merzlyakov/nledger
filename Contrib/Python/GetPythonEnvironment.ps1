@@ -507,10 +507,11 @@ function Status {
 Enables Python extension in NLedger settings
 
 .DESCRIPTION
-The command validates Python connection settings and enabled Python extension
-if Python connection settings are not specified yet, it executes 'link' command with default parameters
-When Python connection settings are valid, it installs Ledger module and enables Python extension.
-NLedger is completely ready to interop with Python 
+Python extension should be enabled in NLedger settings for it to work.
+
+This command checks whether Python extension is properly configured, executes 'connect' command otherwise and 
+sets NLedger settings 'ExtensionProvider' to 'python' to make the extension operable.
+
 #>
 function Enable {
     [CmdletBinding()]
@@ -534,7 +535,9 @@ function Enable {
 Disables Python extension in NLedger settings
 
 .DESCRIPTION
-Disables Python extension in NLedger settings; all other settings are kept unchanged
+Sets an empty value to NLedger 'ExtensionProvider' setting, making Python extension unavailable.
+Extension configuration settings (the file NLedger.Extensibility.Python.settings.xml) themselves are not changed.
+
 #>
 function Disable {
     [CmdletBinding()]
@@ -555,10 +558,12 @@ function Disable {
 
 <#
 .SYNOPSIS
-Removes NLedger Python connection settings
+Removes NLedger Python extension settings
 
 .DESCRIPTION
-If Python extension is disabled, removes settings file
+Deletes the file with NLedger Python extension settings (NLedger.Extensibility.Python.settings.xml)
+It makes Python extension unavailable regardless of whether the NLedger setting (ExtensionProvider) is configured for Python
+
 #>
 function Disconnect {
     [CmdletBinding()]
@@ -577,11 +582,22 @@ function Disconnect {
 Installs embedded Python
 
 .DESCRIPTION
-Downloads and installs embedded Python for NLedger in user data folder
+Downloads, installs and configures an isolated embedded Python for NLedger.
+This is a Windows-only command; it is not available for other OS.
 
-.PARAMETER embed
+All embedded python deployments are located in NLedger application data folder ([user]\AppData\Local\NLedger\).
+It is acceptable to install several different versions of embedded Python; all they will be located at the same place.
+Once the embedded Python is installed, you can use the path to Python executable file to complete connection configuration.
+
+The command downloads Python package by URL https://www.python.org/ftp/python/[version]/[embedded package name].
+After installing Python, it also downloads and installs Pip module (https://bootstrap.pypa.io/get-pip.py) so that the embedded Python can manage regular Wheel packages.
+Note: before installing Pip, it also corrects Python's _PTH file (uncomments 'import site') that fixes installing Pip for embedded deployments.
+
+When the command finishes, it shows the full path to the installed Python.
+
+.PARAMETER version
 Optional parameter containing a version of embedded Python.
-Will use a default (3.8.1) version otherwise
+Default value is 3.8.1 (this version will be downloaded if 'version' parameter is omitted)
 #>
 function Install-Python {
     [CmdletBinding()]
@@ -597,11 +613,11 @@ function Install-Python {
 Uninstalls embedded Python
 
 .DESCRIPTION
-Removes embedded Python for NLedger if it is not in use in current Python connection settings
+Removes previously installed embedded Python from NLedger application data folder.
 
-.PARAMETER embed
+.PARAMETER version
 Optional parameter containing a version of embedded Python.
-Will use a default (3.8.1) version otherwise
+Default value is 3.8.1 (this version will be uninstalled if 'version' parameter is omitted)
 #>
 function Uninstall-Python {
     [CmdletBinding()]
@@ -619,6 +635,35 @@ function Uninstall-Python {
     Write-Output ""
 }
 
+<#
+.SYNOPSIS
+Installs PythonNet module to Python environment
+
+.DESCRIPTION
+Note: Pythonnet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
+They are not needed for NLedger console application.
+
+Ledger module depends on PythonNet, so the latter is usually installed automatically when you install the Ledger module.
+However, you may need more granular control over which version of PythonNet is installed. 
+
+In this case, you should execute this command before installing Ledger module:
+- 'Install-PythonNet' without '-v3' switch installs a currently available PythonNet from PyPa repository (currently 2.5.x)
+- 'Install-PythonNet' with '-v3' switch installs the latest available PythonNet 3 from https://ci.appveyor.com/api/projects/pythonnet repository.
+
+Please, be aware that PythonNet 3 has not been officially released (at the moment 2021-10-18) so this is an experimental option (though it passed tests).
+Ledger module does not require PythonNet version 3 specifically; it properly works with any available version.
+
+In case of any issues with this command, you can manually install PythonNet following recommendations on PythonNet resources.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+
+.PARAMETER v3
+Optional switch that forces installing PythonNet version 3 (from AppVeyor PythonNet repository).
+If this parameter is omitted, the command installs a currently available PythonNet from PyPa repository.
+
+#>
 function Install-PythonNet {
     [CmdletBinding()]
     Param(
@@ -656,6 +701,22 @@ function Install-PythonNet {
     }
 }
 
+<#
+.SYNOPSIS
+Uninstalls PythonNet module from Python environment
+
+.DESCRIPTION
+Note: Pythonnet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
+They are not needed for NLedger console application.
+
+Uninstalls PythonNet module from Python environment. It does not remove the dependent Ledger module, but the latter becomes unusable.
+This command might be helpful if you want to re-install PythonNet on previously configured environment.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+
+#>
 function Uninstall-PythonNet {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$path)
