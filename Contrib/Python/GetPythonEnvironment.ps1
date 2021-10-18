@@ -640,8 +640,8 @@ function Uninstall-Python {
 Installs PythonNet module to Python environment
 
 .DESCRIPTION
-Note: Pythonnet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
-They are not needed for NLedger console application.
+Note: PythonNet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
+NLedger console application does not need for this module.
 
 Ledger module depends on PythonNet, so the latter is usually installed automatically when you install the Ledger module.
 However, you may need more granular control over which version of PythonNet is installed. 
@@ -707,10 +707,10 @@ Uninstalls PythonNet module from Python environment
 
 .DESCRIPTION
 Note: Pythonnet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
-They are not needed for NLedger console application.
+NLedger console application does not need for this module.
 
 Uninstalls PythonNet module from Python environment. It does not remove the dependent Ledger module, but the latter becomes unusable.
-This command might be helpful if you want to re-install PythonNet on previously configured environment.
+This command might be helpful if you want to re-install PythonNet on previously configured Python environment.
 
 .PARAMETER path
 Optional parameter containing a full path to Python executable file.
@@ -735,6 +735,28 @@ function Uninstall-PythonNet {
     Write-Output "PythonNet is uninstalled ($path)"
 }
 
+<#
+.SYNOPSIS
+Installs Ledger module to Python environment
+
+.DESCRIPTION
+Note: Ledger module should be installed only if you want to use NLedger capabilities in Python session.
+NLedger console application does not need for this module.
+
+Ledger module allows you to use NLedger capabilities in Python session. It includes reading journal files, accessing data objects and
+executing commands. Ledger module can be distributed as an independent software; it does not need for NLedger installation and does not require any special settings.
+
+The Ledger module is packaged in a Wheel format file. Though it can be installed in a usual way, this command may be useful for simplifying the installation steps.
+
+The Ledger module depends on PythonNet (2.5.x or 3.x). Pip package manager will try to resolve dependencies and automatically install PythonNet, 
+so you probably do not need to worry about that. However, in case of any problems with PythonNet installation, 
+it is recommended to install PythonNet before Ledger (by means of 'install-pythonnet' command or manually).
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+
+#>
 function Install-Ledger {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$path)
@@ -762,6 +784,22 @@ function Install-Ledger {
     }
 }
 
+<#
+.SYNOPSIS
+Uninstalls Ledger module from Python environment
+
+.DESCRIPTION
+Note: Pythonnet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
+NLedger console application does not need for this module.
+
+Uninstalls Ledger module from Python environment. It does not remove the dependent PythonNet module, so you may need to uninstall it separately.
+This command might be helpful if you want to re-install Ledger module on previously configured Python environment.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+
+#>
 function Uninstall-Ledger {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$path)
@@ -780,6 +818,24 @@ function Uninstall-Ledger {
     Write-Output "Ledger is uninstalled ($path)"
 }
 
+<#
+.SYNOPSIS
+Runs Ledger module tests
+
+.DESCRIPTION
+Ledger module package (ledger-[version].whl) is distributed with a test file (ledger_tests.py) that is based on Python unit tests.
+Test coverage is about 100%, so passed tests guarantee that the module functions properly.
+
+You may run the tests in a command line console as usual Python unit tests: [path to python] ledger_tests.py
+This command performs the same action but in a shorter notation.
+
+Note: Ledger module should be installed in the Python environment.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+
+#>
 function Test-Ledger {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][string]$path)
@@ -800,7 +856,6 @@ function Test-Ledger {
     & $path $Private:ledgerTests
     if ($LASTEXITCODE -ne 0) {throw "Python unit tests failed (Exit code: $LASTEXITCODE)."}
 }
-
 
 function Help {
     [CmdletBinding()]
