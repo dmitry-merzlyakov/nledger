@@ -314,12 +314,10 @@ function Test-Connection {
     $Private:settings = Get-PythonIntegrationSettings
     if ($Private:settings) {
         $Private:pyInfo = Get-PyInfo -pyExecutable $Private:settings.PyExecutable
-        return [PSCustomObject]@{
-            Settings = $Private:settings
-            PyInfo = $Private:pyInfo
+        return [System.Management.Automation.PSSerializer]::Serialize([PSCustomObject]@{
             IsConnectionValid = -not [Boolean]$Private:pyInfo.status_error
             IsPythonNetInstalled = [Boolean]$Private:pyInfo.pyNetModuleInfo
-        }
+        })
     }
     return $null
 }

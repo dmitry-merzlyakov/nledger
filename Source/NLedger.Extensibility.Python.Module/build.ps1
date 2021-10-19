@@ -119,7 +119,7 @@ if ($test) {
     Write-Verbose "Run Python unit tests"
 
     Write-Verbose "Running tests: $pyExecutable $Script:testFile"
-    . $pyExecutable $Script:testFile
+    $null = (. $pyExecutable $Script:testFile)
     [int]$Script:testExitCode = $LastExitCode
     Write-Verbose "Test exit code: $Script:testExitCode"
 

@@ -23,12 +23,14 @@ namespace NLedger.Extensibility.Python.Platform
         protected PythonConnector(IPythonConfigurationReader pythonConfigurationReader)
         {
             PythonConfigurationReader = pythonConfigurationReader ?? throw new ArgumentNullException(nameof(pythonConfigurationReader));
+            NLedgerPythonConnectionDisabled = String.Equals(Environment.GetEnvironmentVariable("NLedgerPythonConnectionDisabled"), Boolean.TrueString, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public IPythonConfigurationReader PythonConfigurationReader { get; }
         public PythonHost PythonHost { get; private set; }
+        public bool NLedgerPythonConnectionDisabled { get; }
 
-        public bool IsAvailable => PythonHost != null || PythonConfigurationReader.IsAvailable;
+        public bool IsAvailable => !NLedgerPythonConnectionDisabled && (PythonHost != null || PythonConfigurationReader.IsAvailable);
         public bool HasActiveConnections => Connections.Any();
         public bool KeepAlive { get; set; } = true;
 

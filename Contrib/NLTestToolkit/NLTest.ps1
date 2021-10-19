@@ -34,6 +34,8 @@
 .PARAMETER metaListPath
     Relative or absolute path to a file with a list of test metadata.
     In case of a relative path, the tool uses the own location folder as a base.
+.PARAMETER ignoreCategories
+    Comma-separated list of categories to temporarily add to the ignored test list. 
 .PARAMETER disableIgnoreList
     Relative or absolute path to a file with a list of test to be ignored.
     In case of a relative path, the tool uses the own location folder as a base.
@@ -69,6 +71,7 @@ Param(
     [Parameter(Mandatory=$False)][string]$nledgerTestPath = "..",
     [Parameter(Mandatory=$False)][string]$filterRegex = "",
     [Parameter(Mandatory=$False)][string]$metaListPath = ".\NLTest.Meta.xml",
+    [Parameter(Mandatory=$False)][string]$ignoreCategories = "",
     [Switch]$disableIgnoreList = $False,
     [Parameter(Mandatory=$False)][string]$reportFileName = "$([Environment]::GetFolderPath("MyDocuments"))/NLedger/NLedgerTestReport-$(get-date -f yyyyMMdd-HHmmss)",
     [Switch]$xmlReport = $False,
@@ -113,6 +116,7 @@ $Script:testCategories.Keys | ForEach-Object { Write-Verbose "Category: $_"; ( $
 
 $Script:ignoreActions = @()
 $Script:metaListContent.SelectNodes("/nltest-metadata/actions/ignore") | ForEach-Object { $Script:ignoreActions += [PsCustomObject]@{ categories=$_.categories; reason=$_.reason } }
+if ($ignoreCategories) { ($ignoreCategories -split ",") | Where-Object{$_} | ForEach-Object { $Script:ignoreActions += [PsCustomObject]@{ categories=$_; reason="The $_ category has been temporarily disabled by the user" } } }
 Write-Verbose "Found $($Script:ignoreActions.Count) ignore actions"
 
 $Script:variableActions = @()
