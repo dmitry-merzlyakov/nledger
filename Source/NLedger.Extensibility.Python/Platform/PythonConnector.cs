@@ -23,14 +23,12 @@ namespace NLedger.Extensibility.Python.Platform
         protected PythonConnector(IPythonConfigurationReader pythonConfigurationReader)
         {
             PythonConfigurationReader = pythonConfigurationReader ?? throw new ArgumentNullException(nameof(pythonConfigurationReader));
-            NLedgerPythonConnectionDisabled = String.Equals(Environment.GetEnvironmentVariable("NLedgerPythonConnectionDisabled"), Boolean.TrueString, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public IPythonConfigurationReader PythonConfigurationReader { get; }
         public PythonHost PythonHost { get; private set; }
-        public bool NLedgerPythonConnectionDisabled { get; }
 
-        public bool IsAvailable => !NLedgerPythonConnectionDisabled && (PythonHost != null || PythonConfigurationReader.IsAvailable);
+        public bool IsAvailable => PythonHost != null || PythonConfigurationReader.IsAvailable;
         public bool HasActiveConnections => Connections.Any();
         public bool KeepAlive { get; set; } = true;
 
@@ -76,6 +74,10 @@ namespace NLedger.Extensibility.Python.Platform
 
         private readonly ISet<PythonConnectionContext> Connections = new HashSet<PythonConnectionContext>();
         private static readonly object SyncRoot = new object();
-        private static Lazy<PythonConnector> _Current = new Lazy<PythonConnector>(() => new PythonConnector(new XmlFilePythonConfigurationReader()), true);
+        private static Lazy<PythonConnector> _Current = new Lazy<PythonConnector>(() => 
+            new PythonConnector(
+                new EnvPythonConfigurationReader(
+                new XmlFilePythonConfigurationReader())), 
+            true);
     }
 }

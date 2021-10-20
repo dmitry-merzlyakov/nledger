@@ -105,7 +105,7 @@ if (!$noPython) {
         $noPython = $True
     }
 }
-if ($noPython){$env:NLedgerPythonConnectionDisabled = $True}
+if ($noPython){$env:NLedgerPythonConnectionStatus = "Disabled"}
 
 # First step: build sources
 
