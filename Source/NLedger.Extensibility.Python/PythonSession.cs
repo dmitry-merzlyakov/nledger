@@ -31,24 +31,14 @@ namespace NLedger.Extensibility.Python
         /// </summary>
         public static void PythonModuleInitialization()
         {
-            // MainApplicationContext is empty only if Python module is being initialized in Python session (not in NLedger process).
-            // Further code initializes global context for Python session.
-            if (MainApplicationContext.Current == null)
+            CreateStandaloneSession(() => new PythonSession(), () =>
             {
                 var context = new MainApplicationContext();
-
                 var envs = new EnvironmentVariablesSettingsSource("nledger");
                 context.SetEnvironmentVariables(envs.EnvironmentVariables);
                 context.IsAtty = String.Equals(envs.GetValue("IsAtty"), bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
-
-                var threadAcquirer = context.AcquireCurrentThread();
-                var pythonSession = new PythonSession();
-                pythonSession.PythonHostThreadAcquirer = threadAcquirer;
-
-                context.SetExtendedSession(pythonSession);
-                Session.SetSessionContext(pythonSession);
-                Scope.DefaultScope = new Report(pythonSession);
-            }
+                return context;
+            });
         }
 
         /// <summary>
@@ -56,9 +46,7 @@ namespace NLedger.Extensibility.Python
         /// </summary>
         public static void PythonModuleShutdown()
         {
-            var pythonSession = Current;
-            pythonSession?.PythonHostThreadAcquirer?.Dispose();
-            pythonSession?.Dispose();
+            Current?.Dispose();
         }
 
         public PythonSession()
@@ -66,7 +54,7 @@ namespace NLedger.Extensibility.Python
             PythonValueConverter = new PythonValueConverter(this);
         }
 
-        public bool IsPythonHost => PythonHostThreadAcquirer != null;
+        public bool IsPythonHost => IsStandaloneSession;
         public IDictionary<PyModule, PythonModule> ModulesMap { get; } = new Dictionary<PyModule, PythonModule>();
         public IPythonValueConverter PythonValueConverter { get; }
 
@@ -294,7 +282,5 @@ namespace NLedger.Extensibility.Python
             var module = new PythonModule(this, name);
             MainModule.DefineGlobal(name, module.ModuleObject);
         }
-
-        private IDisposable PythonHostThreadAcquirer { get; set; }
     }
 }

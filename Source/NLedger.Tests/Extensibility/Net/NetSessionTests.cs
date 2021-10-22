@@ -3,6 +3,7 @@ using NLedger.Amounts;
 using NLedger.Extensibility;
 using NLedger.Extensibility.Net;
 using NLedger.Utility.ServiceAPI;
+using NLedger.Journals;
 using NLedger.Xacts;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using NLedger.Commodities;
 
 namespace NLedger.Tests.Extensibility.Net
 {
@@ -265,6 +267,85 @@ commodity $
     Expenses:Food                             $25.00
     [Expenses:Food:AVERAGE]                   $32.50".NormalizeOutput(), equity.OutputText.NormalizeOutput());
 
+        }
+
+
+        public static string NetSession_IntegrationTest6_Input = @"
+D 1000.00 EUR
+P 2011-01-01 GBP 1.2 EUR
+
+2011-01-01 * Opening balance
+    Assets:Bank                    10.00 GBP
+    Equity:Opening balance
+
+2012-01-02 * Test
+    Assets:Bank                      5.00 GBP
+    Income:Whatever
+
+2012-01-03 * Test
+    Assets:Bank
+    Income:Whatever              -5.00 EUR @ 0.8733 GBP
+";
+
+        public static string NetSession_IntegrationTest6_Output = @"
+-5.00 GBP
+GBP
+Total is presently: (0.00 EUR)
+Converted to EUR:   (-5.73 EUR)
+Total is now:       (-5.73 EUR)
+
+-5.00 EUR {0.8733 GBP} [2012/01/03]
+EUR
+Total is presently: (-5.73 EUR)
+Converted to EUR:   (-5.00 EUR)
+Total is now:       (-10.73 EUR)
+
+-10.73 EUR
+";
+
+        [Fact]
+        // Net extension example: .Net standalone session (ported unit test 78AB4B87_py.test)
+        public void NetSession_IntegrationTest6()
+        {
+            var sb = new StringBuilder();
+
+            using(var session = NetSession.CreateStandaloneSession())
+            {
+                var eur = CommodityPool.Current.FindOrCreate("EUR");
+
+                var totalEur = new Amount("0.00 EUR");
+                var totalGbp = new Amount("0.00 GBP");
+                var total = new Amount("0.00 EUR");
+
+                foreach(var post in session.ReadJournalFromString(NetSession_IntegrationTest6_Input).Query("^income:"))
+                {
+                    sb.AppendLine($"{post.Amount}");
+                    sb.AppendLine($"{post.Amount.Commodity.Symbol}");
+
+                    if (post.Amount.Commodity.ToString() == "EUR")
+                        totalEur += post.Amount;
+                    else if (post.Amount.Commodity.ToString() == "GBP")
+                        totalGbp += post.Amount;
+
+                    var a = post.Amount.Value(default(DateTime), eur);
+                    if((bool)a)
+                    {
+                        sb.AppendLine($"Total is presently: ({total})");
+                        sb.AppendLine($"Converted to EUR:   ({a})");
+                        total += a;
+                        sb.AppendLine($"Total is now:       ({total})");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"Cannot convert '{post.Amount}'");
+                    }
+                    sb.AppendLine();
+                }
+
+                sb.AppendLine($"{total}");
+            }
+
+            Assert.Equal(NetSession_IntegrationTest6_Output.Trim(), sb.ToString().Trim());
         }
 
     }

@@ -98,12 +98,38 @@ namespace NLedger.Extensibility
         public virtual void Dispose()
         {
             MainApplicationContext.Current?.SetExtendedSession(null);
+            StandaloneSessionThreadAcquirer?.Dispose();
         }
 
         /// <summary>
         /// Depends on implementation. Manages a lookup request for custom members (functions, values, imported modules).
         /// </summary>
         protected abstract ExprOp LookupFunction(string name);
+
+        protected bool IsStandaloneSession => StandaloneSessionThreadAcquirer != null;
+
+        /// <summary>
+        /// Creates a "standalone" Ledger session. Standalone session provides a limited scope 
+        /// where Ledger domain objects can function under the control of custom code (for example, in Python interpreter console).
+        /// This model is the opposite of the usual use of Ledger when sessions are meant to process commands. 
+        /// </summary>
+        protected static T CreateStandaloneSession<T>(Func<T> sessionFactory, Func<MainApplicationContext> contextFactory = null) where T : ExtendedSession
+        {
+            if (MainApplicationContext.Current == null)
+            {
+                var context = contextFactory?.Invoke() ?? new MainApplicationContext();
+
+                var threadAcquirer = context.AcquireCurrentThread();
+                var extendedSession = sessionFactory?.Invoke() ?? throw new ArgumentNullException(nameof(sessionFactory));
+                extendedSession.StandaloneSessionThreadAcquirer = threadAcquirer;
+
+                context.SetExtendedSession(extendedSession);
+                Session.SetSessionContext(extendedSession);
+                Scope.DefaultScope = new Report(extendedSession);
+            }
+
+            return (T)Current;
+        }
 
         private void CreateOptions()
         {
@@ -122,5 +148,7 @@ namespace NLedger.Extensibility
 
         private readonly OptionCollection Options = new OptionCollection();
         private readonly ExprOpCollection LookupItems = new ExprOpCollection();
+        private IDisposable StandaloneSessionThreadAcquirer { get; set; }
+
     }
 }

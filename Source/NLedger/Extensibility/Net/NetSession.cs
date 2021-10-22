@@ -1,4 +1,5 @@
 ﻿using NLedger.Expressions;
+using NLedger.Scopus;
 using NLedger.Textual;
 using NLedger.Utility;
 using NLedger.Utils;
@@ -16,6 +17,16 @@ namespace NLedger.Extensibility.Net
     public class NetSession : ExtendedSession
     {
         public static readonly string LoggerCategory = "extension.dotnet";
+
+        public static new NetSession Current => ExtendedSession.Current as NetSession;
+
+        /// <summary>
+        /// Creates Standalone .Net session that provides a scope where Ledger domain objects can function under the control of custom code.
+        /// </summary>
+        public static NetSession CreateStandaloneSession(Func<MainApplicationContext> contextFactory = null)
+        {
+            return CreateStandaloneSession(() => new NetSession(new NamespaceResolver(), new ValueConverter()), contextFactory);
+        }
 
         public NetSession(INamespaceResolver namespaceResolver, IValueConverter valueConverter)
         {
@@ -38,7 +49,7 @@ namespace NLedger.Extensibility.Net
 
         public override void Eval(string code, ExtensionEvalModeEnum mode)
         {
-            //throw new NotImplementedException();
+            // Eval statement in the "basic" .Net session is ignored but can be implemented in derived classes
         }
 
         public override void ImportOption(string line)
@@ -78,15 +89,9 @@ namespace NLedger.Extensibility.Net
                 throw new ParseError("Directive 'import' for dotNet extension can only contain 'assemblies', 'assembly', 'file' or 'alias' clauses.");
         }
 
-        public override void Initialize()
-        {
-            //throw new NotImplementedException();
-        }
+        public override void Initialize() { }
 
-        public override bool IsInitialized()
-        {
-            return true;
-        }
+        public override bool IsInitialized() { return true;  }
 
         protected override ExprOp LookupFunction(string name)
         {
