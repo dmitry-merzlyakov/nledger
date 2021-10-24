@@ -18,7 +18,7 @@ namespace NLedger.Tests.Extensibility.Net
     public class NetSessionTests
     {
         [Fact]
-        // Net extension example: using .Net function File.Exists in 'check' directive. The function takes PATH tag value as a named parameter ('value').
+        // Net extension example (Service API): using .Net function File.Exists in 'check' directive. The function takes PATH tag value as a named parameter ('value').
         public void NetSession_IntegrationTest1()
         {
             var inputText = @"
@@ -50,7 +50,7 @@ tag PATH
         }
 
         [Fact]
-        // Net extension example: using a custom .Net function (customAssert) and a custom value (customValue) in 'check' directive
+        // Net extension example (Service API): using a custom .Net function (customAssert) and a custom value (customValue) in 'check' directive
         public void NetSession_IntegrationTest2()
         {
             var inputText = @"
@@ -88,16 +88,15 @@ tag PATH
         }
 
         [Fact]
-        // Net extension example: custom options and using NLedger logger
+        // Net extension example (Service API): custom options and using NLedger logger
         public void NetSession_IntegrationTest3()
         {
             var inputText = @"
 --myfirst
 --mysecond Hey
 ";
-            // TODO 1) underscore 2) context is empty 3) custom object in global variable 4) use logger from context
-            Action<object> myFirst = context => { NLedger.Utils.Logger.Current.Info(() => "In myFirst"); };
-            Action<object,string> mySecond = (context, val) => { var a1 = context; };
+            Action<object> myFirst = whence => { NLedger.Utils.Logger.Current.Info(() => "In myFirst"); };
+            Action<object,string> mySecond = (whence, val) => { NLedger.Utils.Logger.Current.Info(() => $"In mysecond: {val}"); };
 
             var engine = new ServiceEngine(
                 createCustomProvider: mem =>
@@ -116,15 +115,15 @@ tag PATH
             var session = engine.CreateSession("-f /dev/stdin --trace 7", inputText);  // --trace 7 -> Set logging level to LOG_INFO
             Assert.True(session.IsActive, session.ErrorText);
 
-            // TODO
             Assert.Contains("In myFirst", session.ErrorText);
+            Assert.Contains("In mysecond: Hey", session.ErrorText);
 
             var response = session.ExecuteCommand("reg");
             Assert.False(response.HasErrors);
         }
 
         [Fact]
-        // Net extension example: importing assemblies and aliases
+        // Net extension example (Service API): importing assemblies and aliases
         public void NetSession_IntegrationTest4()
         {
             var inputText = @"
@@ -181,7 +180,7 @@ tag PATH
         }
 
         [Fact]
-        // Net extension example: average calculation across transactions
+        // Net extension example (Service API): average calculation across transactions
         public void NetSession_IntegrationTest5()
         {
 
@@ -304,7 +303,7 @@ Total is now:       (-10.73 EUR)
 ";
 
         [Fact]
-        // Net extension example: .Net standalone session (ported unit test 78AB4B87_py.test)
+        // Net extension example (Standalone session): .Net standalone session (ported unit test 78AB4B87_py.test)
         public void NetSession_IntegrationTest6()
         {
             var sb = new StringBuilder();

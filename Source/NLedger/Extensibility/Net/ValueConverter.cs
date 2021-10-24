@@ -14,19 +14,24 @@ namespace NLedger.Extensibility.Net
     {
         public object GetObject(Value val)
         {
+            if (Value.IsNullOrEmpty(val))
+                return null;
+
             switch (val.Type)
             {
                 case ValueTypeEnum.Amount: return val.AsAmount;
                 case ValueTypeEnum.Any: return val.AsAny();
                 case ValueTypeEnum.Balance: return val.AsBalance;
                 case ValueTypeEnum.Boolean: return val.AsBoolean;
-                case ValueTypeEnum.Date: return val.AsDateTime;
+                case ValueTypeEnum.Date: return val.AsDate;
                 case ValueTypeEnum.DateTime: return val.AsDateTime;
-                case ValueTypeEnum.Integer: return val.AsLong;
+                case ValueTypeEnum.Integer: return ReduceLong(val.AsLong);
                 case ValueTypeEnum.Mask: return val.AsMask;
                 case ValueTypeEnum.String: return val.AsString;
+                case ValueTypeEnum.Scope: return val.AsScope;
+                case ValueTypeEnum.Sequence: return val.AsSequence;
             }
-            return val.AsScope; // TODO add casting scope to post etc
+            return null;
         }
 
         public Value GetValue(object obj)
@@ -61,6 +66,14 @@ namespace NLedger.Extensibility.Net
                 return Value.Get((IList<Value>)obj);
             else
                 return Value.Get(obj);
+        }
+
+        public static object ReduceLong(long value)
+        {
+            if (value > Int32.MaxValue || value < Int32.MinValue)
+                return value;
+            else
+                return (int)value;
         }
     }
 }
