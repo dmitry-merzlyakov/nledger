@@ -13,6 +13,10 @@ namespace NLedger.Extensibility.Net
 {
     public class PathFunctor : BaseFunctor
     {
+        /// <summary>
+        /// Looks for a class name by given path (that includes a namespace, class name and a path to a class member)
+        /// and creates a PathFunctor for it.
+        /// </summary>
         public static PathFunctor ParsePath(string path, INamespaceResolver namespaceResolver, IValueConverter valueConverter)
         {
             if (String.IsNullOrWhiteSpace(path))
@@ -37,7 +41,7 @@ namespace NLedger.Extensibility.Net
                 }
             }
 
-            throw new ParseError($"Cannot find any class by path '{path}'");
+            throw new ParseError($"Cannot find a class by path '{path}'");
         }
 
         public PathFunctor(Type classType, string[] path, IValueConverter valueConverter)
@@ -72,11 +76,11 @@ namespace NLedger.Extensibility.Net
 
             var field = type.GetField(leafName);
             if (field != null)
-                return new ValueFunctor(field.GetValue(null), ValueConverter).ExprFunctor(scope);
+                return new ValueFunctor(field.GetValue(context), ValueConverter).ExprFunctor(scope);
 
             var prop = type.GetProperty(leafName);
             if (prop != null)
-                return new ValueFunctor(prop.GetValue(null), ValueConverter).ExprFunctor(scope);
+                return new ValueFunctor(prop.GetValue(context), ValueConverter).ExprFunctor(scope);
 
             throw new ParseError($"Cannot evaluate path {String.Join(".", Path)}");
         }
