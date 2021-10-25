@@ -81,7 +81,7 @@ namespace NLedger.Extensibility.Net
             else if (String.Equals(line, "alias", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (args.Length != 3 || !String.Equals(args[1], "for", StringComparison.InvariantCultureIgnoreCase))
-                    throw new ParseError("Directive 'import alias [alias] for [path]' an alias and a path as parameters.");
+                    throw new ParseError("Directive 'import alias [alias] for [path]' requires an alias and a path as parameters.");
 
                 AddAliasDirective(args[0], args[2]);
             }
