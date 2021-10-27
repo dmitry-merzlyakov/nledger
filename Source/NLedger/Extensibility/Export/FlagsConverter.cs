@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace NLedger.Extensibility.Export
 {
+    /// <summary>
+    /// This is a generic converter that presents Boolean-property flags in a source data object as numberic bit flags.
+    /// Provides basic operations such as GetFlags, SetFlags, HasFlags, ClearFlags, AddFlags and DropFlags
+    /// </summary>
     public sealed class FlagsConverter<T>
     {
         public uint GetFlags(T origin)
@@ -15,7 +19,7 @@ namespace NLedger.Extensibility.Export
 
             uint flags = 0;
             foreach (var flag in Mapping.Values.Where(f => f.Getter(origin)).Select(f => f.Flag))
-                flags = flags | flag;
+                flags |= flag;
 
             return flags;
         }
