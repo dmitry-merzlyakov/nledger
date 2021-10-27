@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>NLedger</AssemblyTitle>
@@ -16,21 +15,17 @@
     <RepositoryUrl>https://github.com/dmitry-merzlyakov/nledger</RepositoryUrl>
     <PackageTags>ledger;plaintext-accounting;accounting;cli;csharp;dotnet</PackageTags>
     <PackageLicenseExpression>BSD-3-Clause-Clear</PackageLicenseExpression>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\NLedger.Extensibility.Python.Module\src\**\*.*" Exclude="..\NLedger.Extensibility.Python.Module\src\**\ledger.egg-info\*.*" LinkBase="pymodules">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="pythonnet" Version="3.0.0-preview2021-10-05" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
   </ItemGroup>
-
 </Project>
