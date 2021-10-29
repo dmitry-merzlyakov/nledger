@@ -13,8 +13,8 @@
     <!-- Path to ProductInfo file -->
     <ProductInfoPath>$(SourceRoot)ProductInfo.xml</ProductInfoPath>
     <!-- Paths to test project assemblies separated by spaces -->
-    <TestAssembliesFramework>$(SourceRoot)NLedger.Tests\bin\Release\net452\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\net452\NLedger.IntegrationTests.dll</TestAssembliesFramework>
-    <TestAssembliesCore>$(SourceRoot)NLedger.Tests\bin\Release\netcoreapp3.1\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\netcoreapp3.1\NLedger.IntegrationTests.dll</TestAssembliesCore>
+    <TestAssembliesFramework>$(SourceRoot)NLedger.Tests\bin\Release\net452\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\net472\NLedger.IntegrationTests.dll $(SourceRoot)NLedger.Extensibility.Python.Tests\bin\Release\net472\NLedger.Extensibility.Python.Tests.dll</TestAssembliesFramework>
+    <TestAssembliesCore>$(SourceRoot)NLedger.Tests\bin\Release\netcoreapp3.1\NLedger.Tests.dll $(SourceRoot)NLedger.IntegrationTests\bin\Release\netcoreapp3.1\NLedger.IntegrationTests.dll $(SourceRoot)NLedger.Extensibility.Python.Tests\bin\Release\netcoreapp3.1\NLedger.Extensibility.Python.Tests.dll</TestAssembliesCore>
 
     <!-- Output file structure -->
 
@@ -60,8 +60,8 @@
 
   <Target Name="CodeTests" DependsOnTargets="Build;CheckOutputDir">
     <Message Text="Target : CodeTests (executing all unit tests defined in code)"/>
-    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesFramework) /Logger:trx" />
-    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesCore) /Logger:trx" />
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesFramework) /Logger:trx /Platform:x64" />
+    <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesCore) /Logger:trx /Platform:x64" />
     <!-- Copy trx files (s) to output folder -->
     <CreateItem Include="$(TestResultsDir)**\*.*">
       <Output TaskParameter="Include" ItemName="TestResultsFiles" />
