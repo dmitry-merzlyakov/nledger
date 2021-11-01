@@ -121,6 +121,10 @@
                     <Shortcut Id="NLTestToolkitShortcut" Name=".Net Ledger Test Toolkit" Description=".Net Ledger Test Toolkit Console" Target="[APPLICATIONFOLDER]\NLTestToolkit\NLTest.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
                     <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLTestToolkitShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
                 </Component>
+                <Component Id="PythonToolkitShortcuts" Guid="FA25D943-E118-46D9-A800-23319AF2FB62" >
+                    <Shortcut Id="PythonToolkitShortcut" Name=".Net Ledger Python Toolkit" Description=".Net Ledger Python Toolkit Console" Target="[APPLICATIONFOLDER]\Python\GetPythonEnvironment.Console.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
+                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\PythonToolkitShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+                </Component>
             </Directory>
          </Directory>
 
@@ -145,6 +149,7 @@
          <ComponentRef Id="NLedgerReleaseNotesFiles"/>         <!-- Release Notes (readme and changelog) that are open after install -->
          <ComponentRef Id="LedgerSharedTestFiles_input"/>      <!-- Example data files -->
          <ComponentRef Id="PythonContrib"/>                    <!-- Python contribution files -->
+         <ComponentRef Id="PythonToolkitShortcuts"/>           <!-- Python Toolkit Console shortcut -->
 
          <Feature Id="DocFilesFeature" Title="!(loc.DocFilesFeature_Title)" Level="1" Description="!(loc.DocFilesFeature_Desc)" AllowAdvertise="no" >
            <ComponentRef Id="LedgerDocFiles"/>                 <!-- Ledger 3 Documentation -->
