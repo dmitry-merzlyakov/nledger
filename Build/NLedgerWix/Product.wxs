@@ -20,7 +20,7 @@
 
       <PropertyRef Id="NETFRAMEWORK45"/>
       <Condition Message="!(loc.Condition_NetFrameworkIsNotInstalled)">
-         <![CDATA[Installed OR NETFRAMEWORK45]]>
+         <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED]]>
       </Condition>
 
       <!-- VBS custom actions  -->
@@ -132,7 +132,9 @@
 
          <!-- NLedger Core components (not optional) -->
          <ComponentRef Id="AppBinFiles"/>                      <!-- NLedger .Net Framework dll and exe files -->
+         <ComponentRef Id="AppBinFilesPyModulesLedger"/>       <!-- NLedger .Net Framework dll and exe files -->
          <ComponentRef Id="AppBinCoreFiles"/>                  <!-- NLedger .Net Core dll and exe files -->
+         <ComponentRef Id="AppBinCoreFilesPyModules"/>         <!-- NLedger .Net Core dll and exe files -->
          <ComponentRef Id="AppBinFilesPath"/>                  <!-- Adding NLedger folder to PATH -->
          <ComponentRef Id="LedgerManFiles"/>                   <!-- Ledger manual that can be open from NLedger -->
          <ComponentRef Id="LedgerCoreManFiles"/>               <!-- Ledger manual that can be open from NLedger Core -->
@@ -142,6 +144,7 @@
          <ComponentRef Id="ProgramMenuSubfolderShortcuts"/>    <!-- Common component to manage main menu folder with shortcuts -->
          <ComponentRef Id="NLedgerReleaseNotesFiles"/>         <!-- Release Notes (readme and changelog) that are open after install -->
          <ComponentRef Id="LedgerSharedTestFiles_input"/>      <!-- Example data files -->
+         <ComponentRef Id="PythonContrib"/>                    <!-- Python contribution files -->
 
          <Feature Id="DocFilesFeature" Title="!(loc.DocFilesFeature_Title)" Level="1" Description="!(loc.DocFilesFeature_Desc)" AllowAdvertise="no" >
            <ComponentRef Id="LedgerDocFiles"/>                 <!-- Ledger 3 Documentation -->

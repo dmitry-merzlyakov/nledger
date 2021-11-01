@@ -58,7 +58,7 @@
     <MSBuild Projects="$(SourceRoot)NLedger.sln" Properties="Configuration=Release;VersionPrefix=$(VersionPrefix).$(BuildNumber);SourceRevisionId=$(SourceRevisionId)" />
   </Target>
 
-  <Target Name="CodeTests" DependsOnTargets="Build;CheckOutputDir">
+  <Target Name="CodeTests" DependsOnTargets="Build;CheckOutputDir;GetPythonConnection">
     <Message Text="Target : CodeTests (executing all unit tests defined in code)"/>
     <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesFramework) /Logger:trx /Platform:x64" />
     <Exec Command="&quot;$(VsTestConsolePath)&quot; $(TestAssembliesCore) /Logger:trx /Platform:x64" />
@@ -71,16 +71,24 @@
     <RemoveDir Directories="$(TestResultsDir)"/>
   </Target>
 
-  <Target Name="Release" DependsOnTargets="Build">
+  <Target Name="PythonBuild" DependsOnTargets="Build;GetPythonConnection">
+    <Message Text="Target : Build Python Module"/>
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(SourceRoot)NLedger.Extensibility.Python.Module\build.ps1&quot; -test -build" />
+  </Target>
+
+  <Target Name="Release" DependsOnTargets="Build;PythonBuild">
     <Message Text="Target : Release (composing a package folder with release binaries)"/>
     <!-- Prepare a folder for package binaries -->
     <RemoveDir Directories="$(PackageDir)"/>
     <MakeDir Directories="$(PackageDir)"/>
     <!-- Add binaries (.Net Framework) -->
-    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\net45\NLedger.dll" DestinationFiles="$(PackageDir)bin\net45\NLedger.dll"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net45\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)bin\net45\NLedger-cli.exe.config"  />
-    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net45\ledger.1.html"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\net45\NLedger.dll" DestinationFiles="$(PackageDir)bin\net472\NLedger.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\net472\NLedger-cli.exe"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)bin\net472\NLedger-cli.exe.config"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\NLedger.Extensibility.Python.dll" DestinationFiles="$(PackageDir)bin\net472\NLedger.Extensibility.Python.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\Python.Runtime.dll" DestinationFiles="$(PackageDir)bin\net472\Python.Runtime.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\pymodules\ledger\__init__.py" DestinationFiles="$(PackageDir)bin\net472\pymodules\ledger\__init__.py"  />
+    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net472\ledger.1.html"  />
     <!-- Add binaries (.Net Core) -->
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\netstandard2.0\NLedger.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.exe" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe"  />
@@ -88,9 +96,13 @@
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.dll.config" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.dll.config"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.deps.json" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.deps.json"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger-cli.runtimeconfig.json" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger.Extensibility.Python.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.Extensibility.Python.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\Python.Runtime.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\Python.Runtime.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\System.Security.Permissions.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\System.Security.Permissions.dll"  />
+    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\pymodules\ledger\__init__.py" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\pymodules\ledger\__init__.py"  />
     <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\ledger.1.html"  />
     <!-- Add Contrib files -->
-    <CreateItem Include="$(ProjectRoot)Contrib\**\*.*">
+    <CreateItem Include="$(ProjectRoot)Contrib\**\*.*" Exclude="$(ProjectRoot)Contrib\**\__pycache__\*.*">
       <Output TaskParameter="Include" ItemName="ContribFiles" />
     </CreateItem>
     <Copy SourceFiles="@(ContribFiles)" DestinationFiles="@(ContribFiles->'$(PackageDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
@@ -146,6 +158,13 @@
     <Message Text="Checking version and licensing info in all source code files" />
     <Message Text="NOTE: if this task fails, execute ProductInfoUpdate.cmd to actualize data and observe modifications in a source control system." />
     <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(BuildDir)ProductInfo.psm1 ; Test-VersionInfoAndLicenseNotes&quot;" />
+  </Target>
+
+  <!-- Technical task - configure Python connection -->
+  <Target Name="GetPythonConnection">
+    <Message Text="Configuring Python connection file" />
+    <Message Text="NOTE: if this task fails, configure Python connection manually (command 'connect' in 'GetPythonEnvironment.ps1')." />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\Python\GetPythonEnvironment.ps1&quot; -command connect -noAnsiColor" />
   </Target>
 
   <!-- Technical task - checking the content of Wix configuration files -->

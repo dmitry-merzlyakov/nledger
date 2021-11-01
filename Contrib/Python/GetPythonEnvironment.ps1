@@ -48,7 +48,9 @@ Note: use 'set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process' to 
 Param(
     [Parameter(Mandatory=$False)][ValidateSet("discover","status","connect","disconnect","enable","disable","test-connection","install-python","install-pythonnet","install-ledger","uninstall-python","uninstall-pythonnet","uninstall-ledger","test-ledger")]$command,
     [Parameter(Mandatory=$False)][string]$path,
-    [Parameter(Mandatory=$False)][string]$version
+    [Parameter(Mandatory=$False)][string]$version,
+    [Switch][bool]$noAnsiColor = $False
+
 )
 
 trap 
@@ -63,6 +65,8 @@ Import-Module $Script:ScriptPath/../NLManagement/NLSetup.psm1 -Force
 Import-Module $Script:ScriptPath/../NLManagement/NLCommon.psm1 -Force
 
 [bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+
+if ($noAnsiColor) {$Global:ANSI_Colorization=$False}
 
 ## Default settings
 
