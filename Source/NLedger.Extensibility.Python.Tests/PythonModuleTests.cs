@@ -80,6 +80,15 @@ namespace NLedger.Extensibility.Python.Tests
                         scope.Exec(@"sys.path.insert(0, module_test_folder)");
 
                         scope.Import("unittest");
+
+                        /* This code is helpful to troubleshoot Python test issues executed under xUnits
+                        var sb = new StringBuilder();
+                        var result = scope.Eval(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result");
+                        sb.AppendLine($"Test runs: {result.GetAttr("testsRun")}");
+                        PrintTestResultEntry(result.GetAttr("errors"), sb, "Errors");
+                        PrintTestResultEntry(result.GetAttr("failures"), sb, "Failures");
+                        Console.WriteLine(sb.ToString()); */
+
                         Assert.True(scope.Eval<bool>(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result.wasSuccessful()"));
                     }
                 }
@@ -90,5 +99,16 @@ namespace NLedger.Extensibility.Python.Tests
             }
         }
 
+        private static void PrintTestResultEntry(PyObject pyObject, StringBuilder sb, string description)
+        {
+            sb.AppendLine($"{description}: {pyObject.Length()}");
+            for(int i = 0; i < pyObject.Length(); i++)
+            {
+                var obj = pyObject[i];
+                for (int j = 0; j < obj.Length(); j++)
+                    sb.AppendLine(obj[j].ToString());
+                sb.AppendLine();
+            }
+        }
     }
 }

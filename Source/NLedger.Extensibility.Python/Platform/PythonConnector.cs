@@ -85,7 +85,7 @@ namespace NLedger.Extensibility.Python.Platform
         private static Lazy<PythonConnector> _Current = new Lazy<PythonConnector>(() => 
             new PythonConnector(
                 new EnvPythonConfigurationReader(
-                new XmlFilePythonConfigurationReader())), 
+                new XmlFilePythonConfigurationReader(appModuleResolver: new LocalResourceAppModuleResolver()))),
             true);
     }
 }

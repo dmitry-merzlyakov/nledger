@@ -18,9 +18,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\NLedger.Extensibility.Python.Module\src\**\*.*" Exclude="..\NLedger.Extensibility.Python.Module\src\**\ledger.egg-info\*.*" LinkBase="pymodules">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="..\NLedger.Extensibility.Python.Module\src\ledger\__init__.py" Link="__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="pythonnet" Version="3.0.0-preview2021-10-05" />

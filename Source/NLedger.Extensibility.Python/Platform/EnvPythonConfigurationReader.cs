@@ -40,6 +40,7 @@ namespace NLedger.Extensibility.Python.Platform
                     PyHome = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyHome");
                     PyDll = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyDll");
                     PyPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyPath")?.Split(',');
+                    AppModulesPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionAppModulesPath");
                 }
             }
             else
@@ -54,6 +55,7 @@ namespace NLedger.Extensibility.Python.Platform
         public string PyHome { get; }
         public string[] PyPath { get; }
         public string PyDll { get; }
+        public string AppModulesPath { get; }
 
         public bool IsAvailable
         {
@@ -79,7 +81,8 @@ namespace NLedger.Extensibility.Python.Platform
                 {
                     PyHome = PyHome,
                     PyPath = PyPath,
-                    PyDll = PyDll
+                    PyDll = PyDll,
+                    AppModulesPath = AppModulesPath
                 };
 
             return BasePythonConfigurationReader?.Read();

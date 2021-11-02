@@ -21,7 +21,7 @@ namespace NLedger.Extensibility.Python.Platform
     /// </summary>
     public class PythonHost : IDisposable
     {
-        public PythonHost(PythonConfiguration pythonConfiguration, bool addPathToAssembly = true)
+        public PythonHost(PythonConfiguration pythonConfiguration)
         {
             if (pythonConfiguration == null)
                 throw new ArgumentNullException(nameof(pythonConfiguration));
@@ -49,8 +49,9 @@ namespace NLedger.Extensibility.Python.Platform
 
             var pyPathList = (pythonConfiguration.PyPath ?? Enumerable.Empty<string>()).ToList();
 
-            if (addPathToAssembly)
-                pyPathList.Insert(0, Path.Combine(GetCurrentAssemblyPath(), "pymodules"));
+            var appModulesPath = pythonConfiguration.AppModulesPath;
+            if (!String.IsNullOrEmpty(appModulesPath))
+                pyPathList.Insert(0, appModulesPath);
 
             // Populating Python Home and Python Path settings
 

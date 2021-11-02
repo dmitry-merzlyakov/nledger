@@ -13,28 +13,13 @@ using System.Text;
 namespace NLedger.Extensibility.Python.Platform
 {
     /// <summary>
-    /// PythonNet configuration settings
+    /// The interface that presents a manages Python application modules and their locations
     /// </summary>
-    public class PythonConfiguration
+    public interface IAppModuleResolver
     {
         /// <summary>
-        /// Path to Python Home folder (the root folder for Python binaries that contain files like python38.dll etc)
+        /// Returns a path to Python application modules
         /// </summary>
-        public string PyHome { get; set; }
-
-        /// <summary>
-        /// Collection of python search paths (the same that python's sys.path returns)
-        /// </summary>
-        public string[] PyPath { get; set; }
-
-        /// <summary>
-        /// Name of python core binary file that is located in python home, e.g. python38 (without extension)
-        /// </summary>
-        public string PyDll { get; set; }
-
-        /// <summary>
-        /// Optional path to a folder containing application module(s).
-        /// </summary>
-        public string AppModulesPath { get; set; }
+        string GetAppModulePath();
     }
 }

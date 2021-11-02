@@ -32,9 +32,9 @@ def get_nledger_dll_path():
 
     if os.path.isfile(releaseDLL):
         if os.path.isfile(debugDLL):
-            debugMTXDate = os.path.getmtime(debugDLL)
-            releaseMTXDate = os.path.getmtime(releaseDLL)
-            if debugMTXDate < releaseMTXDate:
+            debugBinDate = os.path.getmtime(debugDLL)
+            releaseBinDate = os.path.getmtime(releaseDLL)
+            if debugBinDate < releaseBinDate:
                 return releaseDLL
             else:
                 return debugDLL

@@ -25,14 +25,17 @@ namespace NLedger.Extensibility.Python.Platform
         /// </summary>
         public static string DefaultFileName => Path.GetFullPath($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/NLedger/NLedger.Extensibility.Python.settings.xml");
 
-        public XmlFilePythonConfigurationReader(string fileName = null)
+        public XmlFilePythonConfigurationReader(string fileName = null, IAppModuleResolver appModuleResolver = null)
         {
             FileName = String.IsNullOrWhiteSpace(fileName) ? DefaultFileName : fileName;
+            AppModuleResolver = appModuleResolver;
         }
 
         public string FileName { get; }
 
         public bool IsAvailable => File.Exists(FileName);
+
+        public IAppModuleResolver AppModuleResolver { get; }
 
         public PythonConfiguration Read()
         {
@@ -42,7 +45,8 @@ namespace NLedger.Extensibility.Python.Platform
             {
                 PyHome = xdoc.Descendants(XName.Get("py-home")).FirstOrDefault()?.Value,
                 PyPath = xdoc.Descendants(XName.Get("py-path")).FirstOrDefault()?.Value.Split(';') ?? new string[0],
-                PyDll = xdoc.Descendants(XName.Get("py-dll")).FirstOrDefault()?.Value
+                PyDll = xdoc.Descendants(XName.Get("py-dll")).FirstOrDefault()?.Value,
+                AppModulesPath = AppModuleResolver?.GetAppModulePath()
             };
         }
     }

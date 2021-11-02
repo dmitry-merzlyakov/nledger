@@ -62,8 +62,9 @@ is_pythonnet_2 = clr.__version__ and clr.__version__.startswith("2.")
 ############################
 # Load NLedger library
 
-# Check whether the module is running under NLedger host (NLedger.Extensibility.Python.dll is the granparent folder indicates it)
-is_nledger_host = ntpath.isfile(getpath('./../../NLedger.Extensibility.Python.dll'))
+# Check whether the module is running under NLedger host (the indicator is that the current app domain already contains type PythonSession)
+from System import Type
+is_nledger_host = not (Type.GetType("NLedger.Extensibility.Python.PythonSession,NLedger.Extensibility.Python") is None)
 
 # Load NLedger library if it is not NLedger host
 if not is_nledger_host:
