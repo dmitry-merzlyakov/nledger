@@ -15,16 +15,23 @@ using System.Text;
 namespace NLedger.Extensibility.Python.Platform
 {
     /// <summary>
-    /// Application Modules Resolver is responsible for extracting Ledger module from embedded resources to a specific location (Local App Data folder),
-    /// managing modules per assembly versions, checking module code consistency and restoring it if it detects issues.
+    /// This AppModuleResolver is responsible to extract Ledger module from current assembly's embedded resources and put it to application data folder.
     /// </summary>
     public class LocalResourceAppModuleResolver : IAppModuleResolver
     {
+        public LocalResourceAppModuleResolver(string appModulePath = null)
+        {
+            AppModulePath = appModulePath ?? BuildAppModulePath();
+        }
+
+        public string AppModulePath { get; }
+        public event Action OnFileCreated;
+
         public string GetAppModulePath()
         {
-            if (String.IsNullOrEmpty(AppModulePath))
+            if (!IsPathValidated)
             {
-                var targetFileName = ModuleInitFilePath();
+                var targetFileName = Path.GetFullPath($"{AppModulePath}/ledger/__init__.py");
                 var assemblyDate = File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
 
                 if (!File.Exists(targetFileName) || assemblyDate != File.GetLastWriteTime(targetFileName))
@@ -38,20 +45,21 @@ namespace NLedger.Extensibility.Python.Platform
                     }
 
                     File.SetLastWriteTime(targetFileName, assemblyDate);
+                    OnFileCreated?.Invoke();
                 }
 
-                AppModulePath = Path.GetDirectoryName(Path.GetDirectoryName(targetFileName));
+                IsPathValidated = true;
             }
 
             return AppModulePath;
         }
 
-        public string ModuleInitFilePath()
+        protected virtual string BuildAppModulePath()
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            return Path.GetFullPath($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/NLedger/PyModules/{version}/ledger/__init__.py");
+            return Path.GetFullPath($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/NLedger/PyModules/{version}");
         }
 
-        private string AppModulePath { get; set; }
+        private bool IsPathValidated { get; set; }
     }
 }

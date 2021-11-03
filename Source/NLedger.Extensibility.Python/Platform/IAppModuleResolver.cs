@@ -13,7 +13,7 @@ using System.Text;
 namespace NLedger.Extensibility.Python.Platform
 {
     /// <summary>
-    /// The interface that presents a manages Python application modules and their locations
+    /// AppModuleResolver returns a path to a folder where Python application modules are located.
     /// </summary>
     public interface IAppModuleResolver
     {

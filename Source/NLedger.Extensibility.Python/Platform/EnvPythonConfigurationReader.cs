@@ -20,9 +20,9 @@ namespace NLedger.Extensibility.Python.Platform
     }
 
     /// <summary>
-    /// Python configuration reader that tries to get data from environment variables.
+    /// Python configuration reader tries to get data from environment variables.
     /// If variables are not specified, it forwards the request to the underlying reader.
-    /// It basically allows to override existing XML settings in environment variables.
+    /// It basically allows to override existing XML settings by means of environment variables.
     /// </summary>
     public class EnvPythonConfigurationReader : IPythonConfigurationReader
     {
@@ -39,7 +39,7 @@ namespace NLedger.Extensibility.Python.Platform
                 {
                     PyHome = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyHome");
                     PyDll = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyDll");
-                    PyPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyPath")?.Split(',');
+                    PyPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyPath")?.Split(';');
                     AppModulesPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionAppModulesPath");
                 }
             }

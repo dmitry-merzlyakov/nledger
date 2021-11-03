@@ -13,6 +13,11 @@ using System.Linq;
 
 namespace NLedger.Extensibility.Python.Platform
 {
+    /// <summary>
+    /// PythonConnector manages PythonHost and connections objects: it provides Python configuration for PythonHost; 
+    /// initializes the host when Python connection was requested; keeps a pool of connection objects and
+    /// destroys the host when all connections are released.
+    /// </summary>
     public class PythonConnector
     {
         public static PythonConnector Current => _Current.Value;

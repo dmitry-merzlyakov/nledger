@@ -13,7 +13,7 @@ using System.Text;
 namespace NLedger.Extensibility.Python.Platform
 {
     /// <summary>
-    /// PythonNet configuration reader representation
+    /// PythonNet configuration reader provides a PythonConfiguration object
     /// </summary>
     public interface IPythonConfigurationReader
     {

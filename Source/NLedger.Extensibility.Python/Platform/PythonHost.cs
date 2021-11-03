@@ -17,7 +17,7 @@ using System.Reflection;
 namespace NLedger.Extensibility.Python.Platform
 {
     /// <summary>
-    /// PythonHost is Responsible for initialization and disposing PythonNet engine in the current application domain
+    /// PythonHost is responsible for initialization and disposing PythonNet engine in the current application domain
     /// </summary>
     public class PythonHost : IDisposable
     {
@@ -73,13 +73,6 @@ namespace NLedger.Extensibility.Python.Platform
         {
             PythonEngine.EndAllowThreads(ThreadState);
             PythonEngine.Shutdown();
-        }
-
-        public static string GetCurrentAssemblyPath()
-        {
-            var uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-            var path = Uri.UnescapeDataString(uri.Path);
-            return Path.GetDirectoryName(path);
         }
     }
 }
