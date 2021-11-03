@@ -332,7 +332,7 @@ namespace NLedger.Accounts
             return LookupItems.Value.Lookup(kind, name, this);
         }
 
-        public string PartialName(bool flat)
+        public string PartialName(bool flat = false)
         {
             StringBuilder sb = new StringBuilder(Name);
 
@@ -370,6 +370,14 @@ namespace NLedger.Accounts
                     XData.FamilyDetails.Total = Value.AddOrSetValue(XData.FamilyDetails.Total, temp);
             }
             return XData.FamilyDetails.Total;
+        }
+
+        /// <summary>
+        /// Ported from bool children_with_xdata()
+        /// </summary>
+        public bool ChildrenWithXData()
+        {
+            return Accounts.Any(a => a.Value.HasXData || a.Value.ChildrenWithXData());
         }
 
         public int ChildrenWithFlags(bool toDisplay, bool visited)

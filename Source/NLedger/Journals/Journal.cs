@@ -258,6 +258,22 @@ namespace NLedger.Journals
             return Master.FindAccountRe(regexp);
         }
 
+        /// <summary>
+        /// ported from journal_t::add_account
+        /// </summary>
+        public void AddAccount(Account acct)
+        {
+            Master.AddAccount(acct);
+        }
+
+        /// <summary>
+        /// ported from journal_t::remove_account
+        /// </summary>
+        public bool RemoveAccount(Account acct)
+        {
+            return Master.RemoveAccount(acct);
+        }
+
         public int Read(ParseContextStack context)
         {
             int count = 0;
@@ -405,6 +421,26 @@ namespace NLedger.Journals
 
             Xacts.Add(xact);
             return true;
+        }
+
+        /// <summary>
+        /// ported from journal_t::remove_xact
+        /// </summary>
+        public bool RemoveXact(Xact xact)
+        {
+            var found = Xacts.Remove(xact);
+            if (found)
+                xact.Journal = null;
+
+            return found;
+        }
+
+        /// <summary>
+        /// Ported from journal_t::has_xdata
+        /// </summary>
+        public bool HasXData()
+        {
+            return Xacts.Any(x => x.HasXData) || AutoXacts.Any(x => x.HasXData) || PeriodXacts.Any(x => x.HasXData) || Master.HasXData || Master.ChildrenWithXData();
         }
 
         public void ClearXData()

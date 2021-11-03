@@ -94,6 +94,31 @@ namespace NLedger.Values
             }
         }
 
+        public static explicit operator bool(Value value)
+        {
+            return value?.Bool ?? false;
+        }
+
+        public static bool operator <(Value left, Value right)
+        {
+            return left?.IsLessThan(right) ?? false;
+        }
+
+        public static bool operator <=(Value left, Value right)
+        {
+            return !(left?.IsGreaterThan(right) ?? false);
+        }
+
+        public static bool operator >(Value left, Value right)
+        {
+            return left?.IsGreaterThan(right) ?? false;
+        }
+
+        public static bool operator >=(Value left, Value right)
+        {
+            return !(left?.IsLessThan(right) ?? false);
+        }
+
         public static Value operator -(Value val)
         {
             return val.Negated();
@@ -163,6 +188,14 @@ namespace NLedger.Values
         public static Value StringValue(string str = "")
         {
             return Get(str, true);
+        }
+
+        /// <summary>
+        /// Ported from inline value_t mask_value(const string& str)
+        /// </summary>
+        public static Value MaskValue(string str)
+        {
+            return new Value(new Mask(str));
         }
 
         public static Value AddOrSetValue(Value lhs, Value rhs)
@@ -318,6 +351,51 @@ namespace NLedger.Values
             return Storage != null ? Storage.AsAny() : null;
         }
 
+        public void SetBoolean(bool val)
+        {
+            Storage = new BooleanValueStorage(val);
+        }
+
+        public void SetDateTime(DateTime val)
+        {
+            Storage = new DateTimeValueStorage(val);
+        }
+
+        public void SetDate(Date val)
+        {
+            Storage = new DateValueStorage(val);
+        }
+
+        public void SetLong(long val)
+        {
+            Storage = new IntegerValueStorage(val);
+        }
+
+        public void SetAmount(Amount val)
+        {
+            Storage = new AmountValueStorage(val);
+        }
+
+        public void SetBalance(Balance val)
+        {
+            Storage = new BalanceValueStorage(val);
+        }
+
+        public void SetMask(Mask val)
+        {
+            Storage = new MaskValueStorage(val);
+        }
+
+        public void SetString(string val)
+        {
+            Storage = new StringValueStorage(val);
+        }
+
+        public void SetSequence(IList<Value> sequence)
+        {
+            Storage = new SequenceValueStorage(sequence);
+        }
+
         public bool IsValid
         {
             get { return Storage != null ? Storage.IsValid : true; }
@@ -423,6 +501,19 @@ namespace NLedger.Values
             Value temp = Value.Clone(this);
             temp.InPlaceNegate();
             return temp;
+        }
+
+        public void Annotate(Annotation details)
+        {
+            if (Type == ValueTypeEnum.Amount)
+            {
+                AsAmount.Annotate(details);
+            }                
+            else
+            {
+                ErrorContext.Current.AddErrorContext(String.Format("While attempting to annotate {0}:", this));
+                throw new ValueError(String.Format(ValueError.CannotAnnotateSmth, this));
+            }
         }
 
         public Value StripAnnotations(AnnotationKeepDetails whatToKeep)
@@ -603,6 +694,11 @@ namespace NLedger.Values
             return new Value(Storage.Simplify());
         }
 
+        public void InPlaceSimplify()
+        {
+            Storage = Storage?.Simplify();
+        }
+
         public void PushBack(Value val)
         {
             if (Storage == null)
@@ -696,6 +792,13 @@ namespace NLedger.Values
         public string Dump(bool relaxed = true)
         {
             return Storage != null ? Storage.Dump(relaxed) : "null";  // "null" means VOID
+        }
+
+        public Value Casted(ValueTypeEnum type)
+        {
+            Value temp = Value.Clone(this);
+            temp.InPlaceCast(type);
+            return temp;
         }
 
         public Value InPlaceCast(ValueTypeEnum type)
@@ -979,6 +1082,19 @@ namespace NLedger.Values
             throw new ValueError(String.Format(ValueError.CannotDetermineNumericValueOfSmth, this));
         }
 
+        public Value Reduced()
+        {
+            Value temp = Value.Clone(this);
+            temp.InPlaceUnreduce();
+            return temp;
+        }
+
+        public void InPlaceReduce()
+        {
+            if (Storage != null)
+                Storage = Storage.Reduce();
+        }
+
         public Value Unreduced()
         {
             Value temp = Value.Clone(this);
@@ -1044,6 +1160,27 @@ namespace NLedger.Values
                 case ValueTypeEnum.Any: return AsAny().SafeGetType() == typeof(ExprOp) ? "an expr" : "an object";
                 default:
                     throw new InvalidOperationException(String.Format("Unknown type: {0}", theType ?? Type));
+            }
+        }
+
+        public Type BaseType()
+        {
+            switch (Type)
+            {
+                case ValueTypeEnum.Void: return typeof(void);
+                case ValueTypeEnum.Boolean: return typeof(bool);
+                case ValueTypeEnum.DateTime: return typeof(DateTime);
+                case ValueTypeEnum.Date: return typeof(Date);
+                case ValueTypeEnum.Integer: return typeof(long);
+                case ValueTypeEnum.Amount: return typeof(Amount);
+                case ValueTypeEnum.Balance: return typeof(Balance);
+                case ValueTypeEnum.String: return typeof(string);
+                case ValueTypeEnum.Mask: return typeof(Mask);
+                case ValueTypeEnum.Sequence: return typeof(IList<Value>);
+                case ValueTypeEnum.Scope: return typeof(Scope);
+                case ValueTypeEnum.Any: return AsAny().SafeGetType();
+                default:
+                    throw new InvalidOperationException(String.Format("Unknown type: {0}", Type));
             }
         }
 

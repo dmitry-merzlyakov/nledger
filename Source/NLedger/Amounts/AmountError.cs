@@ -75,8 +75,10 @@ namespace NLedger.Amounts
         public const string ErrorMessageCannotTruncateAnUninitializedAmount = "Cannot truncate an uninitialized amount";
         public const string ErrorMessageCannotComputeCeilingOnAnUninitializedAmount = "Cannot compute ceiling on an uninitialized amount";
         public const string ErrorMessageCannotRoundAnUninitializedAmount = "Cannot round an uninitialized amount";
+        public const string ErrorMessageCannotDeterminePrecisionOfAnUninitializedAmount = "Cannot determine precision of an uninitialized amount";
         public const string ErrorMessageCannotDetermineDisplayPrecisionOfAnUninitializedAmount = "Cannot determine display precision of an uninitialized amount";
         public const string ErrorMessageCannotInvertUninitializedAmount = "Cannot invert an uninitialized amount";
+        public const string ErrorMessageCannotSetWhetherToKeepThePrecisionOfAnUninitializedAmount = "Cannot set whether to keep the precision of an uninitialized amount";
 
         public AmountError(string message)
             : base(message)

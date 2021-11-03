@@ -104,7 +104,7 @@ namespace NLedger.Amounts
         public static Amount Exact(string value)
         {
             Amount temp = new Amount();
-            temp.Parse(value, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
+            temp.Parse(ref value, AmountParseFlagsEnum.PARSE_NO_MIGRATE);
             return temp;
         }
 
@@ -361,6 +361,17 @@ namespace NLedger.Amounts
         public bool KeepPrecision
         {
             get { return Quantity.KeepPrecision; }
+        }
+
+        /// <summary>
+        /// Ported from void amount_t::set_keep_precision(const bool keep) const
+        /// </summary>
+        public void SetKeepPrecision(bool keep = true)
+        {
+            if (!Quantity.HasValue)
+                throw new AmountError(AmountError.ErrorMessageCannotSetWhetherToKeepThePrecisionOfAnUninitializedAmount);
+
+            Quantity = Quantity.SetKeepPrecision(keep);
         }
 
         /// <summary>
@@ -656,7 +667,10 @@ namespace NLedger.Amounts
             return true;
         }
 
-        public bool Parse(string line, AmountParseFlagsEnum parseFlags = AmountParseFlagsEnum.PARSE_DEFAULT)
+        /// <summary>
+        /// Semantic equivalent of the Parse method, which sends a string parameter as a value (the string does not change during parsing)
+        /// </summary>
+        public bool ParseString(string line, AmountParseFlagsEnum parseFlags = AmountParseFlagsEnum.PARSE_DEFAULT)
         {
             return Parse(ref line, parseFlags);
         }
@@ -847,7 +861,7 @@ namespace NLedger.Amounts
             }
 
             if (HasCommodity && amount.HasCommodity && Commodity != amount.Commodity)
-                throw new AmountError(AmountError.ErrorMessageAddingAmountsWithDifferentCommodities);
+                throw new AmountError(String.Format(AmountError.ErrorMessageSubtractingAmountsWithDifferentCommodities, Commodity, amount.Commodity));
 
             BigInt quantity = Quantity + amount.Quantity;
 
@@ -884,7 +898,7 @@ namespace NLedger.Amounts
             }
 
             if (HasCommodity && amount.HasCommodity && Commodity != amount.Commodity)
-                throw new AmountError(AmountError.ErrorMessageSubtractingAmountsWithDifferentCommodities);
+                throw new AmountError(String.Format(AmountError.ErrorMessageSubtractingAmountsWithDifferentCommodities, Commodity, amount.Commodity));
 
             BigInt quantity = Quantity - amount.Quantity;
 
@@ -1095,7 +1109,7 @@ namespace NLedger.Amounts
                 return;
 
             Logger.Current.Debug("amount.unround", () => String.Format("Unrounding {0}", this));
-            Quantity = Quantity.SetKeepPrecision(true);
+            SetKeepPrecision(true);
             Logger.Current.Debug("amount.unround", () => String.Format("Unrounded = {0}", this));
         }
 
@@ -1269,7 +1283,7 @@ namespace NLedger.Amounts
                 return;
 
             //_dup;
-            Quantity = Quantity.SetKeepPrecision(false);
+            SetKeepPrecision(false);
         }
 
         /// <summary>
@@ -1330,6 +1344,17 @@ namespace NLedger.Amounts
         public void ClearCommodity()
         {
             Commodity = CommodityPool.Current.NullCommodity;
+        }
+
+        public int Precision
+        {
+            get
+            {
+                if (!Quantity.HasValue)
+                    throw new AmountError(AmountError.ErrorMessageCannotDeterminePrecisionOfAnUninitializedAmount);
+
+                return Quantity.Precision;
+            }
         }
 
         public int DisplayPrecision

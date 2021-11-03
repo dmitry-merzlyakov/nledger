@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Expressions;
+using NLedger.Extensibility;
 using NLedger.Textual;
 using NLedger.Times;
 using NLedger.Utility;
@@ -61,7 +62,7 @@ namespace NLedger.Scopus
         {
             TimesCommon.Current.Epoch = TimesCommon.Current.CurrentDate;
 
-            Session.SetSessionContext(Session = new Session());
+            Session.SetSessionContext(Session = ExtendedSession.CreateExtendedSession() ?? new Session());
 
             // Create the report object, which maintains state relating to each
             // command invocation.  Because we're running from main(), the
@@ -97,6 +98,7 @@ namespace NLedger.Scopus
 
         public void Dispose()
         {
+            ExtendedSession.Current?.Dispose();
             Session.SetSessionContext(null);
         }
 

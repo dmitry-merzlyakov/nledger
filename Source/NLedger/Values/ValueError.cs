@@ -70,6 +70,7 @@ namespace NLedger.Values
         public const string CannotCeilingSmth = "Cannot ceiling {0}";
         public const string CannotAbsSmth = "Cannot abs {0}";
         public const string CannotDetermineNumericValueOfSmth = "Cannot determine numeric value of {0}";
+        public const string CannotAnnotateSmth = "Cannot annotate {0}";
 
         public ValueError(string message)
             : base(message)

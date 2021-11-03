@@ -30,10 +30,20 @@
                <Directory Id="NLTestToolkitFolder" Name="NLTestToolkit">
                   <Component Id="NLTestToolkit" Guid="874FBA65-1862-4E0E-B1E6-078A45ACF084" >
                      <File Id="File_NLTest_cmd" Name="NLTest.cmd" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.cmd"/>
-                     <File Id="File_NLTest_IgnoreList_xml" Name="NLTest.IgnoreList.xml" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.IgnoreList.xml"/>
                      <File Id="File_NLTest_Launcher_ps1" Name="NLTest.Launcher.ps1" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.Launcher.ps1"/>
                      <File Id="File_NLTest_ps1" Name="NLTest.ps1" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.ps1"/>
                      <File Id="File_NLTest_xslt" Name="NLTest.xslt" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.xslt"/>
+                     <File Id="File_NLTest_Meta_xml" Name="NLTest.Meta.xml" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.Meta.xml"/>
+                  </Component>
+               </Directory>
+               <Directory Id="PythonFolder" Name="Python">
+                  <Component Id="PythonContrib" Guid="30468F59-AAF0-4308-BAAB-B689BEB2CE22" >
+                     <File Id="File_GetPythonEnvironment_ps1" Name="GetPythonEnvironment.ps1" Source="$(var.PackageFolder)NLedger\Python\GetPythonEnvironment.ps1"/>
+                     <File Id="File_GetPythonEnvironment_Console_cmd" Name="GetPythonEnvironment.Console.cmd" Source="$(var.PackageFolder)NLedger\Python\GetPythonEnvironment.Console.cmd"/>
+                     <File Id="File_ledger_tests_py" Name="ledger_tests.py" Source="$(var.PackageFolder)NLedger\Python\ledger_tests.py"/>
+                     <File Id="File_PyManagement_psm1" Name="PyManagement.psm1" Source="$(var.PackageFolder)NLedger\Python\PyManagement.psm1"/>
+                     <File Id="File_Python_drewr3_dat" Name="drewr3.dat" Source="$(var.PackageFolder)NLedger\Python\drewr3.dat"/>
+                     <File Id="File_ledger_0_8_4_py3_none_any_whl" Name="ledger-0.8.4-py3-none-any.whl" Source="$(var.PackageFolder)NLedger\Python\ledger-0.8.4-py3-none-any.whl"/>
                   </Component>
                </Directory>
                <Directory Id="testFolder" Name="test">
@@ -462,6 +472,10 @@
                         <File Id="File_nl_issues_1_test" Name="nl-issues-1.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.test"/>
                         <File Id="File_nl_issues_1_dat" Name="nl-issues-1.dat" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.dat"/>
                         <File Id="File_pricedb_dat" Name="pricedb.dat" Source="$(var.PackageFolder)NLedger\test\nledger\pricedb.dat"/>
+                        <File Id="File_nl_baseline_net_1.test" Name="nl-baseline-net-1.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-baseline-net-1.test"/>
+                        <File Id="File_nl_baseline_net_2.test" Name="nl-baseline-net-2.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-baseline-net-2.test"/>
+                        <File Id="File_nl_baseline_net_3.test" Name="nl-baseline-net-3.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-baseline-net-3.test"/>
+                        <File Id="File_nl_baseline_net_4.test" Name="nl-baseline-net-4.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-baseline-net-4.test"/>
                      </Component>
                   </Directory>
                   <Directory Id="regressFolder" Name="regress">
@@ -692,6 +706,9 @@
                       <File Id="File_NLedger_Core_cli_deps_json" Name="NLedger-cli.deps.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.deps.json"/>
                       <File Id="File_NLedger_Core_cli_dll_config" Name="NLedger-cli.dll.config" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.dll.config"/>
                       <File Id="File_NLedger_Core_cli_runtimeconfig_json" Name="NLedger-cli.runtimeconfig.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"/>
+                      <File Id="File_NLedger_Core_System_Security_Permissions_dll" Name="System.Security.Permissions.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\System.Security.Permissions.dll"/>
+                      <File Id="File_NLedger_Core_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger.Extensibility.Python.dll"/>
+                      <File Id="File_Core_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\Python.Runtime.dll"/>
                     </Component>
                     <Component Id="LedgerCoreManFiles" Guid="C4C85651-C61F-4B2B-AE5F-C4A3BFAE8930" >
                         <File Id="File_Core_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\ledger.1.html"/>
@@ -699,12 +716,14 @@
                   </Directory>
                </Directory>
                <Component Id="AppBinFiles" Guid="59E7E5B2-E13F-4FBC-B05C-B5E1DFC1F06A" >
-                  <File Id="File_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net45\NLedger.dll"/>
-                  <File Id="File_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\\bin\net45\NLedger-cli.exe">
+                  <File Id="File_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger.dll"/>
+                  <File Id="File_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger-cli.exe">
                      <!-- Call NGen -->
 		     <netfx:NativeImage Id="File_NLedger_cli_exe" Platform="all" Priority="0" />
                   </File>
-                  <File Id="File_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\\bin\net45\NLedger-cli.exe.config"/>
+                  <File Id="File_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger-cli.exe.config"/>
+                  <File Id="File_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger.Extensibility.Python.dll"/>
+                  <File Id="File_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net472\Python.Runtime.dll"/>
                </Component>
                <Component Id="LicenseFiles" Guid="9D31EDB8-04BC-4EF7-856C-3F29655E78CF" >
                   <File Id="File_LICENSE" Name="LICENSE" Source="$(var.PackageFolder)NLedger\LICENSE"/>

@@ -425,6 +425,30 @@ namespace NLedger
                 amount.InPlaceTruncate();
         }
 
+        public Balance Reduced()
+        {
+            Balance temp = new Balance(this);
+            temp.InPlaceReduce();
+            return temp;
+        }
+
+        public void InPlaceReduce()
+        {
+            // A temporary must be used here because reduction may cause
+            // multiple component amounts to collapse to the same commodity.
+            Balance temp = new Balance();
+            foreach (Amount amount in Amounts.Values)
+                temp = temp.Add(amount.Reduced());
+            Amounts = temp.Amounts;
+        }
+
+        public Balance Unreduced()
+        {
+            Balance temp = new Balance(this);
+            temp.InPlaceUnreduce();
+            return temp;
+        }
+
         public void InPlaceUnreduce()
         {
             // A temporary must be used here because unreduction may cause
@@ -433,6 +457,13 @@ namespace NLedger
             foreach (Amount amount in Amounts.Values)
                 temp = temp.Add(amount.Unreduced());
             Amounts = temp.Amounts;
+        }
+
+        public Balance Unrounded()
+        {
+            Balance temp = new Balance(this);
+            temp.InPlaceUnround();
+            return temp;
         }
 
         public void InPlaceUnround()
@@ -576,6 +607,27 @@ namespace NLedger
                 return amount;
             }
             return null;
+        }
+
+        /**
+         * Commodity-related methods.  Balances support two
+         * commodity-related methods:
+         *
+         * commodity_count() returns the number of different commodities
+         * stored in the balance.
+         *
+         * commodity_amount(optional<commodity_t>) returns an (optional)
+         * amount for the given commodity within the balance; if no
+         * commodity is specified, it returns the (optional) uncommoditized
+         * component of the balance.  If no matching element can be found,
+         * boost::none is returned.
+         */
+        /// <summary>
+        /// ported from std::size_t commodity_count() const
+        /// </summary>
+        public int CommodityCount
+        {
+            get { return Amounts.Count; }
         }
 
         /**

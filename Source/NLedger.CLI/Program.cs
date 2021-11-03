@@ -20,7 +20,11 @@ namespace NLedger.CLI
         {
             // System.Diagnostics.Debugger.Launch(); // This debugging option might be useful in case of troubleshooting of NLTest issues
 
-            var context = new NLedgerConfiguration().CreateConsoleApplicationContext();
+            var extensionProviderSelector = new Extensibility.ExtensionProviderSelector().
+                AddProvider("dotnet", () => new Extensibility.Net.NetExtensionProvider()).
+                AddProvider("python", () => new Extensibility.Python.PythonExtensionProvider());
+
+            var context = new NLedgerConfiguration().CreateConsoleApplicationContext(extensionProviderSelector);
             var main = new Main(context);
 
             var argString = CommandLineArgs.GetArguments(args); // This way is preferrable because of double quotas that are missed by using args

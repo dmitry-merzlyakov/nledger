@@ -189,6 +189,42 @@ namespace NLedger.Tests.Utility.ServiceAPI
             }
         }
 
+        /// <summary>
+        /// Example of getting query results
+        /// </summary>
+        [Fact]
+        public void ServiceAPI_IntegrationTests_9()
+        {
+            var inputText = @"
+2012-03-17 Payee
+    Expenses:Food                $20
+    Assets:Cash";
+
+            var engine = new ServiceEngine();
+            var session = engine.CreateSession("-f /dev/stdin", inputText);
+
+            var response = session.ExecuteQuery("^expenses:");
+            Assert.False(response.HasErrors);
+
+            var posts = response.Posts;
+            Assert.Single(posts);
+
+            // Note: once session response is received, current thread is out of NLedger application context.
+            // It means that queried objects (posts in this example) are accessible, but provide limited functinality.
+            // Some properties or functions are accessible; some might trigger runtime exceptions.
+            var post = posts.Single();
+            Assert.Equal("Expenses:Food", post.Account.ToString());
+            Assert.Equal(20, post.Amount.Quantity.ToLong());
+
+            // If you need to get full access to all properties and functions, you need to set NLedger application context.
+            // (at least, for a limited scoope like "using" below). In bounds of this scope, all NLedger functinality is available.
+            using (response.MainApplicationContext.AcquireCurrentThread())
+            {
+                Assert.Equal("Payee", post.Payee);
+                Assert.Equal("$20", post.Amount.Print());
+            }
+        }
+
         [Fact]
         public void ServiceAPI_ServiceSession_Dispose_Verification()
         {

@@ -75,17 +75,17 @@ namespace NLedger.IntegrationTests.unit
 
             //NOT_FOR_PYTHON
             Amount x13 = new Amount();
-            x13.Parse("$100...");
+            x13.ParseString("$100...");
             Assert.Equal(x12, x13);
 
             Amount x14 = new Amount();
-            Assert.Throws<AmountError>(() => x14.Parse("DM"));
+            Assert.Throws<AmountError>(() => x14.ParseString("DM"));
 
             Amount x15 = new Amount("$1.000.000,00");   // parsing this switches us to European
 
             Amount x16 = new Amount("$2000");
             Assert.Equal("$2.000,00", x16.ToString());
-            x16.Parse("$2000,00");
+            x16.ParseString("$2000,00");
             Assert.Equal("$2.000,00", x16.ToString());
 
             // Since use of a decimal-comma is an additive quality, we must switch back
@@ -96,7 +96,7 @@ namespace NLedger.IntegrationTests.unit
 
             Amount x18 = new Amount("$2000");
             Assert.Equal("$2,000.00", x18.ToString());
-            x18.Parse("$2,000");
+            x18.ParseString("$2,000");
             Assert.Equal("$2,000.00", x18.ToString());
 
             Assert.Equal(x15, x17);
@@ -107,37 +107,37 @@ namespace NLedger.IntegrationTests.unit
             Assert.Equal("EUR 1000", x19.ToString());
             Assert.Equal("EUR 1000", x20.ToString());
 
-            x1.Parse("$100.0000", AmountParseFlagsEnum.PARSE_NO_MIGRATE);
+            x1.ParseString("$100.0000", AmountParseFlagsEnum.PARSE_NO_MIGRATE);
             Assert.Equal(2, x12.Commodity.Precision);
             Assert.Equal(x1.Commodity, x12.Commodity);
             Assert.Equal(x1, x12);
 
-            x0.Parse("$100.0000");
+            x0.ParseString("$100.0000");
             Assert.Equal(4, x12.Commodity.Precision);
             Assert.Equal(x0.Commodity, x12.Commodity);
             Assert.Equal(x0, x12);
 
-            x2.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_REDUCE);
+            x2.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_REDUCE);
             Assert.Equal(x2, x12);
-            x3.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE | AmountParseFlagsEnum.PARSE_NO_REDUCE);
+            x3.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE | AmountParseFlagsEnum.PARSE_NO_REDUCE);
             Assert.Equal(x3, x12);
 
-            x4.Parse("$100.00");
+            x4.ParseString("$100.00");
             Assert.Equal(x4, x12);
-            x5.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE);
+            x5.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE);
             Assert.Equal(x5, x12);
-            x6.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_REDUCE);
+            x6.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_REDUCE);
             Assert.Equal(x6, x12);
-            x7.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE | AmountParseFlagsEnum.PARSE_NO_REDUCE);
+            x7.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE | AmountParseFlagsEnum.PARSE_NO_REDUCE);
             Assert.Equal(x7, x12);
 
-            x8.Parse("$100.00");
+            x8.ParseString("$100.00");
             Assert.Equal(x8, x12);
-            x9.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE);
+            x9.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE);
             Assert.Equal(x9, x12);
-            x10.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_REDUCE);
+            x10.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_REDUCE);
             Assert.Equal(x10, x12);
-            x11.Parse("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE | AmountParseFlagsEnum.PARSE_NO_REDUCE);
+            x11.ParseString("$100.00", AmountParseFlagsEnum.PARSE_NO_MIGRATE | AmountParseFlagsEnum.PARSE_NO_REDUCE);
             Assert.Equal(x11, x12);
 
             Assert.True(x0.Valid());

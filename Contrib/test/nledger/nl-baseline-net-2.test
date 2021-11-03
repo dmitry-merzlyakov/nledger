@@ -1,0 +1,26 @@
+import assemblies
+import alias check_path for System.IO.File.Exists
+
+tag PATH
+    check check_path(value)
+    check System.IO.File.Exists(value)
+
+2012-02-29 KFC
+    ; PATH: test/baseline/feat-import_py.test
+    Expenses:Food                $20
+    Assets:Cash
+
+2012-02-29 KFC
+    ; PATH: test/baseline/feat-import_noexist.test
+    Expenses:Food                $20
+    Assets:Cash
+
+test reg
+12-Feb-29 KFC                   Expenses:Food                   $20          $20
+                                Assets:Cash                    $-20            0
+12-Feb-29 KFC                   Expenses:Food                   $20          $20
+                                Assets:Cash                    $-20            0
+__ERROR__
+Warning: "$sourcepath/test/nledger/nl-baseline-net-2.test", line 16: Metadata check failed for (PATH: test/baseline/feat-import_noexist.test): check_path(value)
+Warning: "$sourcepath/test/nledger/nl-baseline-net-2.test", line 16: Metadata check failed for (PATH: test/baseline/feat-import_noexist.test): (((System.IO).File).Exists(value))
+end test

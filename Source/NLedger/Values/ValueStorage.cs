@@ -59,6 +59,7 @@ namespace NLedger.Values
         IValueStorage StripAnnotations(AnnotationKeepDetails whatToKeep);
         IValueStorage Simplify();
         IValueStorage Truncate();
+        IValueStorage Reduce();
         IValueStorage Unreduce();
     }
 
@@ -293,6 +294,11 @@ namespace NLedger.Values
         }
 
         public virtual IValueStorage Unreduce()
+        {
+            return this;
+        }
+
+        public virtual IValueStorage Reduce()
         {
             return this;
         }
@@ -817,8 +823,15 @@ namespace NLedger.Values
             if (valueStorage.SafeType() == ValueTypeEnum.Integer)
                 return new IntegerValueStorage(AsLong / valueStorage.AsLong);
 
+            // [DM] Initial c# code for [Integer]/[Amount] division: return new AmountValueStorage(valueStorage.AsAmount / AsAmount);
+            // This initial code reflected the original Ledger code that is likely contains a mistake:
+            //    value.cc - value_t& value_t::operator/=(const value_t& val); case INTEGER/case AMOUNT:
+            //       set_amount(val.as_amount() / as_long());
+            // In the source code the dividend and divisor are reversed that causes wrong division results. Notice that previous division INTEGER/INTEGER is correct.
+            // It was decided to fix this problem in c# code since wrong division results cause negative effect on integrated capabilities.
+
             if (valueStorage.SafeType() == ValueTypeEnum.Amount)
-                return new AmountValueStorage(valueStorage.AsAmount / AsAmount);
+                return new AmountValueStorage(AsAmount / valueStorage.AsAmount);
 
             return base.DivideValueStorage(valueStorage);
         }
@@ -1084,6 +1097,12 @@ namespace NLedger.Values
             return this;
         }
 
+        public override IValueStorage Reduce()
+        {
+            AsAmount.InPlaceReduce();
+            return this;
+        }
+
         public override IValueStorage Unreduce()
         {
             AsAmount.InPlaceUnreduce();
@@ -1291,6 +1310,12 @@ namespace NLedger.Values
         public override IValueStorage Truncate()
         {
             AsBalance.InPlaceTruncate();
+            return this;
+        }
+
+        public override IValueStorage Reduce()
+        {
+            AsBalance.InPlaceReduce();
             return this;
         }
 
@@ -1655,6 +1680,14 @@ namespace NLedger.Values
             }
             sb.Append(")");
             return sb.ToString();
+        }
+
+        public override IValueStorage Reduce()
+        {
+            var sequence = AsSequence;
+            for (int i = 0; i < sequence.Count; i++)
+                sequence[i].InPlaceReduce();
+            return this;
         }
 
         public override IValueStorage Unreduce()
