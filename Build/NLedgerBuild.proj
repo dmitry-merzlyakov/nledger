@@ -87,7 +87,6 @@
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\NLedger-cli.exe.config" DestinationFiles="$(PackageDir)bin\net472\NLedger-cli.exe.config"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\NLedger.Extensibility.Python.dll" DestinationFiles="$(PackageDir)bin\net472\NLedger.Extensibility.Python.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\Python.Runtime.dll" DestinationFiles="$(PackageDir)bin\net472\Python.Runtime.dll"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net472\pymodules\ledger\__init__.py" DestinationFiles="$(PackageDir)bin\net472\pymodules\ledger\__init__.py"  />
     <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net472\ledger.1.html"  />
     <!-- Add binaries (.Net Core) -->
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\netstandard2.0\NLedger.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.dll"  />
@@ -99,10 +98,9 @@
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\NLedger.Extensibility.Python.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\NLedger.Extensibility.Python.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\Python.Runtime.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\Python.Runtime.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\System.Security.Permissions.dll" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\System.Security.Permissions.dll"  />
-    <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\netcoreapp3.1\pymodules\ledger\__init__.py" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\pymodules\ledger\__init__.py"  />
     <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\netcoreapp3.1\ledger.1.html"  />
     <!-- Add Contrib files -->
-    <CreateItem Include="$(ProjectRoot)Contrib\**\*.*" Exclude="$(ProjectRoot)Contrib\**\__pycache__\*.*">
+    <CreateItem Include="$(ProjectRoot)Contrib\**\*.*" >
       <Output TaskParameter="Include" ItemName="ContribFiles" />
     </CreateItem>
     <Copy SourceFiles="@(ContribFiles)" DestinationFiles="@(ContribFiles->'$(PackageDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
@@ -119,12 +117,14 @@
   <Target Name="IntegrationTests" DependsOnTargets="Release">
     <Message Text="Target : IntegrationTests (executing all Ledger tests in NLTest Toolkit)"/>
     <!-- Call NGEN to create a native image to speed up the tests. Requires elevated permissions -->
-    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Add-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Add-NGenImage $(PackageDir)bin\net472\NLedger-cli.exe&quot;" />
     <!-- Run all integration tests -->
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\net45\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetFramework.LastTestResults&quot;" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\net472\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetFramework.LastTestResults&quot;" />
     <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(PackageDir)NLTestToolkit\NLTest.ps1&quot; -nledgerExePath $(PackageDir)bin\netcoreapp3.1\NLedger-cli.exe -htmlReport -reportFileName &quot;$(OutputDir)NLTest.NetCore.LastTestResults&quot;" />
     <!-- Remove the native image from the cache -->
-    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Remove-NGenImage $(PackageDir)bin\net45\NLedger-cli.exe&quot;" />
+    <Exec Condition=" '$(Elevated)'=='True' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;Import-Module $(PackageDir)Install\SysNGen.psm1 ; Remove-NGenImage $(PackageDir)bin\net472\NLedger-cli.exe&quot;" />
+    <!-- Remove PyCache files created after running tests -->
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -Command &quot;get-childitem -LiteralPath $(PackageDir)test -Directory -Recurse | Where-Object {$_.Name -eq '__pycache__'} | Remove-Item -Force -Recurse&quot;" />
   </Target>
 
   <Target Name="Package" DependsOnTargets="Release">
@@ -145,6 +145,7 @@
     <Message Text="Target : Create NuGet package"/>
     <Exec Command="dotnet pack --configuration Release --no-build" WorkingDirectory="$(SourceRoot)" />
     <Copy SourceFiles="$(SourceRoot)NLedger\bin\Release\NLedger.$(VersionPrefix)-$(VersionSuffix).nupkg" DestinationFiles="$(OutputDir)NLedger.$(VersionPrefix)-$(VersionSuffix).nupkg" />
+    <Copy SourceFiles="$(SourceRoot)NLedger.Extensibility.Python\bin\Release\NLedger.Extensibility.Python.$(VersionPrefix)-$(VersionSuffix).nupkg" DestinationFiles="$(OutputDir)NLedger.Extensibility.Python.$(VersionPrefix)-$(VersionSuffix).nupkg" />
   </Target>
 
   <!-- Technical task - check output folder -->

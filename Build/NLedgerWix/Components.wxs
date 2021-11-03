@@ -713,13 +713,6 @@
                     <Component Id="LedgerCoreManFiles" Guid="C4C85651-C61F-4B2B-AE5F-C4A3BFAE8930" >
                         <File Id="File_Core_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\ledger.1.html"/>
                     </Component>
-                    <Directory Id="AppBinCoreFilesPyModules" Name="pymodules">
-                        <Directory Id="AppBinCoreFilesPyModulesLedger" Name="ledger">
-                            <Component Id="AppBinCoreFilesPyModules" Guid="ED7A67EB-865D-434C-B2B4-48AB4B633AAC" >
-                                <File Id="File_AppBinCore_init_py" Name="__init__.py" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\pymodules\ledger\__init__.py"/>
-                            </Component>
-                        </Directory>
-                    </Directory>
                   </Directory>
                </Directory>
                <Component Id="AppBinFiles" Guid="59E7E5B2-E13F-4FBC-B05C-B5E1DFC1F06A" >
@@ -732,13 +725,6 @@
                   <File Id="File_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger.Extensibility.Python.dll"/>
                   <File Id="File_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net472\Python.Runtime.dll"/>
                </Component>
-               <Directory Id="AppBinFilesPyModules" Name="pymodules">
-                  <Directory Id="AppBinFilesPyModulesLedger" Name="ledger">
-                     <Component Id="AppBinFilesPyModulesLedger" Guid="6EDEF5CC-D008-4711-8ADC-831CF4B3E975" >
-                         <File Id="File_AppBinFiles_init_py" Name="__init__.py" Source="$(var.PackageFolder)NLedger\bin\net472\pymodules\ledger\__init__.py"/>
-                     </Component>
-                  </Directory>
-               </Directory>
                <Component Id="LicenseFiles" Guid="9D31EDB8-04BC-4EF7-856C-3F29655E78CF" >
                   <File Id="File_LICENSE" Name="LICENSE" Source="$(var.PackageFolder)NLedger\LICENSE"/>
                   <File Id="File_LICENSE_LEDGER" Name="LICENSE.LEDGER" Source="$(var.PackageFolder)NLedger\LICENSE.LEDGER"/>
