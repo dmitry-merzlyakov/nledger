@@ -168,7 +168,7 @@
   <Target Name="GetPythonConnection">
     <Message Text="Configuring Python connection file" />
     <Message Text="NOTE: if this task fails, configure Python connection manually (command 'connect' in 'GetPythonEnvironment.ps1')." />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\Python\GetPythonEnvironment.ps1&quot; -command connect -noAnsiColor" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\Python\GetPythonEnvironment.ps1&quot; -command connect -version 3.8.1 -noAnsiColor" />
   </Target>
 
   <!-- Technical task - checking the content of Wix configuration files -->
