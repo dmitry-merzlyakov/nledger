@@ -22,6 +22,8 @@ Connection management function:
 Technical functions for advanced configuring:
 - install-python - Install an isolated embedded Python (Windows only)
 - uninstall-python - Uninstall embedded Python
+- install-wheel - Install Wheel module (required to build Ledger package)
+- uninstall-wheel - Uninstall Wheel module
 - install-pythonnet - Install PythonNet module
 - uninstall-pythonnet - Uninstall PythonNet module
 - install-ledger - Install Ledger module (and PythonNet if it has not been installed yet)
@@ -46,7 +48,7 @@ Note: use 'set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process' to 
 #>
 [CmdletBinding()]
 Param(
-    [Parameter(Mandatory=$False)][ValidateSet("discover","status","connect","disconnect","enable","disable","test-connection","install-python","install-pythonnet","install-ledger","uninstall-python","uninstall-pythonnet","uninstall-ledger","test-ledger")]$command,
+    [Parameter(Mandatory=$False)][ValidateSet("discover","status","connect","disconnect","enable","disable","test-connection","install-python","install-wheel","install-pythonnet","install-ledger","uninstall-python","uninstall-wheel","uninstall-pythonnet","uninstall-ledger","test-ledger")]$command,
     [Parameter(Mandatory=$False)][string]$path,
     [Parameter(Mandatory=$False)][string]$version,
     [Switch][bool]$noAnsiColor = $False
@@ -72,6 +74,7 @@ if ($noAnsiColor) {$Global:ANSI_Colorization=$False}
 
 $appPrefix = "NLedger"
 $pyPlatform = "amd64"
+$pyWheelModule = "wheel"
 $pyNetModule = "PythonNet"
 $pyLedgerModule = "Ledger"
 $pyEmbedVersion = "3.8.1"
@@ -198,6 +201,7 @@ function Get-PyInfo {
             $Private:pipVersion = Get-PipVersion -pyExecutable $pyExecutable
             if ($Private:pipVersion) {
                 $Private:info["pipVersion"] = $Private:pipVersion
+                $Private:info["pyWheelInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyWheelModule
                 $Private:info["pyHome"] = Split-Path $pyExecutable
                 $Private:info["pyPath"] = [String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
                 $Private:info["pyDll"] = "python$($Private:info.pyVersion.Major)$($Private:info.pyVersion.Minor)"
@@ -218,6 +222,7 @@ function Write-PyInfo {
         if ($_.pyVersion) { $Private:pyInfo["Python Version"] = "$($_.pyVersion.Major).$($_.pyVersion.Minor).$($_.pyVersion.Build)"}
         if ($_.pyPlatform) { $Private:pyInfo["Python Platform"] = $_.pyPlatform}
         if ($_.pipVersion) { $Private:pyInfo["Pip Version"] = $_.pipVersion}
+        if ($_.pyWheelInfo) { $Private:pyInfo["Wheel Version"] = $_.pyWheelInfo.Version}
         if ($_.pyHome) { $Private:pyInfo["Python HOME"] = $_.pyHome}
         if ($_.pyPath) { $Private:pyInfo["Python PATH"] = (($_.pyPath -split ";") -join "`n")}
         if ($_.pyDll) { $Private:pyInfo["Python Dll"] = $_.pyDll}
@@ -639,6 +644,84 @@ function Uninstall-Python {
 
 <#
 .SYNOPSIS
+Installs Wheel module to Python environment
+
+.DESCRIPTION
+Installs Wheel module to Python by means of Pip.
+
+Note: Wheel module is only needed if you want to build Ledger package from source code (e.g. by means of get-nledger-up.ps1).
+.Net Ledger and Ledger module can work without Wheel. 
+
+Note: you can check whether Wheel is installed by means of "discover" command. It will show Wheel version if it is found.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+#>
+function Install-Wheel {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$False)][string]$path
+    )
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+    if(!($Private:info.pyWheelInfo)) {
+        $null = Install-PyModule -pyExe $path -pyModule $pyWheelModule -Verbose:$VerbosePreference
+    }
+
+    $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule $pyWheelModule
+
+    if($Private:packageInfo){
+        Write-Output ("Wheel {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
+    } else {
+        Write-Output ("Wheel {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+    }
+}
+
+<#
+.SYNOPSIS
+Uninstalls Wheel module from Python environment
+
+.DESCRIPTION
+Uninstall Wheel module to Python by means of Pip.
+
+Note: Wheel module is only needed if you want to build Ledger package from source code (e.g. by means of get-nledger-up.ps1).
+.Net Ledger and Ledger module can work without Wheel. 
+
+Note: you can check whether Wheel is installed by means of "discover" command. It will show Wheel version if it is found.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+#>
+function Uninstall-Wheel {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$False)][string]$path)
+
+    if(!$path) {
+        $Private:settings = Get-PythonIntegrationSettings
+        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+        $path = $settings.PyExecutable
+    }
+
+    $Private:info = Get-PyInfo -pyExecutable $path
+    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+    $null = Uninstall-PyModule -pyExe $path -pyModule $pyWheelModule -Verbose:$VerbosePreference
+
+    Write-Output "Wheel is uninstalled ($path)"
+}
+
+<#
+.SYNOPSIS
 Installs PythonNet module to Python environment
 
 .DESCRIPTION
@@ -870,7 +953,7 @@ function Help {
         ("{c:Yellow}disconnect{f:Normal}" | Out-AnsiString) = "Remove the connection file"
         ("{c:Yellow}enable{f:Normal}" | Out-AnsiString) = "Enable Python extension in NLedger settings"
         ("{c:Yellow}disable{f:Normal}" | Out-AnsiString) = "Disable Python extension in NLedger settings"
-        ("{c:DarkYellow}install-{f:Normal}[target]" | Out-AnsiString) = "Install embedded Python (install-python) or PythonNet (install-pythonnet) or Ledger module (install-ledger)"
+        ("{c:DarkYellow}install-{f:Normal}[target]" | Out-AnsiString) = "Install embedded Python (install-python) or Wheel (install-wheel) or PythonNet (install-pythonnet) or Ledger module (install-ledger)"
         ("{c:DarkYellow}uninstall-{f:Normal}[target]" | Out-AnsiString) = "Uninstall listed targets"
         ("{c:DarkYellow}test-ledger{f:Normal}" | Out-AnsiString) = "Run tests for installed Ledger module"
         ("{c:DarkYellow}help{f:Normal}" | Out-AnsiString) = "Shows this help text"
@@ -935,6 +1018,10 @@ if ($command -eq 'install-python') {
     Install-Python -version $version
 }
 
+if ($command -eq 'install-wheel') {
+    Install-Wheel -path $path
+}
+
 if ($command -eq 'install-pythonnet') {
     if($version -and $version -ne "v3"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'v3'"}
     Install-PythonNet -path $path -v3:($version -eq "v3")
@@ -949,6 +1036,10 @@ if ($command -eq 'uninstall-python') {
     if($path){throw "Command 'uninstall-python' does not accept 'path' parameters"}
     if(!$version){throw "Command 'uninstall-python' requires 'version' parameters"}
     Uninstall-Python -version $version
+}
+
+if ($command -eq 'uninstall-wheel') {
+    Uninstall-Wheel -path $path
 }
 
 if ($command -eq 'uninstall-pythonnet') {
