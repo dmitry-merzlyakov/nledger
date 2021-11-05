@@ -31,10 +31,6 @@ namespace NLedger.Extensibility.Python.Platform
             if (!Directory.Exists(pythonConfiguration.PyHome))
                 throw new ArgumentException($"Folder {pythonConfiguration.PyHome} not found");
 
-            var wrongPathItems = pythonConfiguration.PyPath?.Where(p => !Directory.Exists(p) && !File.Exists(p)).ToList() ?? Enumerable.Empty<string>();
-            if (wrongPathItems.Any())
-                throw new ArgumentException($"The following Python Path items were not found (neither a folder not a file exists): {String.Join(";", wrongPathItems)}");
-
             // Specifying Python core (always first step)
 
             Runtime.PythonDLL = pythonConfiguration.PyDll;
