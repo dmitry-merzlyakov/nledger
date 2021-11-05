@@ -19,28 +19,6 @@ the latest build status is:
 
 
 ***
-#### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [85] 2021/11/05 23:41:16
-
->Build #85; Status:Succeeded
-
->Queued by Microsoft.VisualStudio.Services.TFS; Reason:IndividualCI
-
->Requested for Microsoft.VisualStudio.Services.TFS (Email:\*)
-
->Latest commit: 97121dab0268bd3b19138e4ff9eca84332af94cf
-
-Build logs: System.Collections.Hashtable[D:\a\1\Output\\NLedger-BuildLogs-v0.8.zip]
-
-Install package: System.Collections.Hashtable[D:\a\1\Output\\NLedger-v0.8.zip]
-
-MSI package: System.Collections.Hashtable[D:\a\1\Output\\NLedger-v0.8.msi]
-
-Nuget package: System.Collections.Hashtable[D:\a\1\Output\\NLedger.0.8.4-beta.nupkg]
-
-Nuget Python package: System.Collections.Hashtable[D:\a\1\Output\\NLedger.Extensibility.Python.0.8.4-beta.nupkg]
-
-Wheel Python package: System.Collections.Hashtable[D:\a\1\Output\\ledger-0.8.4-py3-none-any.whl]
-***
 #### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [84] 2021/11/05 18:27:10
 
 >Build #84; Status:Succeeded
