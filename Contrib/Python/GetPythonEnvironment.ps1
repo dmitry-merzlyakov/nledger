@@ -325,6 +325,7 @@ function Test-Connection {
         $Private:pyInfo = Get-PyInfo -pyExecutable $Private:settings.PyExecutable
         return [System.Management.Automation.PSSerializer]::Serialize([PSCustomObject]@{
             IsConnectionValid = -not [Boolean]$Private:pyInfo.status_error
+            IsWheelInstalled = [Boolean]$Private:pyInfo.pyWheelInfo
             IsPythonNetInstalled = [Boolean]$Private:pyInfo.pyNetModuleInfo
         })
     }

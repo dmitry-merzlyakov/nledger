@@ -174,14 +174,18 @@ if (!$noNLTests)
 
 if (!$noPython){
     Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building Python Ledger module"
-    if(!($pythonConnectionStatus.IsPythonNetInstalled)){Write-Warning "PythonNet is not installed on the connected Python environment. Ledger module will be built but not tested. It is not a critical problem since module code is tested by Ledger unit tests."}
+    if(!($pythonConnectionStatus.IsWheelInstalled)){Write-Warning "Wheel is not installed on the connected Python environment. Ledger module will not be built. You can install wheel module by means of './Contrib/Python/GetPythonEnvironment.ps1 -command uninstall-wheel'."}
+    else {
+       if(!($pythonConnectionStatus.IsPythonNetInstalled)){Write-Warning "PythonNet is not installed on the connected Python environment. Ledger module will be built but not tested. It is not a critical problem since module code is tested by Ledger unit tests."}
 
-    [string]$pyBuildPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.Extensibility.Python.Module/build.ps1")
-    Write-Verbose "Expected Python Ledger module build script path: $pyBuildPath"
-    if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$pyBuildPath' does not exist. Check that source code base is in valid state." }
+       [string]$pyBuildPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.Extensibility.Python.Module/build.ps1")
+       Write-Verbose "Expected Python Ledger module build script path: $pyBuildPath"
+       if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$pyBuildPath' does not exist. Check that source code base is in valid state." }
 
-    $( $(& "$pyBuildPath" -build -test:$pythonConnectionStatus.IsPythonNetInstalled) 2>&1 | Out-String ) | Write-Verbose     
-    if ($LASTEXITCODE -ne 0) { throw "Python module build failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+       $( $(& "$pyBuildPath" -build -test:$pythonConnectionStatus.IsPythonNetInstalled) 2>&1 | Out-String ) | Write-Verbose     
+       if ($LASTEXITCODE -ne 0) { throw "Python module build failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+       $pythonModuleBuilt = $True
+    }
 }
 
 if ($install) {    
@@ -216,7 +220,7 @@ if (!($noNLTests)) {
 }
 Write-Host
 
-if (!($noPython)) {
+if ($pythonModuleBuilt) {
     Write-Host "Python module: BUILT (see /Contrib/Python)"
 } else {
     Write-Host "Python module: IGNORED"
