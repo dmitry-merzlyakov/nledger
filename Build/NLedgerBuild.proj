@@ -74,6 +74,7 @@
   <Target Name="PythonBuild" DependsOnTargets="Build;GetPythonConnection">
     <Message Text="Target : Build Python Module"/>
     <!-- Install PythonNet since it is needed for Python unit tests -->
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\Python\GetPythonEnvironment.ps1&quot; -command install-wheel -noAnsiColor" />
     <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\Python\GetPythonEnvironment.ps1&quot; -command install-pythonnet -noAnsiColor" />
     <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(SourceRoot)NLedger.Extensibility.Python.Module\build.ps1&quot; -test -build" />
     <Copy SourceFiles="$(ProjectRoot)Contrib\Python\ledger-$(VersionPrefix)-py3-none-any.whl" DestinationFiles="$(OutputDir)ledger-$(VersionPrefix)-py3-none-any.whl" />
