@@ -30,6 +30,9 @@ class ledger_build_py(build_py):
         # distutils uses old-style classes, so no super()
         build_py.run(self)
 
+    def get_data_files_without_manifest(self):
+        return self.get_data_files()
+
 # Build process
 
 setuptools.setup(
