@@ -385,13 +385,15 @@ function Discover {
         } else { Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Not found" | Out-AnsiString )}
         Write-Output ""
   
-        Write-Verbose "Search embed Python"
-        $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
-        if (!$embeds) { 
-            Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} $(if($Script:isWindowsPlatform){"Not found"}else{"Not available"})" | Out-AnsiString )
-        } else {
-            Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
-            $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
+        if ($Script:isWindowsPlatform) {
+          Write-Verbose "Search embed Python"
+          $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
+          if (!$embeds) { 
+              Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Not found" | Out-AnsiString )
+          } else {
+              Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
+              $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
+          }
         }
           
         Write-Verbose "Check NLedger Python settings"
