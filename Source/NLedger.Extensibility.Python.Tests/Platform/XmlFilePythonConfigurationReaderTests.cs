@@ -24,8 +24,6 @@ namespace NLedger.Extensibility.Python.Tests.Platform
 <?xml version=""1.0"" encoding=""UTF-8""?>
 <nledger-python-settings>
   <py-executable>py-executable-value</py-executable>
-  <py-home>py-home-value</py-home>
-  <py-path>py-path1;py-path2</py-path>
   <py-dll>py-dll-value</py-dll>
 </nledger-python-settings>
 ".Trim();
@@ -86,8 +84,6 @@ namespace NLedger.Extensibility.Python.Tests.Platform
         {
             var reader = new XmlFilePythonConfigurationReader(FileName, new TestAppModuleResolver());
             var config = reader.Read();
-            Assert.Equal("py-home-value", config.PyHome);
-            Assert.Equal(new string[] { "py-path1", "py-path2" }, config.PyPath);
             Assert.Equal("py-dll-value", config.PyDll);
             Assert.Equal("some-path", config.AppModulesPath);
         }

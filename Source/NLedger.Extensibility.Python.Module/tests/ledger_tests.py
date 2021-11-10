@@ -47,7 +47,7 @@ def get_nledger_dll_path():
     return None
 
 def get_drewr3_dat_filename():
-    filename = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), 'drewr3.dat'))
+    filename = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'drewr3.dat'))
     if not os.path.isfile(filename):
         raise Exception('Cannot find file ' + filename)
     return filename

@@ -28,38 +28,28 @@ namespace NLedger.Extensibility.Python.Platform
 
             // Validate settings
 
-            if (!Directory.Exists(pythonConfiguration.PyHome))
-                throw new ArgumentException($"Folder {pythonConfiguration.PyHome} not found");
+            if (!File.Exists(pythonConfiguration.PyDll))
+                throw new ArgumentException($"PyDll {pythonConfiguration.PyDll} not found");
 
-            // Specifying Python core (always first step)
+            // Specifying path to LibPython
 
             Runtime.PythonDLL = pythonConfiguration.PyDll;
 
-            // Add Python Home to system path (if needed)
+            // Initialize Python
 
-            var path = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
-            if (!path.StartsWith(pythonConfiguration.PyHome))
-                Environment.SetEnvironmentVariable("PATH", pythonConfiguration.PyHome + ";" + path, EnvironmentVariableTarget.Process);
+            PythonEngine.Initialize();            
 
-            // Add path to the current assembly to pyPath. It allows to load local application modules located in assembly folder
-
-            var pyPathList = (pythonConfiguration.PyPath ?? Enumerable.Empty<string>()).ToList();
+            // Add path to app module
 
             var appModulesPath = pythonConfiguration.AppModulesPath;
             if (!String.IsNullOrEmpty(appModulesPath))
-                pyPathList.Insert(0, appModulesPath);
+            {
+                using (Py.GIL())
+                    PythonEngine.Exec($"import sys;sys.path.insert(0,'{appModulesPath.Replace(@"\", @"\\")}')");
+            }
 
-            // Populating Python Home and Python Path settings
+            // Enable thread management
 
-            var pyPathLine = String.Join(";", pyPathList);
-            Environment.SetEnvironmentVariable("PYTHONHOME", pythonConfiguration.PyHome, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONPATH", pyPathLine, EnvironmentVariableTarget.Process);
-            PythonEngine.PythonHome = pythonConfiguration.PyHome;
-            PythonEngine.PythonPath = pyPathLine;
-
-            // Initialize Python
-
-            PythonEngine.Initialize();
             ThreadState = PythonEngine.BeginAllowThreads();
         }
 

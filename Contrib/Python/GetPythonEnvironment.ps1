@@ -96,8 +96,6 @@ function Get-PythonIntegrationSettings {
     [xml]$Private:xmlContent = Get-Content $Script:settingsFileName
     $Private:settings = [PSCustomObject]@{
         PyExecutable = $Private:xmlContent.'nledger-python-settings'.'py-executable'
-        PyHome = $Private:xmlContent.'nledger-python-settings'.'py-home'
-        PyPath = $Private:xmlContent.'nledger-python-settings'.'py-path'
         PyDll = $Private:xmlContent.'nledger-python-settings'.'py-dll'
     }
     Write-Verbose "Read settings: $Private:settings"
@@ -115,14 +113,6 @@ function Set-PythonIntegrationSettings {
 
     $Private:elm = $Private:doc.CreateElement("py-executable")
     $Private:elm.InnerText = $settings.PyExecutable
-    $null = $Private:root.AppendChild($Private:elm)
-
-    $Private:elm = $Private:doc.CreateElement("py-home")
-    $Private:elm.InnerText = $settings.PyHome
-    $null = $Private:root.AppendChild($Private:elm)
-
-    $Private:elm = $Private:doc.CreateElement("py-path")
-    $Private:elm.InnerText = $settings.PyPath
     $null = $Private:root.AppendChild($Private:elm)
 
     $Private:elm = $Private:doc.CreateElement("py-dll")
@@ -158,8 +148,6 @@ function Update-PythonEnvironmentSettings {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$True)][string]$pyExecutable,
-        [Parameter(Mandatory=$True)][string]$pyHome,
-        [Parameter(Mandatory=$True)][string]$pyPath,
         [Parameter(Mandatory=$True)][string]$pyDll
     )
 
@@ -167,14 +155,10 @@ function Update-PythonEnvironmentSettings {
     if(!$Private:settings) {
         $Private:settings = [PSCustomObject]@{
             PyExecutable = $pyExecutable
-            PyHome = $pyHome
-            PyPath = $pyPath
             PyDll = $pyDll
         }    
     } else {
         $Private:settings.PyExecutable = $pyExecutable
-        $Private:settings.PyHome = $pyHome
-        $Private:settings.PyPath = $pyPath
         $Private:settings.PyDll = $pyDll
     }
 
@@ -475,9 +459,9 @@ function Connect {
     if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.status_error))" }
 
     Write-Verbose "Update or create settings"
-    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyHome -ne $Private:info.pyHome -or $settings.PyPath -ne $Private:info.pyPath -or $settings.PyDll -ne $Private:info.pyDll)) {
+    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyDll -ne $Private:info.pyDll)) {
         Write-Verbose "Settings file is outdated"
-        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyHome $Private:info.pyHome -pyPath $Private:info.pyPath -pyDll $Private:info.pyDll
+        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyDll $Private:info.pyDll
         Write-Output "Settings file ($Script:settingsFileName) is updated"
     } else { Write-Verbose "Settings file $Script:settingsFileName is actual"}
 
