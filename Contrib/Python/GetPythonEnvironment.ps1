@@ -204,7 +204,7 @@ function Get-PyInfo {
                 $Private:info["pyWheelInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyWheelModule
                 $Private:info["pyHome"] = Split-Path $pyExecutable
                 $Private:info["pyPath"] = [String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
-                $Private:info["pyDll"] = "python$($Private:info.pyVersion.Major)$($Private:info.pyVersion.Minor)"
+                $Private:info["pyDll"] = $(Get-PyDll -pyExecutable $pyExecutable)
                 $Private:info["pyNetModuleInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
                 $Private:info["pyLedgerModuleInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyLedgerModule
             } else { $Private:info["status_error"] = "Pip is not installed. Please, refer to Python documentation or to https://bootstrap.pypa.io for installation instructions" }

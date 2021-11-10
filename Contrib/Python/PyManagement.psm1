@@ -158,6 +158,21 @@ function Get-PyPath {
     Write-Verbose "Python returned: $Private:result"
     return $($Private:result -split ',' | ForEach-Object{ $_.trim().trim("[").trim("]").trim("'").trim().Replace("\\", "\") })
 }
+
+function Get-PyDll {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)][string]$pyExecutable)
+
+    if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
+    Write-Verbose "Ensuring that 'find-libpython' module is installed"
+    if(!(Test-PyModuleInstalled -pyExecutable $pyExecutable -pyModule 'find-libpython')) { $null = Install-PyModule -pyExecutable $pyExecutable -pyModule 'find-libpython' }
+
+    [string]$Private:result = $( $(& "$pyExecutable" "-c" "from find_libpython import find_libpython;print(find_libpython())") 2>&1 | Out-String )
+    Write-Verbose "Python returned: $Private:result"
+
+    return $Private:result.Trim()
+}
+
 function Get-PySitePackages {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$True)][string]$pyExecutable)
