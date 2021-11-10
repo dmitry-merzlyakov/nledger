@@ -13,7 +13,6 @@
 from typing import Iterable, List, Tuple, Dict
 import enum
 import os
-import ntpath
 import sys
 
 # Helper functions
@@ -22,7 +21,7 @@ def getenv(name: str) -> str:
     return os.environ[name] if name in os.environ else None
 
 def getpath(relative_path: str) -> str:
-    return ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), relative_path))
+    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), relative_path))
 
 # Static property attribute
 
@@ -74,13 +73,13 @@ if not is_nledger_host:
     nledger_extensibility_python_dll_path = getenv("nledger_extensibility_python_dll_path")
     if not bool(nledger_extensibility_python_dll_path):
         nledger_extensibility_python_dll_path = getpath('./runtime/NLedger.Extensibility.Python.dll')
-    assert ntpath.isfile(nledger_extensibility_python_dll_path), "Cannot find NLedger binary file: " + nledger_extensibility_python_dll_path
+    assert os.path.isfile(nledger_extensibility_python_dll_path), "Cannot find NLedger binary file: " + nledger_extensibility_python_dll_path
 
     # Adding path to runtime dll to PATH and sending only name fixes a problem in pythonnet:
     # it tries to use Assembly.Load for loading an assembly specified by path and name
 
-    dllFolder = ntpath.dirname(nledger_extensibility_python_dll_path)
-    dllName = ntpath.splitext(ntpath.basename(nledger_extensibility_python_dll_path))[0]
+    dllFolder = os.path.dirname(nledger_extensibility_python_dll_path)
+    dllName = os.path.splitext(os.path.basename(nledger_extensibility_python_dll_path))[0]
 
     if not(dllFolder in sys.path):
         sys.path.append(dllFolder)

@@ -16,7 +16,6 @@
 
 from typing import Iterable, Tuple
 import unittest
-import ntpath
 import os
 import os.path
 import sys
@@ -27,8 +26,8 @@ import collections
 # It returns path to either debug or release binaries depending what was built later.
 # If binaries are not found (so, it is likely non-development environment), the function returns None
 def get_nledger_dll_path():
-    debugDLL = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '../../NLedger.Extensibility.Python/bin/Debug/netstandard2.0/NLedger.Extensibility.Python.dll'))
-    releaseDLL = ntpath.abspath(ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '../../NLedger.Extensibility.Python/bin/Release/netstandard2.0/NLedger.Extensibility.Python.dll'))
+    debugDLL = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../NLedger.Extensibility.Python/bin/Debug/netstandard2.0/NLedger.Extensibility.Python.dll'))
+    releaseDLL = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../NLedger.Extensibility.Python/bin/Release/netstandard2.0/NLedger.Extensibility.Python.dll'))
 
     if os.path.isfile(releaseDLL):
         if os.path.isfile(debugDLL):
@@ -59,7 +58,7 @@ if nledger_dll_path:
     os.environ["nledger_extensibility_python_dll_path"] = nledger_dll_path
 
     # Before importing ledger module, it is important to add path to source code to the first position to override already installed module
-    sys.path.insert(0, ntpath.join(ntpath.dirname(ntpath.realpath(__file__)), '..', 'src'))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src'))
 
 import ledger
 from ledger import Amount, Position, TransactionBase, Value
