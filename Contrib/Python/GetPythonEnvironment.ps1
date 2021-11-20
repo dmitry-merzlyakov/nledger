@@ -719,8 +719,8 @@ Ledger module depends on PythonNet, so the latter is usually installed automatic
 However, you may need more granular control over which version of PythonNet is installed. 
 
 In this case, you should execute this command before installing Ledger module:
-- 'Install-PythonNet' without '-v3' switch installs a currently available PythonNet from PyPa repository (currently 2.5.x)
-- 'Install-PythonNet' with '-v3' switch installs the latest available PythonNet 3 from https://ci.appveyor.com/api/projects/pythonnet repository.
+- 'Install-PythonNet' without '-pre' switch installs a currently available PythonNet from PyPa repository (currently 2.5.x)
+- 'Install-PythonNet' with '-pre' switch installs the latest available pre-release of PythonNet 3
 
 Please, be aware that PythonNet 3 has not been officially released (at the moment 2021-10-18) so this is an experimental option (though it passed tests).
 Ledger module does not require PythonNet version 3 specifically; it properly works with any available version.
@@ -731,8 +731,8 @@ In case of any issues with this command, you can manually install PythonNet foll
 Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 
-.PARAMETER v3
-Optional switch that forces installing PythonNet version 3 (from AppVeyor PythonNet repository).
+.PARAMETER pre
+Optional switch that forces installing pre-release of PythonNet version 3.
 If this parameter is omitted, the command installs a currently available PythonNet from PyPa repository.
 
 #>
@@ -740,7 +740,7 @@ function Install-PythonNet {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$False)][string]$path,
-        [Switch]$v3 = $False
+        [Switch]$pre = $False
     )
 
     if(!$path) {
@@ -752,18 +752,8 @@ function Install-PythonNet {
     $Private:info = Get-PyInfo -pyExecutable $path
     if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $Private:packageName = "pythonnet"
-    if($v3) {
-        Write-Output "Looking for the latest PythonNet 3 package on Appveyor"
-        $Private:pyNet3Package = Get-PythonNet3 -download
-        if (!$Private:pyNet3Package) { throw "Cannot find the latest PythonNet3 package" }
-        Write-Output "Found PythonNet 3 package:"
-        $Private:pyNet3Package | Format-List
-        $Private:packageName = $Private:pyNet3Package.LocalFile
-    }
-
     $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
-    $null = Install-PyModule -pyExe $path -pyModule $Private:packageName -Verbose:$VerbosePreference
+    $null = Install-PyModule -pyExe $path -pyModule "pythonnet" -pre:$pre -Verbose:$VerbosePreference
     $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "pythonnet"
 
     if($Private:packageInfo){
@@ -1010,8 +1000,8 @@ if ($command -eq 'install-wheel') {
 }
 
 if ($command -eq 'install-pythonnet') {
-    if($version -and $version -ne "v3"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'v3'"}
-    Install-PythonNet -path $path -v3:($version -eq "v3")
+    if($version -and $version -ne "pre"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'pre'"}
+    Install-PythonNet -path $path -pre:($version -eq "pre")
 }
 
 if ($command -eq 'install-ledger') {
