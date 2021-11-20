@@ -208,7 +208,7 @@ Another option is to install pre-release version of PythonNet 3. .Net Ledger Pyt
 >python -m pip install pythonnet --pre
 ```
 
-Ultimately, Linux and OSX user can build PythonNet 3 from source code. Use path to GitHub PythonNet repository for it:
+Ultimately, Linux and OSX users can build PythonNet 3 from source code. Use path to GitHub PythonNet repository for it:
 ```console
 /usr/bin/python3 -m pip install -U git+https://github.com/pythonnet/pythonnet --user --egg 
 ```
@@ -225,7 +225,7 @@ Try the following piece of code and check the result:
 >>> print(DateTime.Now.ToString())
 10/21/2021 8:46:15 PM
 ```
-If you see another result (nota current time), you should troubleshoot and resolve your PythonNet installation issues.
+If you see another result (not the current time), you should troubleshoot and resolve your PythonNet installation issues.
 
 >Disclaimer: If you are using PythonNet 3, remember that it is currently under development.
 Although it passed all the tests as of the time the .Net Ledger Python module was released, there may be issues in later versions.
@@ -234,7 +234,7 @@ If you run into intractable problems, consider using PythonNet 2.5.x
 If you get an irrelevant calculation results, it is recommended to verify your case with the original Ledger console application. 
 This might be an expected case and you probably need to clarify the issue requesting help on Ledger resources.
 
-If detect a problem with .Net Ledger Python module specifically - please, add an issue on .Net Ledger GitHub.
+If detect a problem with .Net Ledger Python module specifically - please, add an issue on .Net Ledger [GitHub](https://github.com/dmitry-merzlyakov/nledger/issues).
 
 ## Resources
 
