@@ -37,7 +37,7 @@ For better understanding which way is more appropriate for you, please, observe 
   - `Extensibility API` provides basic abstractions for .Net Ledger extensions.
     Conceptually, this component generalizes the original Ledger extension approach used to integrate Python, so you can build integration with any software in the same way. 
     This approach specifies a two-way integration where you can extend Ledger data processing with custom functions that have access to the Ledger domain model as well as allow  external software to create its own data processing routines that work with Ledger domain objects and functions. 
-  - `.Net Extensibility` implements Extensibility API for .Net platform. 
+  - `.Net Extension` implements Extensibility API for .Net platform. 
     When this extension is active, the .Net Ledger console application can load .Net assemblies and use their functions and objects. 
     External software that use Service API can enable the extension and specify its own data processing or validation functions.
     As an alternative, the external software can establish Standalone session.
