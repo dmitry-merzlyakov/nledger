@@ -19,6 +19,28 @@ the latest build status is:
 
 
 ***
+#### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [87] 2021/11/28 22:09:13
+
+>Build #87; Status:Failed
+
+>Queued by Microsoft.VisualStudio.Services.TFS; Reason:IndividualCI
+
+>Requested for Microsoft.VisualStudio.Services.TFS (Email:\*)
+
+>Latest commit: a50bdacaf09a27e63a7f6d3b01a5d24fbddde7e7
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/s/c2xfald8cdg1ouf/nledger-buildlogs-v0.8.zip?dl=0) MD5: D12E35681FB8E5CA1DE9A63532706C26
+
+Install package: [NLedger-v0.8.zip](https://www.dropbox.com/s/n1c5g8pwietmo9t/nledger-v0.8.zip?dl=0) MD5: 3CF8C3DD5E3E48549B28FEAEAFD42D91
+
+MSI package: Not created
+
+Nuget package: Not created
+
+Nuget Python package: Not created
+
+Wheel Python package: [ledger-0.8.4-py3-none-any.whl](https://www.dropbox.com/s/0sgkhhs5rm2kiel/ledger-0.8.4-py3-none-any.whl?dl=0) MD5: EE196922C40AE28FEF0BFF1E62026FDF
+***
 #### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [86] 2021/11/06 00:02:15
 
 >Build #86; Status:Succeeded
@@ -787,6 +809,7 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
 
 
 
