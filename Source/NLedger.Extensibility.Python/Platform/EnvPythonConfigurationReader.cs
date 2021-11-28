@@ -37,9 +37,7 @@ namespace NLedger.Extensibility.Python.Platform
 
                 if (Status == EnvPythonConfigurationStatus.Active)
                 {
-                    PyHome = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyHome");
                     PyDll = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyDll");
-                    PyPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionPyPath")?.Split(';');
                     AppModulesPath = Environment.GetEnvironmentVariable("NLedgerPythonConnectionAppModulesPath");
                 }
             }
@@ -52,8 +50,6 @@ namespace NLedger.Extensibility.Python.Platform
         public IPythonConfigurationReader BasePythonConfigurationReader { get; }
 
         public EnvPythonConfigurationStatus Status { get; }
-        public string PyHome { get; }
-        public string[] PyPath { get; }
         public string PyDll { get; }
         public string AppModulesPath { get; }
 
@@ -79,8 +75,6 @@ namespace NLedger.Extensibility.Python.Platform
             if (Status == EnvPythonConfigurationStatus.Active)
                 return new PythonConfiguration()
                 {
-                    PyHome = PyHome,
-                    PyPath = PyPath,
                     PyDll = PyDll,
                     AppModulesPath = AppModulesPath
                 };

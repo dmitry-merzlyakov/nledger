@@ -172,6 +172,8 @@ if (!$noNLTests)
     if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
 }
 
+# Fourth step: build Python module
+
 if (!$noPython){
     Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building Python Ledger module"
     if(!($pythonConnectionStatus.IsWheelInstalled)){Write-Warning "Wheel is not installed on the connected Python environment. Ledger module will not be built. You can install wheel module by means of './Contrib/Python/GetPythonEnvironment.ps1 -command uninstall-wheel'."}
@@ -187,6 +189,8 @@ if (!$noPython){
        $pythonModuleBuilt = $True
     }
 }
+
+# Fifth step: install built binaries
 
 if ($install) {    
     Write-Progress -Activity "Building, testing and installing NLedger" -Status "Installing NLeger binaries"

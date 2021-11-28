@@ -96,8 +96,6 @@ function Get-PythonIntegrationSettings {
     [xml]$Private:xmlContent = Get-Content $Script:settingsFileName
     $Private:settings = [PSCustomObject]@{
         PyExecutable = $Private:xmlContent.'nledger-python-settings'.'py-executable'
-        PyHome = $Private:xmlContent.'nledger-python-settings'.'py-home'
-        PyPath = $Private:xmlContent.'nledger-python-settings'.'py-path'
         PyDll = $Private:xmlContent.'nledger-python-settings'.'py-dll'
     }
     Write-Verbose "Read settings: $Private:settings"
@@ -115,14 +113,6 @@ function Set-PythonIntegrationSettings {
 
     $Private:elm = $Private:doc.CreateElement("py-executable")
     $Private:elm.InnerText = $settings.PyExecutable
-    $null = $Private:root.AppendChild($Private:elm)
-
-    $Private:elm = $Private:doc.CreateElement("py-home")
-    $Private:elm.InnerText = $settings.PyHome
-    $null = $Private:root.AppendChild($Private:elm)
-
-    $Private:elm = $Private:doc.CreateElement("py-path")
-    $Private:elm.InnerText = $settings.PyPath
     $null = $Private:root.AppendChild($Private:elm)
 
     $Private:elm = $Private:doc.CreateElement("py-dll")
@@ -158,8 +148,6 @@ function Update-PythonEnvironmentSettings {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$True)][string]$pyExecutable,
-        [Parameter(Mandatory=$True)][string]$pyHome,
-        [Parameter(Mandatory=$True)][string]$pyPath,
         [Parameter(Mandatory=$True)][string]$pyDll
     )
 
@@ -167,14 +155,10 @@ function Update-PythonEnvironmentSettings {
     if(!$Private:settings) {
         $Private:settings = [PSCustomObject]@{
             PyExecutable = $pyExecutable
-            PyHome = $pyHome
-            PyPath = $pyPath
             PyDll = $pyDll
         }    
     } else {
         $Private:settings.PyExecutable = $pyExecutable
-        $Private:settings.PyHome = $pyHome
-        $Private:settings.PyPath = $pyPath
         $Private:settings.PyDll = $pyDll
     }
 
@@ -204,7 +188,7 @@ function Get-PyInfo {
                 $Private:info["pyWheelInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyWheelModule
                 $Private:info["pyHome"] = Split-Path $pyExecutable
                 $Private:info["pyPath"] = [String]::Join(";", $(Get-PyPath -pyExecutable $pyExecutable))
-                $Private:info["pyDll"] = "python$($Private:info.pyVersion.Major)$($Private:info.pyVersion.Minor)"
+                $Private:info["pyDll"] = $(Get-PyDll -pyExecutable $pyExecutable)
                 $Private:info["pyNetModuleInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyNetModule
                 $Private:info["pyLedgerModuleInfo"] = Test-PyModuleInstalled -pyExe $pyExecutable -pyModule $pyLedgerModule
             } else { $Private:info["status_error"] = "Pip is not installed. Please, refer to Python documentation or to https://bootstrap.pypa.io for installation instructions" }
@@ -385,13 +369,15 @@ function Discover {
         } else { Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Not found" | Out-AnsiString )}
         Write-Output ""
   
-        Write-Verbose "Search embed Python"
-        $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
-        if (!$embeds) { 
-            Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} $(if($Script:isWindowsPlatform){"Not found"}else{"Not available"})" | Out-AnsiString )
-        } else {
-            Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
-            $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
+        if ($Script:isWindowsPlatform) {
+          Write-Verbose "Search embed Python"
+          $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
+          if (!$embeds) { 
+              Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Not found" | Out-AnsiString )
+          } else {
+              Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
+              $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
+          }
         }
           
         Write-Verbose "Check NLedger Python settings"
@@ -473,9 +459,9 @@ function Connect {
     if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.status_error))" }
 
     Write-Verbose "Update or create settings"
-    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyHome -ne $Private:info.pyHome -or $settings.PyPath -ne $Private:info.pyPath -or $settings.PyDll -ne $Private:info.pyDll)) {
+    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyDll -ne $Private:info.pyDll)) {
         Write-Verbose "Settings file is outdated"
-        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyHome $Private:info.pyHome -pyPath $Private:info.pyPath -pyDll $Private:info.pyDll
+        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyDll $Private:info.pyDll
         Write-Output "Settings file ($Script:settingsFileName) is updated"
     } else { Write-Verbose "Settings file $Script:settingsFileName is actual"}
 
@@ -733,8 +719,8 @@ Ledger module depends on PythonNet, so the latter is usually installed automatic
 However, you may need more granular control over which version of PythonNet is installed. 
 
 In this case, you should execute this command before installing Ledger module:
-- 'Install-PythonNet' without '-v3' switch installs a currently available PythonNet from PyPa repository (currently 2.5.x)
-- 'Install-PythonNet' with '-v3' switch installs the latest available PythonNet 3 from https://ci.appveyor.com/api/projects/pythonnet repository.
+- 'Install-PythonNet' without '-pre' switch installs a currently available PythonNet from PyPa repository (currently 2.5.x)
+- 'Install-PythonNet' with '-pre' switch installs the latest available pre-release of PythonNet 3
 
 Please, be aware that PythonNet 3 has not been officially released (at the moment 2021-10-18) so this is an experimental option (though it passed tests).
 Ledger module does not require PythonNet version 3 specifically; it properly works with any available version.
@@ -745,8 +731,8 @@ In case of any issues with this command, you can manually install PythonNet foll
 Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 
-.PARAMETER v3
-Optional switch that forces installing PythonNet version 3 (from AppVeyor PythonNet repository).
+.PARAMETER pre
+Optional switch that forces installing pre-release of PythonNet version 3.
 If this parameter is omitted, the command installs a currently available PythonNet from PyPa repository.
 
 #>
@@ -754,7 +740,7 @@ function Install-PythonNet {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$False)][string]$path,
-        [Switch]$v3 = $False
+        [Switch]$pre = $False
     )
 
     if(!$path) {
@@ -766,18 +752,8 @@ function Install-PythonNet {
     $Private:info = Get-PyInfo -pyExecutable $path
     if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $Private:packageName = "pythonnet"
-    if($v3) {
-        Write-Output "Looking for the latest PythonNet 3 package on Appveyor"
-        $Private:pyNet3Package = Get-PythonNet3 -download
-        if (!$Private:pyNet3Package) { throw "Cannot find the latest PythonNet3 package" }
-        Write-Output "Found PythonNet 3 package:"
-        $Private:pyNet3Package | Format-List
-        $Private:packageName = $Private:pyNet3Package.LocalFile
-    }
-
     $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
-    $null = Install-PyModule -pyExe $path -pyModule $Private:packageName -Verbose:$VerbosePreference
+    $null = Install-PyModule -pyExe $path -pyModule "pythonnet" -pre:$pre -Verbose:$VerbosePreference
     $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "pythonnet"
 
     if($Private:packageInfo){
@@ -1024,8 +1000,8 @@ if ($command -eq 'install-wheel') {
 }
 
 if ($command -eq 'install-pythonnet') {
-    if($version -and $version -ne "v3"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'v3'"}
-    Install-PythonNet -path $path -v3:($version -eq "v3")
+    if($version -and $version -ne "pre"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'pre'"}
+    Install-PythonNet -path $path -pre:($version -eq "pre")
 }
 
 if ($command -eq 'install-ledger') {

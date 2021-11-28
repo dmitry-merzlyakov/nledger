@@ -1,3 +1,51 @@
+## 0.8.4 (2021-12-01)
+
+### Release Information
+
+- Introduced Extensibility API allowing seamless integration with Ledger domain model for external software
+- Created .Net and Python extensions for .Net Ledger
+- Enabled Python integration tests
+- Created .Net Ledger Python module as a standalone software product
+- Bug fixing
+
+### Features
+
+- Building on the original Ledger Python integration concept, a generic Extension API has been created to provide software integration capabilities:
+    - It manages custom code and functions in Ledger data files (custom functions in expressions, key words *import* and *python*, command *python*).
+    - It provides full access to Ledger domain objects from custom code.
+    - It exposes a Standalone Session concept that allows custom code to use Ledger domain objects directly in its own procedures.
+    - It extends the console application and Service API so you can use integration capabilities along with other Ledger features.
+- The Python Extension for .Net Ledger is built on the Extension API:
+    - It fully supports all the original Ledger Python features. Python-related integration tests passed. 
+    - Interoperability with the Python runtime is based on the PythonNet library, which implies a wide list of supported CPython distributions.
+      Helper scripts minimize the effort of setting up a connection to the Python runtime. 
+    - The .Net Ledger Python module is available as a Wheel package and can be redistributed as a standalone product. .Net Ledger installation is not required.
+- The .Net extension integrates the Ledger runtime with external .Net code:
+    - It can extend data processing with functions from custom .Net assemblies.
+      With the Service API, it also allows direct interaction with global and context objects. 
+    - It provides standalone session capabilities, which allows you to create a scope where your code interacts directly with Ledger domain objects.
+    - All members of Ledger Domain model are accessible.
+
+### Known Issues
+
+Listed in ProductInfo.xml
+
+### Bug Fixing
+
+- Fixed multi-threading issue in string extensions (GetWidthAlignFormatString)
+- Fixed Service API session disposal issues (access to global objects)
+- Performance improvements: optimized creating lookup definitions for transactional objects
+- Fixed [Integer] / [Amount] Value division (see commit 2d1570c6)
+- Commodity Defaults are moved from a static variable to the application context
+
+### Breaking Changes
+
+- The helper method Amount.Parse(string) has been renamed to Amount.ParseString(string) to avoid assembly import issues for external libraries. 
+  In particular, when importing an assembly, PythonNet couldn't find the difference between Amount.Parse(ref string) and other overloaded methods. 
+  Modification does not affect the core code.
+- .Net Framework version for executable binaries is changed to 4.7.2 for better management of Standard 2.0 dependencies.
+- Changed format of .Net Ledger Test Toolkit metadata file (NLTest.Meta.xml).
+
 ## 0.8 (2020-10-02)
 
 ### Release Information

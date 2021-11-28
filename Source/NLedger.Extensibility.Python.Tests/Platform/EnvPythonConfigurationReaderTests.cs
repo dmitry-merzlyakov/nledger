@@ -31,8 +31,6 @@ namespace NLedger.Extensibility.Python.Tests.Platform
         {
             public bool IsAvailable { get; set; } = true;
 
-            public string PyHome { get; set; } = "py-home";
-            public string[] PyPath { get; set; } = new string[] { "py-path" };
             public string PyDll { get; set; } = "py-dll";
             public string AppModulesPath { get; set; } = "app-modules-path";
 
@@ -40,8 +38,6 @@ namespace NLedger.Extensibility.Python.Tests.Platform
             {
                 return new PythonConfiguration()
                 {
-                    PyHome = PyHome,
-                    PyPath = PyPath,
                     PyDll = PyDll,
                     AppModulesPath = AppModulesPath
                 };
@@ -62,10 +58,8 @@ namespace NLedger.Extensibility.Python.Tests.Platform
 
             Assert.Equal(baseReader, envReader.BasePythonConfigurationReader);
             Assert.Equal(EnvPythonConfigurationStatus.Active, envReader.Status);
-            Assert.Equal("env-py-home", envReader.PyHome);
             Assert.Equal("env-py-dll", envReader.PyDll);
             Assert.Equal("app-modules-path", envReader.AppModulesPath);
-            Assert.Equal(new string[] { "path-1", "path-2" }, envReader.PyPath);
         }
 
         [Fact]
@@ -116,18 +110,14 @@ namespace NLedger.Extensibility.Python.Tests.Platform
         public void EnvPythonConfigurationReader_Read_ReturnsOwnConfigIfActive()
         {
             Environment.SetEnvironmentVariable("NLedgerPythonConnectionStatus", "Active");
-            Environment.SetEnvironmentVariable("NLedgerPythonConnectionPyHome", "env-py-home");
             Environment.SetEnvironmentVariable("NLedgerPythonConnectionPyDll", "env-py-dll");
-            Environment.SetEnvironmentVariable("NLedgerPythonConnectionPyPath", "path-1;path-2");
             Environment.SetEnvironmentVariable("NLedgerPythonConnectionAppModulesPath", "env-app-modules-path");
 
             var envReader = new EnvPythonConfigurationReader(null);
             var config = envReader.Read();
 
-            Assert.Equal("env-py-home", config.PyHome);
             Assert.Equal("env-py-dll", config.PyDll);
             Assert.Equal("env-app-modules-path", config.AppModulesPath);
-            Assert.Equal(new string[] { "path-1", "path-2" }, config.PyPath);
         }
 
         [Fact]
@@ -138,10 +128,8 @@ namespace NLedger.Extensibility.Python.Tests.Platform
             var envReader = new EnvPythonConfigurationReader(new TestPythonConfigurationReader());
             var config = envReader.Read();
 
-            Assert.Equal("py-home", config.PyHome);
             Assert.Equal("py-dll", config.PyDll);
             Assert.Equal("app-modules-path", config.AppModulesPath);
-            Assert.Equal(new string[] { "py-path" }, config.PyPath);
 
             envReader = new EnvPythonConfigurationReader(null);
             config = envReader.Read();

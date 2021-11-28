@@ -43,8 +43,6 @@ namespace NLedger.Extensibility.Python.Platform
 
             return new PythonConfiguration()
             {
-                PyHome = xdoc.Descendants(XName.Get("py-home")).FirstOrDefault()?.Value,
-                PyPath = xdoc.Descendants(XName.Get("py-path")).FirstOrDefault()?.Value.Split(';') ?? new string[0],
                 PyDll = xdoc.Descendants(XName.Get("py-dll")).FirstOrDefault()?.Value,
                 AppModulesPath = AppModuleResolver?.GetAppModulePath()
             };
