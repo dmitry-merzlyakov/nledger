@@ -4,20 +4,17 @@
 
 # .Net Ledger: Double-Entry Accounting System
 
-.Net Ledger (NLedger) is a complete .Net port of the 
-[Ledger](http://ledger-cli.org), excellent powerful command line accounting system. 
-The main purpose of this project is to enable all features of Ledger to .Net world. 
+.Net Ledger (NLedger) is a complete .Net port of the [Ledger](http://ledger-cli.org), an excellent powerful command line accounting system. 
+The main purpose of this project is to enable all Ledger features to .Net world. 
 
-NLedger command line utility (NLedger.cli) is highly compatible with the original
-Ledger. It supports all original features and command line options; 
-the produced output is 100% equal. The reliable level of compatibility is verified by Ledger tests that
-are 99% passed (with exception of few ones that require unavailable on Windows features).
-It is expected that people may feel like they use the genuine Ledger but in Windows
-command line.
+NLedger command line utility (NLedger.cli) is highly compatible with the original Ledger. 
+It supports all original features and command line options; the produced output is 100% identical to the original.
+Reliable compatibility level confirmed by 99% Ledger tests (except for a few that require deprecated features).
+Everything is done to ensure that users have the feeling of using a genuine Ledger. 
 
-NLedger is written on pure C# with no dependencies on any external libraries
-or any platform-specific features. It lets NLedger properly work on any 
-.Net compatible system and can be embedded into any .Net application.
+NLedger is written in pure C# with no dependencies on any external libraries or any platform-specific features
+(with the exception of additional extensions that may depend on the connection libraries).
+This allows NLedger to work properly on any .Net compatible system and be embedded in any .Net application. 
 
 ## Quick Start
 
@@ -27,14 +24,13 @@ If you have just installed NLedger MSI or ZIP package on Windows and want to kno
   - Click *.Net Ledger Folder* icon in the main menu;
   - Type *cmd* in the address bar of Windows Explorer window;
   - In the command line window, type *ledger --version* - NLedger should show its version;
-  - Type *ledger bal -f test/input/drewr3.dat* - you will get a balance for one of example files that are in *test\input* folder;
+  - Type *ledger bal -f test/input/drewr3.dat* - you will get the balance for one of the example files that are in *test\input* folder;
 - Run NLedger Live Demo:
   - Click *.Net Ledger Live Demo* icon in the main menu;
-  - Observe the documentation and try all examples in action;
-- Read this file to the end, *Ledger 3 Documentation*, *.Net Ledger Guide* and try to find the use of this tool.
+  - Check out the documentation and try all the examples in action;
+- Read this file to the end, look at *Ledger 3 Documentation*, *.Net Ledger Guide* and try to find a use of this tool.
 
-If you have installed NLedger from the sources, you can open a new command line window, navigate to NLedger folder and try:
-
+If you installed NLedger from source code, you can open a new command prompt window, go to the NLedger folder and try:
 ```
 ledger --version
 ledger bal -f test/input/drewr3.dat
@@ -43,9 +39,9 @@ pwsh -file ./get-nledger-tools.ps1 -demo
 
 ## Features
 
-NLedger thoroughly derives all valuable Ledger capabilities. Basically,
-all what Ledger can do, NLedger can do as well. Here is a short list of the most
-significant Ledger features:
+NLedger faithfully reproduces all valuable Ledger capabilities.
+Basically, anything the Ledger can do, NLedger can.
+Here is a short list of the most important Ledger features:
 
 - As an excellent accounting system:
   - **Double-entry accounting**. Nuff said; it is a must-have feature;
@@ -93,18 +89,16 @@ and keep yourself in loop with [Ledger Community](https://www.ledger-cli.org/con
 
 *So, if Ledger is so nice, why NLedger?* Here is the answer or, in other words, the project mission :)
 
-The first use of NLedger is enabling Ledger features in Windows world.
-Even as a developer, I faced difficulties running Ledger 3.1.1 on Windows 10 and,
-I believe, it would be unsolvable problem for regular people.
+The first benefit of NLedger is bringing Ledger functionality to the Windows world. 
+Even as a developer, I ran into difficulties running Ledger 3.1.1 on Windows 10, 
+and it seems to me that for inexperienced users this will be an unsolvable problem.
 
-I would like to let everyone install NLedger by one click and use it exactly
-in the same way as it is described in Ledger documentation. Ledger but on any 
-Windows - it was the first goal.
+I want everyone to be able to install NLedger with one click and use it exactly as described in the Ledger documentation. 
+Ledger, but on any Windows - this was the first target.
 
-The second use of NLedger is that it is a native .Net application. 
-It gives unlimited abilities to extend it with extra functions and integrate with
-other products on .Net platform. It was the second thing why it was decided 
-to port Ledger on .Net.
+The second benefit of NLedger is that it is a native .Net application. 
+This gives unlimited possibilities for expanding it with additional functions and integration with other products on the .Net platform. 
+It was the second reason why it was decided to port Ledger to .Net.
 
 ## Project Vision and Development Progress
 
@@ -114,37 +108,40 @@ seamless access to the same functions for external .Net applications.
 
 - Current **Project Status** is:
   - Ported from [Ledger 3.2.1](https://github.com/ledger/ledger), branch Master, commit 56c42e11; 2020/5/18
-  - Core functionality is ported; command line utility is available;
+  - All functionality ported; command line utility is available;
+  - Program API for developing with NLedger is created; NuGet packages are available;
   - Ledger testing framework is ported; 
-  - Ledger tests are passed to some extend:
-    - 98% (694 out of 707) test cases passed;
-    - 13 test cases are ignored because of known limitations;
+  - Ledger tests are passed:
+    - 99% (708 out of 711) test cases passed;
+    - 3 test cases are ignored because of known limitations;
     - 0 failed.
+  - The Ledger Python module is available as a standalone product for Python users. 
 - **Current limitations** (technical restrictions that will be addressed by next releases) are:
-  - No Python integration. Ledger tests that require Python are disabled;
-  - DateTime parser on .Net has less specific error messages and does not allow
-      to detect the same mistakes as Ledger does. Corresponded Ledger test is disabled till further decision;
-  - It was found that in some conditions the original Ledger produced incorrect 
-    rounding at the last rendering step (*stream_out_mpq*). It was caused by specifics of its
-    arbitrary-precision arithmetic library; some combinations of
-    divisible and divisor produce rounded result that does not match expected
-    banking rounding. Some Ledger tests were corrected (opt-lot-prices, opt-lots, opt-lots_basis).
+  - The .Net DateTime parser throws less specific error messages and cannot catch the same errors as the Ledger. 
+    The corresponded test is disabled pending a further decision;
+  - NLedger Python extension supports Python 3.6 or later.
+    The test designed for Python 2 is disabled as deprecated;
+  - It was found that under some conditions, the original Ledger gave incorrect rounding in the last processing step (*stream_out_mpq*).
+    The problem was caused by the arbitrary precision arithmetic library that Ledger used. 
+    Certain combinations of dividend and divisor produce a rounded result that does not match the expected bank rounding. 
+    Affected Ledger tests were corrected (opt-lot-prices, opt-lots, opt-lots_basis).
       
 - **Development Roadmap** is available by this [link](https://github.com/dmitry-merzlyakov/nledger/blob/master/roadmap.md).
-  It describes the plan to complete all intended features by the version 1.0.
+  It describes the plan to complete all intended features by the version 1.0 and notes for further steps.
 
 ## Installation
 
-Because of .Net nature, NLedger can run on any system that supports .Net (either .Net Framework or .Net Core).
-However, its testing framework and helper tools use PowerShell, so
-you can run Ledger tests only if your system has installed PowerShell as well.
+NLedger can run on any system that supports .Net (either .Net Framework or .Net Core).
+However, the testing framework and helper tools use PowerShell, so you can only run Ledger tests if you also have PowerShell installed on your system. 
+If you also want to use the Python extension, you should have Python on your machine. 
 
 ### System Requirements
 
-- .Net Framework 4.5 or higher and/or .Net Core SDK 3.1 or higher. It is required component to run the command line application;
+- .Net Framework 4.7.2 or higher and/or .Net Core SDK 3.1 or higher. It is required component to run the command line application;
 - PowerShell 5.0 or higher. It is needed to run testing framework and other tools.
+- Python 3.6 or later. It is required for Python extension.
 
-Therefore, PowerShell is not required component, you can still use NLedger, but ability to run PowerShell scripts makes your life easier.
+PowerShell is optional, you can still use NLedger if it is not installed, but the ability to run PowerShell scripts makes your life easier.
 
 ### Build and Install from source code
 
@@ -153,13 +150,17 @@ Therefore, PowerShell is not required component, you can still use NLedger, but 
 ```
 git clone https://github.com/dmitry-merzlyakov/nledger
 cd nledger
+pwsh -file ./get-nledger-tools.ps1 -pythonConnect
 pwsh -file ./get-nledger-up.ps1 -install
 ```
 
-On Windows, depending on your Powershell version, the last command might look like:
+On Windows, depending on your Powershell version, the last commands may look like:
 ```
+powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -pythonConnect
 powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -install
 ```
+
+The command `pythonConnect` is needed if you want to run Python-related unit tests. It can be skipped otherwise.
 
 ### Install from NLedger Installation Package
 
@@ -187,12 +188,19 @@ OR (for impatient people):
 
 ## NLedger NuGet package
 
-NLedger is available as NuGet package. Read more how to embed NLedger into your software [here](https://github.com/dmitry-merzlyakov/nledger/blob/master/build.md) - section Developing with NLedger.
+NLedger is available as NuGet packages. Read more how to develop with NLedger [here](https://github.com/dmitry-merzlyakov/nledger/blob/master/build.md).
+
+## NLedger Python Module
+
+NLedger Python module provides Ledger features in a Python interpreter session.
+It can be used as stand-alone software; it does not require installing NLedger.
+The latest package can be downloaded from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases).
+You can find more information in [.Net Ledger Documentation](https://github.com/dmitry-merzlyakov/nledger/blob/master/nledger.md) or in the module [Readme](https://github.com/dmitry-merzlyakov/nledger/blob/master/Source/NLedger.Extensibility.Python.Module/README.md) file.
 
 ## Documentation
 
-As it was mentioned, the main information source about how to use this application 
-is Ledger resources and community. Therefore:
+As mentioned, the main source of information on how to use this application are Ledger-related resources and the community. 
+Therefore:
 - Refer to [Ledger documentation](https://www.ledger-cli.org/docs.html) or 
   read [other resources](http://plaintextaccounting.org/) to get conceptual 
   information about command line accounting and Ledger capabilities;
@@ -201,17 +209,16 @@ is Ledger resources and community. Therefore:
 
 ## Contribution
 
-NLedger is currently under an active development and some big enhancements 
-are coming. You can check the planes in [Roadmap](https://github.com/dmitry-merzlyakov/nledger/blob/master/roadmap.md).
-However, code quality is a primary focus, 
-so any bug fixing requests and/or fixing changes will be processed in the 
-first order. Therefore, if you want to help this project:
+NLedger is currently in active development and some enhancements are still coming.
+You can check the planes in [Roadmap](https://github.com/dmitry-merzlyakov/nledger/blob/master/roadmap.md).
+However, code quality is a primary focus, so any bug fixing requests and/or fixing changes will be processed in the first order. 
+Therefore, if you want to help this project:
 
-- Any help in testing NLedger are very appreciated. You can leave information about found 
+- Any help with testing NLedger is greatly appreciated. You can leave information about found 
   defect on [Issues](https://github.com/dmitry-merzlyakov/nledger/issues) tab; they will be processed in the first order;
 - Anyone who would like to provide a fix for any found defect are welcome.
   Please, create pull requests for fixing changes; they will be processed in the first order as well;
-- Coming enhancements are developed under my control.
+- Enhancements are developed under my control.
   Of course, anyone of you can make a fork from this code and extend it on your own, enjoy!
 
 ### How to inform about found defects
@@ -230,6 +237,9 @@ I really like it very much and it was a great pleasure for me to analyze its cod
 in the smallest detail. Thought it was quite big challenge for me 
 (GDB left the corns on my hands :)) I've got an invaluable experience. Thank you! 
 
+I would like to express my gratitude to the creators of the [PythonNet](https://github.com/pythonnet/pythonnet) library, 
+who have worked hard to solve complex problems of interacting with Python and provided the developers with an effective tool. 
+
 ## Contact
 
 - Join us in the chat room here: [![Gitter chat room](https://badges.gitter.im/nledger/Lobby.svg)](https://gitter.im/nledger/lobby);
@@ -240,4 +250,4 @@ in the smallest detail. Thought it was quite big challenge for me
 
 The code is licensed under 3-clause [FreeBSD license](https://github.com/dmitry-merzlyakov/nledger/blob/master/LICENSE).
 
-(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2021 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
