@@ -19,6 +19,28 @@ the latest build status is:
 
 
 ***
+#### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [89] 2021/11/29 01:13:54
+
+>Build #89; Status:Succeeded
+
+>Queued by Microsoft.VisualStudio.Services.TFS; Reason:IndividualCI
+
+>Requested for Microsoft.VisualStudio.Services.TFS (Email:\*)
+
+>Latest commit: 93481a4b60f959f9f367cf1ad16fe6451493fdf6
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/s/a7qpk0skr8uz9g1/nledger-buildlogs-v0.8.zip?dl=0) MD5: C760E7E9E6F48607D2FC9A5609D188AD
+
+Install package: [NLedger-v0.8.zip](https://www.dropbox.com/s/4395o9bpshq7dgf/nledger-v0.8.zip?dl=0) MD5: 6A287191431F5C1806E203305A9B9A16
+
+MSI package: [NLedger-v0.8.msi](https://www.dropbox.com/s/snta42rmf5jdvts/nledger-v0.8.msi?dl=0) MD5: B1AF785C454EAE0056CCBD0B3D0D2590
+
+Nuget package: [NLedger.0.8.4-beta.nupkg](https://www.dropbox.com/s/9o34xyzieip4fqy/nledger.0.8.4-beta.nupkg?dl=0) MD5: 795A1CD51E6DD0AA0F982A856C7E821A
+
+Nuget Python package: [NLedger.Extensibility.Python.0.8.4-beta.nupkg](https://www.dropbox.com/s/mnthhudscwgv8x5/nledger.extensibility.python.0.8.4-beta.nupkg?dl=0) MD5: 16AFD046D8E52BB1807B1F0339587665
+
+Wheel Python package: [ledger-0.8.4-py3-none-any.whl](https://www.dropbox.com/s/3ea4xx7hsxo5n33/ledger-0.8.4-py3-none-any.whl?dl=0) MD5: 142039854FF3909A4BF5F7466FA0F45A
+***
 #### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [88] 2021/11/29 00:49:59
 
 >Build #88; Status:Succeeded
@@ -831,6 +853,7 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
 
 
 
