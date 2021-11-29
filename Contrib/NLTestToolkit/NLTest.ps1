@@ -115,7 +115,7 @@ Write-Verbose "Read MetaList; found $($Script:testCategories.Count) test categor
 $Script:testCategories.Keys | ForEach-Object { Write-Verbose "Category: $_"; ( $Script:testCategories[$_] | ForEach-Object { Write-Verbose " File: $_"} )}
 
 $Script:ignoreActions = @()
-$Script:metaListContent.SelectNodes("/nltest-metadata/actions/ignore") | ForEach-Object { $Script:ignoreActions += [PsCustomObject]@{ categories=$_.categories; reason=$_.reason } }
+$Script:metaListContent.SelectNodes("/nltest-metadata/actions/ignore") | ForEach-Object { $Script:ignoreActions += [PsCustomObject]@{ categories=$_.categories; reason=$_.reason; ifNoFile=$_.'if-no-file' } }
 if ($ignoreCategories) { ($ignoreCategories -split ",") | Where-Object{$_} | ForEach-Object { $Script:ignoreActions += [PsCustomObject]@{ categories=$_; reason="The $_ category has been temporarily disabled by the user" } } }
 Write-Verbose "Found $($Script:ignoreActions.Count) ignore actions"
 
@@ -343,6 +343,18 @@ function RunExecutable {
     return $Private:runResult
 }
 
+function TestIgnoreActionConditions {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)]$ignoreAction)
+
+    if($ignoreAction.ifNoFile) {
+        [string]$Private:fileName = [System.IO.Path]::GetFullPath(($ignoreAction.ifNoFile).Replace("{LocalApplicationData}", [Environment]::GetFolderPath("LocalApplicationData")))
+        Write-Verbose "Ignore condition 'if-no-file' - '$($Private:fileName)'"
+        return !(Test-Path -LiteralPath $Private:fileName -PathType Leaf)
+    }
+    return $True
+}
+
 # Executes a test case
 function RunTestCase {
     [CmdletBinding()]
@@ -364,7 +376,9 @@ function RunTestCase {
 
     # Process ignore actions
     if (!$disableIgnoreList) {
-        $Private:applicableActions = $Script:ignoreActions | Where-Object { $_.categories -split "," | Where-Object { $Private:categories -contains $_ } }
+        $Private:applicableActions = $Script:ignoreActions | 
+            Where-Object { $_.categories -split "," | Where-Object { $Private:categories -contains $_ } } |
+            Where-Object { TestIgnoreActionConditions -ignoreAction $_ }
         Write-Verbose "Found $(($Private:applicableActions | Measure-Object).Count) applicable ignore action(s)"
         if (($Private:applicableActions | Measure-Object).Count -gt 0) {
             $Private:testCaseResult.ReasonToIgnore = [string]::Join(",", ($Private:applicableActions | ForEach-Object {$_.reason}))
