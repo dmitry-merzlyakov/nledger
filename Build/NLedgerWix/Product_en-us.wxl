@@ -27,7 +27,7 @@
 
    <!-- UI Messages -->
 
-   <String Id="Condition_NetFrameworkIsNotInstalled">This application requires .NET Framework 4.5 or later. Please install the .NET Framework then run this installer again.</String>
+   <String Id="Condition_NetFrameworkIsNotInstalled">This application requires .NET Framework 4.7.2 or later. Please install the .NET Framework then run this installer again.</String>
    <String Id="Condition_PowershellIsNotInstalled">Some of selected features require Powershell 4.0 or later. It seems like you have an older version or do not have it either. You shall install the recommended version of Powershell when .Net Ledger Setup is finished. Otherwise, some features may not work.</String>
    <String Id="Condition_DeleteUserSettings">Would you like to delete .Net Ledger user settings and other files? If you click Yes, the following folder(s) will be deleted:</String>
 

@@ -18,7 +18,10 @@
 
       <!-- Checking required .Net Framework version -->
 
-      <PropertyRef Id="NETFRAMEWORK45"/>
+      <Property Id="WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED">
+         <RegistrySearch Id="NET472Installed" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Release" Type="raw" />
+      </Property>
+
       <Condition Message="!(loc.Condition_NetFrameworkIsNotInstalled)">
          <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED]]>
       </Condition>
