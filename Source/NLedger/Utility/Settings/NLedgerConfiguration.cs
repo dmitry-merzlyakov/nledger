@@ -7,6 +7,7 @@
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Abstracts.Impl;
+using NLedger.Extensibility;
 using NLedger.Utility.Settings.CascadeSettings;
 using NLedger.Utility.Settings.CascadeSettings.Definitions;
 using System;
@@ -30,6 +31,7 @@ namespace NLedger.Utility.Settings
             var ansiTerminalEmulationDefinition = AddDefinition(new BoolSettingDefinition("AnsiTerminalEmulation", AnsiTerminalEmulationDescription, true));
             var defaultPagerDefinition = AddDefinition(new StringSettingDefinition("DefaultPager", DefaultPagerDescription));
             var disableUserSettingsDefinition = AddDefinition(new BoolSettingDefinition("DisableUserSettings", DisableUserSettingsDescription, false, SettingScopeEnum.Application));
+            var extensionProviderDefinition = AddDefinition(new StringSettingDefinition("ExtensionProvider", ExtensionProviderDescription));
 
             if (externalDefinitions != null && externalDefinitions.Any())
                 Definitions = Definitions.Concat(externalDefinitions).ToList();
@@ -42,6 +44,7 @@ namespace NLedger.Utility.Settings
             AnsiTerminalEmulation = new SettingValue<bool>(SettingsContainer, ansiTerminalEmulationDefinition);
             DefaultPager = new SettingValue<string>(SettingsContainer, defaultPagerDefinition);
             DisableUserSettings = new SettingValue<bool>(SettingsContainer, disableUserSettingsDefinition);
+            ExtensionProvider = new SettingValue<string>(SettingsContainer, extensionProviderDefinition);
 
             SettingsContainer.EffectiveScope = DisableUserSettings.Value ? SettingScopeEnum.Application : SettingScopeEnum.User;
         }
@@ -55,17 +58,20 @@ namespace NLedger.Utility.Settings
         public SettingValue<bool> AnsiTerminalEmulation { get; private set; }
         public SettingValue<string> DefaultPager { get; private set; }
         public SettingValue<bool> DisableUserSettings { get; private set; }
+        public SettingValue<string> ExtensionProvider { get; private set; }
 
         /// <summary>
         /// Popupates the main application context with effective settings for a console application
         /// </summary>
-        public MainApplicationContext CreateConsoleApplicationContext()
+        public MainApplicationContext CreateConsoleApplicationContext(ExtensionProviderSelector extensionProviderSelector = null)
         {
             Console.OutputEncoding = OutputEncoding.Value;
             if (AnsiTerminalEmulation.Value)
                 AnsiTextWriter.Attach();
 
-            var context = new MainApplicationContext()
+            var applicationServiceProvider = new ApplicationServiceProvider(extensionProviderFactory: extensionProviderSelector?.GetProvider(ExtensionProvider.Value));
+
+            var context = new MainApplicationContext(applicationServiceProvider)
             {
                 IsAtty = IsAtty.Value,
                 TimeZone = TimeZoneId.Value,
@@ -88,5 +94,6 @@ namespace NLedger.Utility.Settings
         private static readonly string AnsiTerminalEmulationDescription = "Enables embedded managing of VT100 codes and colorizing the console output.";
         private static readonly string DefaultPagerDescription = "When this value is not empty and *IsAtty* is turned on, NLedger runs the pager and directs the output to its input stream.";
         private static readonly string DisableUserSettingsDescription = "Disables managing of NLedger settings by optional common and user configuration files.";
+        private static readonly string ExtensionProviderDescription = "Specifies an extension provider name (python, dotnet, powershell).";
     }
 }

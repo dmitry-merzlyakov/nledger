@@ -56,26 +56,28 @@ namespace NLedger.Commodities
         #region Commodity Defaults
         public class CommodityDefaults
         {
+            /// <summary>
+            /// Ported bool decimal_comma_by_default
+            /// </summary>
             public bool DecimalCommaByDefault { get; set; }
+
+            /// <summary>
+            /// Ported bool time_colon_by_default
+            /// </summary>
             public bool TimeColonByDefault { get; set; }
         }
 
-        public static CommodityDefaults Defaults
-        {
-            get { return _Defaults ?? (_Defaults = new CommodityDefaults()); }
-        }
+        public static CommodityDefaults Defaults => MainApplicationContext.Current?.CommodityDefaults;
 
         public static void Initialize()
         {
-            _Defaults = null;
+            MainApplicationContext.Current.CommodityDefaults = null;
         }
 
         public static void Shutdown()
         {
-            _Defaults = null;
+            MainApplicationContext.Current.CommodityDefaults = null;
         }
-
-        private static CommodityDefaults _Defaults;
         #endregion
 
         public static readonly string DebugCommodityCompare = "commodity.compare";
@@ -306,6 +308,16 @@ namespace NLedger.Commodities
 
         public string QualifiedSymbol { get; set; }
 
+        public string Name
+        {
+            get { return Base.Name; }
+        }
+
+        public string Note
+        {
+            get { return Base.Note; }
+        }
+
         public string Symbol
         {
             get { return String.IsNullOrEmpty(QualifiedSymbol) ? BaseSymbol : QualifiedSymbol; }
@@ -444,6 +456,16 @@ namespace NLedger.Commodities
             Pool.CommodityPriceHistory.AddPrice(Referent, date, price);
 
             Base.PriceMap.Clear(); // a price was added, invalid the map
+        }
+
+        /// <summary>
+        /// Ported from void commodity_t::remove_price(const datetime_t& date, commodity_t& commodity)
+        /// </summary>
+        public void RemovePrice(DateTime date, Commodity commodity)
+        {
+            Pool.CommodityPriceHistory.RemovePrice(Referent, commodity, date);
+            Logger.Current.Debug("history.find", () => String.Format("Removing price: {0} on {1}", Symbol, date));
+            Base.PriceMap.Clear();
         }
 
         public PricePoint? FindPriceFromExpr(Expr expr, Commodity commodity, DateTime moment)
@@ -617,6 +639,11 @@ namespace NLedger.Commodities
             newDetails.IsValueExprCalculated = true;
 
             return Pool.FindOrCreate(Symbol, newDetails);
+        }
+
+        public void SetName(string arg = null)
+        {
+            Base.Name = arg;
         }
 
         public void SetNote(string arg = null)

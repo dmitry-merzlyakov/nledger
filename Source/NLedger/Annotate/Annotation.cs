@@ -24,6 +24,11 @@ namespace NLedger.Annotate
     /// </summary>
     public class Annotation : IEquatable<Annotation>
     {
+        public static explicit operator bool(Annotation annotation)
+        {
+            return !IsNullOrEmpty(annotation);
+        }
+
         /// <summary>
         /// Equal to operator bool() const
         /// </summary>

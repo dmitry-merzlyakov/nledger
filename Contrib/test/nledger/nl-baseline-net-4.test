@@ -1,0 +1,11 @@
+import assembly NLedger
+import alias option_pyfirst for NLedger.Utility.PrintHelper.Print
+import alias option_pysecond for NLedger.Utility.PrintHelper.Print
+
+--pyfirst
+--pysecond Hey
+
+test reg
+$FILE
+$FILE Hey
+end test

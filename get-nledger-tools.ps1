@@ -25,6 +25,10 @@
     Runs NLedger Test Toolkit interactive console.
 .PARAMETER settings
     Runs NLedger Setup interactive console that allows to manage settings on the local environment (app, user and common scope).
+.PARAMETER pythonConnect
+    Creates Python Extension settings file.
+.PARAMETER pythonTools
+    Runs Python Toolset console that allows to manage Python Extension settings on the local environment.
 .PARAMETER demo
     Runs NLedger demo web application where you can observe documentation and interatively run described commands.
     GUI is needed (since this demo runs a browser).
@@ -43,6 +47,12 @@
 .EXAMPLE
     PS> ./get-nledger-tools.ps1 -testConsole
     Runs NLedger Test Toolkit interactive console where you can execute ledger tests for current binaries.
+.EXAMPLE
+    PS> ./get-nledger-tools.ps1 -pythonConnect
+    Creates Python Extension settings file that specifies where local Python is installed.
+.EXAMPLE
+    PS> ./get-nledger-tools.ps1 -pythonTools
+    Runs Python Toolset console where you can change or remove Python Extension settings.
 .EXAMPLE
     PS> ./get-nledger-tools.ps1 -settings
     Runs NLedger Setup interactive console where you can manage local NLedger settings.
@@ -65,6 +75,8 @@ Param(
     [Switch][bool]$installConsole = $False,
     [Switch][bool]$testConsole = $False,
     [Switch][bool]$settings = $False,
+    [Switch][bool]$pythonConnect = $False,
+    [Switch][bool]$pythonTools = $False,
     [Switch][bool]$demo = $False
 )
 
@@ -108,6 +120,16 @@ if ($settings) {
     return
 }
 
+if ($pythonConnect) {
+    & $Script:powershell -File $("$Script:ScriptPath/Contrib/Python/GetPythonEnvironment.ps1") -command connect
+    return
+}
+
+if ($pythonTools) {
+    & $Script:powershell -NoExit -File $("$Script:ScriptPath/Contrib/Python/GetPythonEnvironment.ps1")
+    return
+}
+
 if ($demo) {
     & $Script:powershell -File $("$Script:ScriptPath/Contrib/NLManagement/NLDoc.LiveDemo.WebConsole.ps1")
     return
@@ -129,5 +151,9 @@ Write-Host -NoNewline -ForegroundColor Yellow "-testConsole       "
 Write-Host "Runs NLedger Test Toolkit console."
 Write-Host -NoNewline -ForegroundColor Yellow "-settings          "
 Write-Host "Runs NLedger settings manager."
+Write-Host -NoNewline -ForegroundColor Yellow "-pythonConnect     "
+Write-Host "Creates Python Extension settings file."
+Write-Host -NoNewline -ForegroundColor Yellow "-pythonTools       "
+Write-Host "Runs Python Toolset console that manages Python Extension settings."
 Write-Host -NoNewline -ForegroundColor Yellow "-demo              "
 Write-Host "Runs NLedger interactive demo. Requires GUI."

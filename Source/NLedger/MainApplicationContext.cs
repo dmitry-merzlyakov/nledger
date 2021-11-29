@@ -9,6 +9,7 @@
 using NLedger.Abstracts;
 using NLedger.Abstracts.Impl;
 using NLedger.Commodities;
+using NLedger.Extensibility;
 using NLedger.Formatting;
 using NLedger.Scopus;
 using NLedger.Times;
@@ -30,13 +31,15 @@ namespace NLedger
         IVirtualConsoleProvider VirtualConsoleProvider { get; }
         IFileSystemProvider FileSystemProvider { get; }
         IPagerProvider PagerProvider { get; }
+        IExtensionProvider ExtensionProvider { get; }
     }
 
     public class ApplicationServiceProvider : IApplicationServiceProvider
     {
         public ApplicationServiceProvider(Func<IQuoteProvider> quoteProviderFactory = null, Func<IProcessManager> processManagerFactory = null, 
             Func<IManPageProvider> manPageProviderFactory = null, Func<IVirtualConsoleProvider> virtualConsoleProviderFactory = null,
-            Func<IFileSystemProvider> fileSystemProviderFactory = null, Func<IPagerProvider> pagerProviderFactory = null)
+            Func<IFileSystemProvider> fileSystemProviderFactory = null, Func<IPagerProvider> pagerProviderFactory = null,
+            Func<IExtensionProvider> extensionProviderFactory = null)
         {
             _QuoteProvider = new Lazy<IQuoteProvider>(quoteProviderFactory ?? (() => new QuoteProvider()));
             _ProcessManager = new Lazy<IProcessManager>(processManagerFactory ?? (() => new ProcessManager()));
@@ -44,6 +47,7 @@ namespace NLedger
             _VirtualConsoleProvider = new Lazy<IVirtualConsoleProvider>(virtualConsoleProviderFactory ?? (() => new VirtualConsoleProvider()));
             _FileSystemProvider = new Lazy<IFileSystemProvider>(fileSystemProviderFactory ?? (() => new FileSystemProvider()));
             _PagerProvider = new Lazy<IPagerProvider>(pagerProviderFactory ?? (() => new PagerProvider()));
+            _ExtensionProvider = new Lazy<IExtensionProvider>(extensionProviderFactory ?? EmptyExtensionProvider.CurrentFactory);
         }
 
         public IQuoteProvider QuoteProvider => _QuoteProvider.Value;
@@ -52,6 +56,7 @@ namespace NLedger
         public IVirtualConsoleProvider VirtualConsoleProvider => _VirtualConsoleProvider.Value;
         public IFileSystemProvider FileSystemProvider => _FileSystemProvider.Value;
         public IPagerProvider PagerProvider => _PagerProvider.Value;
+        public IExtensionProvider ExtensionProvider => _ExtensionProvider.Value;
 
         private readonly Lazy<IQuoteProvider> _QuoteProvider;
         private readonly Lazy<IProcessManager> _ProcessManager;
@@ -59,6 +64,7 @@ namespace NLedger
         private readonly Lazy<IVirtualConsoleProvider> _VirtualConsoleProvider;
         private readonly Lazy<IFileSystemProvider> _FileSystemProvider;
         private readonly Lazy<IPagerProvider> _PagerProvider;
+        private readonly Lazy<IExtensionProvider> _ExtensionProvider;
     }
 
 
@@ -82,6 +88,12 @@ namespace NLedger
             set { _CommodityPool = value; }
         }
 
+        public Commodity.CommodityDefaults CommodityDefaults
+        {
+            get { return _CommodityDefaults ?? (_CommodityDefaults = new Commodity.CommodityDefaults()); }
+            set { _CommodityDefaults = value; }
+        }
+
         // For FileSystem
         public bool IsAtty { get; set; } = true;
 
@@ -91,6 +103,9 @@ namespace NLedger
         // For Scope
         public Scope DefaultScope { get; set; }
         public Scope EmptyScope { get; set; }
+
+        // For Item
+        public bool UseAuxDate { get; set; }
 
         // For Logger & Validator
         public ILogger Logger { get; set; } = new Logger();
@@ -128,6 +143,13 @@ namespace NLedger
             _EnvironmentVariables = new Dictionary<string, string>(variables ?? Empty, StringComparer.InvariantCultureIgnoreCase);
         }
 
+        public ExtendedSession ExtendedSession { get; private set; }
+
+        public ExtendedSession SetExtendedSession(ExtendedSession extendedSession)
+        {
+            return ExtendedSession = extendedSession;
+        }
+
         // Abstract Application Services
         public IApplicationServiceProvider ApplicationServiceProvider => _ApplicationServiceProvider;
 
@@ -152,6 +174,7 @@ namespace NLedger
             context.ArgsOnly = ArgsOnly;
             context.InitFile = InitFile;
             context.CommodityPool = CommodityPool;
+            context.CommodityDefaults = CommodityDefaults;
             context.IsAtty = IsAtty;
             context.TimesCommon = TimesCommon;
             context.DefaultScope = DefaultScope;
@@ -165,6 +188,7 @@ namespace NLedger
             context.CancellationSignal = CancellationSignal;
             context.DefaultPager = DefaultPager;
             context._EnvironmentVariables = _EnvironmentVariables;
+            context.ExtendedSession = ExtendedSession;
             return context;
         }
 
@@ -191,6 +215,7 @@ namespace NLedger
         private static readonly IDictionary<string, string> Empty = new Dictionary<string, string>();
 
         private CommodityPool _CommodityPool;
+        private Commodity.CommodityDefaults _CommodityDefaults;
         private IApplicationServiceProvider _ApplicationServiceProvider;
         private IDictionary<string, string> _EnvironmentVariables;
     }

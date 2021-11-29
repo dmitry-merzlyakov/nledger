@@ -60,6 +60,16 @@ namespace NLedger.Utility.ServiceAPI
             return Task.Run(() => ExecutingCommand(command, token));
         }
 
+        public ServiceQueryResult ExecuteQuery(string query)
+        {
+            return ExecutingQuery(query, CancellationToken.None);
+        }
+
+        public Task<ServiceQueryResult> ExecuteQueryAsync(string query, CancellationToken token = default(CancellationToken))
+        {
+            return Task.Run(() => ExecutingQuery(query, token));
+        }
+
         public void Dispose()
         {
             CloseSession();
@@ -110,6 +120,14 @@ namespace NLedger.Utility.ServiceAPI
                 throw new InvalidOperationException("Session is not active");
 
             return new ServiceResponse(this, command, token);
+        }
+
+        private ServiceQueryResult ExecutingQuery(string query, CancellationToken token)
+        {
+            if (!IsActive)
+                throw new InvalidOperationException("Session is not active");
+
+            return new ServiceQueryResult(this, query, token);
         }
 
         private void CloseSession()

@@ -17,6 +17,8 @@
     Omits xUnit tests
 .PARAMETER noNLTests
     Omits NLTest integration tests
+.PARAMETER noPython
+    Disables Python unit and integration tests; Python module build is skipped
 .PARAMETER install
     If this switch is set, the script installs NLedger when binaries are built and verified.
 .EXAMPLE
@@ -31,7 +33,7 @@
     Note: this switch is set automatically on non-windows platforms.
 .NOTES
     Author: Dmitry Merzlyakov
-    Date:   August 27, 2020
+    Date:   October 19, 2021
     ===
     Run the script on Windows: >powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1
     Run the script on other OS: >powershell -File ./get-nledger-up.ps1
@@ -42,6 +44,7 @@ Param(
     [Switch][bool]$debugMode = $False,
     [Switch][bool]$noUnitTests = $False,
     [Switch][bool]$noNLTests = $False,
+    [Switch][bool]$noPython = $False,
     [Switch][bool]$install = $False
 )
 
@@ -86,6 +89,24 @@ if (!(Test-Path -LiteralPath $solutionPath -PathType Leaf)) { "File '$solutionPa
 Write-Verbose "Expected NLTest path: $nlTestPath"
 if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$nlTestPath' does not exist. Check that source code base is in valid state." }
 
+# Check Python connection availability
+
+[string]$powershell = $(if($Script:isWindowsPlatform){"powershell"}else{"pwsh"})
+
+if (!$noPython) {
+    Write-Verbose "Checking NLedger Python extension settings..."
+    
+    [string]$testConnectionOutput = & $powershell -File $("$Script:ScriptPath/Contrib/Python/GetPythonEnvironment.ps1") -command "test-connection"
+    Write-Verbose "GetPythonEnvironment's test-connection returned: $testConnectionOutput"
+    $pythonConnectionStatus = $(if($testConnectionOutput){[System.Management.Automation.PSSerializer]::Deserialize($testConnectionOutput)}else{$null})
+    
+    if (!($pythonConnectionStatus.IsConnectionValid)){
+        Write-Warning "NLedger Python Extension settings are not configured or not valid. This does not prevent the build from completing, but unit and integration tests that require Python will be skipped. Building Ledger module will be skipped. Use './get-nledger-tools.ps1 -pythonTools' command to configure settings or disable this warning by adding a switch './get-nledger-up.ps1 -noPython'."
+        $noPython = $True
+    }
+}
+if ($noPython){$env:NLedgerPythonConnectionStatus = "Disabled"}
+
 # First step: build sources
 
 Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building source code [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
@@ -119,7 +140,7 @@ if(!$noUnitTests) {
 function composeNLedgerExePath {
     Param([Parameter(Mandatory=$True)][bool]$core)
     [string]$private:config = $(if($debugMode){"Debug"}else{"Release"})
-    [string]$private:framework = $(if($core){"netcoreapp3.1"}else{"net45"})
+    [string]$private:framework = $(if($core){"netcoreapp3.1"}else{"net472"})
     [string]$private:osxBin = $(if($isOsxPlatform){"/osx-x64"})
     [string]$private:extension = $(if($isWindowsPlatform){".exe"}else{""})
     return [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.CLI/bin/$private:config/$private:framework$($private:osxBin)/NLedger-cli$private:extension")
@@ -127,6 +148,8 @@ function composeNLedgerExePath {
 
 if (!$noNLTests)
 {
+    [string]$ignoreCategories = $(if($noPython){"python"}else{""})
+
     if (!$coreOnly){
         Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [.Net Framework] [$(if($debugMode){"Debug"}else{"Release"})]"
 
@@ -136,7 +159,7 @@ if (!$noNLTests)
         Import-Module "$Script:ScriptPath/Contrib/Install/SysNGen.psm1"
         if (Test-CanCallNGen) {$null = Add-NGenImage $nledgerFrameworkExeFile}
 
-        $null = (& $nlTestPath -nledgerExePath $nledgerFrameworkExeFile -noconsole -showProgress | Write-Verbose)
+        $null = (& $nlTestPath -nledgerExePath $nledgerFrameworkExeFile -noconsole -showProgress -ignoreCategories $ignoreCategories | Write-Verbose)
         if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
     }
 
@@ -145,13 +168,33 @@ if (!$noNLTests)
     [string]$nledgerCoreExeFile = composeNLedgerExePath -core $true
     if (!(Test-Path -LiteralPath $nledgerCoreExeFile -PathType Leaf)) { throw "Cannot find $nledgerCoreExeFile" }
 
-    $null = (& $nlTestPath -nledgerExePath $nledgerCoreExeFile -noconsole -showProgress | Write-Verbose)
+    $null = (& $nlTestPath -nledgerExePath $nledgerCoreExeFile -noconsole -showProgress -ignoreCategories $ignoreCategories | Write-Verbose)
     if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
 }
 
-if ($install) {
+# Fourth step: build Python module
+
+if (!$noPython){
+    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building Python Ledger module"
+    if(!($pythonConnectionStatus.IsWheelInstalled)){Write-Warning "Wheel is not installed on the connected Python environment. Ledger module will not be built. You can install wheel module by means of './Contrib/Python/GetPythonEnvironment.ps1 -command uninstall-wheel'."}
+    else {
+       if(!($pythonConnectionStatus.IsPythonNetInstalled)){Write-Warning "PythonNet is not installed on the connected Python environment. Ledger module will be built but not tested. It is not a critical problem since module code is tested by Ledger unit tests."}
+
+       [string]$pyBuildPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.Extensibility.Python.Module/build.ps1")
+       Write-Verbose "Expected Python Ledger module build script path: $pyBuildPath"
+       if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$pyBuildPath' does not exist. Check that source code base is in valid state." }
+
+       $( $(& "$pyBuildPath" -build -test:$pythonConnectionStatus.IsPythonNetInstalled) 2>&1 | Out-String ) | Write-Verbose     
+       if ($LASTEXITCODE -ne 0) { throw "Python module build failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+       $pythonModuleBuilt = $True
+    }
+}
+
+# Fifth step: install built binaries
+
+if ($install) {    
     Write-Progress -Activity "Building, testing and installing NLedger" -Status "Installing NLeger binaries"
-    $null = (& powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -install | Write-Verbose)
+    $null = (& $powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -install | Write-Verbose)
     if ($LASTEXITCODE -ne 0) { throw "Installation failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
 }
 
@@ -178,6 +221,13 @@ if (!($noNLTests)) {
     Write-Host "NLedger tests: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
 } else {
     Write-Host "NLedger tests: IGNORED"
+}
+Write-Host
+
+if ($pythonModuleBuilt) {
+    Write-Host "Python module: BUILT (see /Contrib/Python)"
+} else {
+    Write-Host "Python module: IGNORED"
 }
 Write-Host
 

@@ -65,6 +65,7 @@ namespace NLedger.Commodities
         public int Precision { get; set; }
         public CommodityFlagsEnum Flags { get; set; }
         public int? GraphIndex { get; set; }
+        public string Name { get; set; }
         public string Note { get; set; }
         public Amount Smaller { get; set; }
         public Amount Larger { get; set; }

@@ -3,6 +3,136 @@
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath\..\NLManagement\NLWhere.psm1 -Force
 
+# ANSI Terminal colorization
+
+[bool]$Global:ANSI_Colorization = !([System.Environment]::OSVersion.Platform -eq "Win32NT" -and [System.Environment]::OSVersion.Version.Major -lt 10)
+
+[string]$ESC = [char]27
+[string]$Global:NormalColor = "$($ESC)[0m"
+[string]$Global:ForegroundBold = "$($ESC)[1m"
+[string]$Global:ForegroundUnderline = "$($ESC)[4m"
+[string]$Global:ForegroundBlink = "$($ESC)[5m"
+
+[string]$Global:BackgroundColorBlack = "$($ESC)[40m"
+[string]$Global:BackgroundColorRed = "$($ESC)[41m"
+[string]$Global:BackgroundColorGreen = "$($ESC)[42m"
+[string]$Global:BackgroundColorYellow = "$($ESC)[43m"
+[string]$Global:BackgroundColorBlue = "$($ESC)[44m"
+[string]$Global:BackgroundColorMagenta = "$($ESC)[45m"
+[string]$Global:BackgroundColorCyan = "$($ESC)[46m"
+[string]$Global:BackgroundColorWhite = "$($ESC)[47m"
+
+[string]$Global:BackgroundColorBoldBlack = "$($ESC)[40;1m"
+[string]$Global:BackgroundColorBoldRed = "$($ESC)[41;1m"
+[string]$Global:BackgroundColorBoldGreen = "$($ESC)[42;1m"
+[string]$Global:BackgroundColorBoldYellow = "$($ESC)[43;1m"
+[string]$Global:BackgroundColorBoldBlue = "$($ESC)[44;1m"
+[string]$Global:BackgroundColorBoldMagenta = "$($ESC)[45;1m"
+[string]$Global:BackgroundColorBoldCyan = "$($ESC)[46;1m"
+[string]$Global:BackgroundColorBoldWhite = "$($ESC)[47;1m"
+
+[string]$Global:ForegroundColorBlack = "$($ESC)[30m"
+[string]$Global:ForegroundColorRed = "$($ESC)[31m"
+[string]$Global:ForegroundColorGreen = "$($ESC)[32m"
+[string]$Global:ForegroundColorYellow = "$($ESC)[33m"
+[string]$Global:ForegroundColorBlue = "$($ESC)[34m"
+[string]$Global:ForegroundColorMagenta = "$($ESC)[35m"
+[string]$Global:ForegroundColorCyan = "$($ESC)[36m"
+[string]$Global:ForegroundColorWhite = "$($ESC)[37m"
+
+[string]$Global:ForegroundColorBoldBlack = "$($ESC)[30;1m"
+[string]$Global:ForegroundColorBoldRed = "$($ESC)[31;1m"
+[string]$Global:ForegroundColorBoldGreen = "$($ESC)[32;1m"
+[string]$Global:ForegroundColorBoldYellow = "$($ESC)[33;1m"
+[string]$Global:ForegroundColorBoldBlue = "$($ESC)[34;1m"
+[string]$Global:ForegroundColorBoldMagenta = "$($ESC)[35;1m"
+[string]$Global:ForegroundColorBoldCyan = "$($ESC)[36;1m"
+[string]$Global:ForegroundColorBoldWhite = "$($ESC)[37;1m"
+
+$Script:AnsiBackgroundColorMapping = @{
+  Black       = $Global:BackgroundColorBlack
+  DarkBlue    = $Global:BackgroundColorBlue
+  DarkGreen   = $Global:BackgroundColorGreen
+  DarkCyan    = $Global:BackgroundColorCyan
+  DarkRed     = $Global:BackgroundColorRed
+  DarkMagenta = $Global:BackgroundColorMagenta
+  DarkYellow  = $Global:BackgroundColorYellow
+  Gray        = $Global:BackgroundColorWhite
+  DarkGray = $Global:BackgroundColorBoldBlack
+  Blue     = $Global:BackgroundColorBoldBlue
+  Green    = $Global:BackgroundColorBoldGreen
+  Cyan     = $Global:BackgroundColorBoldCyan
+  Red      = $Global:BackgroundColorBoldRed
+  Magenta  = $Global:BackgroundColorBoldMagenta
+  Yellow   = $Global:BackgroundColorBoldYellow
+  White    = $Global:BackgroundColorBoldWhite
+}
+
+$Script:AnsiForegroundColorMapping = @{
+  Black       = $Global:ForegroundColorBlack
+  DarkBlue    = $Global:ForegroundColorBlue
+  DarkGreen   = $Global:ForegroundColorGreen
+  DarkCyan    = $Global:ForegroundColorCyan
+  DarkRed     = $Global:ForegroundColorRed
+  DarkMagenta = $Global:ForegroundColorMagenta
+  DarkYellow  = $Global:ForegroundColorYellow
+  Gray        = $Global:ForegroundColorWhite
+  DarkGray = $Global:ForegroundColorBoldBlack
+  Blue     = $Global:ForegroundColorBoldBlue
+  Green    = $Global:ForegroundColorBoldGreen
+  Cyan     = $Global:ForegroundColorBoldCyan
+  Red      = $Global:ForegroundColorBoldRed
+  Magenta  = $Global:ForegroundColorBoldMagenta
+  Yellow   = $Global:ForegroundColorBoldYellow
+  White    = $Global:ForegroundColorBoldWhite
+}
+
+$Script:AnsiFormatColorMapping = @{
+  Normal    = $Global:NormalColor
+  Bold      = $Global:ForegroundBold
+  Underline = $Global:ForegroundUnderline
+  Blink     = $Global:ForegroundBlink
+}
+
+$Script:AnsiColorMapping = @{
+  b = $Script:AnsiBackgroundColorMapping
+  c = $Script:AnsiForegroundColorMapping
+  f = $Script:AnsiFormatColorMapping
+}
+
+function Convert-ColorTokensToAnsi {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)][AllowEmptyString()][string]$inputString
+  )
+
+  $private:foundMatches = @((Select-String -InputObject $inputString '{(?<type>c|b|f):(?<color>\w+)}' -AllMatches).Matches)
+  [array]::Reverse($private:foundMatches)
+  foreach($private:match in $private:foundMatches) {
+    if ($private:match.Groups) {
+      [string]$private:type = $private:match.Groups[1].Value
+      [string]$private:color = $private:match.Groups[2].Value
+      [int]$private:pos = $private:match.Groups[0].Index
+      [int]$private:length = $private:match.Groups[0].Length
+  
+      if ($Global:ANSI_Colorization) {
+        $Private:mapping = $Script:AnsiColorMapping[$private:type]
+        $Private:ansiCode = $Private:mapping[$private:color]
+        if (!($Private:ansiCode)) { throw "Invalid color in token: $($Private:color)" }  
+      } else { $Private:ansiCode = "" }
+  
+      $inputString = $inputString.Remove($private:pos, $private:length)
+      $inputString = $inputString.Insert($private:pos, $Private:ansiCode)  
+    }
+  }
+
+  return $inputString
+}
+
+function Out-AnsiString {
+  Process { Convert-ColorTokensToAnsi $_ }
+}
+
 # Helper function that returns a structure indicating a failure
 function Get-Fault {
     [CmdletBinding()]

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyTitle>NLedger</AssemblyTitle>
+    <Company>Dmitry Merzlyakov</Company>
+    <Product>NLedger, the double-entry accounting tool</Product>
+    <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
+    <Copyright>Copyright © 2015-2021, Dmitry Merzlyakov</Copyright>
+    <VersionPrefix>0.8.4</VersionPrefix>
+    <VersionSuffix>beta</VersionSuffix>
+    <SourceRevisionId>dev-environment</SourceRevisionId>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Title>NLedger</Title>
+    <Authors>Dmitry Merzlyakov</Authors>
+    <RepositoryUrl>https://github.com/dmitry-merzlyakov/nledger</RepositoryUrl>
+    <PackageTags>ledger;plaintext-accounting;accounting;cli;csharp;dotnet</PackageTags>
+    <PackageLicenseExpression>BSD-3-Clause-Clear</PackageLicenseExpression>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\NLedger.Extensibility.Python.Module\src\ledger\__init__.py" Link="__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="pythonnet" Version="3.0.0-preview2021-10-05" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NLedger\NLedger.csproj" />
+  </ItemGroup>
+</Project>

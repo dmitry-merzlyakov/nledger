@@ -51,9 +51,9 @@ $Script:WixComponentValidationExceptions = @(
   "NLedger\NLManagement\NonDeliverable\",
   "NLedger\NLManagement\NLDoc.LiveDemo.Launch.sh",
   "NLedger\test\nledger\getquote"
-  "NLedger\bin\net45\NLedger-cli.exe",
-  "NLedger\bin\net45\NLedger-cli.exe.config"
-  "NLedger\bin\net45\ledger.1.html",
+  "NLedger\bin\net472\NLedger-cli.exe",
+  "NLedger\bin\net472\NLedger-cli.exe.config"
+  "NLedger\bin\net472\ledger.1.html",
   "NLedger\bin\netcoreapp3.1\ledger.1.html"
 )
 

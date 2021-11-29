@@ -537,7 +537,13 @@ namespace NLedger.IntegrationTests.unit
             v5 /= new Value(2L);
             Assert.Equal(v5, new Value(4L));
             v5 /= new Value(new Amount("8"));
-            Assert.Equal(v5, new Value(new Amount("2")));
+
+            // [DM] The original Ledger unit test is corrected here to reflect the fix in INTEGER/AMOUNT division
+            // (see comments in ValueStorage.cs; IntegerValueStorage; DivideValueStorage
+            // Even from logical standpoint, 4/8=0.5, not 2
+            Assert.Equal(v5, new Value(new Amount("0.5")));
+            v5 = new Value(2L); // Set to 2 to pass next test steps
+            // Original unit test row - Assert.Equal(v5, new Value(new Amount("2")));
 
             v16 /= new Value(2L);
             v16 /= new Value(new Amount("2"));

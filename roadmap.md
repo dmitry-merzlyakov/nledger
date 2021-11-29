@@ -1,4 +1,4 @@
-# NLedger Development Roadmap
+# .Net Ledger Development Roadmap
 
 This is a roadmap for development of next NLedger releases.
 
@@ -47,34 +47,38 @@ This is a roadmap for development of next NLedger releases.
 
 **Extending functional and data integration API; two-way integration with other language environments; code completion**
 
-- Enhancement (Service API): add support of semantical tokenization for NLedger output;
-- Enhancement (Service API): add auxiliary classes that help to build textual Ledger commands programmatically;
-- Enhancement (Data API): add language and data integration capabilities:
-  - Create data transfer objects that enable communication with NLedger domain model and methods (reflecting ledger's python integration model);
-    Make that Data API available as part of Service API session object;
-  - Create an abstract integration provider that presents a two-way integration 
-    (calling NLedger methods from external code and calling external methods from NLedger - by means of tokens 'python', 'import' and etc)
-  - Implement Python integration provider;
-  - Implement Powershell integration provider;
-  - Validate .Net integration capabilities by means of the integration provider;
-- Code completion: enable Ledger tests that require Python integration;
+- [Complete] Create Extensibility API allowing seamless integration with Ledger domain model for external software
+- [Complete] Create .Net extension that integrates the Ledger runtime with external .Net applications
+- [Complete] Create Python extension that allows to extend Ledger data files with Python functions
+- [Complete] Create .Net Ledger Python module that provides access to Ledger domain objects in a Python interpreter session
+- [Complete] Code completion: enable Ledger tests that require Python integration;
+- Create Powershell extension that allows to extend Ledger data files with Powershell functions
 - Bug fixing: solve issues with .Net date parser error messages; 
   consider creating an own date parser; enable corresponded Ledger unit and integration tests;
 - Bug fixing: solve issues with file names in error messages (absolute vs relative); 
   simplify corresponded Ledger integration tests;
-- Code completion: add integrated pager; add complete support of external pagers;
-  solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
-- Code completion: add localization capabilities for error and warning messages; 
-  verify and process Ledger methods *gettext_*, *throw_*;
-- Code completion: complete well-formatted code documentation, enable generating XML documentation file and include into NuGet package.
+- Update the source code and tests to the latest Ledger version (branch NEXT);
+- Add a build profile that supports .Net 5
 
 ## NLedger 1.0
 
-**Bug fixing, code optimization and stabilization**
+**Bug fixing, code completion, optimization and stabilization**
 
-- Update the source code and tests to the latest Ledger version (branch NEXT);
+- Code completion: complete well-formatted code documentation, enable generating XML documentation file and include into NuGet package.
+- Code completion: add localization capabilities for error and warning messages; 
+  verify and process Ledger methods *gettext_*, *throw_*;
 - Code optimization (analyze efficient of *lookup* implementation and other critical places);
 - General performance analyzing and optimization;
 - Code stabilization and bug fixing;
 
-(c) 2017-2020 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+## Further Enhancements
+
+**Features planned for future releases**
+
+- Enhancement (Service API): add support of semantical tokenization for NLedger output;
+- Enhancement (Service API): add auxiliary classes that help to build textual Ledger commands programmatically;
+- Enhancement (Service API): add auxiliary classes that can render Ledger Journal from a Journal object instance
+- Code completion: add integrated pager; add complete support of external pagers;
+  solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
+
+(c) 2017-2021 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
