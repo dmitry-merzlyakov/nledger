@@ -81,4 +81,4 @@ This is a roadmap for development of next NLedger releases.
 - Code completion: add integrated pager; add complete support of external pagers;
   solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
 
-(c) 2017-2021 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2022 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

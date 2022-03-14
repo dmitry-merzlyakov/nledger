@@ -43,7 +43,7 @@
                      <File Id="File_ledger_tests_py" Name="ledger_tests.py" Source="$(var.PackageFolder)NLedger\Python\ledger_tests.py"/>
                      <File Id="File_PyManagement_psm1" Name="PyManagement.psm1" Source="$(var.PackageFolder)NLedger\Python\PyManagement.psm1"/>
                      <File Id="File_Python_drewr3_dat" Name="drewr3.dat" Source="$(var.PackageFolder)NLedger\Python\drewr3.dat"/>
-                     <File Id="File_ledger_0_8_4_py3_none_any_whl" Name="ledger-0.8.4-py3-none-any.whl" Source="$(var.PackageFolder)NLedger\Python\ledger-0.8.4-py3-none-any.whl"/>
+                     <File Id="File_ledger_0_8_5_py3_none_any_whl" Name="ledger-0.8.5-py3-none-any.whl" Source="$(var.PackageFolder)NLedger\Python\ledger-0.8.5-py3-none-any.whl"/>
                   </Component>
                </Directory>
                <Directory Id="testFolder" Name="test">
