@@ -74,6 +74,9 @@ namespace NLedger.Print
             bool needSeparator = false;
             foreach(char c in note)
             {
+                if (c == '\r')      // [DM] Correction for Windows platform: skip \r char added by AppendNote as part of Environment.NewLine
+                    continue;
+
                 if (c == '\n')
                 {
                     needSeparator = true;

@@ -1,0 +1,13 @@
+2022/01/30 * stuff  ;Misc
+    ; UUID: 0292006581600/20220130/0
+    Expenses:Unknown                         123 €
+    Assets:Wallet
+
+test print
+2022/01/30 * stuff
+    ;Misc
+    ; UUID: 0292006581600/20220130/0
+    Expenses:Unknown                           123 €
+    Assets:Wallet
+end test
+

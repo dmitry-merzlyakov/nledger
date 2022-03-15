@@ -180,10 +180,10 @@ namespace NLedger.Items
                     if (byValue)
                     {
                         BindScope boundScope = new BindScope(scope, this);
-                        SetTag(tag, new Expr(field).Calc(boundScope), overwriteExisting);
+                        SetTag(tag, new Expr(field).Calc(boundScope), overwriteExisting, true);
                     }
                     else
-                        SetTag(tag, Value.Get(field), overwriteExisting);
+                        SetTag(tag, Value.Get(field), overwriteExisting, true);
 
                     break;
                 }

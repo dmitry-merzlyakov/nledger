@@ -219,6 +219,14 @@ namespace NLedger.Tests.Items
         }
 
         [Fact]
+        public void Item_ParseTags_Populates_IsParsedFlag()
+        {
+            TestItem item = new TestItem();
+            item.ParseTags(" MyTag: 2012/02/02", null);
+            Assert.True(item.GetMetadata().First().Value.IsParsed);
+        }
+
+        [Fact]
         public void Item_Id_ReturnsUUIDTagsIfExists()
         {
             TestItem item = new TestItem();
