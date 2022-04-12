@@ -1279,7 +1279,7 @@ namespace NLedger.Textual
                 ApplyStack.PushFront("year", TimesCommon.Current.Epoch);
                 Logger.Current.Debug(DebugTimesEpoch, () => String.Format("Setting current year to {0}", year));
                 // This must be set to the last day of the year, otherwise partial
-                // dates like "11/01" will refer to last year's november, not the
+                // dates like "11/01" will refer to last year's November, not the
                 // current year.
                 TimesCommon.Current.Epoch = new DateTime(year, 12, 31);
             }

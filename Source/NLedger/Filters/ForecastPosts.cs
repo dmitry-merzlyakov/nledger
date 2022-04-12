@@ -83,7 +83,7 @@ namespace NLedger.Filters
             // of the pending_posts_list for each posting.
             //
             // The algorithm below works by iterating through the N periodic postings
-            // over and over, until each of them mets the termination critera for the
+            // over and over, until each of them meets the termination criteria for the
             // forecast and is removed from the set.
 
             while (PendingPosts.Any())

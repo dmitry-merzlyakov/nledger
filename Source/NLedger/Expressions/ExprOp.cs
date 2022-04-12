@@ -136,7 +136,7 @@ namespace NLedger.Expressions
         public static ExprOp FindDefinition(ExprOp op, Scope scope, ExprOp locus, int depth, int recursionDepth = 0)
         {
             // If the object we are apply call notation to is a FUNCTION value
-            // or a O_LAMBDA expression, then this is the object we want to
+            // or an O_LAMBDA expression, then this is the object we want to
             // call.
             if (op.IsFunction || op.Kind == OpKindEnum.O_LAMBDA)
                 return op;

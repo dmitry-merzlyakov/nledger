@@ -187,7 +187,7 @@ namespace NLedger.Amounts
         {
             CommodityPool.Cleanup();
 
-            // Add time commodity conversions, so that timelog's may be parsed
+            // Add time commodity conversions, so that timelogs may be parsed
             // in terms of seconds, but reported as minutes or hours.
             Commodity commS = CommodityPool.Current.Create("s");
             if (commS != null)
