@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'True'">netstandard2.0</TargetFrameworks>
     <AssemblyTitle>NLedger</AssemblyTitle>
     <Company>Dmitry Merzlyakov</Company>
