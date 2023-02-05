@@ -70,6 +70,12 @@ namespace NLedger.Tests.Scopus
         [Fact]
         public void Session_ReadData_UsesDefaultLedgerFileNameIfNoFilesSpecifiedAndFilesBecauseOfNoFile()
         {
+            // The fake file system instance guarantess that the session object does not see a default ledger file
+            // that might physically exist on the machine (e.g. %HOMEPATH%\ledger on Windows)
+            var fs = new NLedger.Utility.ServiceAPI.MemoryFileSystemProvider();
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (fileSystemProviderFactory: () => fs));
+
             Session session = new Session();
             Assert.Throws<ParseError>(() => session.ReadData(null));
         }
