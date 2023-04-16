@@ -62,7 +62,7 @@ namespace NLedger.Extensibility
         /// Executes a Ledger command with arguments and returns the output as a text. Helpful for third-party integration software.
         /// </summary>
         /// <param name="session">Current session instance</param>
-        /// <param name="args">Enuemrable of strings that contains a command with arguments</param>
+        /// <param name="args">Enumerable of strings that contains a command with arguments</param>
         /// <param name="readJournalFiles">Optional flag indicating whether it shoudl read journal files before executing teh command</param>
         /// <returns>Command execution result (output text and/or error messages)</returns>
         /// <remarks>This method is composed from Main.Execute, GlobalScope.ExecuteCommandWrapper and GlobalScope.ExecuteCommand.

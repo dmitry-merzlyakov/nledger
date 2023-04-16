@@ -382,7 +382,7 @@ but also allows to run all its examples in an interactive manner. You just selec
 so that you see the result in a command line console popup.
 
 You can also repeat the command, change command line arguments to see the result, change the file and run the command again. If you did something wrong in the file, 
-you can revert your changes and continue experimenting with it. So, it is some kind of a playground that let you learn NLedger features in easy and efficiemt way.
+you can revert your changes and continue experimenting with it. So, it is some kind of a playground that let you learn NLedger features in easy and efficient way.
 
 On Windows, you can run the console by executing *NLedger\Contrib\NLManagement\NLDoc.LiveDemo.WebConsole.cmd*.
 

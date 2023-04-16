@@ -2,7 +2,7 @@
 .SYNOPSIS
     Powershell module that manages NLedger deployment actions
 .DESCRIPTION
-    Installs, uninstalls and checks deployment status on any platform (Wiindows, Linux, OSX)
+    Installs, uninstalls and checks deployment status on any platform (Windows, Linux, OSX)
 .NOTES
     Author: Dmitry Merzlyakov
     Date:   September 04, 2020
@@ -124,7 +124,7 @@ function Uninstall-NLedger {
   Write-Verbose "Uninstalling NLedger"
 
   foreach($info in Get-NLedgerInstalls) {
-    Write-Verbose "Uniinstalling NLedger path $($info.Path)"
+    Write-Verbose "Uninstalling NLedger path $($info.Path)"
 
     if (!($info.HasExe)) {
       Write-Warning "Folder $($info.Path) contains 'ledger' but not 'NLedger-cli'. It might indicate that this folder is not part of NLedger contribution and should not be removed from PATH"

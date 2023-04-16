@@ -61,17 +61,17 @@ namespace NLedger.Extensibility.Python.Tests
                     using (var scope = Py.CreateScope("ledger_tests"))
                     {
                         // Unit tests are executed in local scope. Since Python unit test runner can only manage "main" scope,
-                        // it is necessary to run it explicitely (unittest.main(...)) specifying a test file name as a parameter
+                        // it is necessary to run it explicitly (unittest.main(...)) specifying a test file name as a parameter
                         // Finally, get a boolean value that indicates whether all tests passed well or not (...result.wasSuccessful())
 
                         // Test runner parameters are: 
-                        // exit=False - supresses exiting the current process when all tests are done
-                        // module=None - supresses module importing (basically, "main")
+                        // exit=False - suppresses exiting the current process when all tests are done
+                        // module=None - suppresses module importing (basically, "main")
                         // argv[0] - just a string indicating the current process name (required)
                         // argv[1] - name of a unit test file (should be searchable by Python paths)
 
                         // This method only use a final boolean value (Yes/No) to check whether tests are passed without any diagnostics.
-                        // If it is neccessary to troubleshoot this step, it is recommended to extract a test result object and go through detected errors
+                        // If it is necessary to troubleshoot this step, it is recommended to extract a test result object and go through detected errors
                         // FOr example: var res = scope.Eval(@"unittest.main(exit=False,module=None,argv=('EmbeddedHost','ledger_tests')).result");
 
                         scope.Set("module_test_folder", moduleTestFolder);

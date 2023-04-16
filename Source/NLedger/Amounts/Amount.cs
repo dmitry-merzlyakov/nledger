@@ -1505,7 +1505,7 @@ namespace NLedger.Amounts
         }
 
         /// <summary>
-        /// to_string() returns an amount'ss "display value" as a string --
+        /// to_string() returns an amount's "display value" as a string --
         /// after rounding the value according to the commodity's default
         /// precision.  It is equivalent to: `round().to_fullstring()'.
         /// </summary>

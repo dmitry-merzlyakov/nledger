@@ -19,7 +19,7 @@ namespace NLedger.Tests
 {
     // By default, this test uses BigRational arithmetic to validate BigInt.
     // In case you want to validate BigInt with Decimal arithmetic, uncomment the next alias.
-    // See Amount.cs for further information about Qunatity Arithmetics in NLedger
+    // See Amount.cs for further information about Quantity Arithmetics in NLedger
     using BigInt = BigInt<BigRational>;
     //using BigInt = BigInt<BigDecimal>;
 

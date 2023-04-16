@@ -283,7 +283,7 @@ namespace NLedger.Tests.Amounts
             Commodity commodityA = new Commodity(CommodityPool.Current, new CommodityBase("AmtNZeroA")) { Precision = 2 };
             // Set a value that less than commodity precision (2) but higher than quantity precision (8)
             Amount amountA = new Amount(Quantity.Parse("0.008", 8), commodityA);
-            Assert.False(amountA.IsZero);  // The value is rounded to 0.01 accorrding to Commodity precision
+            Assert.False(amountA.IsZero);  // The value is rounded to 0.01 according to Commodity precision
         }
 
         [Fact]

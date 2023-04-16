@@ -153,7 +153,7 @@ function Get-Success {
     return @{ Status=$True; Message=$message }
 }
 
-# Helper method that print a structure indicater either success or failure
+# Helper method that print a structure indicator either success or failure
 function PrintStatusResponse {
   [CmdletBinding()]
   Param(
@@ -189,7 +189,7 @@ function Write-ConsoleColors {
     The former changes foreground color of further string; the latter changes the background.
     Console color name matches the names specified in System.ConsoleColor enum. Case insensitive.
 .PARAMETER inputString
-    Input string that can contain colorizatiion tokens.
+    Input string that can contain colorization tokens.
 .PARAMETER NoNewLine
     Switcher that indicates whether the output should end up with a new line symbol.
 .EXAMPLE

@@ -2,7 +2,7 @@
 .SYNOPSIS
     Powershell module that helps managing hard links for files
 .DESCRIPTION
-    Creates, removes and checks file hard links on any platform (Wiindows, Linux, OSX)
+    Creates, removes and checks file hard links on any platform (Windows, Linux, OSX)
 .NOTES
     Author: Dmitry Merzlyakov
     Date:   September 04, 2020

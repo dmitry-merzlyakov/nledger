@@ -2,7 +2,7 @@
 .SYNOPSIS
     Powershell module that manages shell PATH variable
 .DESCRIPTION
-    Adds, removes and checks paths in PATH variable on any platform (Wiindows, Linux, OSX)
+    Adds, removes and checks paths in PATH variable on any platform (Windows, Linux, OSX)
 .NOTES
     Author: Dmitry Merzlyakov
     Date:   September 04, 2020
@@ -51,7 +51,7 @@ function Reset-Shell {
 .SYNOPSIS
     Compares two paths
 .DESCRIPTION
-    Checks whether two paths are equal and retrns True or False. Properly manages relative and do-normalized paths.
+    Checks whether two paths are equal and returns True or False. Properly manages relative and do-normalized paths.
 .PARAMETER pathA
     First path
 .PARAMETER pathB
