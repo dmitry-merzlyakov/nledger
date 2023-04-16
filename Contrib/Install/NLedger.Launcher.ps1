@@ -1,4 +1,4 @@
-# This scripts runs the installer with elevated priviledges and keeps PS console open to let people read the status of installation activities.
+# This scripts runs the installer with elevated privileges and keeps PS console open to let people read the status of installation activities.
 [CmdletBinding()]
 Param(
     [Switch][bool]$uninstall = $False

@@ -16,7 +16,7 @@ namespace NLedger.Extensibility.Export
 {
     /// <summary>
     /// This is a wrapper for exported List objects. It keeps a reference to an original list, mimics basic methods but hides interfaces 
-    /// that might identify the origin as a list. Replacing lists with the wrapper prevents impicit conversion by connectors that causes loosing 
+    /// that might identify the origin as a list. Replacing lists with the wrapper prevents implicit conversion by connectors that causes loosing 
     /// a reference to the origin. So, wrapped lists properly supply mutability (manipulations with the exported list are reflected in the origin).
     /// </summary>
     public class ListAdapter<T>

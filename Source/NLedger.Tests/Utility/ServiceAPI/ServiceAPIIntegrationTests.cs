@@ -210,14 +210,14 @@ namespace NLedger.Tests.Utility.ServiceAPI
             Assert.Single(posts);
 
             // Note: once session response is received, current thread is out of NLedger application context.
-            // It means that queried objects (posts in this example) are accessible, but provide limited functinality.
+            // It means that queried objects (posts in this example) are accessible, but provide limited functionality.
             // Some properties or functions are accessible; some might trigger runtime exceptions.
             var post = posts.Single();
             Assert.Equal("Expenses:Food", post.Account.ToString());
             Assert.Equal(20, post.Amount.Quantity.ToLong());
 
             // If you need to get full access to all properties and functions, you need to set NLedger application context.
-            // (at least, for a limited scoope like "using" below). In bounds of this scope, all NLedger functinality is available.
+            // (at least, for a limited scope like "using" below). In bounds of this scope, all NLedger functionality is available.
             using (response.MainApplicationContext.AcquireCurrentThread())
             {
                 Assert.Equal("Payee", post.Payee);

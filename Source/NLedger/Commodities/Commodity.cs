@@ -33,7 +33,7 @@ namespace NLedger.Commodities
          * for default ordering of commodities. The previous considerations still make sence: changing SortedDictionary to Dictionary
          * leads to failed tests (cmd-pricemap.test, regress\7C44010B.test) because of differences in hashing between .Net Dictionary and the unordered_map.
          * DM: migrated test "cmd-org.test" revealed an issue with class balance_t.
-         * In partucular, its member "amounts" (typedef std::map<commodity_t *, amount_t> amounts_map)
+         * In particular, its member "amounts" (typedef std::map<commodity_t *, amount_t> amounts_map)
          * does not specify any comparison rules (there is no third generic type in the template), 
          * so std::map uses a default comparer (std:less<K>). It compares commodity instances by means of operator "<" - __x < __y.
          * Since commodity_to does not override this operator, the system compares _object_allocation_addresses_ in memory.

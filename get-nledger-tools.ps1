@@ -4,7 +4,7 @@
 .DESCRIPTION
     NLedger toolkit helps to manage NLedger deployments on the current environment.
     It covers the following areas:
-        1) Installing and uninstalling NLedger (that means addiing to PATH variable, creating 'ledger' hard link and some other activities);
+        1) Installing and uninstalling NLedger (that means adding to PATH variable, creating 'ledger' hard link and some other activities);
         2) Executing tests from Ledger testing framework (that ensures that existing binaries behaves exactly as the original Ledger);
         3) Managing NLedger settings;
         4) Showing an interactive demo web application.
@@ -12,7 +12,7 @@
     If no switches are specified, this script just prints a help text.
 .PARAMETER install
     Installs NLedger binaries on the current environment (adds to PATH variable and creates 'ledger' hard link).
-    If the current deployment coontains binaries for both platforms (.Net Framework and .Net Core) - installs .Net Framework binaries.
+    If the current deployment contains binaries for both platforms (.Net Framework and .Net Core) - installs .Net Framework binaries.
     If you run the script with administrative privileges, it will also create NGen image for .Net Framework binaries.
 .PARAMETER installPreferCore
     Installs NLedger binaries but prefers .Net Core binaries if there is a choice.

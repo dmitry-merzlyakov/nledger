@@ -59,7 +59,7 @@ namespace NLedger.Abstracts
         /// See https://tiswww.case.edu/php/chet/readline/history.html
         /// </remarks>
         /// <param name="readLineName">Optional key that filters history</param>
-        /// <param name="str">Text to expact</param>
+        /// <param name="str">Text to expect</param>
         /// <param name="output">Result</param>
         /// <returns>
         /// Note: return Zero if history is not available

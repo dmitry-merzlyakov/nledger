@@ -22,7 +22,7 @@ namespace NLedger.Abstracts
         /// <summary>
         /// Show man page and immediately return execution flow
         /// </summary>
-        /// <returns>Indicates whether the operation is successfull</returns>
+        /// <returns>Indicates whether the operation is successful</returns>
         bool Show();
     }
 }

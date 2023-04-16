@@ -432,7 +432,7 @@ class OriginKeeper:
         self._origin = value
 
     def get_origin(self):
-        raise Exception("Method 'get_origin' should be defined in derived class if 'origin' value is not specified explicitely.")
+        raise Exception("Method 'get_origin' should be defined in derived class if 'origin' value is not specified explicitly.")
 
 ###########################
 # Ported extras
@@ -2748,7 +2748,7 @@ class Value(OriginKeeper):
 
         assert(not (commodities is None) and isinstance(commodities, str))
         if addPrices is None:
-            return Value.to_value(self.origin.ExchangeCommodities(commodities, False, DateTime())) # default(DateTime) caused PythonNet issued, so arguments are populated explicitely
+            return Value.to_value(self.origin.ExchangeCommodities(commodities, False, DateTime())) # default(DateTime) caused PythonNet issued, so arguments are populated explicitly
 
         assert(isinstance(addPrices, bool))
         if moment is None:

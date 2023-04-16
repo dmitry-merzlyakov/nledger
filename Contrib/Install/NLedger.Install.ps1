@@ -7,7 +7,7 @@
       1) Adds the path to NLedger binaries to PATH variable so that you can call in any folder;
       2) Creates an alias (hard link) 'ledger' to 'NLedger-cli.exe' to let you use a typical name;
       3) For .Net Framework, it calls NGen to create a very efficient native image for NLedger binaries that
-         dramatically improves performance. Note: this action requires administrative priviledges.
+         dramatically improves performance. Note: this action requires administrative privileges.
     If no switches are specified, this script can play a role of an interactive console where the user
     can enter available commands and check the result status. Available commands are shown when the script is run.
 .PARAMETER install
