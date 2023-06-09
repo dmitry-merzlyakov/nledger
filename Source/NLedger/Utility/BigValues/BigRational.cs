@@ -367,7 +367,7 @@ namespace NLedger.Utility.BigValues
             string fractionalFormat = pos >= 0 && format.Length > pos + 1 ? format.Substring(pos + 1) : String.Empty;
             int prec = pos >= 0 ? format.Length - pos - 1 : 0;
 
-            // Round value and get integral and fractional parts of this valud
+            // Round value and get integral and fractional parts of this value
             BigRational value;
             Round(out value, prec);
             var integral = value.GetWholePart();

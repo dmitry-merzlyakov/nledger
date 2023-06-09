@@ -389,7 +389,7 @@ namespace NLedger.Tests.Scopus
             scope1.PushFront(Value.Get("string"));
             scope1.PushBack(Value.Get(true));
             option1.Handler(scope1);
-            Assert.Equal("true", option1.Value); // Indicates that the call was successfull
+            Assert.Equal("true", option1.Value); // Indicates that the call was successful
 
             Option option2 = new Option("myname_");
             CallScope scope2 = new CallScope(new EmptyScope());
@@ -426,7 +426,7 @@ namespace NLedger.Tests.Scopus
             CallScope scope1 = new CallScope(new EmptyScope());
             scope1.PushFront(Value.Get("string"));
             option1.Handler(scope1);
-            Assert.True(option1.Handled); // Indicates that the call was successfull
+            Assert.True(option1.Handled); // Indicates that the call was successful
 
             Option option2 = new Option("myname");
             CallScope scope2 = new CallScope(new EmptyScope());

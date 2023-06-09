@@ -403,7 +403,7 @@ Settings include a full path to a Python executable file, Python HOME and PATH v
 The command is intended to create NLedger Python extension settings automatically by extracting needed information from an existing Python deployment.
 
 In the first step, it determines the location of Python deployment in the following order:
-- If 'path' parameter is specified, it uses the parameter value explicitely
+- If 'path' parameter is specified, it uses the parameter value explicitly
 - If 'embed' parameter is specified, it installs an embedded Python in NLedger application folder and refers to it
 - If extension settings file already exists, it extracts the path from the file
 - Otherwise, it tries to find a local Python installation.

@@ -81,7 +81,7 @@ namespace NLedger.Abstracts.Impl
             }
             catch (Exception ex)
             {
-                Logger.Current.Debug("pager", () => String.Format("Error occured during pager execution: {0}", ex.Message));
+                Logger.Current.Debug("pager", () => String.Format("Error occurred during pager execution: {0}", ex.Message));
                 throw new LogicError(String.Format("Error in the pager: {0}", ex.Message));
             }
         }

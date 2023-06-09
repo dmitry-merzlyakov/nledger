@@ -37,7 +37,7 @@ function help {
   Write-Console "{c:gray}For example, {c:darkgray}get-help show{c:gray} explains every command option and provides examples."
   Write-Console ""
   Write-Console "{c:gray}Note: if you want to modify settings in app config file (e.g. NLedger-cli.exe.config),"
-  Write-Console "{c:gray}you must have administrative priviledges. Run this console as an administrator."
+  Write-Console "{c:gray}you must have administrative privileges. Run this console as an administrator."
   Write-Console ""
 }
 
@@ -240,7 +240,7 @@ function show-details {
 .PARAMETER settingValue
     The value (case-insensitive if the list permitted values is specified).
 .PARAMETER app
-    Default: False. Indicates that the current scope is Application. You must have adminidstrative priviledges.
+    Default: False. Indicates that the current scope is Application. You must have administrative privileges.
 .PARAMETER common
     Default: False. Indicates that the current scope is Common (all users).
 .PARAMETER user
@@ -287,7 +287,7 @@ function set-setting {
 .PARAMETER settingName
     The name of setting (case-insensitive).
 .PARAMETER app
-    Default: False. Indicates that the current scope is Application. You must have adminidstrative priviledges.
+    Default: False. Indicates that the current scope is Application. You must have administrative privileges.
 .PARAMETER common
     Default: False. Indicates that the current scope is Common (all users).
 .PARAMETER user

@@ -261,7 +261,7 @@ namespace NLedger.Utility
                     node = childNode;
 
                     if (node.IsLeaf)
-                        throw new InvalidOperationException("Unbalanced sequence lengthes");
+                        throw new InvalidOperationException("Unbalanced sequence lengths");
                 }
                 node.Action = ansiCsiAction;
             }

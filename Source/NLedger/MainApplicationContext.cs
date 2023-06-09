@@ -162,7 +162,7 @@ namespace NLedger
             _ApplicationServiceProvider = applicationServiceProvider;
         }
 
-        // Request an excluse access to the current thread
+        // Request an exclusive access to the current thread
         public ThreadAcquirer AcquireCurrentThread()
         {
             return new ThreadAcquirer(this);

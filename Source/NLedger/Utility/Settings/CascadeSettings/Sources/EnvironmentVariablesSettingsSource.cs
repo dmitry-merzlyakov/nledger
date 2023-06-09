@@ -23,7 +23,7 @@ namespace NLedger.Utility.Settings.CascadeSettings.Sources
         /// <summary>
         /// Creates an instance of the source.
         /// </summary>
-        /// <param name="namePrefix">Optinal filtering prefix for setting names</param>
+        /// <param name="namePrefix">Optimal filtering prefix for setting names</param>
         public EnvironmentVariablesSettingsSource(string namePrefix = null)
         {
             NamePrefix = namePrefix;
