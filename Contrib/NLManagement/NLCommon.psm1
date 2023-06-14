@@ -1,7 +1,7 @@
 ﻿# NLedger Management Module that shares a common routine functions with others
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-Import-Module $Script:ScriptPath\..\NLManagement\NLWhere.psm1 -Force
+Import-Module $Script:ScriptPath/../NLManagement/NLWhere.psm1 -Force
 
 # ANSI Terminal colorization
 
@@ -353,5 +353,235 @@ function NLedgerLocation {
   if (!$private:path) { throw "Cannot find NLedger executable file" }
   return [System.IO.Path]::GetDirectoryName($private:path)
 }
+
+
+<#
+.SYNOPSIS
+    Determines whether the current OS is Windows
+.DESCRIPTION
+    Returns True if the current OS is Windows or returns False otherwise.
+#>
+function Test-IsWindows {
+  [CmdletBinding()]
+  Param()
+
+  [bool][System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+}
+
+<#
+.SYNOPSIS
+    Determines whether the current OS is OSX
+.DESCRIPTION
+    Returns True if the current OS is OSX or returns False otherwise.
+#>
+function Test-IsOSX {
+  [CmdletBinding()]
+  Param()
+
+  [bool][System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+}
+
+<#
+.SYNOPSIS
+    Determines whether the current OS is Linux
+.DESCRIPTION
+    Returns True if the current OS is Linux or returns False otherwise.
+#>
+function Test-IsLinux {
+  [CmdletBinding()]
+  Param()
+
+  [bool][System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)
+}
+
+<#
+.SYNOPSIS
+    Returns a full path to ProgramFiles(x86) folder
+.DESCRIPTION
+    Only for Windows OS
+#>
+function Get-SpecialFolderProgramFilesX86 {
+  [CmdletBinding()]
+  Param()
+
+  if(Test-IsWindows){[System.Environment]::GetFolderPath(([System.Environment+SpecialFolder]::ProgramFilesX86))}else{""}
+}
+
+<#
+.SYNOPSIS
+    Returns a list of installed .Net Framework SDKs as a collection of versions
+.DESCRIPTION
+    On windows machines, installed .Net Framework SDKs can be identified by subfolders in %ProgramFiles(x86)%\Reference Assemblies\Microsoft\Framework\.NETFramework\
+#>
+function Get-NetFrameworkSDKs {
+  [CmdletBinding()]
+  Param()
+
+  if (Get-SpecialFolderProgramFilesX86) {
+    (Get-ChildItem -Path "$(Get-SpecialFolderProgramFilesX86)/Reference Assemblies/Microsoft/Framework/.NETFramework" -Directory) | 
+      Where-Object { $_ -match "v\d+.\d+(.\d+)?" } |
+      ForEach-Object { [version]($_ | Select-String -Pattern "\d+.\d+(.\d+)?").Matches.Value }
+  }
+}
+
+<#
+.SYNOPSIS
+    Returns a list of available .Net Framework SDK targets (TFM codes)
+.DESCRIPTION
+    Transforms a collection of installed .Net Framework SDLs into TFM codes
+#>
+function Get-NetFrameworkSdkTargets {
+  [CmdletBinding()]
+  Param()
+
+  (Get-NetFrameworkSDKs) | ForEach-Object { if($_.Build -eq -1) {"net$($_.Major)$($_.Minor)"} else {"net$($_.Major)$($_.Minor)$($_.Build)"} }
+}
+
+<#
+.SYNOPSIS
+    Determines whether dotnet is installed on the current machine.
+.DESCRIPTION
+    Returns True if "dotnet" command is available on the current machine.
+#>
+function Test-IsDotnetInstalled {
+  [CmdletBinding()]
+  Param()
+
+  [bool]-not(-not($(get-command dotnet -ErrorAction SilentlyContinue)))
+}
+
+<#
+.SYNOPSIS
+    Determines currently installed dotnet SDKs
+.DESCRIPTION
+    Returns the list of versions of every installed SDK
+#>
+function Get-DotnetSdks {
+  [CmdletBinding()]
+  Param()
+
+  $(dotnet --list-sdks) | ForEach-Object { [version]($_ | Select-String -Pattern "^\d+.\d+.\d+").Matches.Value }
+}
+
+<#
+.SYNOPSIS
+    Provides available dotnet build targets
+.DESCRIPTION
+    Returns the list of build targets (TFM codes) that correspond to the list of installed dotnet SDKs
+#>
+function Get-DotnetSdkTargets {
+  [CmdletBinding()]
+  Param()
+
+  Get-DotnetSdks | ForEach-Object { if($_.Major -lt 5) {"netcoreapp$($_.Major).$($_.Minor)"} else {"net$($_.Major).$($_.Minor)"} }
+}
+
+<#
+.SYNOPSIS
+    Checks whether given string is a valid TFM code
+.DESCRIPTION
+    Supports .Net Core/5.0+ and .Net Framework codes
+#>
+function Test-IsTfmCode {
+  [CmdletBinding()]
+  Param([Parameter(Mandatory=$True)][string]$code)
+
+  [bool]($code -match "(net|netcoreapp)\d+(\.\d+)?")
+}
+
+<#
+.SYNOPSIS
+    Checks whether given TFM code is about .Net Framework target
+.DESCRIPTION
+    Supports all .Net Framework codes
+#>
+function Test-IsFrameworkTfmCode {
+  [CmdletBinding()]
+  Param([Parameter(Mandatory=$True)][string]$code)
+
+  [bool]($code -match "^net\d+$")
+}
+
+# For internal usage
+function Get-NLedgerBins {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)][string]$folderName,
+    [Parameter(Mandatory=$True)][bool]$isDebug
+  )
+
+  if (Test-Path -LiteralPath $folderName -PathType Container) {
+    Write-Verbose "Get-NLedgerBins - collecting info from $folderName folder."
+    foreach($targetFolder in (Get-ChildItem -LiteralPath $folderName -Directory) | Where-Object { Test-IsTfmCode $_.Name }) {
+      [string]$tfmCode = $targetFolder.Name
+      [string]$tfmFolder = $targetFolder.FullName
+      [bool]$isOsxRuntime = $false
+
+      if (Test-Path -LiteralPath "$tfmFolder/osx-x64" -PathType Container) { 
+        $tfmFolder = "$tfmFolder/osx-x64"
+        $isOsxRuntime = $true
+      }
+
+      [string]$nledgerFile = "$tfmFolder/NLedger-cli.exe"
+      if (!(Test-Path -LiteralPath $nledgerFile -PathType Leaf)) {
+        $nledgerFile = "$tfmFolder/NLedger-cli"
+        if (!(Test-Path -LiteralPath $nledgerFile -PathType Leaf)) { continue }
+      }
+
+      Write-Verbose "Found executable NLedger: $nledgerFile (TFM: $tfmCode; Debug: $isDebug; OSX: $isOsxRuntime)"
+      [PSCustomObject]@{
+        NLedgerExecutable = [System.IO.Path]::GetFullPath($nledgerFile)
+        TfmCode = $tfmCode
+        IsDebug = $isDebug
+        IsOsxRuntme = $isOsxRuntime
+      }
+
+    }
+  } else {
+    Write-Verbose "Get-NLedgerBins - folder $folderName does not exist."
+  }
+}
+
+<#
+.SYNOPSIS
+    Provides information about available NLedger binaries
+.DESCRIPTION
+    Returns a collection of objects containing information about local NLedger binaries.
+    Every info object has a full path to NLedger executable file, corresponded TFM code and Debug/Release flag.
+    The function looks for files in the current file structure 
+    (either development structure that is a copy of the repository or public binaries distructured by means of zip archive or MSI file).
+#>
+function Get-NLedgerBinaryInfos {
+  [CmdletBinding()]
+  Param()
+
+  [string]$devDebugBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Debug")
+  [string]$devReleaseBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Release")
+  [string]$publicBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../bin")
+
+  return  (Get-NLedgerBins -folderName $devDebugBin -isDebug $true) +
+          (Get-NLedgerBins -folderName $devReleaseBin -isDebug $false) +
+          (Get-NLedgerBins -folderName $publicBin -isDebug $false)
+}
+
+<#
+.SYNOPSIS
+    Provides information about a specific NLedger binary file
+.DESCRIPTION
+    Looks for a specific NLedger instance in a collection of available local binaries
+    using specified TFM code and Debug/Release flag
+#>
+function Get-NLedgerBinaryInfo {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)][string]$tfmCode,
+    [Parameter(Mandatory=$True)][bool]$isDebug
+  )
+
+  return  Get-NLedgerBinaryInfos | Where-Object { $_.TfmCode -eq $tfmCode -and $_.IsDebug -eq $isDebug }
+}
+
+
+
 
 Export-ModuleMember -function * -alias *

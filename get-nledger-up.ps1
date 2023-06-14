@@ -8,9 +8,14 @@
     (adds to PATH and creates 'ledger' hard link). In case of any errors on any steps,
     the script provides troubleshooting information to help people solve environmental
     issues. Switches can regulate this process. The script works on any platform (Windows, Linux, OSX).
-.PARAMETER coreOnly
-    Orders to create .Net Core binaries only. By default, the script creates both Framework
-    and Core binaries. This switch is selected automatically on non-Windows platforms.
+.PARAMETER targets
+    An optional parameter that specifies one or more target framework versions for binary files.
+    The targets should be provided as a semicolon-separated list of target framework moniker (TFM) codes.
+    (See more about TFM here: https://learn.microsoft.com/en-us/dotnet/standard/frameworks)
+    If this parameters is omitted, the script tries to build two targets: net48 and net6.0 with two exceptions:
+    - net48 target is ignored if it is not available (on non-Windows machines or if the current machine does not have .Net Framework 4,8 SDK);
+    - If net6.0 SDK is not installed, the script uses the latest available dotnet SDK.
+    Targets specified by the user are used as they are (so, you might get a build error if a corresponded SDK is not available).
 .PARAMETER debugMode
     Orders to create binaries in Debug mode (Release by default)
 .PARAMETER noUnitTests
@@ -28,9 +33,8 @@
     PS> ./get-nledger-up.ps1 -Verbose
     Show detail diagnostic information to troubleshoot build issues.
 .EXAMPLE
-    PS> ./get-nledger-up.ps1 -coreOnly
-    Create .Net Core binaries only.
-    Note: this switch is set automatically on non-windows platforms.
+    PS> ./get-nledger-up.ps1 -targets net5.0;net7.0
+    Create binaries for net5.0 and net 7.0 targets.
 .NOTES
     Author: Dmitry Merzlyakov
     Date:   October 19, 2021
@@ -40,7 +44,7 @@
 #>
 [CmdletBinding()]
 Param(
-    [Switch][bool]$coreOnly = $False,
+    [string]$targets = "",
     [Switch][bool]$debugMode = $False,
     [Switch][bool]$noUnitTests = $False,
     [Switch][bool]$noNLTests = $False,
@@ -55,39 +59,61 @@ trap
 } 
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-[Version]$minDotnetVersion = "3.1"
+
+[string]$defaultFrameworkTarget = "net48"
+[string]$defaultDotnetTarget = "net6.0"
 
 Write-Progress -Activity "Building, testing and installing NLedger" -Status "Initialization"
 
+function Assert-FileExists {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)][string]$fileName)
+
+    $fileName = [System.IO.Path]::GetFullPath($fileName)
+    if (!(Test-Path -LiteralPath $fileName -PathType Leaf)) { throw "File '$fileName' does not exist. Check that source code base is in valid state." }
+    return $fileName
+}
+
+Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/NLManagement/NLCommon.psm1") -Force
+
 # Check environmental information
 
-[bool]$isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-[bool]$isOsxPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+[bool]$isWindowsPlatform = Test-IsWindows
+[bool]$isOsxPlatform = Test-IsOSX
 Write-Verbose "Detected: is windows platform=$isWindowsPlatform; is OSX platform: $isOsxPlatform"
 
-[bool]$isDotNetInstalled = -not(-not($(get-command dotnet -ErrorAction SilentlyContinue)))
-if (!$isDotNetInstalled) { throw "DotNet Core is not installed (command 'dotnet' is not available)" }
-
-[Version]$dotnetVersion = $(dotnet --version)
-Write-Verbose "Detected: dotnet version=$dotnetVersion"
-if ($dotnetVersion -lt $minDotnetVersion) { throw "Detected dotnet version is $dotnetVersion but minimal required is $minDotnetVersion" }
+if (!(Test-IsDotnetInstalled)) { throw "DotNet Core is not installed (command 'dotnet' is not available)" }
 
 # Validate switchers
 
-if (!$isWindowsPlatform -and !$coreOnly) {
-    $coreOnly = $true
-    Write-Verbose "Since it is not windows platform, switch 'coreOnly' is changed to 'True'."
+function Get-AppropriateTarget {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$True)]$availableTargets,
+        [Parameter(Mandatory=$True)][string]$defaultTarget
+    )
+
+    if ($availableTargets -contains $defaultTarget) {$defaultTarget} else {$availableTargets | Select-Object -Last 1}
 }
+
+if (!$targets) {
+    Write-Verbose "Getting default build targets"
+    $targetList = @(
+        Get-AppropriateTarget (Get-NetFrameworkSdkTargets) $defaultFrameworkTarget
+        Get-AppropriateTarget (Get-DotnetSdkTargets) $defaultDotnetTarget
+    ) | Where-Object {$_}
+    if (!$targetList) { throw "Appropriate build targets not found on the local machine. Specify 'target' parameter explicitely." }
+    $targets = [string]::Join(";", $targetList)
+}
+Write-Verbose "Build targets: $targets"
 
 # Check codebase structure
 
-[string]$solutionPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.sln")
-Write-Verbose "Expected solution path: $solutionPath"
-if (!(Test-Path -LiteralPath $solutionPath -PathType Leaf)) { "File '$solutionPath' does not exist. Check that source code base is in valid state." }
+[string]$solutionPath = Assert-FileExists "$Script:ScriptPath/Source/NLedger.sln"
+Write-Verbose "Solution path: $solutionPath"
 
-[string]$nlTestPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/Contrib/NLTestToolkit/NLTest.ps1")
-Write-Verbose "Expected NLTest path: $nlTestPath"
-if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$nlTestPath' does not exist. Check that source code base is in valid state." }
+[string]$nlTestPath = Assert-FileExists "$Script:ScriptPath/Contrib/NLTestToolkit/NLTest.ps1"
+Write-Verbose "NLTest path: $nlTestPath"
 
 # Check Python connection availability
 
@@ -96,7 +122,7 @@ if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { "File '$nlTestPath' 
 if (!$noPython) {
     Write-Verbose "Checking NLedger Python extension settings..."
     
-    [string]$testConnectionOutput = & $powershell -File $("$Script:ScriptPath/Contrib/Python/GetPythonEnvironment.ps1") -command "test-connection"
+    [string]$testConnectionOutput = & $powershell -File $(Assert-FileExists "$Script:ScriptPath/Contrib/Python/GetPythonEnvironment.ps1") -command "test-connection"
     Write-Verbose "GetPythonEnvironment's test-connection returned: $testConnectionOutput"
     $pythonConnectionStatus = $(if($testConnectionOutput){[System.Management.Automation.PSSerializer]::Deserialize($testConnectionOutput)}else{$null})
     
@@ -109,13 +135,18 @@ if ($noPython){$env:NLedgerPythonConnectionStatus = "Disabled"}
 
 # First step: build sources
 
-Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building source code [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
+Write-Progress -Activity "Building, testing and installing NLedger" -Status "Building source code [$targets] [$(if($debugMode){"Debug"}else{"Release"})]"
 
-[string]$buildCommandLine = "dotnet build '$solutionPath'"
-if ($coreOnly) { $buildCommandLine += " /p:CoreOnly=True"}
-if ($debugMode) { $buildCommandLine += " --configuration Debug"} else { $buildCommandLine += " --configuration Release" }
-if ($isOsxPlatform) { $buildCommandLine += " -r osx-x64"}
-Write-Verbose "Build sources command line: $buildCommandLine"
+function Get-DotnetBuildCommandLine {
+    [CmdletBinding()]
+    Param([Parameter(Mandatory=$True)][string]$command)
+
+    $env:LocalTargetFrameworks = $targets # Because of msbuild issue, use env variable instead of parameter -p:LocalTargetFrameworks='$targets'. See https://github.com/dotnet/msbuild/issues/2999
+    [string]"dotnet $command '$solutionPath' --configuration $(if($debugMode){"Debug"}else{"Release"}) $(if($isOsxPlatform){" -r osx-x64"})"
+}
+
+[string]$buildCommandLine = Get-DotnetBuildCommandLine "build"
+Write-Verbose "Build sources command line: $buildCommandLine; Environment variable LocalTargetFrameworks: $env:LocalTargetFrameworks"
 
 $null = (Invoke-Expression $buildCommandLine | Write-Verbose)
 if ($LASTEXITCODE -ne 0) { throw "Build failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
@@ -123,13 +154,10 @@ if ($LASTEXITCODE -ne 0) { throw "Build failed for some reason. Run this script 
 # Second step: run unit tests
 
 if(!$noUnitTests) {
-    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running unit tests [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
+    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running unit tests [$targets] [$(if($debugMode){"Debug"}else{"Release"})]"
 
-    [string]$unittestCommandLine = "dotnet test '$solutionPath'"
-    if ($coreOnly) { $unittestCommandLine += " /p:CoreOnly=True"}
-    if ($debugMode) { $unittestCommandLine += " --configuration Debug"} else { $buildCommandLine += " --configuration Release" }
-    if ($isOsxPlatform) { $buildCommandLine += " -r osx-x64"}
-    Write-Verbose "Run unit tests command line: $unittestCommandLine"
+    [string]$unittestCommandLine = Get-DotnetBuildCommandLine "test"
+    Write-Verbose "Run unit tests command line: $unittestCommandLine; Environment variable LocalTargetFrameworks: $env:LocalTargetFrameworks"
 
     $null = (Invoke-Expression $unittestCommandLine | Write-Verbose)
     if ($LASTEXITCODE -ne 0) { throw "Unit tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
@@ -137,40 +165,30 @@ if(!$noUnitTests) {
 
 # Third step: run integration tests
 
-function composeNLedgerExePath {
-    Param([Parameter(Mandatory=$True)][bool]$core)
-    [string]$private:config = $(if($debugMode){"Debug"}else{"Release"})
-    [string]$private:framework = $(if($core){"netcoreapp3.1"}else{"net472"})
-    [string]$private:osxBin = $(if($isOsxPlatform){"/osx-x64"})
-    [string]$private:extension = $(if($isWindowsPlatform){".exe"}else{""})
-    return [System.IO.Path]::GetFullPath("$Script:ScriptPath/Source/NLedger.CLI/bin/$private:config/$private:framework$($private:osxBin)/NLedger-cli$private:extension")
-}    
+$targetList = $targets -split ";"
+$targetBins = Get-NLedgerBinaryInfos | Where-Object { $targetList -contains $_.TfmCode -and $_.IsDebug -eq $debugMode }
+if (($targetList | Measure-Object).Count -ne ($targetBins | Measure-Object).Count) { throw "Detected unrecognisable issue: the number of build targets does not equal to the number of built binaries. Please, verify verbose log and find out the cause of this issue." }
 
 if (!$noNLTests)
 {
     [string]$ignoreCategories = $(if($noPython){"python"}else{""})
 
-    if (!$coreOnly){
-        Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [.Net Framework] [$(if($debugMode){"Debug"}else{"Release"})]"
+    foreach ($binInfo in $targetBins) {
+        Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [$($binInfo.TfmCode)] [$(if($debugMode){"Debug"}else{"Release"})]"
 
-        [string]$nledgerFrameworkExeFile = composeNLedgerExePath -core $false
-        if (!(Test-Path -LiteralPath $nledgerFrameworkExeFile -PathType Leaf)) { throw "Cannot find $nledgerFrameworkExeFile" }
+        if (Test-IsFrameworkTfmCode $binInfo.TfmCode) {
+            Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Install/SysNGen.psm1")
+            if (Test-CanCallNGen) {$null = Add-NGenImage $binInfo.NLedgerExecutable }
+        }
 
-        Import-Module "$Script:ScriptPath/Contrib/Install/SysNGen.psm1"
-        if (Test-CanCallNGen) {$null = Add-NGenImage $nledgerFrameworkExeFile}
-
-        $null = (& $nlTestPath -nledgerExePath $nledgerFrameworkExeFile -noconsole -showProgress -ignoreCategories $ignoreCategories | Write-Verbose)
+        $null = (& $nlTestPath -nledgerExePath $binInfo.NLedgerExecutable -noconsole -showProgress -ignoreCategories $ignoreCategories | Write-Verbose)
         if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
     }
-
-    Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [.Net Core] [$(if($debugMode){"Debug"}else{"Release"})]"
-
-    [string]$nledgerCoreExeFile = composeNLedgerExePath -core $true
-    if (!(Test-Path -LiteralPath $nledgerCoreExeFile -PathType Leaf)) { throw "Cannot find $nledgerCoreExeFile" }
-
-    $null = (& $nlTestPath -nledgerExePath $nledgerCoreExeFile -noconsole -showProgress -ignoreCategories $ignoreCategories | Write-Verbose)
-    if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
 }
+
+
+throw "stop"
+
 
 # Fourth step: build Python module
 
