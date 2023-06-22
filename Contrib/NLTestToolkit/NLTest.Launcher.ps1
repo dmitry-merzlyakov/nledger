@@ -3,10 +3,14 @@
 Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-Import-Module $Script:ScriptPath\..\NLManagement\NLWhere.psm1 -Force
+Import-Module "$Script:ScriptPath/../NLManagement/NLCommon.psm1" -Force
 
 [string]$nlTestPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/NLTest.ps1")
 if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) {throw "Cannot find '$nlTestPath'"}
+
+$nlBinInfo = Get-PreferredNLedgerBinaryInfo
+if (!$nlBinInfo) { throw "NLedger binary file not found. Please, check your deployment structure and verify that binary files are presented. Use -verbose switch to troubleshoot the problem." }
+$env:nledgerExePath = $nlBinInfo.NLedgerExecutable
 
 function run {
 [CmdletBinding()]
@@ -44,17 +48,27 @@ Param(
     }
 }
 
+function status {
+    [CmdletBinding()]
+    Param()
+    
+    "NLedger binary file: $env:nledgerExePath"
+    (Out-NLedgerBinaryInfos -currentNLedgerExecutable $env:nledgerExePath) | Out-AnsiString
+}
+
 function platform {
 [CmdletBinding()]
 Param(
-    [Switch][bool]$core = $false
-)
-    $private:platform = $(if ($core) {".Net Core"} else {".Net Framework"})
-    $private:path = Get-NLedgerPath -preferCore:$core
-    if (!$private:path) { throw "Cannot find NLedger executable file [$private:platform]" }
-    $env:nledgerExePath = $private:path
+    [Parameter(Mandatory=$True)][string]$tfmCode,
+    [Switch][bool]$debugMode = $false)
 
-    write-host "NLedger executable file [$private:platform]: $private:path`r`n"
+    $nlBinInfo = Get-NLedgerBinaryInfo -tfmCode $tfmCode -isDebug $debugMode
+    if ($nlBinInfo) {
+        $env:nledgerExePath = $nlBinInfo.NLedgerExecutable
+    } else {
+        Write-Error "NLedger binary for [$tfmCode|$(if($debugMode){"Debug"}else{"Release"})] not found."
+    }
+
 }
 
 
@@ -92,4 +106,5 @@ Param()
 write-host -ForegroundColor White "NLedger Testing Toolkit - Interactive console"
 write-host ""
 help
-platform
+status
+
