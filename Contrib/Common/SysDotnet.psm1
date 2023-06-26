@@ -5,7 +5,10 @@ Helper functions for interacting with Dotnet features
 .DESCRIPTION
 Provides access to .Net Framework and Net/NetCore environmental information
 #> 
- 
+
+[string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+Import-Module $Script:ScriptPath/SysPlatform.psm1 -Force
+
 <#
 .SYNOPSIS
     Returns a list of installed .Net Framework SDKs as a collection of version numbers
