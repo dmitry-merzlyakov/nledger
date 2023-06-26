@@ -26,11 +26,11 @@ describe 'Test-IsLinux' {
 
 describe 'Get-SpecialFolderProgramFilesX86' {
     Context 'Run on Windows machine' {
-        BeforeEach { Mock Test-IsWindows { $true } }
+        BeforeEach { Mock -ModuleName SysPlatform -CommandName Test-IsWindows -MockWith { $true } }
         it 'Returns be equal to ProgramFilesX86' { Get-SpecialFolderProgramFilesX86 | Should -Be ([System.Environment]::GetFolderPath(([System.Environment+SpecialFolder]::ProgramFilesX86))) }
     }
     Context 'Run on non-Windows machine' {
-        BeforeEach { Mock Test-IsWindows { $false } }
+        BeforeEach { Mock -ModuleName SysPlatform -CommandName Test-IsWindows -MockWith { $false } }
         it 'Returns empty result' { Get-SpecialFolderProgramFilesX86 | Should -BeNullOrEmpty }
     }
 }
