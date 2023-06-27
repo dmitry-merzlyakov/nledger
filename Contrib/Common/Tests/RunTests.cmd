@@ -1,1 +1,1 @@
-@Powershell -NoLogo -ExecutionPolicy RemoteSigned -Command "Import-Module Pester; Invoke-Pester -EnableExit -OutputFile '%~dp0TestResults.xml' %~dp0."
+@Powershell -NoLogo -ExecutionPolicy RemoteSigned -File "%~dp0RunTests.ps1"

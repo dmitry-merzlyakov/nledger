@@ -1,6 +1,6 @@
 # Tests for SysPlatform.psm1 module
 # Based on Pester unit testing framework (https://github.com/pester/Pester)
-# Pestel 4 or higher needs to be installed by the command: Install-Module -Name Pester -Force -SkipPublisherCheck
+# Pestel 5 or higher needs to be installed by the command: Install-Module -Name Pester -Force -SkipPublisherCheck
 # If you need to enable execution of PS files - execute: set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
