@@ -136,6 +136,16 @@ function Get-NetFrameworkSDKs {
   
   <#
   .SYNOPSIS
+      Provides targets for all available runtimes (.Net Framework and Net Core)
+  .DESCRIPTION
+      Returns the list of targets (TFM codes) for all available runtimes
+  #>
+  function Get-AllRuntimeTargets {
+    @() + (Get-NetFrameworkRuntimeTarget) + (Get-DotnetRuntimeNetCoreTargets)
+  }
+
+  <#
+  .SYNOPSIS
       Tests whether given string is a valid TFM code
   .DESCRIPTION
       Supports .Net Core/5.0+ and .Net Framework codes

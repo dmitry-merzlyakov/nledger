@@ -7,82 +7,140 @@ Provides information about the current structure of NLedger deployment
 #> 
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-Import-Module $Script:ScriptPath/Contrib/NLManagement/NLCommon.psm1 -Force
+Import-Module $Script:ScriptPath/SysPlatform.psm1 -Force
+Import-Module $Script:ScriptPath/SysDotnet.psm1 -Force
 
-
-# For internal usage
-function Out-NLedgerBinaryInfo {
-    [CmdletBinding()]
-    Param([Parameter(Mandatory=$True)]$info)
+<#
+.SYNOPSIS
+    Returns a fully qualified path and name to NLedger executable file
+.DESCRIPTION
+    Checks whether given folder contains NLedger executable file and returns a full path and name.
+    It works on any OS (Windows, Linux, OSX) so it either returns NLedger-cli.exe or NLedger-cli.
+    If folder or file does not exist, it returns an empty value.
+#>
+function Get-NLedgerExecutableFile {
+  [CmdletBinding()]
+  Param([Parameter(Mandatory=$True)][string]$folderName)
   
-    $text = "[$($info.TfmCode)|$(if($($info.IsDebug)){"Debug"}else{"Release"}$(if($($info.IsOsxRuntme)){"(OSX)"}))]"
-    if ($currentNLedgerExecutable -eq $info.NLedgerExecutable) {$text="{c:Yellow}$text{f:Normal}"}
-    $text
-  }
-  
-  # For internal usage
-  function Get-NLedgerBins {
-    [CmdletBinding()]
-    Param(
-      [Parameter(Mandatory=$True)][string]$folderName,
-      [Parameter(Mandatory=$True)][bool]$isDebug
-    )
-  
-    if (Test-Path -LiteralPath $folderName -PathType Container) {
-      Write-Verbose "Get-NLedgerBins - collecting info from $folderName folder."
-      foreach($targetFolder in (Get-ChildItem -LiteralPath $folderName -Directory) | Where-Object { Test-IsTfmCode $_.Name }) {
-        [string]$tfmCode = $targetFolder.Name
-        [string]$tfmFolder = $targetFolder.FullName
-        [bool]$isOsxRuntime = $false
-  
-        if (Test-Path -LiteralPath "$tfmFolder/osx-x64" -PathType Container) { 
-          $tfmFolder = "$tfmFolder/osx-x64"
-          $isOsxRuntime = $true
-        }
-  
-        [string]$nledgerFile = "$tfmFolder/NLedger-cli.exe"
-        if (!(Test-Path -LiteralPath $nledgerFile -PathType Leaf)) {
-          $nledgerFile = "$tfmFolder/NLedger-cli"
-          if (!(Test-Path -LiteralPath $nledgerFile -PathType Leaf)) { continue }
-        }
-  
-        Write-Verbose "Found executable NLedger: $nledgerFile (TFM: $tfmCode; Debug: $isDebug; OSX: $isOsxRuntime)"
-        [PSCustomObject]@{
-          NLedgerExecutable = [System.IO.Path]::GetFullPath($nledgerFile)
-          TfmCode = $tfmCode
-          IsDebug = $isDebug
-          IsOsxRuntme = $isOsxRuntime
-          VersionOrder = (Get-TfmCodeVersion -code $tfmCode -isDebug $isDebug)
-        }
-  
-      }
-    } else {
-      Write-Verbose "Get-NLedgerBins - folder $folderName does not exist."
+  $folderName = [System.IO.Path]::GetFullPath($folderName)
+  if (Test-Path -LiteralPath $folderName -PathType Container) {
+    [string]$nledgerFile = [System.IO.Path]::GetFullPath("$folderName/NLedger-cli.exe")
+    if (Test-Path -LiteralPath $nledgerFile -PathType Leaf) { $nledgerFile }
+    else {
+      $nledgerFile = [System.IO.Path]::GetFullPath("$tfmFolder/NLedger-cli")
+      if (Test-Path -LiteralPath $nledgerFile -PathType Leaf) { $nledgerFile }
     }
   }
-  
-  <#
-  .SYNOPSIS
-      Provides information about available NLedger binaries
-  .DESCRIPTION
-      Returns a collection of objects containing information about local NLedger binaries.
-      Every info object has a full path to NLedger executable file, corresponded TFM code and Debug/Release flag.
-      The function looks for files in the current file structure 
-      (either development structure that is a copy of the repository or public binaries distributed by means of zip archive or MSI file).
-  #>
-  function Get-NLedgerBinaryInfos {
-    [CmdletBinding()]
-    Param()
-  
-    [string]$devDebugBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Debug")
-    [string]$devReleaseBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Release")
-    [string]$publicBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../bin")
-  
-    return  (Get-NLedgerBins -folderName $devDebugBin -isDebug $true) +
-            (Get-NLedgerBins -folderName $devReleaseBin -isDebug $false) +
-            (Get-NLedgerBins -folderName $publicBin -isDebug $false)
+}
+
+<#
+.SYNOPSIS
+    Returns a collection of NLedger binaries found in a package folder.
+.DESCRIPTION
+    Looks for NLedger binaries in all sub-folders of a given folder.
+    Sub-folders should match TFM names or ignored otherwise.
+    Returns a collection of objects containing a full path, TFM code and other flags.
+    Note: isDebug is a declarative flag indicating wether folder contains Release or Debug binaries.
+#>
+function Find-NLedgerBinaries {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)][string]$folderName,
+    [Parameter(Mandatory=$True)][bool]$isDebug
+  )
+
+  if (Test-Path -LiteralPath $folderName -PathType Container) {
+    Write-Verbose "Find-NLedgerBinaries - collecting info from $folderName folder."
+    foreach($targetFolder in (Get-ChildItem -LiteralPath $folderName -Directory) | Where-Object { Test-IsTfmCode $_.Name }) {
+      [string]$tfmCode = $targetFolder.Name
+      [string]$tfmFolder = $targetFolder.FullName
+      [bool]$isOsxRuntime = $false
+
+      if (Test-Path -LiteralPath "$tfmFolder/osx-x64" -PathType Container) { 
+        $tfmFolder = "$tfmFolder/osx-x64"
+        $isOsxRuntime = $true
+      }
+
+      [string]$nledgerFile = Get-NLedgerExecutableFile $tfmFolder
+      if (!$nledgerFile) { continue }
+
+      Write-Verbose "Found executable NLedger: $nledgerFile (TFM: $tfmCode; Debug: $isDebug; OSX: $isOsxRuntime)"
+      [PSCustomObject]@{
+        NLedgerExecutable = $nledgerFile
+        TfmCode = $tfmCode
+        IsDebug = $isDebug
+        IsOsxRuntme = $isOsxRuntime
+      }
+    }
+  } else {
+    Write-Verbose "Find-NLedgerBinaries - folder $folderName does not exist."
   }
+}
   
+<#
+.SYNOPSIS
+    Returns a collection of all available NLedger binaries located in the current deployment structure.
+.DESCRIPTION
+    Looks for NLedger binaries in expected locations in the current deployment structure (where the script is located).
+    It properly recognizes development structures (and looks for binaries in Source/NLedger.CLI/bin folder)
+    or deployment packages (with /bin/ folder).
+#>
+function Find-CurrentNLedgerBinaries {
+  [CmdletBinding()]
+  Param()
+
+  [string]$devDebugBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Debug")
+  [string]$devReleaseBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Release")
+  [string]$publicBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../bin")
+
+  return  @() +
+          (Find-NLedgerBinaries -folderName $devDebugBin -isDebug $true) +
+          (Find-NLedgerBinaries -folderName $devReleaseBin -isDebug $false) +
+          (Find-NLedgerBinaries -folderName $publicBin -isDebug $false)
+}
+
+<#
+.SYNOPSIS
+    Returns a collection of all installed NLedger binaries on the current machine.
+.DESCRIPTION
+    NLedger is considered to be installed if it is available by PATH variable.
+    This function returns all NLedger binary files found by any path listed in PATH variable.
+    Of course, only the first path is effective.
+#>
+function Find-InstalledNLedgerBinaries {
+  [CmdletBinding()]
+  Param()
+
+  Get-Paths | ForEach-Object { Get-NLedgerExecutableFile $_ } | Where-Object { $_ }
+}
+
+function Get-NLedgerDeploymentInfo {
+  [CmdletBinding()]
+  Param()
+
+  $runtimes = Get-AllRuntimeTargets
+
+  $binaries = Find-CurrentNLedgerBinaries
+
+  $installed = Find-InstalledNLedgerBinaries
+  [string]$effectiveInstalled = $installed | Select-Object -First 1
+  [bool]$isExternalInstall = $effectiveInstalled -and ($binaries | Where-Object {$_.NLedgerExecutable -eq $effectiveInstalled} | Measure-Object).Count -eq 0
+
+
+  [PSCustomObject]@{
+    Binaries = $binaries
+    Installed = $installed
+    EffectiveInstalled = $effectiveInstalled
+    IsExternalInstall = $isExternalInstall
+    Runtimes = $runtimes
+
+  }
+
+}
+
+
+
+
   <#
   .SYNOPSIS
       Provides information about a specific NLedger binary file
@@ -120,6 +178,17 @@ function Out-NLedgerBinaryInfo {
     return  Get-NLedgerBinaryInfos | Sort-Object {$_.VersionOrder} | Select-Object -Last 1
   }
   
+# For internal usage
+function Out-NLedgerBinaryInfo {
+  [CmdletBinding()]
+  Param([Parameter(Mandatory=$True)]$info)
+
+  $text = "[$($info.TfmCode)|$(if($($info.IsDebug)){"Debug"}else{"Release"}$(if($($info.IsOsxRuntme)){"(OSX)"}))]"
+  if ($currentNLedgerExecutable -eq $info.NLedgerExecutable) {$text="{c:Yellow}$text{f:Normal}"}
+  $text
+}
+
+
   <#
   .SYNOPSIS
       Provides information about available NLedger binaries in a well-formatted user-friendly way

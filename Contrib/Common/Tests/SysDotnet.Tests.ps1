@@ -304,6 +304,37 @@ describe 'Get-DotnetRuntimeNetCoreTargets' {
     }
 }
 
+describe 'Get-AllRuntimeTargets' {
+    Context 'None runtimes found' {
+        BeforeEach { 
+            Mock -ModuleName SysDotnet -CommandName Get-NetFrameworkRuntimeTarget -MockWith { }
+            Mock -ModuleName SysDotnet -CommandName Get-DotnetRuntimeNetCoreTargets -MockWith { }
+        }
+        it "Returns empty results if none runtimes found" { Get-AllRuntimeTargets | Should -BeNullOrEmpty }
+    }
+    Context '.Net Framework installed' {
+        BeforeEach { 
+            Mock -ModuleName SysDotnet -CommandName Get-NetFrameworkRuntimeTarget -MockWith { "net48" }
+            Mock -ModuleName SysDotnet -CommandName Get-DotnetRuntimeNetCoreTargets -MockWith { }
+        }
+        it "Returns empty results if none runtimes found" { Get-AllRuntimeTargets | Should -Be @( "net48" ) }
+    }
+    Context 'Dotnet Core installed' {
+        BeforeEach { 
+            Mock -ModuleName SysDotnet -CommandName Get-NetFrameworkRuntimeTarget -MockWith { }
+            Mock -ModuleName SysDotnet -CommandName Get-DotnetRuntimeNetCoreTargets -MockWith { "net5.0" }
+        }
+        it "Returns empty results if none runtimes found" { Get-AllRuntimeTargets | Should -Be @( "net5.0" ) }
+    }
+    Context '.Net Framework and dotnet Core are installed' {
+        BeforeEach { 
+            Mock -ModuleName SysDotnet -CommandName Get-NetFrameworkRuntimeTarget -MockWith { "net48" }
+            Mock -ModuleName SysDotnet -CommandName Get-DotnetRuntimeNetCoreTargets -MockWith { "net5.0" }
+        }
+        it "Returns empty results if none runtimes found" { Get-AllRuntimeTargets | Should -Be @( "net48", "net5.0" ) }
+    }
+}
+
 describe 'Test-IsTfmCode' {
     it "Recognizes valid TFM code netcoreapp1.0" { Test-IsTfmCode "netcoreapp1.0" | Should -BeTrue }
     it "Recognizes valid TFM code netcoreapp2.0" { Test-IsTfmCode "netcoreapp2.0" | Should -BeTrue }

@@ -58,4 +58,25 @@ Param()
     if(Test-IsWindows){[System.Environment]::GetFolderPath(([System.Environment+SpecialFolder]::ProgramFilesX86))}else{""}
 }
 
+#################
+# PATH management
+#################
+
+[string]$Script:PathsSeparator = $(if(Test-IsWindows){";"}else{":"})
+
+<#
+.SYNOPSIS
+    Returns a collection of all paths that PATH environment variable contains
+.DESCRIPTION
+    Return only valid entries (empty values are omitted) as a collection of strings
+#>
+function Get-Paths {
+    [CmdletBinding()]
+    Param()
+
+    return $env:PATH -split $Script:PathsSeparator | Where-Object{ $_ }
+}
+
+
+
 Export-ModuleMember -function * -alias *
