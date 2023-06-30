@@ -390,3 +390,70 @@ describe 'Test-IsFrameworkTfmCode' {
     it "Recognizes framework TFM code net48" { Test-IsFrameworkTfmCode "net48" | Should -BeTrue }
     it "Recognizes invalid TFM code" { Test-IsFrameworkTfmCode "code12" | Should -BeFalse }
 }
+
+describe 'Expand-TfmCode' {
+
+    it "Recognizes TFM code netcoreapp1.0 as non-framework" { (Expand-TfmCode "netcoreapp1.0").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code netcoreapp2.0 as non-framework" { (Expand-TfmCode "netcoreapp2.0").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code netcoreapp2.1 as non-framework" { (Expand-TfmCode "netcoreapp2.1").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code netcoreapp2.2 as non-framework" { (Expand-TfmCode "netcoreapp2.2").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code netcoreapp3.0 as non-framework" { (Expand-TfmCode "netcoreapp3.0").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code netcoreapp3.1 as non-framework" { (Expand-TfmCode "netcoreapp3.1").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code net5.0 as non-framework" { (Expand-TfmCode "net5.0").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code net6.0 as non-framework" { (Expand-TfmCode "net6.0").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code net7.0 as non-framework" { (Expand-TfmCode "net7.0").IsFramework | Should -BeFalse }
+    it "Recognizes TFM code net11 as framework" { (Expand-TfmCode "net11").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net20 as framework" { (Expand-TfmCode "net20").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net35 as framework" { (Expand-TfmCode "net35").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net40 as framework" { (Expand-TfmCode "net40").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net403 as framework" { (Expand-TfmCode "net403").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net45 as framework" { (Expand-TfmCode "net45").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net451 as framework" { (Expand-TfmCode "net451").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net452 as framework" { (Expand-TfmCode "net452").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net46 as framework" { (Expand-TfmCode "net46").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net461 as framework" { (Expand-TfmCode "net461").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net462 as framework" { (Expand-TfmCode "net462").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net47 as framework" { (Expand-TfmCode "net47").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net471 as framework" { (Expand-TfmCode "net471").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net472 as framework" { (Expand-TfmCode "net472").IsFramework | Should -BeTrue }
+    it "Recognizes TFM code net48 as framework" { (Expand-TfmCode "net48").IsFramework | Should -BeTrue }
+
+    it "Recognizes TFM code netcoreapp1.0 version" { (Expand-TfmCode "netcoreapp1.0").Version | Should -Be ([version]"1.0") }
+    it "Recognizes TFM code netcoreapp2.0 version" { (Expand-TfmCode "netcoreapp2.0").Version | Should -Be ([version]"2.0") }
+    it "Recognizes TFM code netcoreapp2.1 version" { (Expand-TfmCode "netcoreapp2.1").Version | Should -Be ([version]"2.1") }
+    it "Recognizes TFM code netcoreapp2.2 version" { (Expand-TfmCode "netcoreapp2.2").Version | Should -Be ([version]"2.2") }
+    it "Recognizes TFM code netcoreapp3.0 version" { (Expand-TfmCode "netcoreapp3.0").Version | Should -Be ([version]"3.0") }
+    it "Recognizes TFM code netcoreapp3.1 version" { (Expand-TfmCode "netcoreapp3.1").Version | Should -Be ([version]"3.1") }
+    it "Recognizes TFM code net5.0 version" { (Expand-TfmCode "net5.0").Version | Should -Be ([version]"5.0") }
+    it "Recognizes TFM code net6.0 version" { (Expand-TfmCode "net6.0").Version | Should -Be ([version]"6.0") }
+    it "Recognizes TFM code net7.0 version" { (Expand-TfmCode "net7.0").Version | Should -Be ([version]"7.0") }
+    it "Recognizes TFM code net11 version" { (Expand-TfmCode "net11").Version | Should -Be ([version]"1.1") }
+    it "Recognizes TFM code net20 version" { (Expand-TfmCode "net20").Version | Should -Be ([version]"2.0") }
+    it "Recognizes TFM code net35 version" { (Expand-TfmCode "net35").Version | Should -Be ([version]"3.5") }
+    it "Recognizes TFM code net40 version" { (Expand-TfmCode "net40").Version | Should -Be ([version]"4.0") }
+    it "Recognizes TFM code net403 version" { (Expand-TfmCode "net403").Version | Should -Be ([version]"4.0.3") }
+    it "Recognizes TFM code net45 version" { (Expand-TfmCode "net45").Version | Should -Be ([version]"4.5") }
+    it "Recognizes TFM code net451 version" { (Expand-TfmCode "net451").Version | Should -Be ([version]"4.5.1") }
+    it "Recognizes TFM code net452 version" { (Expand-TfmCode "net452").Version | Should -Be ([version]"4.5.2") }
+    it "Recognizes TFM code net46 version" { (Expand-TfmCode "net46").Version | Should -Be ([version]"4.6") }
+    it "Recognizes TFM code net461 version" { (Expand-TfmCode "net461").Version | Should -Be ([version]"4.6.1") }
+    it "Recognizes TFM code net462 version" { (Expand-TfmCode "net462").Version | Should -Be ([version]"4.6.2") }
+    it "Recognizes TFM code net47 version" { (Expand-TfmCode "net47").Version | Should -Be ([version]"4.7") }
+    it "Recognizes TFM code net471 version" { (Expand-TfmCode "net471").Version | Should -Be ([version]"4.7.1") }
+    it "Recognizes TFM code net472 version" { (Expand-TfmCode "net472").Version | Should -Be ([version]"4.7.2") }
+    it "Recognizes TFM code net48 version" { (Expand-TfmCode "net48").Version | Should -Be ([version]"4.8") }
+
+    it "Recognizes invalid TFM code" { Expand-TfmCode "code12" | Should -BeFalse }
+}
+
+describe 'Test-IsRuntimeCompatible' {
+    it "Returns False for .Net Framework binaries and Net runtime" { Test-IsRuntimeCompatible "net48" "net6.0" | Should -BeFalse }
+    it "Returns False for Net binaries and .Net Framework runtime" { Test-IsRuntimeCompatible "net6.0" "net48" | Should -BeFalse }
+    it "Returns True for equal .Net Framework binaries and runtime" { Test-IsRuntimeCompatible "net48" "net48" | Should -BeTrue }
+    it "Returns True for older .Net Framework binaries rather than runtime" { Test-IsRuntimeCompatible "net471" "net48" | Should -BeTrue }
+    it "Returns False for newer .Net Framework binaries rather than runtime" { Test-IsRuntimeCompatible "net48" "net45" | Should -BeFalse }
+    it "Returns True for equal Net binaries and runtime" { Test-IsRuntimeCompatible "net5.0" "net5.0" | Should -BeTrue }
+    it "Returns True for equal Net Major versions of binaries and runtime" { Test-IsRuntimeCompatible "net5.1" "net5.0" | Should -BeTrue }
+    it "Returns True for equal Net Major versions of binaries and runtime" { Test-IsRuntimeCompatible "net5.0" "net5.1" | Should -BeTrue }
+    it "Returns False for non-equal Net Major versions of binaries and runtime" { Test-IsRuntimeCompatible "net5.0" "net6.0" | Should -BeFalse }
+}

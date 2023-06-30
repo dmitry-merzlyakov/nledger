@@ -69,7 +69,7 @@ function Find-NLedgerBinaries {
         NLedgerExecutable = $nledgerFile
         TfmCode = $tfmCode
         IsDebug = $isDebug
-        IsOsxRuntme = $isOsxRuntime
+        IsOsxRuntime = $isOsxRuntime
       }
     }
   } else {
@@ -124,8 +124,30 @@ function Get-NLedgerDeploymentInfo {
 
   $installed = Find-InstalledNLedgerBinaries
   [string]$effectiveInstalled = $installed | Select-Object -First 1
-  [bool]$isExternalInstall = $effectiveInstalled -and ($binaries | Where-Object {$_.NLedgerExecutable -eq $effectiveInstalled} | Measure-Object).Count -eq 0
 
+  $infos = $binaries | ForEach-Object {
+    $bin = $_
+    [PSCustomObject]@{
+      NLedgerExecutable = $bin.NLedgerExecutable
+      TfmCode = $bin.TfmCode
+      IsDebug = $bin.IsDebug
+      IsOsxRuntime = $bin.IsOsxRuntime
+      IsInstalled = [bool]($bin.NLedgerExecutable -eq $effectiveInstalled)
+      HasRuntime = ($runtimes | Where-Object { Test-IsRuntimeCompatible -binaryTfmCode $bin.TfmCode -runtimeTfmCode $_ } | Measure-Object).Count -gt 0
+      ExpandedTfmCode = Expand-TfmCode $bin.TfmCode
+    }
+  }
+
+  [bool]$isExternalInstall = $effectiveInstalled -and ($infos | Where-Object ( $_.IsInstalled) | Measure-Object).Count -eq 0
+
+  $preferredNLedgerExecutable = if($effectiveInstalled -and !$isExternalInstall) { $effectiveInstalled }
+  else {
+    $infos | 
+      Where-Object { $_.HasRuntime } | 
+      Sort-Object { [string]::Format("{0}.{1}.{2:00}.{3:00}.{4:00}", [int]!$_.IsDebug, [int]!$_.ExpandedTfmCode.IsFramework, $_.ExpandedTfmCode.Version.Major, $_.ExpandedTfmCode.Version.Minor, $_.ExpandedTfmCode.Version.Build ) } |
+      ForEach-Object { $_.NLedgerExecutable } |
+      Select-Object -Last 1
+  }
 
   [PSCustomObject]@{
     Binaries = $binaries
@@ -133,7 +155,8 @@ function Get-NLedgerDeploymentInfo {
     EffectiveInstalled = $effectiveInstalled
     IsExternalInstall = $isExternalInstall
     Runtimes = $runtimes
-
+    Infos = $infos
+    PreferredNLedgerExecutable = $preferredNLedgerExecutable
   }
 
 }
