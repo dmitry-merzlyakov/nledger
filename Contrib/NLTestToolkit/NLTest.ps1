@@ -69,7 +69,7 @@
 Param(
     [Parameter(Mandatory=$False)][string]$nledgerExePath = "",
     [Parameter(Mandatory=$False)][string]$nledgerTestPath = "..",
-    [Parameter(Mandatory=$False)][string]$filterRegex = "",
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = "",
     [Parameter(Mandatory=$False)][string]$metaListPath = ".\NLTest.Meta.xml",
     [Parameter(Mandatory=$False)][string]$ignoreCategories = "",
     [Switch]$disableIgnoreList = $False,

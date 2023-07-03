@@ -7,6 +7,7 @@ Provides information about the current structure of NLedger deployment
 #> 
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+Import-Module $Script:ScriptPath/SysConsole.psm1 -Force
 Import-Module $Script:ScriptPath/SysPlatform.psm1 -Force
 Import-Module $Script:ScriptPath/SysDotnet.psm1 -Force
 
@@ -136,18 +137,12 @@ function Get-NLedgerDeploymentInfo {
       HasRuntime = ($runtimes | Where-Object { Test-IsRuntimeCompatible -binaryTfmCode $bin.TfmCode -runtimeTfmCode $_ } | Measure-Object).Count -gt 0
       ExpandedTfmCode = Expand-TfmCode $bin.TfmCode
     }
-  }
+  } | Sort-Object { [string]::Format("{0}.{1}.{2:00}.{3:00}.{4:00}", [int]!$_.IsDebug, [int]!$_.ExpandedTfmCode.IsFramework, $_.ExpandedTfmCode.Version.Major, $_.ExpandedTfmCode.Version.Minor, $_.ExpandedTfmCode.Version.Build ) }
 
   [bool]$isExternalInstall = $effectiveInstalled -and ($infos | Where-Object ( $_.IsInstalled) | Measure-Object).Count -eq 0
 
   $preferredNLedgerExecutable = if($effectiveInstalled -and !$isExternalInstall) { $effectiveInstalled }
-  else {
-    $infos | 
-      Where-Object { $_.HasRuntime } | 
-      Sort-Object { [string]::Format("{0}.{1}.{2:00}.{3:00}.{4:00}", [int]!$_.IsDebug, [int]!$_.ExpandedTfmCode.IsFramework, $_.ExpandedTfmCode.Version.Major, $_.ExpandedTfmCode.Version.Minor, $_.ExpandedTfmCode.Version.Build ) } |
-      ForEach-Object { $_.NLedgerExecutable } |
-      Select-Object -Last 1
-  }
+  else { $infos | Where-Object { $_.HasRuntime } | ForEach-Object { $_.NLedgerExecutable } | Select-Object -Last 1 }
 
   [PSCustomObject]@{
     Binaries = $binaries
@@ -159,6 +154,24 @@ function Get-NLedgerDeploymentInfo {
     PreferredNLedgerExecutable = $preferredNLedgerExecutable
   }
 
+}
+
+function Out-NLedgerDeploymentInfo {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
+  )
+
+  $deploymentInfo.Infos | ForEach-Object {
+    $info = [ordered]@{
+      "TFM" = $(if($_.NLedgerExecutable -eq $selectedNLedgerExecutable){"{c:Yellow}$($_.TfmCode){f:Normal}" | Out-AnsiString}else{$_.TfmCode})
+      "Profile" = "$(if($_.IsDebug){"Debug"}else{"Release"})$(if($_.IsOsxRuntime){"[OSX]"})$(if($_.IsInstalled){" [Installed]"})"
+      "Runtime" = $(if($_.HasRuntime){"Available"})
+      "Path" = $_.NLedgerExecutable  
+    }
+    [PSCustomObject]$info
+  } | Format-Table
 }
 
 
