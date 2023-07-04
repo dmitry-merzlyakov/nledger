@@ -12,20 +12,34 @@ if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) {throw "Cannot find '$
 $Script:deploymentInfo = Get-NLedgerDeploymentInfo
 $env:nledgerExePath = $deploymentInfo.PreferredNLedgerExecutable
 
-function Assert-NLedgerExecutableIsSelected {
-    [CmdletBinding()]
-    Param()
-    
-    if (!$env:nledgerExePath) { Write-Warning "NLedger executable file is not selected. Please, specify which NLedger you would like to test (use 'select' command for it)"; return $false}
-    if (!(Test-Path -LiteralPath $env:nledgerExePath -PathType Leaf)) { Write-Warning "Selected NLedger executable file does not exist. Please, use 'select' command to specify a correct path to the file"; return $false}
-    return $true
-}
+<#
+.SYNOPSIS
+Run all or specified by criteria tests and show the report in the browser
 
+.DESCRIPTION
+
+Ledger module package (ledger-[version].whl) is distributed with a test file (ledger_tests.py) that is based on Python unit tests.
+Test coverage is about 100%, so passed tests guarantee that the module functions properly.
+
+You may run the tests in a command line console as usual Python unit tests: [path to python] ledger_tests.py
+This command performs the same action but in a shorter notation.
+
+Note: Ledger module should be installed in the Python environment.
+
+.PARAMETER path
+Optional parameter containing a full path to Python executable file.
+If this parameter is omitted, the command uses path from current Python extension settings.
+
+.EXAMPLE
+    C:\PS> .\NLTest.ps1
+    Executes all test files and displays short summary in the console.
+
+#>
 function run {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = "")
 
-    if (Assert-NLedgerExecutableIsSelected) {
+    Assert-NLedgerExecutableIsValid -deploymentInfo $Script:deploymentInfo -selectedNLedgerExecutable $env:nledgerExePath {
         $null = (& $nlTestPath -showReport -filterRegex $filterRegex)
     }
 }
@@ -34,7 +48,7 @@ function xrun {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = "")
 
-    if (Assert-NLedgerExecutableIsSelected) {
+    Assert-NLedgerExecutableIsValid -deploymentInfo $Script:deploymentInfo -selectedNLedgerExecutable $env:nledgerExePath {
         $null = (& $nlTestPath -filterRegex $filterRegex)
     }
 }
@@ -43,7 +57,7 @@ function all {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$False)][AllowEmptyString()][string]$filterRegex = "")
 
-    if (Assert-NLedgerExecutableIsSelected) {
+    Assert-NLedgerExecutableIsValid -deploymentInfo $Script:deploymentInfo -selectedNLedgerExecutable $env:nledgerExePath {
         $null = (& $nlTestPath -disableIgnoreList -filterRegex $filterRegex)
     }
 }
@@ -51,9 +65,11 @@ function all {
 function status {
     [CmdletBinding()]
     Param()
-    
-    "NLedger binary file: $env:nledgerExePath"
-    (Out-NLedgerDeploymentInfo -deploymentInfo $Script:deploymentInfo -selectedNLedgerExecutable $env:nledgerExePath) #| Out-AnsiString
+
+    Write-Output "`n{c:White}Selected NLedger binary file{f:Normal}`n" | Out-AnsiString
+    (Out-NLedgerExecutableInfo -deploymentInfo $Script:deploymentInfo -selectedNLedgerExecutable $env:nledgerExePath | Out-String).Trim()
+    Write-Output "`n{c:White}Available NLedger binary files{f:Normal}" | Out-AnsiString
+    (Out-NLedgerDeploymentInfo -deploymentInfo $Script:deploymentInfo -selectedNLedgerExecutable $env:nledgerExePath)
 }
 
 function platform {
@@ -62,49 +78,41 @@ Param(
     [Parameter(Mandatory=$True)][string]$tfmCode,
     [Switch][bool]$debugMode = $false)
 
-    $nlBinInfo = Get-NLedgerBinaryInfo -tfmCode $tfmCode -isDebug $debugMode
-    if ($nlBinInfo) {
-        $env:nledgerExePath = $nlBinInfo.NLedgerExecutable
+    $nledgerExecutable = Select-NLedgerExecutable -deploymentInfo $Script:deploymentInfo -tfmCode $tfmCode -isDebug $debugMode
+    if ($nledgerExecutable) {
+        $env:nledgerExePath = $nledgerExecutable
     } else {
         Write-Error "NLedger binary for [$tfmCode|$(if($debugMode){"Debug"}else{"Release"})] not found."
     }
 
+    status
 }
 
 
 function help {
 [CmdletBinding()]
 Param()
-     write-host "Interactive testing console helps you execute NLedger test files that are available on the disk.`r`n"
-     write-host -NoNewline "It supports several short commands that perform typical activities:`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "run"
-     write-host -NoNewline "              execute all test files and show a report in the browser;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "run CRITERIA"
-     write-host -NoNewline "     execute tests that match the criteria and show a report;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "xrun"
-     write-host -NoNewline "             execute all test files and show a summary in the console;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "xrun CRITERIA"
-     write-host -NoNewline "    execute matched test files and show a summary in the console;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "all"
-     write-host -NoNewline "              execute all test including disabled by the ignore list; the summary is in the console;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "all CRITERIA"
-     write-host -NoNewline "     execute matched test files including disabled; the summary is in the console;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "platform [-core]"
-     write-host -NoNewline " select .Net platform to execute tests; .Net Framework by default or .Net Core with '-core' switch;`r`n PS>"
-     write-host -NoNewline -ForegroundColor Yellow "help"
-     write-host -NoNewline "             show help page again.`r`n"
-     write-host -NoNewline "`r`nTesting script can be called directly:`r`n PS>"
-     write-host -ForegroundColor Yellow ".\nltest.ps1 OPTIONAL ARGUMENTS"
-     write-host -NoNewline "Use 'get-help' to get detail information about testing script arguments:`r`n PS>"
-     write-host -ForegroundColor Yellow "get-help .\nltest.ps1"
-     write-host -NoNewline "`r`nType '"
-     write-host -NoNewline -ForegroundColor Yellow "exit"
-     write-host "' or close the console window when you finish.`r`n"
+
+    $Private:commands = [ordered]@{
+        ("{c:Yellow}run{f:Normal} [criteria]" | Out-AnsiString) = "Run all or specified by criteria tests and show the report in the browser"
+        ("{c:Yellow}xrun{f:Normal} [criteria]" | Out-AnsiString) = "Run all or specified by criteria tests and show the report in the console"
+        ("{c:Yellow}all{f:Normal} [criteria]" | Out-AnsiString) = "Run tests including disabled by the ignore list and show the report in the console"
+        ("{c:DarkYellow}platform{f:Normal} [TFM]" | Out-AnsiString) = "Select NLedger binary file from the list of available targets"
+        ("{c:DarkYellow}file{f:Normal} [name]" | Out-AnsiString) = "Specify NLedger binary file by fully qualified path and name"
+        ("{c:DarkYellow}status{f:Normal}" | Out-AnsiString) = "Show the selected NLedger binary file and the list of available targets"
+        ("{c:DarkYellow}help{f:Normal}" | Out-AnsiString) = "Shows this help text"
+        ("{c:DarkYellow}get-help{f:Normal} [command]" | Out-AnsiString) = "Get additional information for a specified command"
+        ("{c:DarkYellow}exit{f:Normal}" | Out-AnsiString) = "Close console window"
+    }
+
+    Write-Output "Available commands:`n"
+    ([PSCustomObject]$Private:commands | Format-List | Out-String).Trim()
 }
 
+Write-Output "{c:White}NLedger Testing Toolkit - Interactive console{f:Normal}`n" | Out-AnsiString
+Write-Output "Interactive testing console helps you execute NLedger test files that are available in the current deployment." | Out-AnsiString
+Write-Output "Note: testing script can also be run directly by command '{c:DarkYellow}./nltest.ps1 ARGUMENTS{f:Normal}' (see detail information by '{c:DarkYellow}get-help ./nltest.ps1{f:Normal}')`n" | Out-AnsiString
 
-write-host -ForegroundColor White "NLedger Testing Toolkit - Interactive console"
-write-host ""
 help
 status
 

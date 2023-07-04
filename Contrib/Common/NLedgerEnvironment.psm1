@@ -174,6 +174,60 @@ function Out-NLedgerDeploymentInfo {
   } | Format-Table
 }
 
+function Out-NLedgerExecutableInfo {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
+  )
+
+  $info = [ordered]@{}
+  if (!$selectedNLedgerExecutable) { $info["NLedger Executable"] = "{c:Red}Not selected{f:Normal}" | Out-AnsiString }
+  else {
+    $info["NLedger Executable"] = $selectedNLedgerExecutable
+    if (!(Test-Path -LiteralPath $selectedNLedgerExecutable)) { $info["Detail Info"] = "{c:Red}File does not exist{f:Normal}" | Out-AnsiString }
+    else {
+      $bin = $deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $selectedNLedgerExecutable} | Select-Object -First 1
+      if (!$bin) { $info["Detail Info"] = "{c:Yellow}External file (it does not belong to the current deployment structure).{f:Normal}" | Out-AnsiString }
+      else {
+        $runtimeInfo = "[Runtime: $(if($bin.HasRuntime){"Available"}else{"{c:Yellow}Not available{f:Normal}" | Out-AnsiString})]"
+        $info["Detail Info"] = "[$($bin.TfmCode)][$(if($bin.IsDebug){"Debug"}else{"Release"})]$(if($bin.IsOsxRuntime){"[OSX]"})$runtimeInfo"
+      }
+    }
+  }
+
+  [PSCustomObject]$info | Format-List
+}
+
+function Select-NLedgerExecutable {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$True)][string]$tfmCode,
+    [Parameter(Mandatory=$True)][bool]$isDebug
+  )
+
+  return  $deploymentInfo.Binaries | Where-Object { $_.TfmCode -eq $tfmCode -and $_.IsDebug -eq $isDebug } | ForEach-Object { $_.NLedgerExecutable } | Select-Object -First 1
+}
+
+function Assert-NLedgerExecutableIsValid {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$True)][AllowEmptyString()][string]$selectedNLedgerExecutable,
+    [Parameter(Mandatory=$true)][scriptblock]$ScriptBlock    
+  )
+
+  if (!$selectedNLedgerExecutable) { Write-Output "{c:Red}[ERROR] NLedger binary file is not specified{f:Normal}" | Out-AnsiString }
+  elseif (!(Test-Path -LiteralPath $selectedNLedgerExecutable)) { Write-Output "{c:Red}[ERROR] NLedger binary file '$selectedNLedgerExecutable' does not exist{f:Normal}" | Out-AnsiString }
+  else {
+    $bin = $deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $selectedNLedgerExecutable} | Select-Object -First 1
+    if (!$bin) { Write-Output "{c:Yellow}[WARNING] Specified NLedger binary file '$selectedNLedgerExecutable' does not belong to the current deployment structure).{f:Normal}" | Out-AnsiString }
+    if (!$bin.HasRuntime) { Write-Output "{c:Yellow}[WARNING] NLedger binary file '$selectedNLedgerExecutable' refers to '$($bin.TfmCode)' runtime that is not detected on the current machine.{f:Normal}" | Out-AnsiString }
+
+    . $ScriptBlock 
+  }
+}
 
 
 
