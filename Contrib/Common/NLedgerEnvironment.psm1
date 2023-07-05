@@ -174,6 +174,52 @@ function Out-NLedgerDeploymentInfo {
   } | Format-Table
 }
 
+function Out-NLedgerDeploymentInfoCompact {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
+  )
+
+  if (($deploymentInfo.Infos | Measure-Object).Count -eq 0) { return "None"}
+
+  ($deploymentInfo.Infos | 
+    Group-Object { $_.IsDebug } | 
+    ForEach-Object { 
+      [string]$releaseMarker = $(if($_.Name -eq "False"){"Release"}else{"Debug"})
+      [string]$tfmList = $_.Group | ForEach-Object { 
+        $code = "[$($_.TfmCode)]"
+        if (!$_.HasRuntime) { "{c:DarkGray}$code{f:Normal}" }
+        elseif ($_.NLedgerExecutable -eq $selectedNLedgerExecutable) { "{c:Yellow}$code{f:Normal}" }
+        else { $code }
+      }
+      "{c:DarkGray}$releaseMarker{f:Normal} $tfmList " 
+    }) -join "  " | Out-AnsiString
+}
+
+function Expand-NLedgerExecutableInfo {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
+  )
+
+  [bool]$isSpecified = $selectedNLedgerExecutable
+  [bool]$exists = $isSpecified -and (Test-Path -LiteralPath $selectedNLedgerExecutable -PathType Leaf)
+  $binInfo = ($deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $selectedNLedgerExecutable} | Select-Object -First 1)
+
+  [PSCustomObject]@{
+    DeploymentInfo = $deploymentInfo
+    NLedgerExecutable = $selectedNLedgerExecutable
+    IsSpecified = $isSpecified
+    Exists = $exists
+    BinInfo = $binInfo
+    IsExternal = $exists -and !($binInfo)
+    HasRuntime = $binInfo.HasRuntime
+    PlatformFlags = "[$($binInfo.TfmCode)][$(if($binInfo.IsDebug){"Debug"}else{"Release"})]$(if($binInfo.IsOsxRuntime){"[OSX]"})$runtimeInfo"
+  }
+}
+
 function Out-NLedgerExecutableInfo {
   [CmdletBinding()]
   Param(
@@ -181,22 +227,67 @@ function Out-NLedgerExecutableInfo {
     [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
   )
 
+  $expanded = Expand-NLedgerExecutableInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
+
   $info = [ordered]@{}
-  if (!$selectedNLedgerExecutable) { $info["NLedger Executable"] = "{c:Red}Not selected{f:Normal}" | Out-AnsiString }
+  if (!$expanded.IsSpecified) { $info["NLedger Executable"] = "{c:Red}Not selected{f:Normal}" | Out-AnsiString }
   else {
     $info["NLedger Executable"] = $selectedNLedgerExecutable
-    if (!(Test-Path -LiteralPath $selectedNLedgerExecutable)) { $info["Detail Info"] = "{c:Red}File does not exist{f:Normal}" | Out-AnsiString }
+    if (!$expanded.Exists) { $info["Detail Info"] = "{c:Red}File does not exist{f:Normal}" | Out-AnsiString }
     else {
-      $bin = $deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $selectedNLedgerExecutable} | Select-Object -First 1
-      if (!$bin) { $info["Detail Info"] = "{c:Yellow}External file (it does not belong to the current deployment structure).{f:Normal}" | Out-AnsiString }
+      if ($expanded.IsExternal) { $info["Detail Info"] = "{c:Yellow}External file (it does not belong to the current deployment structure).{f:Normal}" | Out-AnsiString }
       else {
-        $runtimeInfo = "[Runtime: $(if($bin.HasRuntime){"Available"}else{"{c:Yellow}Not available{f:Normal}" | Out-AnsiString})]"
-        $info["Detail Info"] = "[$($bin.TfmCode)][$(if($bin.IsDebug){"Debug"}else{"Release"})]$(if($bin.IsOsxRuntime){"[OSX]"})$runtimeInfo"
+        $runtimeInfo = "[Runtime: $(if($expanded.HasRuntime){"Available"}else{"{c:Yellow}Not available{f:Normal}" | Out-AnsiString})]"
+        $info["Detail Info"] = "$($expanded.PlatformFlags)$runtimeInfo"
       }
     }
   }
 
   [PSCustomObject]$info | Format-List
+}
+
+function Out-NLedgerExecutableInfoCompact {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
+  )
+
+  $expanded = Expand-NLedgerExecutableInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
+
+  $(if (!$expanded.IsSpecified) { "{c:Red}[Not selected]{f:Normal}" }
+  else {
+    if (!$expanded.Exists) { "{c:Red}[Not exist]{f:Normal} $selectedNLedgerExecutable"}
+    else {
+      if ($expanded.IsExternal) { "{c:Yellow}[External]{f:Normal} $selectedNLedgerExecutable"}
+      else {
+        $runtimeInfo = $(if($expanded.HasRuntime){""}else{"{c:Yellow}[No runtime]{f:Normal}"})
+        "$($expanded.PlatformFlags)$runtimeInfo $selectedNLedgerExecutable"
+      }
+    }
+  }) | Out-AnsiString
+}
+
+function Out-NLedgerDeploymentStatus {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory=$True)]$deploymentInfo,
+    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable,
+    [Switch][bool]$compact
+  )
+
+  if ($compact) {
+    [PSCustomObject]([ordered]@{
+      "NLedger Executable" = Out-NLedgerExecutableInfoCompact -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
+      "Available binaries" = Out-NLedgerDeploymentInfoCompact -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
+    }) | Format-List
+  } else {
+    Write-Output "`n{c:White}Selected NLedger binary file{f:Normal}`n" | Out-AnsiString
+    (Out-NLedgerExecutableInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable | Out-String).Trim()
+    Write-Output "`n{c:White}Available NLedger binary files{f:Normal}" | Out-AnsiString
+    (Out-NLedgerDeploymentInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable)
+  }
+
 }
 
 function Select-NLedgerExecutable {
@@ -228,72 +319,6 @@ function Assert-NLedgerExecutableIsValid {
     . $ScriptBlock 
   }
 }
-
-
-
-  <#
-  .SYNOPSIS
-      Provides information about a specific NLedger binary file
-  .DESCRIPTION
-      Looks for a specific NLedger instance in a collection of available local binaries
-      using specified TFM code and Debug/Release flag
-  #>
-  function Get-NLedgerBinaryInfo {
-    [CmdletBinding()]
-    Param(
-      [Parameter(Mandatory=$True)][string]$tfmCode,
-      [Parameter(Mandatory=$True)][bool]$isDebug
-    )
-  
-    return  Get-NLedgerBinaryInfos | Where-Object { $_.TfmCode -eq $tfmCode -and $_.IsDebug -eq $isDebug }
-  }
   
   
-  
-  <#
-  .SYNOPSIS
-      Provides information about preferred ready-to-use NLedger binary file
-  .DESCRIPTION
-      Returns a NLedger instance that belongs to the current deployment structure.
-      If the current structure contains more than one binary file, it returns the installed one.
-      If NLedger is not installed (or installed NLedger belongs to another deployment structure), 
-      it returns the instance with the highest TFM code.
-      If the current deployment structure does not have any NLedger binary file, the function returns null.
-  #>
-  function Get-PreferredNLedgerBinaryInfo {
-    [CmdletBinding()]
-    Param()
-  
-    # TODO
-    return  Get-NLedgerBinaryInfos | Sort-Object {$_.VersionOrder} | Select-Object -Last 1
-  }
-  
-# For internal usage
-function Out-NLedgerBinaryInfo {
-  [CmdletBinding()]
-  Param([Parameter(Mandatory=$True)]$info)
-
-  $text = "[$($info.TfmCode)|$(if($($info.IsDebug)){"Debug"}else{"Release"}$(if($($info.IsOsxRuntme)){"(OSX)"}))]"
-  if ($currentNLedgerExecutable -eq $info.NLedgerExecutable) {$text="{c:Yellow}$text{f:Normal}"}
-  $text
-}
-
-
-  <#
-  .SYNOPSIS
-      Provides information about available NLedger binaries in a well-formatted user-friendly way
-  .DESCRIPTION
-      Returns a comma separated string containing TFM code and debug/release flag for every available binary.
-      If the parameter currentNLedgerExecutable is provided, the corresponded code is highlighted
-  #>
-  
-  function Out-NLedgerBinaryInfos {
-    [CmdletBinding()]
-    Param(
-      [Parameter(Mandatory=$False)][string]$currentNLedgerExecutable
-    )
-  
-    return  (Get-NLedgerBinaryInfos | Sort-Object {$_.VersionOrder} | ForEach-Object { (Out-NLedgerBinaryInfo $_) }) -join ","
-  }
-  
-  Export-ModuleMember -function * -alias *
+Export-ModuleMember -function * -alias *
