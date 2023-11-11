@@ -95,7 +95,7 @@ namespace NLedger.Extensibility.Python
             try
             {
                 using (GIL())
-                    PythonEngine.Exec(code, MainModule.ModuleGlobals.Handle);
+                    PythonEngine.Exec(code, MainModule.ModuleGlobals);
             }
             catch (Exception ex)
             {
