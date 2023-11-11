@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>NLedger-cli</AssemblyName>
-    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'True'">netcoreapp3.1</TargetFrameworks>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
