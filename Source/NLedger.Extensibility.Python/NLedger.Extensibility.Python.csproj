@@ -21,7 +21,7 @@
     <EmbeddedResource Include="..\NLedger.Extensibility.Python.Module\src\ledger\__init__.py" Link="__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="pythonnet" Version="3.0.0-preview2021-10-05" />
+    <PackageReference Include="pythonnet" Version="3.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NLedger\NLedger.csproj" />
