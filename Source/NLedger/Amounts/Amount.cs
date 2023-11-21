@@ -866,7 +866,7 @@ namespace NLedger.Amounts
             BigInt quantity = Quantity + amount.Quantity;
 
             if (HasCommodity == amount.HasCommodity && quantity.Precision < amount.Quantity.Precision)
-                quantity.SetPrecision(amount.Quantity.Precision);
+                quantity = quantity.SetPrecision(amount.Quantity.Precision);
 
             Quantity = quantity;
             return this;

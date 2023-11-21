@@ -474,7 +474,7 @@ namespace NLedger.Tests.Amounts
             Amount amount2 = new Amount(quantity2, null);
 
             Amount result = amount1.InPlaceAdd(amount2);
-            Assert.Equal(2, result.Quantity.Precision);
+            Assert.Equal(3, result.Quantity.Precision);
         }
 
         [Fact]

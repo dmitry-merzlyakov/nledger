@@ -26,6 +26,13 @@ namespace NLedger.IntegrationTests
 
         [Fact]
         [Trait("Category", "Integration")]
+        public void IntegrationTest_test_nledger_gh_issues_29()
+        {
+            new TestRunner(@"test/nledger/gh-issues-29.test").Run();
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
         public void IntegrationTest_test_nledger_gh_issues_5()
         {
             new TestRunner(@"test/nledger/gh-issues-5.test").Run();
