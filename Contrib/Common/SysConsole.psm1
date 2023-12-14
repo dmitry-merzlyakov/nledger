@@ -1,10 +1,17 @@
- <#
+<#
 .SYNOPSIS
 Helper functions for interacting with the console
 
 .DESCRIPTION
 Provides the ability to output colorized text to the terminal
+
+.NOTES
+Author: Dmitry Merzlyakov
+Date:   December 14, 2023
 #> 
+
+[CmdletBinding()]
+Param()
 
 # ANSI Terminal colorization
 

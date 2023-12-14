@@ -1,13 +1,20 @@
- <#
+<#
 .SYNOPSIS
 Helper functions for interacting with Dotnet features
 
 .DESCRIPTION
 Provides access to .Net Framework and Net/NetCore environmental information
+
+.NOTES
+Author: Dmitry Merzlyakov
+Date:   December 14, 2023
 #> 
 
+[CmdletBinding()]
+Param()
+
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-Import-Module $Script:ScriptPath/SysPlatform.psm1 -Force
+Import-Module $Script:ScriptPath/SysPlatform.psm1
 
 <#
 .SYNOPSIS

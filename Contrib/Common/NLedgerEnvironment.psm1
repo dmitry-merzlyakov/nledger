@@ -1,15 +1,23 @@
- <#
+<#
 .SYNOPSIS
 Helper functions for interacting with the NLedger binaries
 
 .DESCRIPTION
 Provides information about the current structure of NLedger deployment
+
+.NOTES
+Author: Dmitry Merzlyakov
+Date:   December 14, 2023
 #> 
 
+[CmdletBinding()]
+Param()
+
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-Import-Module $Script:ScriptPath/SysConsole.psm1 -Force
-Import-Module $Script:ScriptPath/SysPlatform.psm1 -Force
-Import-Module $Script:ScriptPath/SysDotnet.psm1 -Force
+Import-Module $Script:ScriptPath/SysConsole.psm1
+Import-Module $Script:ScriptPath/SysPlatform.psm1
+Import-Module $Script:ScriptPath/SysDotnet.psm1
+Import-Module $Script:ScriptPath/SysCommon.psm1
 
 <#
 .SYNOPSIS
@@ -21,14 +29,18 @@ Import-Module $Script:ScriptPath/SysDotnet.psm1 -Force
 #>
 function Get-NLedgerExecutableFile {
   [CmdletBinding()]
-  Param([Parameter(Mandatory=$True)][string]$folderName)
+  Param(
+    [Parameter(Mandatory)][string]$folderName, 
+    [Switch][bool]$link
+  )
   
   $folderName = [System.IO.Path]::GetFullPath($folderName)
+  $fileName = if($link){"ledger"}else{"NLedger-cli"}
   if (Test-Path -LiteralPath $folderName -PathType Container) {
-    [string]$nledgerFile = [System.IO.Path]::GetFullPath("$folderName/NLedger-cli.exe")
+    [string]$nledgerFile = [System.IO.Path]::GetFullPath("$folderName/$fileName.exe")
     if (Test-Path -LiteralPath $nledgerFile -PathType Leaf) { $nledgerFile }
     else {
-      $nledgerFile = [System.IO.Path]::GetFullPath("$tfmFolder/NLedger-cli")
+      $nledgerFile = [System.IO.Path]::GetFullPath("$tfmFolder/$fileName")
       if (Test-Path -LiteralPath $nledgerFile -PathType Leaf) { $nledgerFile }
     }
   }
@@ -64,10 +76,13 @@ function Find-NLedgerBinaries {
 
       [string]$nledgerFile = Get-NLedgerExecutableFile $tfmFolder
       if (!$nledgerFile) { continue }
+      [string]$nledgerLink = Get-NLedgerExecutableFile $tfmFolder -link
 
       Write-Verbose "Found executable NLedger: $nledgerFile (TFM: $tfmCode; Debug: $isDebug; OSX: $isOsxRuntime)"
       [PSCustomObject]@{
         NLedgerExecutable = $nledgerFile
+        NLedgerLink = $nledgerLink
+        Path = [System.IO.Path]::GetDirectoryName($nledgerFile)
         TfmCode = $tfmCode
         IsDebug = $isDebug
         IsOsxRuntime = $isOsxRuntime
@@ -100,6 +115,14 @@ function Find-CurrentNLedgerBinaries {
           (Find-NLedgerBinaries -folderName $publicBin -isDebug $false)
 }
 
+function Find-CurrentNLedgerStandardAssembly {
+  [CmdletBinding()]
+  Param()
+
+  $paths = @("$Script:ScriptPath/../../Source/NLedger/bin/Debug/netstandard2.0", "$Script:ScriptPath/../../Source/NLedger/bin/Release/netstandard2.0", "$Script:ScriptPath/bin/netstandard2.0")
+  $paths | ForEach-Object { [System.IO.Path]::GetFullPath("$_/NLedger.dll") } | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }
+}
+
 <#
 .SYNOPSIS
     Returns a collection of all installed NLedger binaries on the current machine.
@@ -130,6 +153,8 @@ function Get-NLedgerDeploymentInfo {
     $bin = $_
     [PSCustomObject]@{
       NLedgerExecutable = $bin.NLedgerExecutable
+      NLedgerLink = $bin.NLedgerLink
+      Path = [System.IO.Path]::GetDirectoryName($bin.NLedgerExecutable)
       TfmCode = $bin.TfmCode
       IsDebug = $bin.IsDebug
       IsOsxRuntime = $bin.IsOsxRuntime
@@ -139,158 +164,27 @@ function Get-NLedgerDeploymentInfo {
     }
   } | Sort-Object { [string]::Format("{0}.{1}.{2:00}.{3:00}.{4:00}", [int]!$_.IsDebug, [int]!$_.ExpandedTfmCode.IsFramework, $_.ExpandedTfmCode.Version.Major, $_.ExpandedTfmCode.Version.Minor, $_.ExpandedTfmCode.Version.Build ) }
 
-  [bool]$isExternalInstall = $effectiveInstalled -and ($infos | Where-Object ( $_.IsInstalled) | Measure-Object).Count -eq 0
+  $effectiveInstalledInfo = $infos | Where-Object { $_.IsInstalled }
+  [bool]$isExternalInstall = $effectiveInstalled -and (!$effectiveInstalledInfo)
 
-  $preferredNLedgerExecutable = if($effectiveInstalled -and !$isExternalInstall) { $effectiveInstalled }
-  else { $infos | Where-Object { $_.HasRuntime } | ForEach-Object { $_.NLedgerExecutable } | Select-Object -Last 1 }
+  $preferredNLedgerExecutableInfo = if($effectiveInstalledInfo) { $effectiveInstalledInfo }
+  else { $infos | Where-Object { $_.HasRuntime } | Select-Object -Last 1 }
 
   [PSCustomObject]@{
     Binaries = $binaries
     Installed = $installed
     EffectiveInstalled = $effectiveInstalled
+    EffectiveInstalledInfo = $effectiveInstalledInfo
     IsExternalInstall = $isExternalInstall
     Runtimes = $runtimes
     Infos = $infos
-    PreferredNLedgerExecutable = $preferredNLedgerExecutable
+    PreferredNLedgerExecutableInfo = $preferredNLedgerExecutableInfo
+    NLedgerStandardAssembly = (Find-CurrentNLedgerStandardAssembly)
   }
 
 }
 
-function Out-NLedgerDeploymentInfo {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
-  )
-
-  $deploymentInfo.Infos | ForEach-Object {
-    $info = [ordered]@{
-      "TFM" = $(if($_.NLedgerExecutable -eq $selectedNLedgerExecutable){"{c:Yellow}$($_.TfmCode){f:Normal}" | Out-AnsiString}else{$_.TfmCode})
-      "Profile" = "$(if($_.IsDebug){"Debug"}else{"Release"})$(if($_.IsOsxRuntime){"[OSX]"})$(if($_.IsInstalled){" [Installed]"})"
-      "Runtime" = $(if($_.HasRuntime){"Available"})
-      "Path" = $_.NLedgerExecutable  
-    }
-    [PSCustomObject]$info
-  } | Format-Table
-}
-
-function Out-NLedgerDeploymentInfoCompact {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
-  )
-
-  if (($deploymentInfo.Infos | Measure-Object).Count -eq 0) { return "None"}
-
-  ($deploymentInfo.Infos | 
-    Group-Object { $_.IsDebug } | 
-    ForEach-Object { 
-      [string]$releaseMarker = $(if($_.Name -eq "False"){"Release"}else{"Debug"})
-      [string]$tfmList = $_.Group | ForEach-Object { 
-        $code = "[$($_.TfmCode)]"
-        if (!$_.HasRuntime) { "{c:DarkGray}$code{f:Normal}" }
-        elseif ($_.NLedgerExecutable -eq $selectedNLedgerExecutable) { "{c:Yellow}$code{f:Normal}" }
-        else { $code }
-      }
-      "{c:DarkGray}$releaseMarker{f:Normal} $tfmList " 
-    }) -join "  " | Out-AnsiString
-}
-
-function Expand-NLedgerExecutableInfo {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
-  )
-
-  [bool]$isSpecified = $selectedNLedgerExecutable
-  [bool]$exists = $isSpecified -and (Test-Path -LiteralPath $selectedNLedgerExecutable -PathType Leaf)
-  $binInfo = ($deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $selectedNLedgerExecutable} | Select-Object -First 1)
-
-  [PSCustomObject]@{
-    DeploymentInfo = $deploymentInfo
-    NLedgerExecutable = $selectedNLedgerExecutable
-    IsSpecified = $isSpecified
-    Exists = $exists
-    BinInfo = $binInfo
-    IsExternal = $exists -and !($binInfo)
-    HasRuntime = $binInfo.HasRuntime
-    PlatformFlags = "[$($binInfo.TfmCode)][$(if($binInfo.IsDebug){"Debug"}else{"Release"})]$(if($binInfo.IsOsxRuntime){"[OSX]"})$runtimeInfo"
-  }
-}
-
-function Out-NLedgerExecutableInfo {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
-  )
-
-  $expanded = Expand-NLedgerExecutableInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
-
-  $info = [ordered]@{}
-  if (!$expanded.IsSpecified) { $info["NLedger Executable"] = "{c:Red}Not selected{f:Normal}" | Out-AnsiString }
-  else {
-    $info["NLedger Executable"] = $selectedNLedgerExecutable
-    if (!$expanded.Exists) { $info["Detail Info"] = "{c:Red}File does not exist{f:Normal}" | Out-AnsiString }
-    else {
-      if ($expanded.IsExternal) { $info["Detail Info"] = "{c:Yellow}External file (it does not belong to the current deployment structure).{f:Normal}" | Out-AnsiString }
-      else {
-        $runtimeInfo = "[Runtime: $(if($expanded.HasRuntime){"Available"}else{"{c:Yellow}Not available{f:Normal}" | Out-AnsiString})]"
-        $info["Detail Info"] = "$($expanded.PlatformFlags)$runtimeInfo"
-      }
-    }
-  }
-
-  [PSCustomObject]$info | Format-List
-}
-
-function Out-NLedgerExecutableInfoCompact {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable
-  )
-
-  $expanded = Expand-NLedgerExecutableInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
-
-  $(if (!$expanded.IsSpecified) { "{c:Red}[Not selected]{f:Normal}" }
-  else {
-    if (!$expanded.Exists) { "{c:Red}[Not exist]{f:Normal} $selectedNLedgerExecutable"}
-    else {
-      if ($expanded.IsExternal) { "{c:Yellow}[External]{f:Normal} $selectedNLedgerExecutable"}
-      else {
-        $runtimeInfo = $(if($expanded.HasRuntime){""}else{"{c:Yellow}[No runtime]{f:Normal}"})
-        "$($expanded.PlatformFlags)$runtimeInfo $selectedNLedgerExecutable"
-      }
-    }
-  }) | Out-AnsiString
-}
-
-function Out-NLedgerDeploymentStatus {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$False)][AllowEmptyString()][string]$selectedNLedgerExecutable,
-    [Switch][bool]$compact
-  )
-
-  if ($compact) {
-    [PSCustomObject]([ordered]@{
-      "NLedger Executable" = Out-NLedgerExecutableInfoCompact -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
-      "Available binaries" = Out-NLedgerDeploymentInfoCompact -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable
-    }) | Format-List
-  } else {
-    Write-Output "`n{c:White}Selected NLedger binary file{f:Normal}`n" | Out-AnsiString
-    (Out-NLedgerExecutableInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable | Out-String).Trim()
-    Write-Output "`n{c:White}Available NLedger binary files{f:Normal}" | Out-AnsiString
-    (Out-NLedgerDeploymentInfo -deploymentInfo $deploymentInfo -selectedNLedgerExecutable $selectedNLedgerExecutable)
-  }
-
-}
-
-function Select-NLedgerExecutable {
+function Select-NLedgerDeploymentInfo {
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$True)]$deploymentInfo,
@@ -298,27 +192,124 @@ function Select-NLedgerExecutable {
     [Parameter(Mandatory=$True)][bool]$isDebug
   )
 
-  return  $deploymentInfo.Binaries | Where-Object { $_.TfmCode -eq $tfmCode -and $_.IsDebug -eq $isDebug } | ForEach-Object { $_.NLedgerExecutable } | Select-Object -First 1
+  $deploymentInfo.Infos | Where-Object { $_.TfmCode -eq $tfmCode -and $_.IsDebug -eq $isDebug } | Select-Object -First 1
 }
 
-function Assert-NLedgerExecutableIsValid {
+function Select-NLedgerExecutableInfo {
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$True)]$deploymentInfo,
-    [Parameter(Mandatory=$True)][AllowEmptyString()][string]$selectedNLedgerExecutable,
-    [Parameter(Mandatory=$true)][scriptblock]$ScriptBlock    
+    [Parameter(Mandatory=$True)][string]$tfmCode,
+    [Parameter(Mandatory=$True)][bool]$isDebug
   )
 
-  if (!$selectedNLedgerExecutable) { Write-Output "{c:Red}[ERROR] NLedger binary file is not specified{f:Normal}" | Out-AnsiString }
-  elseif (!(Test-Path -LiteralPath $selectedNLedgerExecutable)) { Write-Output "{c:Red}[ERROR] NLedger binary file '$selectedNLedgerExecutable' does not exist{f:Normal}" | Out-AnsiString }
-  else {
-    $bin = $deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $selectedNLedgerExecutable} | Select-Object -First 1
-    if (!$bin) { Write-Output "{c:Yellow}[WARNING] Specified NLedger binary file '$selectedNLedgerExecutable' does not belong to the current deployment structure).{f:Normal}" | Out-AnsiString }
-    if (!$bin.HasRuntime) { Write-Output "{c:Yellow}[WARNING] NLedger binary file '$selectedNLedgerExecutable' refers to '$($bin.TfmCode)' runtime that is not detected on the current machine.{f:Normal}" | Out-AnsiString }
+  $deploymentInfo.Binaries | Where-Object { $_.TfmCode -eq $tfmCode -and $_.IsDebug -eq $isDebug } | Select-Object -First 1
+}
 
-    . $ScriptBlock 
+function Select-NLedgerPreferrableInfo {
+  Param(
+    [Parameter()][string]$tfmCode,
+    [Parameter()][ValidateSet("debug","release","",IgnoreCase=$true)][string]$profile,
+    [Parameter(ValueFromPipeline)]$deploymentInfo
+  )
+
+  Process {
+    if (!$tfmCode -and $profile) { throw "Invalid arguments: profile can be specified only when tfmCode is specified also."}
+
+    if ($tfmCode) { 
+      $isDebug = $profile -eq "debug"
+      Select-NLedgerDeploymentInfo $deploymentInfo $tfmCode $isDebug | Assert-IsNotEmpty "NLedger binaries for $(Out-TfmProfile $tfmCode $isDebug) are not found." 
+    } else { 
+      $deploymentInfo.PreferredNLedgerExecutableInfo | Assert-IsNotEmpty "No available binaries for installation." 
+    }
   }
 }
+
+function Out-TfmProfile{
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory)][string]$tfmCode,
+    [Parameter(Mandatory)][bool]$isDebug
+  )
+  "$tfmCode ($(if($isDebug){"Debug"}else{"Release"}))"
+}
+
+function Get-LinkNameFromFile{
+  [CmdletBinding()]
+  Param([Parameter(Mandatory)][string]$nledgerExecutable)
   
-  
+  $path = [System.IO.Path]::GetDirectoryName($nledgerExecutable)
+  $name = [System.IO.Path]::GetFileName($nledgerExecutable)
+
+  [System.IO.Path]::GetFullPath("$path/$($name.Replace("NLedger-cli", "ledger"))")
+}
+
+function Install-NLedgerExecutable {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory)][string]$tfmCode,
+    [Parameter(Mandatory)][bool]$isDebug,
+    [switch]$link
+  )
+
+  $deploymentInfo = Get-NLedgerDeploymentInfo
+  if($deploymentInfo.EffectiveInstalled) {throw "NLedger is already installed: ($($deploymentInfo.EffectiveInstalled))"}
+
+  $info = Select-NLedgerExecutableInfo $deploymentInfo $tfmCode $isDebug
+  if (!$info) {throw "NLedger binaries for $(Out-TfmProfile $tfmCode $isDebug) are not found."}
+
+  Write-Verbose "Installing NLedger; adding to PATH: $($info.Path)"
+  $null = Add-Path $info.Path
+
+  if($link -and !($info.NLedgerLink)) {
+    $linkName = Get-LinkNameFromFile $info.NLedgerExecutable
+    Write-Verbose "Adding hard link $linkName"
+    $null = Add-HardLink -linkPath $linkName -filePath $info.NLedgerExecutable
+  }
+
+  if ((Test-IsFrameworkTfmCode $info.TfmCode) -and (Test-CanCallNGen)) { 
+    Write-Verbose "Adding NGen native image (if possible) $($info.NLedgerExecutable)"
+    $null = Add-NGenImage $info.NLedgerExecutable
+  }
+
+  [PSCustomObject]@{
+    Path = $info.Path
+    NLedgerExecutable = $info.NLedgerExecutable
+    NLedgerLink = $linkName
+  }
+}
+
+function Uninstall-NLedgerExecutable {
+  [CmdletBinding()]
+  Param()
+
+  Write-Verbose "Uninstalling NLedger"
+  $deploymentInfo = Get-NLedgerDeploymentInfo
+
+  foreach($nledgerPath in Find-InstalledNLedgerBinaries ) {
+    $info = $deploymentInfo.Infos | Where-Object { $_.NLedgerExecutable -eq $nledgerPath } | Select-Object -First 1
+    if ($info) {
+      Write-Verbose "Uninstalling NLedger found by path $($info.NLedgerExecutable)"
+
+      if ($info.NLedgerLink) {         
+        Write-Verbose "Removing hard link $($info.NLedgerLink)"
+        $null = Remove-HardLink $info.NLedgerLink 
+      }
+
+      if ((Test-IsFrameworkTfmCode $info.TfmCode) -and (Test-CanCallNGen)) { 
+        Write-Verbose "Removing NGen native image (if presented) $($info.NLedgerExecutable)"
+        $null = Remove-NGenImage $info.NLedgerExecutable 
+      }
+
+      Write-Verbose "Removing from PATH"
+      $null = Remove-Path $info.Path
+
+      Write-Verbose "NLedger located by this path is uninstalled"
+    } else {
+      Write-Warning "NLedger installed by path $($info.NLedgerExecutable) does not belong to the current deployment and cannot be uninstalled. Check PATH variable if it is not expected."
+    }
+  }
+
+}
+
 Export-ModuleMember -function * -alias *

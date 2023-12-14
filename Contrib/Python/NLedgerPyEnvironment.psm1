@@ -1,74 +1,23 @@
 <#
 .SYNOPSIS
-Getting NLedger Python extension ready to work
+NLedger Python extension management
 
 .DESCRIPTION
-This script manages NLedger Python connection settings and dependent external software. Basic responsibilities are:
-- Validating local Python deployment to check compliance with NLedger requirements
-- Optional installing and configuring embedded Python deployment (any versions; Windows only)
-- Producing NLedger Python Extension settings file that allows NLedger to connect and use Python 
-- Enabling Python Extension in NLedger configuration settings
-- Optional installing NLedger Python module to Python environment that allows to use NLedger capabilities in Python session
+Provides functions for managing NLedger Python environment
 
-The provided commands allow you configure the connection either automatically or with any needed granularity. The commands are:
-Informational functions:
-- discover - Find Python deployments on the local machine
-- status - Show NLedger Python integration status
-Connection management function:
-- connect - Create a connection file that references to a Python deployment
-- disconnect - Remove the connection file
-- enable - Enable Python extension in NLedger settings (creates connection settings if they were not created yet)
-- disable - Disable Python extension in NLedger settings
-Technical functions for advanced configuring:
-- install-python - Install an isolated embedded Python (Windows only)
-- uninstall-python - Uninstall embedded Python
-- install-wheel - Install Wheel module (required to build Ledger package)
-- uninstall-wheel - Uninstall Wheel module
-- install-pythonnet - Install PythonNet module
-- uninstall-pythonnet - Uninstall PythonNet module
-- install-ledger - Install Ledger module (and PythonNet if it has not been installed yet)
-- uninstall-ledger - Uninstall Ledger module
-- test-ledger - Run Ledger module tests (ledger_tests.py)
-- test-connection - Return NLedger Python connection settings in a technical format
+.NOTES
+Author: Dmitry Merzlyakov
+Date:   December 14, 2023
+#> 
 
-Hint: in most cases, you only need to execute 'enable' command to configure and enable Python integration.
-The commands can be executed by running the script with '-command' parameter or in console mode by typing a command name.
-
-.PARAMETER command
-Command to execute. You can get detail information for every command by typing 'get-help [command]' in the console
-
-.PARAMETER path
-Optional path to Python executable file
-
-.PARAMETER version
-Optional version of dependent software
-
-Note: use 'set-executionpolicy -ExecutionPolicy RemoteSigned -Scope Process' to run the script in dev terminal
-
-#>
 [CmdletBinding()]
-Param(
-    [Parameter(Mandatory=$False)][ValidateSet("discover","status","connect","disconnect","enable","disable","test-connection","install-python","install-wheel","install-pythonnet","install-ledger","uninstall-python","uninstall-wheel","uninstall-pythonnet","uninstall-ledger","test-ledger")]$command,
-    [Parameter(Mandatory=$False)][string]$path,
-    [Parameter(Mandatory=$False)][string]$version,
-    [Switch][bool]$noAnsiColor = $False
-
-)
-
-trap 
-{
-  write-error $_ 
-  exit 1 
-}
+Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
-Import-Module $Script:ScriptPath/PyManagement.psm1 -Force
-Import-Module $Script:ScriptPath/../NLManagement/NLSetup.psm1 -Force
-Import-Module $Script:ScriptPath/../NLManagement/NLCommon.psm1 -Force
-
-[bool]$Script:isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-
-if ($noAnsiColor) {$Global:ANSI_Colorization=$False}
+Import-Module $Script:ScriptPath/PyManagement.psm1
+Import-Module $Script:ScriptPath/../Common/SysPlatform.psm1
+Import-Module $Script:ScriptPath/../Common/SysConsole.psm1
+Import-Module $Script:ScriptPath/../Common/NLedgerConfig.psm1
 
 ## Default settings
 
@@ -250,9 +199,9 @@ function Get-StatusInfo {
             $Private:info["py_status_error"] = $Private:info["py_info"].status_error
         }
     }
-    $Private:info["nledger_binaries"] = (Test-NLedgerBinaryLoaded)
+    $Private:info["nledger_binaries"] = (Test-NLedgerAssemblyLoaded)
     if ($Private:info["nledger_binaries"]) {
-        $Private:info["extension_provider"] = ($(GetConfigData).Settings | Where-Object { $_.Name -eq "ExtensionProvider" } | Select-Object -First 1).EffectiveSettingValue
+        $Private:info["extension_provider"] = ($(Get-NLedgerConfigData).Settings | Where-Object { $_.Name -eq "ExtensionProvider" } | Select-Object -First 1).EffectiveSettingValue
         $Private:info["is_python_extension_enabled"] = $Private:info["extension_provider"] -eq "python"
     }
 
@@ -279,14 +228,14 @@ function Write-StatusInfo {
             }
         } else {
             $Private:info["Python Connection"] = ("{c:DarkRed}[Disabled]{f:Normal} Connection is not configured" | Out-AnsiString)
-            $Private:info["Connection Settings"] = ("{c:DarkYellow}[File not found]{f:Normal} $($_.py_settings_filename)`nUse Set-PythonConnection command to create a connection file" | Out-AnsiString)
+            $Private:info["Connection Settings"] = ("{c:DarkYellow}[File not found]{f:Normal} $($_.py_settings_filename)`nUse '{c:DarkYellow}python-connect{f:Normal}' command to create a connection file" | Out-AnsiString)
         }
         if ($_.nledger_binaries) {
             if ($_.is_python_extension_enabled) {
                 $Private:info["Python Extension"] = ("{c:DarkGreen}[Enabled]{f:Normal} Extension is active" | Out-AnsiString)
             } else {
                 if ([String]::IsNullOrEmpty($_.extension_provider)) {
-                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Extension provider is not set.`nUse {c:DarkYellow}enable{f:Normal} command to set correct provider." | Out-AnsiString)
+                    $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Extension provider is not set.`nUse '{c:DarkYellow}python-enable{f:Normal}' command to set correct provider." | Out-AnsiString)
                 } else {
                     $Private:info["Python Extension"] = ("{c:DarkRed}[Disabled]{f:Normal} Current extension provider is '$($_.extension_provider)' whereas 'python' expected`nUse {c:DarkYellow}enable{f:Normal} command to set correct provider." | Out-AnsiString)
                 }
@@ -350,8 +299,9 @@ PythonNet and Ledger modules are optional and needs to be installed if you want 
 Optional parameter containing a full path to a Python executable file.
 
 #>
-function Discover {
+function Search-PythonDeployments {
     [CmdletBinding()]
+    [Alias("python-discover")]
     Param([Parameter(Mandatory=$False)][string]$path)
   
     Write-Output ""
@@ -369,7 +319,7 @@ function Discover {
         } else { Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Not found" | Out-AnsiString )}
         Write-Output ""
   
-        if ($Script:isWindowsPlatform) {
+        if (Test-IsWindows) {
           Write-Verbose "Search embed Python"
           $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
           if (!$embeds) { 
@@ -420,8 +370,9 @@ If this parameter is specified, the command installs and refers to the specified
 This parameter is available on Windows only.
 
 #>
-function Connect {
+function Connect-PythonDeployment {
     [CmdletBinding()]
+    [Alias("python-connect")]
     Param(
         [Parameter(Mandatory=$False)][string]$path,
         [Parameter(Mandatory=$False)][string]$embed
@@ -441,7 +392,7 @@ function Connect {
             Write-Verbose "No settings file. Searching local Python"
             $path = Search-PyExecutable
             if (!$path) {
-                if ($Script:isWindowsPlatform) {
+                if (Test-IsWindows) {
                     $embed = $pyEmbedVersion
                     Write-Output "Auto-configuring: use embed Python $pyEmbedVersion (since local Python not found and no settings file)"
                 } else { throw "Auto-configuring is not possible: local Python not found and no settings file. Specify 'path' parameter." }
@@ -485,8 +436,9 @@ indicates whether Ledger capabilities can be used in a Python session (both modu
 Remember that Python sessions work isolately and do not need for any settings actually.
 
 #>
-function Status {
+function Get-PythonStatus {
     [CmdletBinding()]
+    [Alias("python-status")]
     Param()
 
     Write-Output ("`n{c:DarkCyan}[Python Extension Status]{f:Normal}`n" | Out-AnsiString )
@@ -507,16 +459,17 @@ This command checks whether Python extension is properly configured, executes 'c
 sets NLedger settings 'ExtensionProvider' to 'python' to make the extension operable.
 
 #>
-function Enable {
+function Enable-PythonExtension {
     [CmdletBinding()]
+    [Alias("python-enable")]
     Param()
     
     $Private:info = Get-StatusInfo
     if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}
     if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot enable Python extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
-    Connect
-    if ($Private:info.extension_provider -ne "python") { $null = SetConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
+    Connect-PythonDeployment
+    if ($Private:info.extension_provider -ne "python") { $null = Set-NLedgerConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
 
     $Private:info = Get-StatusInfo
     if ($Private:info.extension_provider -ne "python") { Write-Output ("{c:DarkRed}Cannot enable Python extension{f:Normal}" | Out-AnsiString) }
@@ -533,8 +486,9 @@ Sets an empty value to NLedger 'ExtensionProvider' setting, making Python extens
 Extension configuration settings (the file NLedger.Extensibility.Python.settings.xml) themselves are not changed.
 
 #>
-function Disable {
+function Disable-PythonExtension {
     [CmdletBinding()]
+    [Alias("python-disable")]
     Param()
     
     Write-Output ""
@@ -559,8 +513,9 @@ Deletes the file with NLedger Python extension settings (NLedger.Extensibility.P
 It makes Python extension unavailable regardless of whether the NLedger setting (ExtensionProvider) is configured for Python
 
 #>
-function Disconnect {
+function Disconnect-PythonDeployment {
     [CmdletBinding()]
+    [Alias("python-disconnect")]
     Param()
     
     Write-Output ""
@@ -595,6 +550,7 @@ Default value is 3.8.1 (this version will be downloaded if 'version' parameter i
 #>
 function Install-Python {
     [CmdletBinding()]
+    [Alias("python-install")]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
     Write-Output ""
@@ -615,6 +571,7 @@ Default value is 3.8.1 (this version will be uninstalled if 'version' parameter 
 #>
 function Uninstall-Python {
     [CmdletBinding()]
+    [Alias("python-uninstall")]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
     Write-Output ""
@@ -636,8 +593,8 @@ Installs Wheel module to Python environment
 .DESCRIPTION
 Installs Wheel module to Python by means of Pip.
 
-Note: Wheel module is only needed if you want to build Ledger package from source code (e.g. by means of get-nledger-up.ps1).
-.Net Ledger and Ledger module can work without Wheel. 
+Note: Wheel module is only needed if you want to build Ledger package from source code 
+(e.g. by means of get-nledger-up.ps1). .Net Ledger and Ledger module can work without Wheel. 
 
 Note: you can check whether Wheel is installed by means of "discover" command. It will show Wheel version if it is found.
 
@@ -645,8 +602,9 @@ Note: you can check whether Wheel is installed by means of "discover" command. I
 Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 #>
-function Install-Wheel {
+function Install-PythonWheel {
     [CmdletBinding()]
+    [Alias("python-install-wheel")]
     Param(
         [Parameter(Mandatory=$False)][string]$path
     )
@@ -680,8 +638,8 @@ Uninstalls Wheel module from Python environment
 .DESCRIPTION
 Uninstall Wheel module to Python by means of Pip.
 
-Note: Wheel module is only needed if you want to build Ledger package from source code (e.g. by means of get-nledger-up.ps1).
-.Net Ledger and Ledger module can work without Wheel. 
+Note: Wheel module is only needed if you want to build Ledger package from source code 
+(e.g. by means of get-nledger-up.ps1). .Net Ledger and Ledger module can work without Wheel. 
 
 Note: you can check whether Wheel is installed by means of "discover" command. It will show Wheel version if it is found.
 
@@ -689,8 +647,9 @@ Note: you can check whether Wheel is installed by means of "discover" command. I
 Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 #>
-function Uninstall-Wheel {
+function Uninstall-PythonWheel {
     [CmdletBinding()]
+    [Alias("python-uninstall-wheel")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
     if(!$path) {
@@ -738,6 +697,7 @@ If this parameter is omitted, the command installs a currently available PythonN
 #>
 function Install-PythonNet {
     [CmdletBinding()]
+    [Alias("python-install-pythonnet")]
     Param(
         [Parameter(Mandatory=$False)][string]$path,
         [Switch]$pre = $False
@@ -781,6 +741,7 @@ If this parameter is omitted, the command uses path from current Python extensio
 #>
 function Uninstall-PythonNet {
     [CmdletBinding()]
+    [Alias("python-uninstall-pythonnet")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
     if(!$path) {
@@ -819,8 +780,9 @@ Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 
 #>
-function Install-Ledger {
+function Install-PythonLedger {
     [CmdletBinding()]
+    [Alias("python-install-ledger")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
     $Private:ledgerPackage = (Get-LatestAvailableLedgerModule).FileName
@@ -862,8 +824,9 @@ Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 
 #>
-function Uninstall-Ledger {
+function Uninstall-PythonLedger {
     [CmdletBinding()]
+    [Alias("python-uninstall-ledger")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
     if(!$path) {
@@ -882,7 +845,7 @@ function Uninstall-Ledger {
 
 <#
 .SYNOPSIS
-Runs Ledger module tests
+Runs Python Ledger module tests
 
 .DESCRIPTION
 Ledger module package (ledger-[version].whl) is distributed with a test file (ledger_tests.py) that is based on Python unit tests.
@@ -898,8 +861,9 @@ Optional parameter containing a full path to Python executable file.
 If this parameter is omitted, the command uses path from current Python extension settings.
 
 #>
-function Test-Ledger {
+function Invoke-PythonLedgerTests {
     [CmdletBinding()]
+    [Alias("python-test-ledger")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
     [string]$Private:ledgerTests = [System.IO.Path]::GetFullPath("$Script:ScriptPath/ledger_tests.py")
@@ -917,119 +881,4 @@ function Test-Ledger {
 
     & $path $Private:ledgerTests
     if ($LASTEXITCODE -ne 0) {throw "Python unit tests failed (Exit code: $LASTEXITCODE)."}
-}
-
-function Help {
-    [CmdletBinding()]
-    Param()
-
-    $Private:commands = [ordered]@{
-        ("{c:Yellow}discover{f:Normal}" | Out-AnsiString) = "Find Python deployments on the local machine"
-        ("{c:Yellow}status{f:Normal}" | Out-AnsiString) = "Show NLedger Python integration status"
-        ("{c:Yellow}connect{f:Normal}" | Out-AnsiString) = "Create a connection file that references to a Python deployment"
-        ("{c:Yellow}disconnect{f:Normal}" | Out-AnsiString) = "Remove the connection file"
-        ("{c:Yellow}enable{f:Normal}" | Out-AnsiString) = "Enable Python extension in NLedger settings"
-        ("{c:Yellow}disable{f:Normal}" | Out-AnsiString) = "Disable Python extension in NLedger settings"
-        ("{c:DarkYellow}install-{f:Normal}[target]" | Out-AnsiString) = "Install embedded Python (install-python) or Wheel (install-wheel) or PythonNet (install-pythonnet) or Ledger module (install-ledger)"
-        ("{c:DarkYellow}uninstall-{f:Normal}[target]" | Out-AnsiString) = "Uninstall listed targets"
-        ("{c:DarkYellow}test-ledger{f:Normal}" | Out-AnsiString) = "Run tests for installed Ledger module"
-        ("{c:DarkYellow}help{f:Normal}" | Out-AnsiString) = "Shows this help text"
-        ("{c:DarkYellow}get-help{f:Normal} [command]" | Out-AnsiString) = "Get additional information for a specified command"
-        ("{c:DarkYellow}exit{f:Normal}" | Out-AnsiString) = "Close console window"
-    }
-
-    Write-Output "Available commands:"
-    ([PSCustomObject]$Private:commands) | Format-List
-}
-
-
-# Manage parameters
-
-if (!$command) {
-    Write-Output ""
-    Write-Output ("{c:White}NLedger Python Toolset Console" | Out-AnsiString)
-    Write-Output ("******************************{f:Normal}" | Out-AnsiString)
-    Write-Output "This script manages NLedger Python Extension settings"
-    Write-Output "It can discover environment details, configure and validate NLedger settings, install or configure dependent software."
-    Write-Output ""
-    Help
-    return
-}
-
-if ($command -eq 'discover') { 
-    if($version){throw "Command 'discover' does not accept 'version' parameter"}
-    Discover -path $path 
-}
-
-if ($command -eq 'status') { 
-    if($path -or $version){throw "Command 'status' does not accept any parameters"}
-    Status 
-}
-
-if ($command -eq 'connect') {
-    Connect -path $path -embed $version
-}
-
-if ($command -eq 'disconnect') { 
-    if($path -or $version){throw "Command 'disconnect' does not accept any parameters"}
-    Disconnect 
-}
-
-if ($command -eq 'enable') {
-    if($path -or $version){throw "Command 'enable' does not accept any parameters"}
-    Enable
-}
-
-if ($command -eq 'disable') {
-    if($path -or $version){throw "Command 'disable' does not accept any parameters"}
-    Disable
-}
-
-if ($command -eq 'test-connection') {
-    if($path -or $version){throw "Command 'test-connection' does not accept any parameters"}
-    Test-Connection
-}
-
-if ($command -eq 'install-python') {
-    if($path){throw "Command 'install-python' does not accept 'path' parameters"}
-    Install-Python -version $version
-}
-
-if ($command -eq 'install-wheel') {
-    Install-Wheel -path $path
-}
-
-if ($command -eq 'install-pythonnet') {
-    if($version -and $version -ne "pre"){throw "Command 'install-pythonnet' does not accept 'version' parameter if it not empty and not equal to 'pre'"}
-    Install-PythonNet -path $path -pre:($version -eq "pre")
-}
-
-if ($command -eq 'install-ledger') {
-    if ($version) {throw "Command 'install-ledger' does not accept 'version' parameter"}
-    Install-Ledger -path $path
-}
-
-if ($command -eq 'uninstall-python') {
-    if($path){throw "Command 'uninstall-python' does not accept 'path' parameters"}
-    if(!$version){throw "Command 'uninstall-python' requires 'version' parameters"}
-    Uninstall-Python -version $version
-}
-
-if ($command -eq 'uninstall-wheel') {
-    Uninstall-Wheel -path $path
-}
-
-if ($command -eq 'uninstall-pythonnet') {
-    if($version){throw "Command 'uninstall-pythonnet' does not accept 'version' parameters"}
-    Uninstall-PythonNet -path $path
-}
-
-if ($command -eq 'uninstall-ledger') {
-    if ($version) {throw "Command 'uninstall-ledger' does not accept 'version' parameter"}
-    Uninstall-Ledger -path $path
-}
-
-if ($command -eq 'test-ledger') {
-    if ($version) {throw "Command 'test-ledger' does not accept 'version' parameter"}
-    Test-Ledger -path $path
 }
