@@ -8,6 +8,7 @@
 // **********************************************************************************
 using NLedger.Expressions;
 using NLedger.Scopus;
+using NLedger.Utility;
 using NLedger.Utils;
 using NLedger.Values;
 using System;
@@ -562,7 +563,7 @@ namespace NLedger.Accounts
 
         private static Value GetEarliestCheckin(Account account)
         {
-            return account.SelfDetails().EarliestCheckin != null ? Value.Get(account.SelfDetails().EarliestCheckin) : Value.Empty;
+            return !account.SelfDetails().EarliestCheckin.IsNotADateTime() ? Value.Get(account.SelfDetails().EarliestCheckin) : Value.Empty;
         }
 
         private static Value GetSubcount(Account account)
@@ -582,7 +583,7 @@ namespace NLedger.Accounts
 
         private static Value GetLatestCheckout(Account account)
         {
-            return account.SelfDetails().LatestCheckout != null ? Value.Get(account.SelfDetails().LatestCheckout) : Value.Empty;
+            return !account.SelfDetails().LatestCheckout.IsNotADateTime() ? Value.Get(account.SelfDetails().LatestCheckout) : Value.Empty;
         }
 
         private static Value GetLatestCheckoutCleared(Account account)

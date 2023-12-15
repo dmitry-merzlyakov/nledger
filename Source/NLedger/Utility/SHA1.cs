@@ -20,7 +20,7 @@ namespace NLedger.Utility
         public static string GetHash(string input)
         {
             // see here - http://stackoverflow.com/questions/17292366/hashing-with-sha1-algorithm-in-c-sharp
-            using (SHA1Managed sha1 = new SHA1Managed())
+            using (var sha1 = System.Security.Cryptography.SHA1.Create())
             {
                 var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(input));
                 return BitConverter.ToString(hash).Replace("-", "").ToLower();

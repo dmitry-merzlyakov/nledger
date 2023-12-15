@@ -1349,7 +1349,7 @@ namespace NLedger.Scopus
 
             AccountXDataDetails statistics = report.Session.Journal.Master.FamilyDetails(true);
 
-            if (statistics.EarliestPost == null || statistics.LatestPost == null)
+            if (!statistics.EarliestPost.IsValid() && !statistics.LatestPost.IsValid())
                 return Value.Empty;
 
             sb.AppendFormat("Time period: {0} to {1} ({2} days)",
