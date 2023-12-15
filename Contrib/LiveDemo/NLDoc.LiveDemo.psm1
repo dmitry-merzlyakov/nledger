@@ -15,6 +15,7 @@ Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath\PsHttpListener.psm1
+Import-Module $Script:ScriptPath\..\Common\SysCommon.psm1
 Import-Module $Script:ScriptPath\..\Common\SysPlatform.psm1
 Import-Module $Script:ScriptPath\..\Common\SysConsole.psm1
 Import-Module $Script:ScriptPath\..\Common\NLedgerConfig.psm1
@@ -310,25 +311,27 @@ function Invoke-NLedgerLiveDemo {
 
   Write-Output "NLedger Live Demo"
 
-  if (!(Get-NLedgerDeploymentInfo).Installed) { throw "NLedger is not installed."}
+  Assert-CommandCompleted {
+    if (!(Get-NLedgerDeploymentInfo).Installed) { throw "NLedger is not installed."}
 
-  $demoConfig = Get-NLedgerLiveDemoConfig
+    $demoConfig = Get-NLedgerLiveDemoConfig
 
-  $actions = @{
-    "\/content" = { Get-Content -Encoding UTF8 -LiteralPath $demoConfig.DemoFile | Out-String }
-    "\/shutdown" = { Invoke-HttpListenerShutdown }
-    "\/act\.actRun\.(.+)" = { Invoke-NLedgerLiveDemoActionRun -testid $_[1] -demoConfig $demoConfig }
-    "\/act\.actEdit\.(.+)" = { Invoke-NLedgerLiveDemoActionEdit -testid $_[1] -demoConfig $demoConfig }
-    "\/act\.actOpen\.(.+)" = { Invoke-NLedgerLiveDemoActionOpen -testid $_[1] -demoConfig $demoConfig }
-    "\/act\.actRevert\.(.+)" = { Invoke-NLedgerLiveDemoActionRevert -testid $_[1] -demoConfig $demoConfig }
+    $actions = @{
+      "\/content" = { Get-Content -Encoding UTF8 -LiteralPath $demoConfig.DemoFile | Out-String }
+      "\/shutdown" = { Invoke-HttpListenerShutdown }
+      "\/act\.actRun\.(.+)" = { Invoke-NLedgerLiveDemoActionRun -testid $_[1] -demoConfig $demoConfig }
+      "\/act\.actEdit\.(.+)" = { Invoke-NLedgerLiveDemoActionEdit -testid $_[1] -demoConfig $demoConfig }
+      "\/act\.actOpen\.(.+)" = { Invoke-NLedgerLiveDemoActionOpen -testid $_[1] -demoConfig $demoConfig }
+      "\/act\.actRevert\.(.+)" = { Invoke-NLedgerLiveDemoActionRevert -testid $_[1] -demoConfig $demoConfig }
+    }
+
+    Write-Output "The web browser with the demo content should open automatically."
+    Write-Output "You can also open the demo manually using the link: {c:Yellow}$($demoConfig.DemoURL){f:Normal}." | Out-AnsiString
+    Write-Output "When you close the demo page, this process shuts down."
+    Write-Output "You can also stop this process at any time by pressing {c:Yellow}CTRL-C{f:Normal}." | Out-AnsiString
+    
+    $null = Initialize-NLedgerLiveDemoSandbox -files $demoConfig.Files -sandbox $demoConfig.Sandbox
+    $null = Start-HttpListener -actions $actions -prefix $demoConfig.DemoURL -onListenerStart { $null = Open-NLedgerLiveDemoPage $demoConfig } 
   }
-
-  Write-Output "The web browser with the demo content should open automatically."
-  Write-Output "You can also open the demo manually using the link: {c:Yellow}$($demoConfig.DemoURL){f:Normal}." | Out-AnsiString
-  Write-Output "When you close the demo page, this process shuts down."
-  Write-Output "You can also stop this process at any time by pressing {c:Yellow}CTRL-C{f:Normal}." | Out-AnsiString
-  
-  $null = Initialize-NLedgerLiveDemoSandbox -files $demoConfig.Files -sandbox $demoConfig.Sandbox
-  $null = Start-HttpListener -actions $actions -prefix $demoConfig.DemoURL -onListenerStart { $null = Open-NLedgerLiveDemoPage $demoConfig } 
 }
 

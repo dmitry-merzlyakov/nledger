@@ -15,6 +15,7 @@ Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 Import-Module $Script:ScriptPath/PyManagement.psm1
+Import-Module $Script:ScriptPath/../Common/SysCommon.psm1
 Import-Module $Script:ScriptPath/../Common/SysPlatform.psm1
 Import-Module $Script:ScriptPath/../Common/SysConsole.psm1
 Import-Module $Script:ScriptPath/../Common/NLedgerConfig.psm1
@@ -304,41 +305,43 @@ function Search-PythonDeployments {
     [Alias("python-discover")]
     Param([Parameter(Mandatory=$False)][string]$path)
   
-    Write-Output ""
-    if($path) {
-        Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Testing Python by path: $path" | Out-AnsiString )
-        Get-PyInfo -pyExecutable $path | Write-PyInfo
+    Assert-CommandCompleted {
         Write-Output ""
-      
-    } else {
-        Write-Verbose "Search local Python"
-        $path = Search-PyExecutable
-        if ($path) {
-            Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Found by path: $path" | Out-AnsiString )
+        if($path) {
+            Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Testing Python by path: $path" | Out-AnsiString )
             Get-PyInfo -pyExecutable $path | Write-PyInfo
-        } else { Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Not found" | Out-AnsiString )}
-        Write-Output ""
-  
-        if (Test-IsWindows) {
-          Write-Verbose "Search embed Python"
-          $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
-          if (!$embeds) { 
-              Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Not found" | Out-AnsiString )
-          } else {
-              Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
-              $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
-          }
-        }
-          
-        Write-Verbose "Check NLedger Python settings"
-        $settings = Get-PythonIntegrationSettings
-        if($settings) {
-            Write-Output ( "{c:DarkCyan}[NLedger Settings]{f:Normal} Found connection settings file: $Script:settingsFileName" | Out-AnsiString )
-            Write-Output "Configured path to Python executable: $($settings.PyExecutable)"
-            Get-PyInfo -pyExecutable $settings.PyExecutable | Write-PyInfo
-        } else { Write-Output ("{c:DarkCyan}[NLedger Settings]{f:Normal} Not found (no file $Script:settingsFileName)" | Out-AnsiString ) }
-        Write-Output ""
-    }  
+            Write-Output ""
+        
+        } else {
+            Write-Verbose "Search local Python"
+            $path = Search-PyExecutable
+            if ($path) {
+                Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Found by path: $path" | Out-AnsiString )
+                Get-PyInfo -pyExecutable $path | Write-PyInfo
+            } else { Write-Output ("{c:DarkCyan}[Local Python]{f:Normal} Not found" | Out-AnsiString )}
+            Write-Output ""
+    
+            if (Test-IsWindows) {
+            Write-Verbose "Search embed Python"
+            $embeds = Search-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -fullPath
+            if (!$embeds) { 
+                Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Not found" | Out-AnsiString )
+            } else {
+                Write-Output ("{c:DarkCyan}[Embed Python]{f:Normal} Found $(($embeds | Measure-Object).Count) deployment(s)" | Out-AnsiString )
+                $embeds | ForEach-Object { Get-PyInfo -pyExecutable $_ } | Write-PyInfo
+            }
+            }
+            
+            Write-Verbose "Check NLedger Python settings"
+            $settings = Get-PythonIntegrationSettings
+            if($settings) {
+                Write-Output ( "{c:DarkCyan}[NLedger Settings]{f:Normal} Found connection settings file: $Script:settingsFileName" | Out-AnsiString )
+                Write-Output "Configured path to Python executable: $($settings.PyExecutable)"
+                Get-PyInfo -pyExecutable $settings.PyExecutable | Write-PyInfo
+            } else { Write-Output ("{c:DarkCyan}[NLedger Settings]{f:Normal} Not found (no file $Script:settingsFileName)" | Out-AnsiString ) }
+            Write-Output ""
+        }  
+    }
 }
 
 <#
@@ -378,45 +381,47 @@ function Connect-PythonDeployment {
         [Parameter(Mandatory=$False)][string]$embed
     )
 
-    if ($path -and $embed) { throw "Connect command cannot get both 'path' and 'embed' parameters at the same time."}
+    Assert-CommandCompleted {
+        if ($path -and $embed) { throw "Connect command cannot get both 'path' and 'embed' parameters at the same time."}
 
-    Write-Output ""
-    $Private:settings = Get-PythonIntegrationSettings
+        Write-Output ""
+        $Private:settings = Get-PythonIntegrationSettings
 
-    if (!$path -and !$embed) {
-        Write-Verbose "Auto-configuring parameters. Checking existing settings first."
-        if ($Private:settings) {
-            $path = $settings.PyExecutable
-            Write-Output "Found path '$path' specified in NLedger Python settings ($Script:settingsFileName)"
-        } else {
-            Write-Verbose "No settings file. Searching local Python"
-            $path = Search-PyExecutable
-            if (!$path) {
-                if (Test-IsWindows) {
-                    $embed = $pyEmbedVersion
-                    Write-Output "Auto-configuring: use embed Python $pyEmbedVersion (since local Python not found and no settings file)"
-                } else { throw "Auto-configuring is not possible: local Python not found and no settings file. Specify 'path' parameter." }
-            }
-        }        
+        if (!$path -and !$embed) {
+            Write-Verbose "Auto-configuring parameters. Checking existing settings first."
+            if ($Private:settings) {
+                $path = $settings.PyExecutable
+                Write-Output "Found path '$path' specified in NLedger Python settings ($Script:settingsFileName)"
+            } else {
+                Write-Verbose "No settings file. Searching local Python"
+                $path = Search-PyExecutable
+                if (!$path) {
+                    if (Test-IsWindows) {
+                        $embed = $pyEmbedVersion
+                        Write-Output "Auto-configuring: use embed Python $pyEmbedVersion (since local Python not found and no settings file)"
+                    } else { throw "Auto-configuring is not possible: local Python not found and no settings file. Specify 'path' parameter." }
+                }
+            }        
+        }
+
+        if ($embed) {
+            Write-Verbose "Installing embedded python $embed"
+            $path = Search-PyExecutable -pyHome (Get-PyEmbed -appPrefix $appPrefix -pyVersion $embed -pyPlatform $pyPlatform)
+            Write-Output "Installed embed Python $embed by path $path"
+        }
+
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.status_error))" }
+
+        Write-Verbose "Update or create settings"
+        if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyDll -ne $Private:info.pyDll)) {
+            Write-Verbose "Settings file is outdated"
+            $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyDll $Private:info.pyDll
+            Write-Output "Settings file ($Script:settingsFileName) is updated"
+        } else { Write-Verbose "Settings file $Script:settingsFileName is actual"}
+
+        Write-Output ("NLedger Python connection is {c:DarkYellow}active{f:Normal} (Settings file: $Script:settingsFileName)`n" | Out-AnsiString)
     }
-
-    if ($embed) {
-        Write-Verbose "Installing embedded python $embed"
-        $path = Search-PyExecutable -pyHome (Get-PyEmbed -appPrefix $appPrefix -pyVersion $embed -pyPlatform $pyPlatform)
-        Write-Output "Installed embed Python $embed by path $path"
-    }
-
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Connection error: cannot use Python by path $path (Error: $($Private:info.status_error))" }
-
-    Write-Verbose "Update or create settings"
-    if (!$settings -or ($settings.PyExecutable -ne $Private:info.pyExecutable -or $settings.PyDll -ne $Private:info.pyDll)) {
-        Write-Verbose "Settings file is outdated"
-        $settings = Update-PythonEnvironmentSettings -pyExecutable $Private:info.pyExecutable -pyDll $Private:info.pyDll
-        Write-Output "Settings file ($Script:settingsFileName) is updated"
-    } else { Write-Verbose "Settings file $Script:settingsFileName is actual"}
-
-    Write-Output ("NLedger Python connection is {c:DarkYellow}active{f:Normal} (Settings file: $Script:settingsFileName)`n" | Out-AnsiString)
 }
 
 <#
@@ -441,11 +446,13 @@ function Get-PythonStatus {
     [Alias("python-status")]
     Param()
 
-    Write-Output ("`n{c:DarkCyan}[Python Extension Status]{f:Normal}`n" | Out-AnsiString )
-    Write-Output "'Python Connection' status indicates whether the reference to Python is properly configured"
-    Write-Output "'Python Extension' status indicates whether NLedger uses the referenced Python"
+    Assert-CommandCompleted {
+        Write-Output ("`n{c:DarkCyan}[Python Extension Status]{f:Normal}`n" | Out-AnsiString )
+        Write-Output "'Python Connection' status indicates whether the reference to Python is properly configured"
+        Write-Output "'Python Extension' status indicates whether NLedger uses the referenced Python"
 
-    Get-StatusInfo | Write-StatusInfo
+        Get-StatusInfo | Write-StatusInfo
+    }
 }
 
 <#
@@ -464,17 +471,19 @@ function Enable-PythonExtension {
     [Alias("python-enable")]
     Param()
     
-    $Private:info = Get-StatusInfo
-    if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}
-    if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot enable Python extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
+    Assert-CommandCompleted {
+        $Private:info = Get-StatusInfo
+        if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}
+        if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot enable Python extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
-    Connect-PythonDeployment
-    if ($Private:info.extension_provider -ne "python") { $null = Set-NLedgerConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
+        Connect-PythonDeployment
+        if ($Private:info.extension_provider -ne "python") { $null = Set-NLedgerConfigValue -scope "user" -settingName "ExtensionProvider" -settingValue "python" }
 
-    $Private:info = Get-StatusInfo
-    if ($Private:info.extension_provider -ne "python") { Write-Output ("{c:DarkRed}Cannot enable Python extension{f:Normal}" | Out-AnsiString) }
-    else { Write-Output ("NLedger Python extension is {c:DarkGreen}enabled{f:Normal}" | Out-AnsiString)}
-    Write-Output ""
+        $Private:info = Get-StatusInfo
+        if ($Private:info.extension_provider -ne "python") { Write-Output ("{c:DarkRed}Cannot enable Python extension{f:Normal}" | Out-AnsiString) }
+        else { Write-Output ("NLedger Python extension is {c:DarkGreen}enabled{f:Normal}" | Out-AnsiString)}
+        Write-Output ""
+    }
 }
 
 <#
@@ -491,17 +500,19 @@ function Disable-PythonExtension {
     [Alias("python-disable")]
     Param()
     
-    Write-Output ""
-    $Private:info = Get-StatusInfo
-    if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}    
-    if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot disable extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
+    Assert-CommandCompleted {
+        Write-Output ""
+        $Private:info = Get-StatusInfo
+        if(!$Private:info.nledger_binaries) {throw "Cannot enable Python extension because NLedger binaries not found. Build NLedger or correct deployment issues"}    
+        if ($Private:info.extension_provider -and $Private:info.extension_provider -ne "python") {throw "Cannot disable extension because 'ExtensionProvider' setting value in NLedger configuration already configured for another provider: $($Private:info.extensionProvider)"}
 
-    if ($Private:info.extension_provider -eq "python") { $null = RemoveConfigValue -scope "user" -settingName "ExtensionProvider" }
+        if ($Private:info.extension_provider -eq "python") { $null = RemoveConfigValue -scope "user" -settingName "ExtensionProvider" }
 
-    $Private:info = Get-StatusInfo
-    if ($Private:info.extension_provider -eq "python") { Write-Output ("{c:DarkRed}Cannot disable extension{f:Normal}; use NLedger Configuration console to sort out the issue manually" | Out-AnsiString) }
-    else { Write-Output ("NLedger Python extension is {c:DarkRed}disabled{f:Normal}" | Out-AnsiString) }
-    Write-Output ""
+        $Private:info = Get-StatusInfo
+        if ($Private:info.extension_provider -eq "python") { Write-Output ("{c:DarkRed}Cannot disable extension{f:Normal}; use NLedger Configuration console to sort out the issue manually" | Out-AnsiString) }
+        else { Write-Output ("NLedger Python extension is {c:DarkRed}disabled{f:Normal}" | Out-AnsiString) }
+        Write-Output ""
+    }
 }
 
 <#
@@ -518,12 +529,14 @@ function Disconnect-PythonDeployment {
     [Alias("python-disconnect")]
     Param()
     
-    Write-Output ""
-    $Private:info = Get-StatusInfo
-    if ($Private:info.extension_provider -eq "python") {throw "Cannot unlink Python connection because Python extension is currently active ('ExtensionProvider' setting value in NLedger configuration is 'python'). Disable extension first using 'disable' command"}
+    Assert-CommandCompleted {
+        Write-Output ""
+        $Private:info = Get-StatusInfo
+        if ($Private:info.extension_provider -eq "python") {throw "Cannot unlink Python connection because Python extension is currently active ('ExtensionProvider' setting value in NLedger configuration is 'python'). Disable extension first using 'disable' command"}
 
-    Remove-PythonIntegrationSettings
-    Write-Output ("NLedger Python connection is {c:DarkYellow}not active{c:Gray} (settings file $Script:settingsFileName is removed)`n" | Out-AnsiString)
+        Remove-PythonIntegrationSettings
+        Write-Output ("NLedger Python connection is {c:DarkYellow}not active{c:Gray} (settings file $Script:settingsFileName is removed)`n" | Out-AnsiString)
+    }
 }
 
 <#
@@ -553,9 +566,9 @@ function Install-Python {
     [Alias("python-install")]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
-    Write-Output ""
-    Write-Output "Embedded Python is available by path: $(Get-PyEmbed -appPrefix $appPrefix -pyVersion $version -pyPlatform $pyPlatform)"
-    Write-Output ""
+    Assert-CommandCompleted {
+        Write-Output "`nEmbedded Python is available by path: $(Get-PyEmbed -appPrefix $appPrefix -pyVersion $version -pyPlatform $pyPlatform)`n"
+    }
 }
 
 <#
@@ -574,16 +587,18 @@ function Uninstall-Python {
     [Alias("python-uninstall")]
     Param([Parameter(Mandatory=$False)][string]$version = $pyEmbedVersion)
 
-    Write-Output ""
-    $Private:settings = Get-PythonIntegrationSettings
-    $Private:path = Test-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
-    if ($Private:path) {
-        if ($Private:settings -and [System.IO.Path]::GetFullPath($(Split-Path $Private:settings.PyExecutable)) -eq $Private:path) { throw "Cannot uninstall embed Python $version because it is currently linked (PyHome $Private:path). Unlink connection first."}
-        Uninstall-PyEmbed -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
-    }
+    Assert-CommandCompleted {
+        Write-Output ""
+        $Private:settings = Get-PythonIntegrationSettings
+        $Private:path = Test-PyEmbedInstalled -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
+        if ($Private:path) {
+            if ($Private:settings -and [System.IO.Path]::GetFullPath($(Split-Path $Private:settings.PyExecutable)) -eq $Private:path) { throw "Cannot uninstall embed Python $version because it is currently linked (PyHome $Private:path). Unlink connection first."}
+            Uninstall-PyEmbed -appPrefix $appPrefix -pyPlatform $pyPlatform -pyVersion $version
+        }
 
-    Write-Output "Embedded Python $version is uninstalled"
-    Write-Output ""
+        Write-Output "Embedded Python $version is uninstalled"
+        Write-Output ""
+    }
 }
 
 <#
@@ -609,25 +624,27 @@ function Install-PythonWheel {
         [Parameter(Mandatory=$False)][string]$path
     )
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
-    }
+    Assert-CommandCompleted {
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
 
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    if(!($Private:info.pyWheelInfo)) {
-        $null = Install-PyModule -pyExe $path -pyModule $pyWheelModule -Verbose:$VerbosePreference
-    }
+        if(!($Private:info.pyWheelInfo)) {
+            $null = Install-PyModule -pyExe $path -pyModule $pyWheelModule -Verbose:$VerbosePreference
+        }
 
-    $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule $pyWheelModule
+        $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule $pyWheelModule
 
-    if($Private:packageInfo){
-        Write-Output ("Wheel {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
-    } else {
-        Write-Output ("Wheel {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+        if($Private:packageInfo){
+            Write-Output ("Wheel {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
+        } else {
+            Write-Output ("Wheel {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+        }
     }
 }
 
@@ -652,18 +669,20 @@ function Uninstall-PythonWheel {
     [Alias("python-uninstall-wheel")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
+    Assert-CommandCompleted {
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
+
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+        $null = Uninstall-PyModule -pyExe $path -pyModule $pyWheelModule -Verbose:$VerbosePreference
+
+        Write-Output "Wheel is uninstalled ($path)"
     }
-
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
-
-    $null = Uninstall-PyModule -pyExe $path -pyModule $pyWheelModule -Verbose:$VerbosePreference
-
-    Write-Output "Wheel is uninstalled ($path)"
 }
 
 <#
@@ -703,23 +722,25 @@ function Install-PythonNet {
         [Switch]$pre = $False
     )
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
-    }
+    Assert-CommandCompleted {
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
 
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
-    $null = Install-PyModule -pyExe $path -pyModule "pythonnet" -pre:$pre -Verbose:$VerbosePreference
-    $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "pythonnet"
+        $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
+        $null = Install-PyModule -pyExe $path -pyModule "pythonnet" -pre:$pre -Verbose:$VerbosePreference
+        $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "pythonnet"
 
-    if($Private:packageInfo){
-        Write-Output ("PythonNet {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
-    } else {
-        Write-Output ("PythonNet {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+        if($Private:packageInfo){
+            Write-Output ("PythonNet {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
+        } else {
+            Write-Output ("PythonNet {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+        }
     }
 }
 
@@ -744,18 +765,20 @@ function Uninstall-PythonNet {
     [Alias("python-uninstall-pythonnet")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
+    Assert-CommandCompleted {
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
+
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+        $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
+
+        Write-Output "PythonNet is uninstalled ($path)"
     }
-
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
-
-    $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
-
-    Write-Output "PythonNet is uninstalled ($path)"
 }
 
 <#
@@ -785,26 +808,28 @@ function Install-PythonLedger {
     [Alias("python-install-ledger")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
-    $Private:ledgerPackage = (Get-LatestAvailableLedgerModule).FileName
-    if (!$Private:ledgerPackage) {throw "Ledger package not found. Build NLedger or correct deployment issues"}
+    Assert-CommandCompleted {
+        $Private:ledgerPackage = (Get-LatestAvailableLedgerModule).FileName
+        if (!$Private:ledgerPackage) {throw "Ledger package not found. Build NLedger or correct deployment issues"}
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
-    }
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
 
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
-    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger" -Verbose:$VerbosePreference
-    $null = Install-PyModule -pyExe $path -pyModule $Private:ledgerPackage -Verbose:$VerbosePreference
-    $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "ledger"
+        $null = Uninstall-PyModule -pyExe $path -pyModule "ledger" -Verbose:$VerbosePreference
+        $null = Install-PyModule -pyExe $path -pyModule $Private:ledgerPackage -Verbose:$VerbosePreference
+        $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "ledger"
 
-    if($Private:packageInfo){
-        Write-Output ("Ledger {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
-    } else {
-        Write-Output ("Ledger {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+        if($Private:packageInfo){
+            Write-Output ("Ledger {c:DarkYellow}$($Private:packageInfo.Version.Trim()){f:Normal} is installed ($path)" | Out-AnsiString)
+        } else {
+            Write-Output ("Ledger {c:DarkRed}has not been installed{f:Normal} ($path). Use -verbose for troubleshooting." | Out-AnsiString)
+        }
     }
 }
 
@@ -829,18 +854,20 @@ function Uninstall-PythonLedger {
     [Alias("python-uninstall-ledger")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
+    Assert-CommandCompleted {
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
+
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+
+        $null = Uninstall-PyModule -pyExe $path -pyModule "ledger" -Verbose:$VerbosePreference
+
+        Write-Output "Ledger is uninstalled ($path)"
     }
-
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
-
-    $null = Uninstall-PyModule -pyExe $path -pyModule "ledger" -Verbose:$VerbosePreference
-
-    Write-Output "Ledger is uninstalled ($path)"
 }
 
 <#
@@ -866,19 +893,21 @@ function Invoke-PythonLedgerTests {
     [Alias("python-test-ledger")]
     Param([Parameter(Mandatory=$False)][string]$path)
 
-    [string]$Private:ledgerTests = [System.IO.Path]::GetFullPath("$Script:ScriptPath/ledger_tests.py")
-    if(!(Test-Path -LiteralPath $Private:ledgerTests -PathType Leaf)) {throw "File $($Private:ledgerTests) not found"}
+    Assert-CommandCompleted {
+        [string]$Private:ledgerTests = [System.IO.Path]::GetFullPath("$Script:ScriptPath/ledger_tests.py")
+        if(!(Test-Path -LiteralPath $Private:ledgerTests -PathType Leaf)) {throw "File $($Private:ledgerTests) not found"}
 
-    if(!$path) {
-        $Private:settings = Get-PythonIntegrationSettings
-        if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
-        $path = $settings.PyExecutable
+        if(!$path) {
+            $Private:settings = Get-PythonIntegrationSettings
+            if (!$Private:settings) { throw "Python path is not specified and no Python connection settings." }
+            $path = $settings.PyExecutable
+        }
+
+        $Private:info = Get-PyInfo -pyExecutable $path
+        if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
+        if (!$Private:info.pyLedgerModuleInfo) { throw "Ledger module is not installed by path $path" }
+
+        & $path $Private:ledgerTests
+        if ($LASTEXITCODE -ne 0) {throw "Python unit tests failed (Exit code: $LASTEXITCODE)."}
     }
-
-    $Private:info = Get-PyInfo -pyExecutable $path
-    if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
-    if (!$Private:info.pyLedgerModuleInfo) { throw "Ledger module is not installed by path $path" }
-
-    & $path $Private:ledgerTests
-    if ($LASTEXITCODE -ne 0) {throw "Python unit tests failed (Exit code: $LASTEXITCODE)."}
 }

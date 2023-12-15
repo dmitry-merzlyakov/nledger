@@ -14,6 +14,7 @@ Date:   December 14, 2023
 Param()
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+Import-Module $Script:ScriptPath/../Common/SysCommon.psm1
 Import-Module $Script:ScriptPath/../Common/NLedgerEnvironment.psm1
 
 <#
@@ -90,17 +91,19 @@ function Invoke-NLedgerTests {
     [Parameter()][ValidateSet("debug","release",IgnoreCase=$true)][string]$profile
   )
 
-  [string]$nlTestPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/NLTest.ps1")
-  if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { throw "File $nlTestPath not found."}
+  Assert-CommandCompleted {
+    [string]$nlTestPath = [System.IO.Path]::GetFullPath("$Script:ScriptPath/NLTest.ps1")
+    if (!(Test-Path -LiteralPath $nlTestPath -PathType Leaf)) { throw "File $nlTestPath not found."}
 
-  [string]$nledgerExePath = (Get-NLedgerDeploymentInfo | Select-NLedgerPreferrableInfo $tfmCode $profile).NLedgerExecutable
+    [string]$nledgerExePath = (Get-NLedgerDeploymentInfo | Select-NLedgerPreferrableInfo $tfmCode $profile).NLedgerExecutable
 
-  $params = @{
-    nledgerExePath = $nledgerExePath
-    filterRegex = $filter
-    showReport = $report
-    disableIgnoreList = $includeIgnored
+    $params = @{
+      nledgerExePath = $nledgerExePath
+      filterRegex = $filter
+      showReport = $report
+      disableIgnoreList = $includeIgnored
+    }
+
+    $null = (& $nlTestPath @params)
   }
-
-  $null = (& $nlTestPath @params)
 }

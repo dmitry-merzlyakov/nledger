@@ -28,8 +28,6 @@ Param(
   [Parameter(Position=1, ValueFromRemainingArguments)][string[]]$commandArguments
 )
 
-$Global:ErrorView = "CategoryView"
-
 function Assert-FileExists {
     [CmdletBinding()]
     Param(
@@ -52,11 +50,14 @@ function Import-ModuleIfAvailable {
 
 [string]$Script:CommandPath = $MyInvocation.MyCommand.Path
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+Import-Module (Assert-FileExists "$Script:ScriptPath/Common/SysCommon.psm1" -message "Check that code base is in valid state")
 Import-Module (Assert-FileExists "$Script:ScriptPath/Common/NLedgerEnvironment.psm1" -message "Check that code base is in valid state")
 Import-Module (Assert-FileExists "$Script:ScriptPath/Common/NLedgerConfig.psm1" -message "Check that code base is in valid state")
 $Script:isPythonAvailable = Import-ModuleIfAvailable "$Script:ScriptPath/Python/NLedgerPyEnvironment.psm1"
 $Script:isLiveDemoAvailable = Import-ModuleIfAvailable "$Script:ScriptPath/LiveDemo/NLDoc.LiveDemo.psm1"
 $Script:isTestFrameworkAvailable = Import-ModuleIfAvailable "$Script:ScriptPath/test/NLTest.psm1"
+
+$Global:AssertionCommandCompletedFailure = { Write-Output "{c:Red}[ERROR]{f:Normal} $($_.exception.message)`n" | Out-AnsiString }
 
 # Basic Console commands
 
@@ -95,45 +96,47 @@ function Show-NLedgerStatus {
   [Alias("status")]
   Param([switch]$details)
 
-  $deploymentInfo = Get-NLedgerDeploymentInfo
+  Assert-CommandCompleted {
+    $deploymentInfo = Get-NLedgerDeploymentInfo
 
-  $info = [ordered]@{}
-  if ($deploymentInfo.Installed -and $deploymentInfo.IsExternalInstall) { $info["NLedger (Installed, External)"] = $deploymentInfo.Installed }
-  if ($deploymentInfo.Installed -and !$deploymentInfo.IsExternalInstall) { $info["NLedger (Installed)"] = $deploymentInfo.Installed }
-  if (!$deploymentInfo.Installed -and $deploymentInfo.PreferredNLedgerExecutableInfo) { $info["NLedger (Preferred, Not Installed)"] = $deploymentInfo.PreferredNLedgerExecutableInfo.NLedgerExecutable }
-  if (!$deploymentInfo.Installed -and !$deploymentInfo.PreferredNLedgerExecutableInfo) { $info["NLedger"] = "Not found" }
+    $info = [ordered]@{}
+    if ($deploymentInfo.Installed -and $deploymentInfo.IsExternalInstall) { $info["NLedger (Installed, External)"] = $deploymentInfo.Installed }
+    if ($deploymentInfo.Installed -and !$deploymentInfo.IsExternalInstall) { $info["NLedger (Installed)"] = $deploymentInfo.Installed }
+    if (!$deploymentInfo.Installed -and $deploymentInfo.PreferredNLedgerExecutableInfo) { $info["NLedger (Preferred, Not Installed)"] = $deploymentInfo.PreferredNLedgerExecutableInfo.NLedgerExecutable }
+    if (!$deploymentInfo.Installed -and !$deploymentInfo.PreferredNLedgerExecutableInfo) { $info["NLedger"] = "Not found" }
 
-  if (!$details) {
-    $info["Available"] = ($deploymentInfo.Infos | ForEach-Object {
-      $item = ""
-      if ($_.IsInstalled) { $item += "{c:Yellow}" | Out-AnsiString }
-      if (!$_.HasRuntime) { $item += "{c:DarkGray}" | Out-AnsiString }
-      $item += "$(Out-TfmProfile $_.TfmCode $_.IsDebug) $(if($_.IsOsxRuntime){"[OSX]"})".Trim()
-      $item += "{f:Normal}" | Out-AnsiString
-      $item
-    }) -join ", "
-    if (!$deploymentInfo.Infos) { $info["Available"] = "Not found" }
-  }
-
-  $output = @( [PSCustomObject]$info )
-
-  if ($details) {
-    $output += $deploymentInfo.Infos | ForEach-Object {
-        $info = [ordered]@{}
-        $info["Executable"] = $_.NLedgerExecutable
-        $info["Link"] = $_.NLedgerLink | Out-MessageWhenEmpty
-        $info["TFM"] = "$(Out-TfmProfile $_.TfmCode $_.IsDebug) $(if($_.IsOsxRuntime){"[OSX]"})"
-        if ($_.IsInstalled) { $info["Installed"] = "Yes" }
-        $info["Runtime"] = if($_.HasRuntime){"Available"} else {"Not available"}
-        [PSCustomObject]$info
+    if (!$details) {
+      $info["Available"] = ($deploymentInfo.Infos | ForEach-Object {
+        $item = ""
+        if ($_.IsInstalled) { $item += "{c:Yellow}" | Out-AnsiString }
+        if (!$_.HasRuntime) { $item += "{c:DarkGray}" | Out-AnsiString }
+        $item += "$(Out-TfmProfile $_.TfmCode $_.IsDebug) $(if($_.IsOsxRuntime){"[OSX]"})".Trim()
+        $item += "{f:Normal}" | Out-AnsiString
+        $item
+      }) -join ", "
+      if (!$deploymentInfo.Infos) { $info["Available"] = "Not found" }
     }
 
-    $output += [PSCustomObject][ordered]@{
-      ".Net Runtime(s)" = $deploymentInfo.Runtimes -join ", "
-    }
-  }
+    $output = @( [PSCustomObject]$info )
 
-  $output | Format-List
+    if ($details) {
+      $output += $deploymentInfo.Infos | ForEach-Object {
+          $info = [ordered]@{}
+          $info["Executable"] = $_.NLedgerExecutable
+          $info["Link"] = $_.NLedgerLink | Out-MessageWhenEmpty
+          $info["TFM"] = "$(Out-TfmProfile $_.TfmCode $_.IsDebug) $(if($_.IsOsxRuntime){"[OSX]"})"
+          if ($_.IsInstalled) { $info["Installed"] = "Yes" }
+          $info["Runtime"] = if($_.HasRuntime){"Available"} else {"Not available"}
+          [PSCustomObject]$info
+      }
+
+      $output += [PSCustomObject][ordered]@{
+        ".Net Runtime(s)" = $deploymentInfo.Runtimes -join ", "
+      }
+    }
+
+    $output | Format-List
+  }
 }
 
 <#
@@ -198,13 +201,15 @@ function Install-NLedger {
     [switch]$link
   )
 
-  $deploymentInfo = Get-NLedgerDeploymentInfo
-  $info = $deploymentInfo | Select-NLedgerPreferrableInfo $tfmCode $profile
+  Assert-CommandCompleted {
+    $deploymentInfo = Get-NLedgerDeploymentInfo
+    $info = $deploymentInfo | Select-NLedgerPreferrableInfo $tfmCode $profile
 
-  if ($info.IsInstalled) { return "NLedger binaries for {c:Yellow}$(Out-TfmProfile $info.TfmCode $info.IsDebug){f:Normal} are already installed." | Out-AnsiString }
+    if ($info.IsInstalled) { return "NLedger binaries for {c:Yellow}$(Out-TfmProfile $info.TfmCode $info.IsDebug){f:Normal} are already installed." | Out-AnsiString }
 
-  if ($deploymentInfo.EffectiveInstalled) { $null = Uninstall-NLedgerExecutable }
-  Install-NLedgerExecutable $info.TfmCode $info.IsDebug -link:$link | Format-List
+    if ($deploymentInfo.EffectiveInstalled) { $null = Uninstall-NLedgerExecutable }
+    Install-NLedgerExecutable $info.TfmCode $info.IsDebug -link:$link | Format-List
+  }
 }
 
 <#
@@ -234,11 +239,13 @@ function Uninstall-NLedger {
   [Alias("uninstall")]
   Param()
 
-  $deploymentInfo = Get-NLedgerDeploymentInfo
-  if (!$deploymentInfo.Installed) { return "NLedger is not installed."}
+  Assert-CommandCompleted {
+    $deploymentInfo = Get-NLedgerDeploymentInfo
+    if (!$deploymentInfo.Installed) { return "NLedger is not installed."}
 
-  $null = Uninstall-NLedgerExecutable
-  "NLedger is uninstalled"
+    $null = Uninstall-NLedgerExecutable
+    "NLedger is uninstalled"
+  }
 }
 
 <#
@@ -293,7 +300,7 @@ function Set-NLedgerConfig {
     [Parameter()][ValidateSet("app","common","user",IgnoreCase=$true)][string]$scope = "user"
   )
 
-  Set-NLedgerConfigValue -scope $scope -settingName $settingName -settingValue $settingValue | Format-List
+  Assert-CommandCompleted { Set-NLedgerConfigValue -scope $scope -settingName $settingName -settingValue $settingValue | Format-List }
 }
 
 <#
@@ -334,7 +341,7 @@ function Remove-NLedgerConfig {
     [Parameter()][ValidateSet("app","common","user",IgnoreCase=$true)][string]$scope = "user"
   )
 
-  Remove-NLedgerConfigValue -scope $scope -settingName $settingName | Format-List
+  Assert-CommandCompleted { Remove-NLedgerConfigValue -scope $scope -settingName $settingName | Format-List }
 }
 
 <#
@@ -391,54 +398,56 @@ function Show-NLedgerConfig {
     [Switch]$details
   )
 
-  $data = Get-NLedgerConfigData
-  $settings = $(if($settingFilter) { $data.Settings | Where-Object { $_.Name -match $settingFilter} } else { $data.Settings })
+  Assert-CommandCompleted {
+    $data = Get-NLedgerConfigData
+    $settings = $(if($settingFilter) { $data.Settings | Where-Object { $_.Name -match $settingFilter} } else { $data.Settings })
 
-  if (!$details) {
-    $settings | ForEach-Object {
-      [PSCustomObject]@{
-        Name = "{c:Yellow}$($_.Name){f:Normal}" | Out-AnsiString
-        Type = "{c:Gray}$($_.SettingType){f:Normal}" | Out-AnsiString
-        Default = $_.DefaultValue
-        App = $_.AppSettingValue
-        Common = $_.CommonSettingValue
-        User = $_.UserSettingValue
-        Env = $_.EnvironmentSettingValue
-        Effective = "{c:Yellow}$($_.EffectiveSettingValue){f:Normal}" | Out-AnsiString
+    if (!$details) {
+      $settings | ForEach-Object {
+        [PSCustomObject]@{
+          Name = "{c:Yellow}$($_.Name){f:Normal}" | Out-AnsiString
+          Type = "{c:Gray}$($_.SettingType){f:Normal}" | Out-AnsiString
+          Default = $_.DefaultValue
+          App = $_.AppSettingValue
+          Common = $_.CommonSettingValue
+          User = $_.UserSettingValue
+          Env = $_.EnvironmentSettingValue
+          Effective = "{c:Yellow}$($_.EffectiveSettingValue){f:Normal}" | Out-AnsiString
+        }
+      } | Format-Table
+    } else {
+      @(
+        [PSCustomObject]@{ Scope='Common settings'; File=$data.CommonSettingsFile; Exists=($data.CommonSettingsFileExists | Out-YesNo) }
+        [PSCustomObject]@{ Scope='User settings'; File=$data.UserSettingsFile; Exists=($data.UserSettingsFileExists | Out-YesNo) }
+        [PSCustomObject]@{ Scope='App settings'; File=$data.AppSettingsFile; Exists=($data.AppSettingsFileExists | Out-YesNo) }
+      ) | Format-Table
+
+      function FormatValue {
+        param (
+          [Parameter()][bool]$hasValue,
+          [Parameter()][bool]$isAvailable,
+          [Parameter()][string]$value
+        )
+        if (!$isAvailable) { "N/A" }
+        else { if (!$hasValue) { "-" } else { "'$value'" } }
       }
-    } | Format-Table
-  } else {
-    @(
-      [PSCustomObject]@{ Scope='Common settings'; File=$data.CommonSettingsFile; Exists=($data.CommonSettingsFileExists | Out-YesNo) }
-      [PSCustomObject]@{ Scope='User settings'; File=$data.UserSettingsFile; Exists=($data.UserSettingsFileExists | Out-YesNo) }
-      [PSCustomObject]@{ Scope='App settings'; File=$data.AppSettingsFile; Exists=($data.AppSettingsFileExists | Out-YesNo) }
-    ) | Format-Table
 
-    function FormatValue {
-      param (
-        [Parameter()][bool]$hasValue,
-        [Parameter()][bool]$isAvailable,
-        [Parameter()][string]$value
-      )
-      if (!$isAvailable) { "N/A" }
-      else { if (!$hasValue) { "-" } else { "'$value'" } }
+      $settings | ForEach-Object {
+        [PSCustomObject]@{
+          Name = "{c:Yellow}$($_.Name){f:Normal}" | Out-AnsiString
+          Category = $_.Category
+          Description = $_.Description
+          Type = "{c:Gray}$($_.SettingType){f:Normal}" | Out-AnsiString
+          Permitted = "{c:Gray}$($_.PossibleValues -join ","){f:Normal}" | Out-AnsiString
+          Default = FormatValue $_.HasDefaultValue $true $_.DefaultValue
+          App = FormatValue $_.HasAppSettingValue $_.IsAvailableForApp $_.AppSettingValue
+          Common = FormatValue $_.HasCommonSettingValue $_.IsAvailableForCommon $_.CommonSettingValue
+          User = FormatValue $_.HasUserSettingValue $_.IsAvailableForUser $_.UserSettingValue
+          Env = FormatValue  $_.HasEnvironmentSettingValue $_.IsAvailableForEnv $_.EnvironmentSettingValue
+          Effective = FormatValue $_.HasEffectiveSettingValue $true "{c:Yellow}$($_.EffectiveSettingValue){f:Normal}" | Out-AnsiString
+        }
+      } | Format-List
     }
-
-    $settings | ForEach-Object {
-      [PSCustomObject]@{
-        Name = "{c:Yellow}$($_.Name){f:Normal}" | Out-AnsiString
-        Category = $_.Category
-        Description = $_.Description
-        Type = "{c:Gray}$($_.SettingType){f:Normal}" | Out-AnsiString
-        Permitted = "{c:Gray}$($_.PossibleValues -join ","){f:Normal}" | Out-AnsiString
-        Default = FormatValue $_.HasDefaultValue $true $_.DefaultValue
-        App = FormatValue $_.HasAppSettingValue $_.IsAvailableForApp $_.AppSettingValue
-        Common = FormatValue $_.HasCommonSettingValue $_.IsAvailableForCommon $_.CommonSettingValue
-        User = FormatValue $_.HasUserSettingValue $_.IsAvailableForUser $_.UserSettingValue
-        Env = FormatValue  $_.HasEnvironmentSettingValue $_.IsAvailableForEnv $_.EnvironmentSettingValue
-        Effective = FormatValue $_.HasEffectiveSettingValue $true "{c:Yellow}$($_.EffectiveSettingValue){f:Normal}" | Out-AnsiString
-      }
-    } | Format-List
   }
 }
 
@@ -467,14 +476,16 @@ function Get-QuickHelp {
 
   $highlighted = @( "status","install","test","python-connect","help" )
 
-  ((Get-Command $Script:CommandPath).Parameters.Command.Attributes | Where-Object { $_.TypeId.Name -eq "ValidateSetAttribute" }).ValidValues | 
-  ForEach-Object { 
-    $h = Get-Help $_; 
-    [PsCustomObject] @{ 
-      Alias = "$(if($_ -in $highlighted){"{c:Yellow}"}else{"{c:DarkYellow}"})$_{f:Normal}" | Out-AnsiString
-      Description = $h.Synopsis 
-    } 
-  } | Format-Table -HideTableHeaders -AutoSize
+  Assert-CommandCompleted {
+    ((Get-Command $Script:CommandPath).Parameters.Command.Attributes | Where-Object { $_.TypeId.Name -eq "ValidateSetAttribute" }).ValidValues | 
+    ForEach-Object { 
+      $h = Get-Help $_; 
+      [PsCustomObject] @{ 
+        Alias = "$(if($_ -in $highlighted){"{c:Yellow}"}else{"{c:DarkYellow}"})$_{f:Normal}" | Out-AnsiString
+        Description = $h.Synopsis 
+      } 
+    } | Format-Table -HideTableHeaders -AutoSize
+  }
 
 }
 

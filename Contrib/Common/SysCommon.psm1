@@ -44,6 +44,25 @@ function Assert-IsNotEmpty {
   End { if (!$hitCounter) { throw $errorMessage } }
 }
 
+# Global variable that can contain a default failure recovering function for Assert-CommandCompleted.
+# The function receives $_ parameter containing an exception object
+$Global:AssertionCommandCompletedFailure = $null
+
+function Assert-CommandCompleted {
+  Param(
+      [Parameter(Mandatory)][scriptblock]$body,
+      [Parameter()][scriptblock]$failureRecovering = $Global:AssertionCommandCompletedFailure
+  )
+
+  try { . $body }
+  catch {
+    Write-Verbose $_
+    if ($failureRecovering) { $failureRecovering.InvokeWithContext($null, [psvariable]::new("_", $_))[0] }
+    else { Write-Output "[ERROR] $($_.exception.message)" }
+  }
+
+}
+
 function Out-YesNo {
   Param([Parameter(ValueFromPipeline)]$val)
 
