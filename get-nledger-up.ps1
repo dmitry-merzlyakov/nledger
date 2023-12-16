@@ -1,46 +1,60 @@
 <#
 .SYNOPSIS
-    Build, verify and optionally install NLedger from source code.
+Builds, verifies, and optionally installs NLedger from source code.
+
 .DESCRIPTION
-    This script helps  to get workable NLedger from source code
-    on their computer. It performs four basic steps: a) builds binaries;
-    b) runs unit tests; c) runs integration tests; d) optionally, installs created binaries
-    (adds to PATH and creates 'ledger' hard link). In case of any errors on any steps,
-    the script provides troubleshooting information to help people solve environmental
-    issues. Switches can regulate this process. The script works on any platform (Windows, Linux, OSX).
+This script will help you get a working NLedger from source on your computer.
+It performs five main steps:
+ a) creates binary files;
+ b) runs unit tests;
+ c) runs integration tests;
+ d) builds and tests the NLedger Python module;
+ d) optionally installs the generated binaries (adds them to PATH and creates a hard link to the "ledger").
+If errors occur at any stage, the script provides troubleshooting information 
+to help you build environment issues. Switches can regulate this process. 
+The script works on any platform (Windows, Linux, OSX).
+
 .PARAMETER targets
-    An optional parameter that specifies one or more target framework versions for binary files.
-    The targets should be provided as a semicolon-separated list of target framework moniker (TFM) codes.
-    (See more about TFM here: https://learn.microsoft.com/en-us/dotnet/standard/frameworks)
-    If this parameters is omitted, the script tries to build two targets: net48 and net6.0 with two exceptions:
-    - net48 target is ignored if it is not available (on non-Windows machines or if the current machine does not have .Net Framework 4,8 SDK);
-    - If net6.0 SDK is not installed, the script uses the latest available dotnet SDK.
-    Targets specified by the user are used as they are (so, you might get a build error if a corresponded SDK is not available).
+An optional parameter that specifies one or more target framework versions for binary files.
+The targets should be provided as a semicolon-separated list of target framework moniker (TFM) codes.
+(See more about TFM here: https://learn.microsoft.com/en-us/dotnet/standard/frameworks)
+If this parameters is omitted, the script tries to build three targets: net48, net6.0 and net8.0.
+If any of these targets are not available on the machine, they are skipped.
+User-specified targets are used as is (so you may get a build error if the corresponding SDK is not available).
+
 .PARAMETER debugMode
-    Orders to create binaries in Debug mode (Release by default)
+Forces building binaries in Debug mode (default Release).
+
 .PARAMETER noUnitTests
-    Omits xUnit tests
+Skips xUnit tests
+
 .PARAMETER noNLTests
-    Omits NLTest integration tests
+Skips Ledger integration tests
+
 .PARAMETER noPython
-    Disables Python unit and integration tests; Python module build is skipped
+Skips building and testing the Python module.
+
 .PARAMETER install
-    If this switch is set, the script installs NLedger when binaries are built and verified.
+Installs NLedger and creates a hard link. If multiple targets are specified, it installs the latest one.
+
 .EXAMPLE
-    PS> ./get-nledger-up.ps1
-    Build, verify and install NLedger from source code.
+PS> ./get-nledger-up.ps1
+Build, verify and install NLedger from source code.
+
 .EXAMPLE
-    PS> ./get-nledger-up.ps1 -Verbose
-    Show detail diagnostic information to troubleshoot build issues.
+PS> ./get-nledger-up.ps1 -Verbose
+Show detail diagnostic information to troubleshoot build issues.
+
 .EXAMPLE
-    PS> ./get-nledger-up.ps1 -targets net5.0;net7.0
-    Create binaries for net5.0 and net 7.0 targets.
+PS> ./get-nledger-up.ps1 -targets net5.0;net7.0
+Create binaries for net5.0 and net 7.0 targets.
+
 .NOTES
-    Author: Dmitry Merzlyakov
-    Date:   October 19, 2021
-    ===
-    Run the script on Windows: >powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1
-    Run the script on other OS: >powershell -File ./get-nledger-up.ps1
+Author: Dmitry Merzlyakov
+Date:   December 20, 2023
+
+Run the script on Windows: >powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1
+Run the script on other OS: >pwsh -File ./get-nledger-up.ps1
 #>
 [CmdletBinding()]
 Param(
@@ -60,8 +74,7 @@ trap
 
 [string]$Script:ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 
-[string]$defaultFrameworkTarget = "net48"
-[string]$defaultDotnetTarget = "net6.0"
+[string]$defaultTargets = "net48;net6.0;net8.0"
 
 Write-Progress -Activity "Building, testing and installing NLedger" -Status "Initialization"
 
@@ -74,60 +87,45 @@ function Assert-FileExists {
     return $fileName
 }
 
-Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/NLManagement/NLCommon.psm1") -Force
+Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Common/SysCommon.psm1")
+Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Common/SysPlatform.psm1")
+Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Common/SysDotnet.psm1")
+Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Common/NLedgerEnvironment.psm1")
+Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Python/NLedgerPyEnvironment.psm1")
 
 # Check environmental information
 
-[bool]$isWindowsPlatform = Test-IsWindows
-[bool]$isOsxPlatform = Test-IsOSX
-Write-Verbose "Detected: is windows platform=$isWindowsPlatform; is OSX platform: $isOsxPlatform"
-
+Write-Verbose "Detected: is windows platform=$(Test-IsWindows); is OSX platform: $(Test-IsOSX)"
 if (!(Test-IsDotnetInstalled)) { throw "DotNet Core is not installed (command 'dotnet' is not available)" }
 
 # Validate switchers
 
-function Get-AppropriateTarget {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$True)]$availableTargets,
-        [Parameter(Mandatory=$True)][string]$defaultTarget
-    )
-
-    if ($availableTargets -contains $defaultTarget) {$defaultTarget} else {$availableTargets | Select-Object -Last 1}
-}
-
-if (!$targets) {
+if (!$targets) { 
     Write-Verbose "Getting default build targets"
-    $targetList = @(
-        Get-AppropriateTarget (Get-NetFrameworkSdkTargets) $defaultFrameworkTarget
-        Get-AppropriateTarget (Get-DotnetSdkTargets) $defaultDotnetTarget
-    ) | Where-Object {$_}
-    if (!$targetList) { throw "Appropriate build targets not found on the local machine. Specify 'target' parameter explicitely." }
-    $targets = [string]::Join(";", $targetList)
+    $targets = ($defaultTargets -split ";" | Where-Object { Test-HasCompatibleSdk $_ }) -join ";"
+    if (!$targets) { throw "Appropriate build targets not found on the local machine. Specify 'target' parameter explicitely." }
 }
 Write-Verbose "Build targets: $targets"
+
+$libraryTargets = "netstandard2.0;$(($targets -split ";" | Where-Object { !(Expand-TfmCode $_).IsFramework }) -join ";")"
+
+Write-Verbose "Library build targets: $libraryTargets"
 
 # Check codebase structure
 
 [string]$solutionPath = Assert-FileExists "$Script:ScriptPath/Source/NLedger.sln"
 Write-Verbose "Solution path: $solutionPath"
 
-[string]$nlTestPath = Assert-FileExists "$Script:ScriptPath/Contrib/NLTestToolkit/NLTest.ps1"
+[string]$nlTestPath = Assert-FileExists "$Script:ScriptPath/Contrib/test/NLTest.ps1"
 Write-Verbose "NLTest path: $nlTestPath"
 
 # Check Python connection availability
 
-[string]$powershell = $(if($Script:isWindowsPlatform){"powershell"}else{"pwsh"})
-
 if (!$noPython) {
     Write-Verbose "Checking NLedger Python extension settings..."
-    
-    [string]$testConnectionOutput = & $powershell -File $(Assert-FileExists "$Script:ScriptPath/Contrib/Python/GetPythonEnvironment.ps1") -command "test-connection"
-    Write-Verbose "GetPythonEnvironment's test-connection returned: $testConnectionOutput"
-    $pythonConnectionStatus = $(if($testConnectionOutput){[System.Management.Automation.PSSerializer]::Deserialize($testConnectionOutput)}else{$null})
-    
+    $pythonConnectionStatus = Get-PythonConnectionInfo
     if (!($pythonConnectionStatus.IsConnectionValid)){
-        Write-Warning "NLedger Python Extension settings are not configured or not valid. This does not prevent the build from completing, but unit and integration tests that require Python will be skipped. Building Ledger module will be skipped. Use './get-nledger-tools.ps1 -pythonTools' command to configure settings or disable this warning by adding a switch './get-nledger-up.ps1 -noPython'."
+        Write-Warning "NLedger Python Extension settings are not configured or not valid. This does not prevent the build from completing, but unit and integration tests that require Python will be skipped. Building Ledger module will be skipped. Use './Contrib/nledger-tools.ps1 python-connect' command to configure settings or disable this warning by adding a switch './get-nledger-up.ps1 -noPython'."
         $noPython = $True
     }
 }
@@ -141,12 +139,14 @@ function Get-DotnetBuildCommandLine {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$True)][string]$command)
 
-    $env:LocalTargetFrameworks = $targets # Because of msbuild issue, use env variable instead of parameter -p:LocalTargetFrameworks='$targets'. See https://github.com/dotnet/msbuild/issues/2999
+    # Due to a msbuild issue, use env variable instead of parameter -p:LocalTargetFrameworks='$targets'. See https://github.com/dotnet/msbuild/issues/2999
+    $env:LocalLibraryTargetFrameworks = $libraryTargets 
+    $env:LocalTargetFrameworks = $targets 
     [string]"dotnet $command '$solutionPath' --configuration $(if($debugMode){"Debug"}else{"Release"}) $(if($isOsxPlatform){" -r osx-x64"})"
 }
 
 [string]$buildCommandLine = Get-DotnetBuildCommandLine "build"
-Write-Verbose "Build sources command line: $buildCommandLine; Environment variable LocalTargetFrameworks: $env:LocalTargetFrameworks"
+Write-Verbose "Build sources command line: $buildCommandLine; Env variables LocalTargetFrameworks: $env:LocalTargetFrameworks; LocalLibraryTargetFrameworks: $env:LocalLibraryTargetFrameworks"
 
 $null = (Invoke-Expression $buildCommandLine | Write-Verbose)
 if ($LASTEXITCODE -ne 0) { throw "Build failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
@@ -165,30 +165,18 @@ if(!$noUnitTests) {
 
 # Third step: run integration tests
 
-$targetList = $targets -split ";"
-$targetBins = Get-NLedgerBinaryInfos | Where-Object { $targetList -contains $_.TfmCode -and $_.IsDebug -eq $debugMode }
-if (($targetList | Measure-Object).Count -ne ($targetBins | Measure-Object).Count) { throw "Detected unrecognisable issue: the number of build targets does not equal to the number of built binaries. Please, verify verbose log and find out the cause of this issue." }
-
 if (!$noNLTests)
 {
     [string]$ignoreCategories = $(if($noPython){"python"}else{""})
 
+    $targetBins = Select-NLedgerDeploymentInfos (Get-NLedgerDeploymentInfo) $targets $debugMode
     foreach ($binInfo in $targetBins) {
-        Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [$($binInfo.TfmCode)] [$(if($debugMode){"Debug"}else{"Release"})]"
-
-        if (Test-IsFrameworkTfmCode $binInfo.TfmCode) {
-            Import-Module (Assert-FileExists "$Script:ScriptPath/Contrib/Install/SysNGen.psm1")
-            if (Test-CanCallNGen) {$null = Add-NGenImage $binInfo.NLedgerExecutable }
-        }
-
+        Write-Progress -Activity "Building, testing and installing NLedger" -Status "Running integration tests [$(Out-TfmProfile $binInfo.TfmCode $debugMode)]"
+        if ((Test-IsFrameworkTfmCode $binInfo.TfmCode) -and (Test-CanCallNGen)) { $null = Add-NGenImage $binInfo.NLedgerExecutable }
         $null = (& $nlTestPath -nledgerExePath $binInfo.NLedgerExecutable -noconsole -showProgress -ignoreCategories $ignoreCategories | Write-Verbose)
         if ($LASTEXITCODE -ne 0) { throw "Integration tests failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
     }
 }
-
-
-throw "stop"
-
 
 # Fourth step: build Python module
 
@@ -212,46 +200,27 @@ if (!$noPython){
 
 if ($install) {    
     Write-Progress -Activity "Building, testing and installing NLedger" -Status "Installing NLeger binaries"
-    $null = (& $powershell -File $("$Script:ScriptPath/Contrib/Install/NLedger.Install.ps1") -install | Write-Verbose)
-    if ($LASTEXITCODE -ne 0) { throw "Installation failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
+
+    $deploymentInfo = Get-NLedgerDeploymentInfo
+    $installInfo = Select-NLedgerDeploymentInfos $deploymentInfo $targets $debugMode | Select-Object -Last 1 | Assert-IsNotEmpty "Unrecoverable issue: cannot find files for installation"
+    if ($deploymentInfo.EffectiveInstalled) { $null = Uninstall-NLedgerExecutable }
+    $installResponse = Install-NLedgerExecutable $installInfo.TfmCode $installInfo.IsDebug -link
+    if (!$installResponse.NLedgerExecutable) { throw "Installation failed for some reason. Run this script again with '-Verbose' to get more information about the cause." }
 }
 
 Write-Progress -Activity "Building, testing and installing NLedger" -Status "Completed" -Completed
 
 # Print summary
 
-Write-Host "*** NLedger Build succeeded ***"
-Write-Host
+Write-Output "*** NLedger build completed successfully ***`n"
 
-Write-Host "Build source code: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
-if (!($coreOnly)) {Write-Host "   .Net Framework binary: $(composeNLedgerExePath -core $false)"}
-Write-Host "   .Net Core binary: $(composeNLedgerExePath -core $true)"
-Write-Host
+Write-Output "Build source code: OK [$targets]"
+Select-NLedgerDeploymentInfos (Get-NLedgerDeploymentInfo) $targets $debugMode | ForEach-Object { Write-Output " > $($_.NLedgerExecutable)"}
 
-if (!($noUnitTests)) {
-    Write-Host "Unit tests: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
-} else {
-    Write-Host "Unit tests: IGNORED"
-}
-Write-Host
+Write-Output "Unit tests: $(if(!$noUnitTests){ "OK" }else{ "SKIPPED" })"
+Write-Output "Ledger tests: $(if(!$noNLTests){ "OK" }else{ "SKIPPED" })"
+Write-Output "Python module: $(if($pythonModuleBuilt){ "BUILT (see ./Contrib/Python)" }else{ "SKIPPED" })"
 
-if (!($noNLTests)) {
-    Write-Host "NLedger tests: OK [$(if($coreOnly){".Net Core"}else{".Net Framework,.Net Core"})] [$(if($debugMode){"Debug"}else{"Release"})]"
-} else {
-    Write-Host "NLedger tests: IGNORED"
-}
-Write-Host
-
-if ($pythonModuleBuilt) {
-    Write-Host "Python module: BUILT (see /Contrib/Python)"
-} else {
-    Write-Host "Python module: IGNORED"
-}
-Write-Host
-
-if ($install) {
-    Write-Host "NLedger install: OK (Note: run a new console session to get effect of changes in environment variables)"
-} else {
-    Write-Host "NLedger is ready to be installed (use ./get-nledger-tools -install)"
-}
-Write-Host
+if ($install) { Write-Output "NLedger install: OK (Installed $($installResponse.NLedgerExecutable))`nNote: run a new console session to get effect of changes in environment variables" }
+else { Write-Output "NLedger is ready to be installed (use ./Contrib/nledger-tools.ps1 install)" }
+Write-Output ""

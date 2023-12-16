@@ -269,23 +269,35 @@ function Get-NLedgerAssemblyType {
     ($Script:nledgerAssembly | Assert-IsNotEmpty "NLedger assembly is not loaded").GetType($typeName) | Assert-IsNotEmpty "Class $typeName not found."
 }
 
+# Lazy initialization
+$Script:isNLedgerConfigModuleInitialized = $false
+
+function Initialize-NLedgerConfigModule {
+    [CmdletBinding()]
+    Param()
+
+    if (!$Script:nledgerAssembly -and !$Script:isNLedgerConfigModuleInitialized)
+    {
+        [string]$Script:nledgerAssemblyName = (Get-NLedgerDeploymentInfo).NLedgerStandardAssembly | Select-Object -Last 1
+        if ($Script:nledgerAssemblyName) { $Script:nledgerAssembly = [System.Reflection.Assembly]::LoadFrom($Script:nledgerAssemblyName) }
+        
+        if (!$Script:nledgerAssembly) {
+            Write-Verbose "Cannot load NLedger assembly; config management functionality is limited"
+            return
+        }
+        
+        Write-Verbose "Looking for NLedger configuration class"
+        $Script:NLedgerConfigurationType = Get-NLedgerAssemblyType "NLedger.Utility.Settings.NLedgerConfiguration"
+        $Script:StringSettingDefinitionType = Get-NLedgerAssemblyType "NLedger.Utility.Settings.CascadeSettings.Definitions.StringSettingDefinition"
+        
+        $Script:isNLedgerConfigModuleInitialized = $true
+    }
+}
+
 function Test-NLedgerAssemblyLoaded {
     [CmdletBinding()]
     Param()
 
+    $null = Initialize-NLedgerConfigModule
     [bool]$Script:nledgerAssembly
 }
-
-# Initialization
-
-$Script:nledgerAssemblyName = (Get-NLedgerDeploymentInfo).NLedgerStandardAssembly
-if ($Script:nledgerAssemblyName) { $Script:nledgerAssembly = [System.Reflection.Assembly]::LoadFrom($Script:nledgerAssemblyName) }
-
-if (!(Test-NLedgerAssemblyLoaded)) {
-    Write-Verbose "Cannot load NLedger assembly; config management functionality is limited"
-    return
-}
-
-Write-Verbose "Looking for NLedger configuration class"
-$Script:NLedgerConfigurationType = Get-NLedgerAssemblyType "NLedger.Utility.Settings.NLedgerConfiguration"
-$Script:StringSettingDefinitionType = Get-NLedgerAssemblyType "NLedger.Utility.Settings.CascadeSettings.Definitions.StringSettingDefinition"

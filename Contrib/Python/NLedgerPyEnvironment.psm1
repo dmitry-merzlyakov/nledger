@@ -250,18 +250,18 @@ function Write-StatusInfo {
     End { $Private:infos | Format-List }
 }
 
-function Test-Connection {
+function Get-PythonConnectionInfo {
     [CmdletBinding()]
     Param()
 
     $Private:settings = Get-PythonIntegrationSettings
     if ($Private:settings) {
         $Private:pyInfo = Get-PyInfo -pyExecutable $Private:settings.PyExecutable
-        return [System.Management.Automation.PSSerializer]::Serialize([PSCustomObject]@{
+        return [PSCustomObject]@{
             IsConnectionValid = -not [Boolean]$Private:pyInfo.status_error
             IsWheelInstalled = [Boolean]$Private:pyInfo.pyWheelInfo
             IsPythonNetInstalled = [Boolean]$Private:pyInfo.pyNetModuleInfo
-        })
+        }
     }
     return $null
 }
@@ -687,38 +687,52 @@ function Uninstall-PythonWheel {
 
 <#
 .SYNOPSIS
-Installs PythonNet module to Python environment
+Installs the PythonNet module into the Python environment.
 
 .DESCRIPTION
-Note: PythonNet and Ledger modules have to be installed only if you want to use NLedger capabilities in Python session.
-NLedger console application does not need for this module.
+The PythoneNet module is a required component for the Python NLedger module, 
+so if you want to use NLedger capabilities in a Python session, you must install it.
+Essentially, when the NLedger Python module is installed, it also triggers 
+the installation of the latest version of PythonNet, but you may want to
+to have more granular control over which version of PythonNet is used.
 
-Ledger module depends on PythonNet, so the latter is usually installed automatically when you install the Ledger module.
-However, you may need more granular control over which version of PythonNet is installed. 
+This command installs PythonNet into the specified Python environment.
+The default version is 2.5.2, which guarantees that the NLedger Python module will work,
+but you can specify a different explicit version or even a pre-release version.
 
-In this case, you should execute this command before installing Ledger module:
-- 'Install-PythonNet' without '-pre' switch installs a currently available PythonNet from PyPa repository (currently 2.5.x)
-- 'Install-PythonNet' with '-pre' switch installs the latest available pre-release of PythonNet 3
-
-Please, be aware that PythonNet 3 has not been officially released (at the moment 2021-10-18) so this is an experimental option (though it passed tests).
-Ledger module does not require PythonNet version 3 specifically; it properly works with any available version.
-
-In case of any issues with this command, you can manually install PythonNet following recommendations on PythonNet resources.
+If PythonNet is already installed, the command will reinstall it.
 
 .PARAMETER path
-Optional parameter containing a full path to Python executable file.
-If this parameter is omitted, the command uses path from current Python extension settings.
+An optional parameter containing the full path to the Python executable.
+If this parameter is omitted, the command uses the path from the current Python extension settings.
+
+.PARAMETER version
+An optional parameter containing the version of PythonNet to install.
+If this parameter is omitted, the command installs PythonNet 2.5.2.
 
 .PARAMETER pre
-Optional switch that forces installing pre-release of PythonNet version 3.
-If this parameter is omitted, the command installs a currently available PythonNet from PyPa repository.
+An optional switch that allows pre-release versions of PythonNet to be installed.
+If this parameter is omitted, the command installs only public versions of PythonNet from the PyPa repository.
 
+.EXAMPLE
+PS> python-install-pythonnet
+
+Installs or reinstalls PythonNet 2.5.2 in a connected Python environment.
+
+.EXAMPLE
+PS> python-install-pythonnet -version 3.0.1
+
+Installs or reinstalls PythonNet 3.0.1 in a connected Python environment.
+
+.NOTES
+Technically, this is a wrapper for "python -m pip install [module[==version]] --pre" command.
 #>
 function Install-PythonNet {
     [CmdletBinding()]
     [Alias("python-install-pythonnet")]
     Param(
-        [Parameter(Mandatory=$False)][string]$path,
+        [Parameter()][string]$path,
+        [Parameter()][version]$version = "2.5.2",
         [Switch]$pre = $False
     )
 
@@ -733,7 +747,7 @@ function Install-PythonNet {
         if ($Private:info.status_error) { throw "Python environment by path $path is not valid (Error: $($Private:info.error))" }
 
         $null = Uninstall-PyModule -pyExe $path -pyModule "pythonnet" -Verbose:$VerbosePreference
-        $null = Install-PyModule -pyExe $path -pyModule "pythonnet" -pre:$pre -Verbose:$VerbosePreference
+        $null = Install-PyModule -pyExe $path -pyModule "pythonnet" -version $version -pre:$pre -Verbose:$VerbosePreference
         $Private:packageInfo = Test-PyModuleInstalled -pyExecutable $path -pyModule "pythonnet"
 
         if($Private:packageInfo){

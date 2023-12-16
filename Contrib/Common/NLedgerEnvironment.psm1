@@ -184,6 +184,18 @@ function Get-NLedgerDeploymentInfo {
 
 }
 
+function Select-NLedgerDeploymentInfos {
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory)]$deploymentInfo,
+    [Parameter(Mandatory)][string]$tfmCodes,
+    [Parameter(Mandatory)][bool]$isDebug
+  )
+
+  $codes = $tfmCodes -split ";"
+  $deploymentInfo.Infos | Where-Object { $codes -contains $_.TfmCode -and $_.IsDebug -eq $isDebug }
+}
+
 function Select-NLedgerDeploymentInfo {
   [CmdletBinding()]
   Param(

@@ -140,7 +140,7 @@ function Get-DotnetRuntimeNetCoreTargets {
   Get-DotnetRuntimes | Where-Object {$_.Name -eq "Microsoft.NETCore.App"} | ForEach-Object {$_.Version} |
     ForEach-Object { "$(if($_.Major -lt 5){"netcoreapp"}else{"net"})$($_.Major).$($_.Minor)" } | Select-Object -Unique
 }
-  
+
 <#
 .SYNOPSIS
     Provides targets for all available runtimes (.Net Framework and Net Core)
@@ -189,7 +189,7 @@ function Expand-TfmCode {
 
   if ($code -match "^net(\d)(\d)$") { return [PSCustomObject]@{ TfmCode=$code; IsFramework=$True; Version=[version]"$($Matches[1]).$($Matches[2])" } }
   if ($code -match "^net(\d)(\d)(\d)$") { return [PSCustomObject]@{ TfmCode=$code; IsFramework=$True; Version=[version]"$($Matches[1]).$($Matches[2]).$($Matches[3])" } }
-  if ($code -match "^net(\d)\.(\d)$") { return [PSCustomObject]@{ TfmCode=$code; IsFramework=$False; Version=[version]"$($Matches[1]).$($Matches[2])" } }
+  if ($code -match "^net(\d+)\.(\d)$") { return [PSCustomObject]@{ TfmCode=$code; IsFramework=$False; Version=[version]"$($Matches[1]).$($Matches[2])" } }
   if ($code -match "^netcoreapp(\d)\.(\d)$") { return [PSCustomObject]@{ TfmCode=$code; IsFramework=$False; Version=[version]"$($Matches[1]).$($Matches[2])" } }
 }
 
@@ -215,6 +215,15 @@ function Test-IsRuntimeCompatible {
   }
 
   return $false
+}
+
+function Test-HasCompatibleSdk {
+  [CmdletBinding()]
+  Param([Parameter(Mandatory)][string]$tfmCode)
+  
+  $expandedTfmCode = Expand-TfmCode $tfmCode
+  $targets = if ($expandedTfmCode.IsFramework) { Get-NetFrameworkSdkTargets } else { Get-DotnetSdkTargets }
+  [bool]($targets | ForEach-Object { Expand-TfmCode $_ } | Where-Object { $expandedTfmCode.Version -le $_.Version})
 }
 
 Export-ModuleMember -function * -alias *
