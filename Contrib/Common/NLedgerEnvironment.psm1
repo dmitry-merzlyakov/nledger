@@ -107,7 +107,7 @@ function Find-CurrentNLedgerBinaries {
 
   [string]$devDebugBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Debug")
   [string]$devReleaseBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../Source/NLedger.CLI/bin/Release")
-  [string]$publicBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../../bin")
+  [string]$publicBin = [System.IO.Path]::GetFullPath("$Script:ScriptPath/../bin")
 
   return  @() +
           (Find-NLedgerBinaries -folderName $devDebugBin -isDebug $true) +
@@ -119,7 +119,7 @@ function Find-CurrentNLedgerStandardAssembly {
   [CmdletBinding()]
   Param()
 
-  $paths = @("$Script:ScriptPath/../../Source/NLedger/bin/Debug/netstandard2.0", "$Script:ScriptPath/../../Source/NLedger/bin/Release/netstandard2.0", "$Script:ScriptPath/bin/netstandard2.0")
+  $paths = @("$Script:ScriptPath/../../Source/NLedger/bin/Debug/netstandard2.0", "$Script:ScriptPath/../../Source/NLedger/bin/Release/netstandard2.0", "$Script:ScriptPath/../bin/netstandard2.0")
   $paths | ForEach-Object { [System.IO.Path]::GetFullPath("$_/NLedger.dll") } | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }
 }
 

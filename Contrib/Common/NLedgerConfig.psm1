@@ -279,6 +279,8 @@ function Initialize-NLedgerConfigModule {
     if (!$Script:nledgerAssembly -and !$Script:isNLedgerConfigModuleInitialized)
     {
         [string]$Script:nledgerAssemblyName = (Get-NLedgerDeploymentInfo).NLedgerStandardAssembly | Select-Object -Last 1
+        Write-Verbose "Loading NLedger assembly ($Script:nledgerAssemblyName) for config management"
+
         if ($Script:nledgerAssemblyName) { $Script:nledgerAssembly = [System.Reflection.Assembly]::LoadFrom($Script:nledgerAssemblyName) }
         
         if (!$Script:nledgerAssembly) {

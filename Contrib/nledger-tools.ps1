@@ -97,7 +97,7 @@ function Show-NLedgerStatus {
   Param([switch]$details)
 
   Assert-CommandCompleted {
-    $deploymentInfo = Get-NLedgerDeploymentInfo
+    $deploymentInfo = Get-NLedgerDeploymentInfo -Verbose:$VerbosePreference
 
     $info = [ordered]@{}
     if ($deploymentInfo.Installed -and $deploymentInfo.IsExternalInstall) { $info["NLedger (Installed, External)"] = $deploymentInfo.Installed }
@@ -399,7 +399,7 @@ function Show-NLedgerConfig {
   )
 
   Assert-CommandCompleted {
-    $data = Get-NLedgerConfigData
+    $data = Get-NLedgerConfigData -Verbose:$VerbosePreference
     $settings = $(if($settingFilter) { $data.Settings | Where-Object { $_.Name -match $settingFilter} } else { $data.Settings })
 
     if (!$details) {
