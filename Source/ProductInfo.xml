@@ -24,7 +24,7 @@
   </AssemblyInfo>
   <BuildVersionAutoGeneration>
     <!-- Version auto-generation -->
-    <BasePatchDate>2020/01/01</BasePatchDate>  <!-- Build number is generated as a difference (in minutes divided 20) between current date/time and BasePatchDate. -->
+    <BasePatchDate>2023/01/01</BasePatchDate>  <!-- Build number is generated as a difference (in minutes divided 20) between current date/time and BasePatchDate. -->
   </BuildVersionAutoGeneration>
   <SourceLicensing>
     <FileHeader>
