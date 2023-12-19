@@ -5,7 +5,7 @@
    <?define UpgradeCode="20E40538-6702-4A39-9901-1EC041653F73" ?>
 
    <!-- Product version - takes from exe file (four number file version) -->
-   <?define VersionNumber="!(bind.FileVersion.File_NLedger_cli_exe)" ?>
+   <?define VersionNumber="!(bind.FileVersion.File_BinNet48_NLedger_cli_exe)" ?>
 
    <!-- Help URL (used in Add/Remove programs) -->
    <?define InfoURL="https://github.com/dmitry-merzlyakov/nledger" ?>

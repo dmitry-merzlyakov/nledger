@@ -99,20 +99,13 @@ function Get-Paths {
     [CmdletBinding()]
     Param()
 
-    return $env:PATH -split $Script:PathsSeparator | Where-Object{ $_ }
-}
-
-<#
-.SYNOPSIS
-    Returns a collection of all paths
-.DESCRIPTION
-    Return only valid entries (empty values are ommitted) as a collection of strings
-#>
-function Get-Paths {
-    [CmdletBinding()]
-    Param()
-
-    return $env:PATH -split $Script:PathsSeparator | Where-Object{$_}
+    if (Test-IsWindows) {
+        # For Windows, get paths from the registry value
+        (Get-Item -LiteralPath 'registry::HKEY_CURRENT_USER\Environment').GetValue('Path', '', 'DoNotExpandEnvironmentNames') -split ';' -ne ''
+    } else {
+        # For other OS, get paths from the env variable
+        $env:PATH -split $Script:PathsSeparator | Where-Object{ $_ }
+    }
 }
 
 <#
@@ -141,19 +134,6 @@ function Test-PathsAreEqual {
 
 <#
 .SYNOPSIS
-    Checks whether given path is in PATH variable
-.DESCRIPTION
-    Returns True or False depending on whether given path is in PATH variable. Properly manages relative and do-normalized paths.
-#>
-function Test-PathInPaths {
-    [CmdletBinding()]
-    Param([Parameter(Mandatory=$True)][string]$path)
-
-    return !(!(Get-Paths | Where-Object{ $(Test-PathsAreEqual $_ $path)}))
-}
-
-<#
-.SYNOPSIS
     Adds path to PATH variable
 .DESCRIPTION
     Adds a path to PATH variable if it is not there yet. Properly manages relative and do-normalized paths. Resets shell in case of changes in PATH.
@@ -163,23 +143,8 @@ function Add-Path {
     Param([Parameter(Mandatory=$True)][string]$path)
 
     if (!(Test-Path -LiteralPath $path -PathType Container)) { throw "Path $path does not exist" }
-    if (!(Test-PathInPaths $path)) {
 
-        if (Test-IsWindows) {
-            [System.Environment]::SetEnvironmentVariable("PATH","$($env:PATH)$($Script:PathsSeparator)$path",[System.EnvironmentVariableTarget]::User)
-        } else {
-            [string]$Private:exportString = "export PATH=`$PATH:$path"
-            [string]$Private:escapedExportString = [System.Text.RegularExpressions.Regex]::Escape($Private:exportString)
-            if(!(Select-String -LiteralPath $Script:ShellConfig -Pattern $Private:escapedExportString)) { # Check whether the file already contains the string
-                $Private:content = Get-Content $Script:ShellConfig
-                $null = ($Private:content | Out-File "$($Script:ShellConfig).old")
-                $null = Add-Content $Script:ShellConfig $Private:exportString
-            }
-        }
-
-        $env:PATH = "$($env:PATH)$($Script:PathsSeparator)$path"
-        $null = Reset-Shell
-    }
+    $null = (Get-Paths | Where-Object { !(Test-PathsAreEqual $_ $path) }) + $path | Update-Paths
 }
 
 <#
@@ -192,27 +157,34 @@ function Remove-Path {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$True)][string]$path)
 
-    if (!(Test-Path -LiteralPath $path -PathType Container)) { throw "Path $path does not exist" }
-    if (Test-PathInPaths $path) {
+    $null = Get-Paths | Where-Object { !(Test-PathsAreEqual $_ $path) } | Update-Paths
+}
 
-        if (Test-IsWindows) {
-            [string]$Private:paths = ( Get-Paths | Where-Object { !(Test-PathsAreEqual $_ $path) } ) -join $($Script:PathsSeparator)
-            [System.Environment]::SetEnvironmentVariable("PATH",$Private:paths,[System.EnvironmentVariableTarget]::User)
-        } else {
-            [string]$Private:exportString = "export PATH=`$PATH:$path"
-            [string]$Private:escapedExportString = [System.Text.RegularExpressions.Regex]::Escape($Private:exportString)
-            if(Select-String -LiteralPath $Script:ShellConfig -Pattern $Private:escapedExportString) { # Check whether the string was already removed
+function Update-Paths {
+    Param([Parameter(ValueFromPipeline)]$path)
+  
+    Begin { $paths = @() }
+    Process { $paths += $path }  
+    End {
+        $pathsValue = $paths -join $Script:PathsSeparator
+        if (((Get-Paths) -join $Script:PathsSeparator) -ne $pathsValue) {
+
+            if (Test-IsWindows) {
+                $null = Set-ItemProperty -Type ExpandString -LiteralPath 'registry::HKEY_CURRENT_USER\Environment' Path $pathsValue
+                [Environment]::SetEnvironmentVariable('PATH', $pathsValue, 'User')             
+            } else {
                 $Private:content = Get-Content $Script:ShellConfig
                 $null = ($Private:content | Out-File "$($Script:ShellConfig).old")
-                $Private:content = $Private:content | Where-Object { $_ -ne $Private:exportString }
+                $Private:content = $Private:content | Where-Object { $_ -notmatch 'export PATH=.*' }
+                $null = ($paths | ForEach-Object { $Private:content += $"export PATH=`$PATH:$path" })
                 $null = ($Private:content | Out-File $Script:ShellConfig )
             }
-        }
 
-        $env:PATH = ( Get-Paths | Where-Object { !(Test-PathsAreEqual $_ $path) } ) -join $($Script:PathsSeparator)
-        $null = Reset-Shell
+            $env:PATH = $pathsValue
+        }
     }
 }
+
 
 #################
 # NGEN management
