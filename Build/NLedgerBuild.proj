@@ -128,7 +128,7 @@
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net8.0\NLedger.Extensibility.Python.dll" DestinationFiles="$(PackageDir)bin\net8.0\NLedger.Extensibility.Python.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net8.0\Python.Runtime.dll" DestinationFiles="$(PackageDir)bin\net8.0\Python.Runtime.dll"  />
     <Copy SourceFiles="$(SourceRoot)NLedger.CLI\bin\Release\net8.0\System.Security.Permissions.dll" DestinationFiles="$(PackageDir)bin\net8.0\System.Security.Permissions.dll"  />
-    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net6.0\ledger.1.html"  />
+    <Copy SourceFiles="$(ProjectRoot)Contrib\ledger.1.html" DestinationFiles="$(PackageDir)bin\net8.0\ledger.1.html"  />
     <!-- Add Contrib files -->
     <CreateItem Include="$(ProjectRoot)Contrib\**\*.*" Exclude="$(ProjectRoot)Contrib\Common\Tests\**\*.*;$(ProjectRoot)Contrib\LiveDemo\NonDeliverable\**\*.*" >
       <Output TaskParameter="Include" ItemName="ContribFiles" />

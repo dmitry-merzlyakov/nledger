@@ -78,56 +78,32 @@
 
       <Directory Id="TARGETDIR" Name="SourceDir">
 
-         <!-- Add NLedger path to PATH variable -->
-
-         <Component Id="AppBinFilesPath" Guid="9E3407D5-85A3-4922-A4DE-9BD66BF0FE27"  >
-            <Environment Id="PATH" Name="PATH" Value="[APPLICATIONFOLDER]" Permanent="no" Part="last" Action="set" System="no" />
-         </Component>
-
          <!-- Shortcuts -->
 
          <Directory Id="ProgramMenuFolder">
             <Directory Id="ProgramMenuSubfolder" Name=".Net Ledger">
-                <Directory Id="DocumentationSubfolder" Name="Documentations">
-                    <Component Id="DocumentationShortcuts" Guid="7FD04C72-CAB4-4A1D-B098-5A69D381D387" >
-                        <RemoveFolder Id="DocumentationSubfolder" On="uninstall"/>
-                        <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\DocumentationShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                    </Component>
-                    <Component Id="LedgerDocShortcuts" Guid="145D5737-73E5-42D3-A292-8C1643A5B630" >
-                        <Shortcut Id="LedgerDocShortcutLedger3Html" Name="Ledger 3 Documentation" Description="Ledger: Command-Line Accounting" Target="[APPLICATIONFOLDER]ledger3.html" WorkingDirectory="APPLICATIONFOLDER"/>
-                        <Shortcut Id="LedgerDocShortcutLedger3Man" Name="Ledger 3 Man Page" Description="Man page of LEDGER" Target="[APPLICATIONFOLDER]ledger.1.html" WorkingDirectory="APPLICATIONFOLDER"/>
-                        <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\LedgerDocShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                    </Component>
-                    <Component Id="NLedgerDocShortcuts" Guid="1442D7CB-462F-47A1-91FA-76AE386B13E2" >
-                        <Shortcut Id="NLedgerDocShortcutNLedgerHtml" Name=".Net Ledger Guide" Description=".Net Ledger Documentation" Target="[APPLICATIONFOLDER]nledger.html" WorkingDirectory="APPLICATIONFOLDER"/>
-                        <Shortcut Id="NLedgerDocShortcutREADMEHtml" Name=".Net Ledger Readme" Description=".Net Ledger Release Notes" Target="[APPLICATIONFOLDER]README.html" WorkingDirectory="APPLICATIONFOLDER"/>
-                        <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLedgerDocShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                    </Component>
-                </Directory>
-                <Component Id="ProgramMenuSubfolderShortcuts" Guid="F74D2881-317F-4559-97BF-29C23CBD4785" >
-                    <RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
-                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\ProgramMenuSubfolderShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                </Component>
-                <Component Id="NLedgerFolderShortcuts" Guid="C14A9C6D-27EE-4DDB-BA13-D9E2BE4CFF36" >
-                    <Shortcut Id="NLedgerFolderShortcut" Name=".Net Ledger Folder" Description="Ledger Application Folder" Target="[APPLICATIONFOLDER]" WorkingDirectory="APPLICATIONFOLDER"/>
-                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLedgerFolderShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                </Component>
-                <Component Id="NLManagementSetupShortcuts" Guid="FD540361-9F4D-4021-A162-FE7FC9A0A400" >
-                    <Shortcut Id="NLManagementSetupShortcut" Name=".Net Ledger Setup Console" Description=".Net Ledger Setup" Target="[APPLICATIONFOLDER]\NLManagement\NLSetup.Console.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
-                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLManagementSetupShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                </Component>
-                <Component Id="NLManagementLiveDemoShortcuts" Guid="D69B5A6C-9F1D-43F0-80B9-A42647260997" >
-                    <Shortcut Id="NLManagementLiveDemoShortcut" Name=".Net Ledger Live Demo" Description=".Net Ledger Demonstration Console" Target="[APPLICATIONFOLDER]\NLManagement\NLDoc.LiveDemo.WebConsole.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
-                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLManagementLiveDemoShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                </Component>
-                <Component Id="NLTestToolkitShortcuts" Guid="CE693206-02C0-4BD6-A739-765CA306E936" >
-                    <Shortcut Id="NLTestToolkitShortcut" Name=".Net Ledger Test Toolkit" Description=".Net Ledger Test Toolkit Console" Target="[APPLICATIONFOLDER]\NLTestToolkit\NLTest.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
-                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLTestToolkitShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                </Component>
-                <Component Id="PythonToolkitShortcuts" Guid="FA25D943-E118-46D9-A800-23319AF2FB62" >
-                    <Shortcut Id="PythonToolkitShortcut" Name=".Net Ledger Python Toolkit" Description=".Net Ledger Python Toolkit Console" Target="[APPLICATIONFOLDER]\Python\GetPythonEnvironment.Console.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
-                    <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\PythonToolkitShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-                </Component>
+               <Component Id="ProgramMenuSubfolderShortcuts" Guid="F74D2881-317F-4559-97BF-29C23CBD4785" >
+                  <RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
+                  <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\ProgramMenuSubfolderShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+               </Component>
+               <Component Id="NLedgerFolderShortcuts" Guid="C14A9C6D-27EE-4DDB-BA13-D9E2BE4CFF36" >
+                  <Shortcut Id="NLedgerFolderShortcut" Name=".Net Ledger Folder" Description="Ledger Application Folder" Target="[APPLICATIONFOLDER]" WorkingDirectory="APPLICATIONFOLDER"/>
+                  <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLedgerFolderShortcut" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+               </Component>
+               <Component Id="NLedgerToolsShortcuts" Guid="1CF76353-E025-4F34-8EBE-53332CA0B42B" >
+                  <Shortcut Id="NLManagementSetupShortcut" Name=".Net Ledger Tools" Description=".Net Ledger Tools Console" Target="[APPLICATIONFOLDER]\nledger-tools.cmd" Icon="Icon.exe" WorkingDirectory="APPLICATIONFOLDER"/>
+                  <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLedgerToolsShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+               </Component>
+               <Component Id="LedgerDocShortcuts" Guid="145D5737-73E5-42D3-A292-8C1643A5B630" >
+                  <Shortcut Id="LedgerDocShortcutLedger3Html" Name="Ledger 3 Documentation" Description="Ledger: Command-Line Accounting" Target="[APPLICATIONFOLDER]ledger3.html" WorkingDirectory="APPLICATIONFOLDER"/>
+                  <Shortcut Id="LedgerDocShortcutLedger3Man" Name="Ledger 3 Man Page" Description="Man page of LEDGER" Target="[APPLICATIONFOLDER]ledger.1.html" WorkingDirectory="APPLICATIONFOLDER"/>
+                  <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\LedgerDocShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+               </Component>
+               <Component Id="NLedgerDocShortcuts" Guid="1442D7CB-462F-47A1-91FA-76AE386B13E2" >
+                  <Shortcut Id="NLedgerDocShortcutNLedgerHtml" Name=".Net Ledger Guide" Description=".Net Ledger Documentation" Target="[APPLICATIONFOLDER]nledger.html" WorkingDirectory="APPLICATIONFOLDER"/>
+                  <Shortcut Id="NLedgerDocShortcutREADMEHtml" Name=".Net Ledger Readme" Description=".Net Ledger Release Notes" Target="[APPLICATIONFOLDER]README.html" WorkingDirectory="APPLICATIONFOLDER"/>
+                  <RegistryValue Root="HKCU" Key="Software\Dmitry Merzlyakov\NLedger\NLedgerDocShortcuts" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+               </Component>
             </Directory>
          </Directory>
 
@@ -138,77 +114,67 @@
       <Feature Id="NLedgerFeature" Title="!(loc.NLedgerFeature_Title)" Level="1" Display="expand" Description="!(loc.NLedgerFeature_Desc)" ConfigurableDirectory="APPLICATIONFOLDER" AllowAdvertise="no" Absent="disallow" InstallDefault="local" >
 
          <!-- NLedger Core components (not optional) -->
-         <ComponentRef Id="AppBinFiles"/>                      <!-- NLedger .Net Framework dll and exe files -->
-         <ComponentRef Id="AppBinCoreFiles"/>                  <!-- NLedger .Net Core dll and exe files -->
-         <ComponentRef Id="AppBinFilesPath"/>                  <!-- Adding NLedger folder to PATH -->
-         <ComponentRef Id="LedgerManFiles"/>                   <!-- Ledger manual that can be open from NLedger -->
-         <ComponentRef Id="LedgerCoreManFiles"/>               <!-- Ledger manual that can be open from NLedger Core -->
-         <ComponentRef Id="LicenseFiles"/>                     <!-- License files -->
+         <ComponentRef Id="BinNetStandard20Files"/>            <!-- NLedger dll and exe files -->
+         <ComponentRef Id="BinNet48Files"/>                    <!-- NLedger dll and exe files -->
+         <ComponentRef Id="BinNet60Files"/>                    <!-- NLedger dll and exe files -->
+         <ComponentRef Id="BinNet80Files"/>                    <!-- NLedger dll and exe files -->
+         <ComponentRef Id="CommonFiles"/>                      <!-- NLedger Powershell tool files -->
          <ComponentRef Id="Extras"/>                           <!-- Extras folder with samples for db calls -->
+         <ComponentRef Id="NLedgerToolsFiles"/>                <!-- NLedger Powershell tool console -->
+         <ComponentRef Id="LicenseFiles"/>                     <!-- License files -->
+         <ComponentRef Id="LedgerManFiles"/>                   <!-- Ledger manual file -->
+         <ComponentRef Id="NLedgerReleaseNotesFiles"/>         <!-- Release Notes (readme and changelog) that are open after install -->
          <ComponentRef Id="NLedgerFolderShortcuts"/>           <!-- Adding a shortcut for NLedger folder -->
          <ComponentRef Id="ProgramMenuSubfolderShortcuts"/>    <!-- Common component to manage main menu folder with shortcuts -->
-         <ComponentRef Id="NLedgerReleaseNotesFiles"/>         <!-- Release Notes (readme and changelog) that are open after install -->
          <ComponentRef Id="LedgerSharedTestFiles_input"/>      <!-- Example data files -->
-         <ComponentRef Id="PythonContrib"/>                    <!-- Python contribution files -->
-         <ComponentRef Id="PythonToolkitShortcuts"/>           <!-- Python Toolkit Console shortcut -->
 
          <Feature Id="DocFilesFeature" Title="!(loc.DocFilesFeature_Title)" Level="1" Description="!(loc.DocFilesFeature_Desc)" AllowAdvertise="no" >
            <ComponentRef Id="LedgerDocFiles"/>                 <!-- Ledger 3 Documentation -->
            <ComponentRef Id="NLedgerDocFiles"/>                <!-- NLedger short doc -->
            <ComponentRef Id="LedgerDocShortcuts"/>             <!-- Shortcuts -->
            <ComponentRef Id="NLedgerDocShortcuts"/>
-           <ComponentRef Id="DocumentationShortcuts" />
-         </Feature>
-
-         <Feature Id="SetupConsoleFeature" Title="!(loc.SetupConsoleFeature_Title)" Level="1" Description="!(loc.SetupConsoleFeature_Desc)" AllowAdvertise="no" >
-           <ComponentRef Id="NLManagementCommon"/>
-           <ComponentRef Id="NLManagementSetup"/>
-           <ComponentRef Id="NLManagementSetupShortcuts"/>
          </Feature>
 
          <Feature Id="LiveDemoFeature" Title="!(loc.LiveDemoFeature_Title)" Level="1" Description="!(loc.LiveDemoFeature_Desc)" AllowAdvertise="no" >
-           <ComponentRef Id="NLManagementCommon"/>
-           <ComponentRef Id="NLManagementLiveDemo"/>
-           <ComponentRef Id="NLManagementLiveDemoShortcuts"/>
+           <ComponentRef Id="LiveDemoFiles"/>
            <ComponentRef Id="SandboxTestFiles"/>
          </Feature>
 
-         <!-- Test toolkit is disabled by default (Level=3) -->
+         <!-- Python extension is disabled by default -->
+         <Feature Id="PythonExtensionFeature" Title="!(loc.PythonExtensionFeature_Title)" Level="5" Description="!(loc.PythonExtensionFeature_Desc)" AllowAdvertise="no" >
+           <ComponentRef Id="PythonContrib"/>
+         </Feature>
+
+         <!-- Test toolkit is disabled by default -->
          <Feature Id="TestToolkitFeature" Title="!(loc.TestToolkitFeature_Title)" Level="5" Description="!(loc.TestToolkitFeature_Desc)" AllowAdvertise="no" >
            <ComponentRef Id="LedgerTestFiles_manual"/>
            <ComponentRef Id="LedgerTestFiles_nledger"/>
            <ComponentRef Id="LedgerTestFiles_input"/>
            <ComponentRef Id="LedgerTestFiles_baseline"/>
            <ComponentRef Id="LedgerTestFiles_regress"/>
-           <ComponentRef Id="NLTestToolkit"/>
-           <ComponentRef Id="NLTestToolkitShortcuts"/>
-         </Feature>
-
-         <!-- Manual Install Scripts are disabled by default (Level=3) -->
-         <Feature Id="ManualInstallFeature" Title="!(loc.ManualInstallFeature_Title)" Level="5" Description="!(loc.ManualInstallFeature_Desc)" AllowAdvertise="no" >
-           <ComponentRef Id="ManualInstall"/>
+           <ComponentRef Id="NLedgerTestToolkit"/>
          </Feature>
 
       </Feature>
 
       <UI>
-	 <UIRef Id="WixUI_Mondo"/>
+	      <UIRef Id="WixUI_Mondo"/>
          <!-- Exit dialog action (show readme) -->
          <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
       </UI>
 
-      <!-- Create a hard link (alias 'ledger') -->
+      <!-- Run PS installing scripts -->
 
-      <SetProperty Id="AppBinFilesAddHardLink" Value='"[SystemFolder]cmd.exe" /C mklink /H "[APPLICATIONFOLDER]ledger.exe" "[APPLICATIONFOLDER]NLedger-cli.exe"' Sequence='execute' Before="AppBinFilesAddHardLink" />
-      <SetProperty Id="AppBinFilesDelHardLink" Value='"[SystemFolder]cmd.exe" /C del /f /q "[APPLICATIONFOLDER]ledger.exe' Sequence='execute' Before="AppBinFilesDelHardLink" />
+      <SetProperty Id="AppBinInstall"   Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -NoExit -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1 install -link"' Sequence='execute' Before="AppBinInstall" />
+      <SetProperty Id="AppBinUninstall" Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -NoExit -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1 uninstall' Sequence='execute' Before="AppBinUninstall" />
 
-      <CustomAction Id='AppBinFilesAddHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
-      <CustomAction Id='AppBinFilesDelHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinInstall' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinUninstall' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
 
       <InstallExecuteSequence> 
-         <Custom Action="AppBinFilesAddHardLink" Before="InstallFinalize">$AppBinFiles&gt;2</Custom>  
-         <Custom Action="AppBinFilesDelHardLink" Before="MsiUnpublishAssemblies">$AppBinFiles=2</Custom>  
-      </InstallExecuteSequence> 
+         <Custom Action="AppBinInstall" Before="InstallFinalize">$NLedgerToolsFiles&gt;2</Custom>  
+         <Custom Action="AppBinUninstall" Before="MsiUnpublishAssemblies">$NLedgerToolsFiles=2</Custom>  
+      </InstallExecuteSequence>
 
    </Product>
 

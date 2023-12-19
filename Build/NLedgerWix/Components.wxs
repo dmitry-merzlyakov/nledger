@@ -7,43 +7,96 @@
 
          <Directory Id="ProgramFilesFolder">
             <Directory Id="APPLICATIONFOLDER" Name="NLedger">
-               <Directory Id="NLManagementFolder" Name="NLManagement">
-                  <Component Id="NLManagementCommon" Guid="6EF42737-8561-47E2-A7BE-920D2BB6337A" >
-                     <File Id="File_NLCommon_psm1" Name="NLCommon.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLCommon.psm1"/>
-                     <File Id="File_NLWhere_psm1" Name="NLWhere.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLWhere.psm1"/>
-                  </Component>
-                  <Component Id="NLManagementSetup" Guid="5BF41549-2630-46C8-BFAC-078503FB7174" >
-                     <File Id="File_NLSetup_psm1" Name="NLSetup.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLSetup.psm1"/>
-                     <File Id="File_NLSetup_Console_ps1" Name="NLSetup.Console.ps1" Source="$(var.PackageFolder)NLedger\NLManagement\NLSetup.Console.ps1"/>
-                     <File Id="File_NLSetup_Console_cmd" Name="NLSetup.Console.cmd" Source="$(var.PackageFolder)NLedger\NLManagement\NLSetup.Console.cmd"/>
-                  </Component>
-                  <Component Id="NLManagementLiveDemo" Guid="C0C4AA00-7433-40D6-965C-F2CC6EA4FF7A" >
-                     <File Id="File_NLDoc_LiveDemo_psm1" Name="NLDoc.LiveDemo.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\NLDoc.LiveDemo.psm1"/>
-                     <File Id="File_NLDoc_LiveDemo_config_xml" Name="NLDoc.LiveDemo.config.xml" Source="$(var.PackageFolder)NLedger\NLManagement\NLDoc.LiveDemo.config.xml"/>
-                     <File Id="File_NLDoc_LiveDemo_Launch_cmd" Name="NLDoc.LiveDemo.Launch.cmd" Source="$(var.PackageFolder)NLedger\NLManagement\NLDoc.LiveDemo.Launch.cmd"/>
-                     <File Id="File_NLDoc_LiveDemo_ledger3_html" Name="NLDoc.LiveDemo.ledger3.html" Source="$(var.PackageFolder)NLedger\NLManagement\NLDoc.LiveDemo.ledger3.html"/>
-                     <File Id="File_NLDoc_LiveDemo_WebConsole_cmd" Name="NLDoc.LiveDemo.WebConsole.cmd" Source="$(var.PackageFolder)NLedger\NLManagement\NLDoc.LiveDemo.WebConsole.cmd"/>
-                     <File Id="File_NLDoc_LiveDemo_WebConsole_ps1" Name="NLDoc.LiveDemo.WebConsole.ps1" Source="$(var.PackageFolder)NLedger\NLManagement\NLDoc.LiveDemo.WebConsole.ps1"/>
-                     <File Id="File_PsHttpListener_psm1" Name="PsHttpListener.psm1" Source="$(var.PackageFolder)NLedger\NLManagement\PsHttpListener.psm1"/>
+               <Directory Id="BinFolder" Name="bin">
+                  <Directory Id="BinNetStandard20Folder" Name="netstandard2.0">
+                     <Component Id="BinNetStandard20Files" Guid="9CEAE247-329E-4E58-B91E-C192C78C2EA4" >
+                        <File Id="File_BinStd_Microsoft_CSharp_dll" Name="Microsoft.CSharp.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\Microsoft.CSharp.dll"/>
+                        <File Id="File_BinStd_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\NLedger.dll"/>
+                        <File Id="File_BinStd_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\NLedger.Extensibility.Python.dll"/>
+                        <File Id="File_BinStd_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\Python.Runtime.dll"/>
+                        <File Id="File_BinStd_System_Reflection_Emit_dll" Name="System.Reflection.Emit.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\System.Reflection.Emit.dll"/>
+                        <File Id="File_BinStd_System_Reflection_Emit_ILGeneration_dll" Name="System.Reflection.Emit.ILGeneration.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\System.Reflection.Emit.ILGeneration.dll"/>
+                        <File Id="File_BinStd_System_Security_AccessControl_dll" Name="System.Security.AccessControl.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\System.Security.AccessControl.dll"/>
+                        <File Id="File_BinStd_System_Security_Permissions_dll" Name="System.Security.Permissions.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\System.Security.Permissions.dll"/>
+                        <File Id="File_BinStd_System.Security.Principal.Windows.dll" Name="System.Security.Principal.Windows.dll" Source="$(var.PackageFolder)NLedger\bin\netstandard2.0\System.Security.Principal.Windows.dll"/>
+                     </Component>                     
+                  </Directory>
+                  <Directory Id="BinNet48Folder" Name="net48">
+                     <Component Id="BinNet48Files" Guid="F0F45576-5DD7-41A3-8A10-55F9087D81E4" >
+                        <File Id="File_BinNet48_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\bin\net48\ledger.1.html"/>
+                        <File Id="File_BinNet48_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger.dll"/>
+                        <File Id="File_BinNet48_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger-cli.exe"/>
+                        <File Id="File_BinNet48_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger-cli.exe.config"/>
+                        <File Id="File_BinNet48_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger.Extensibility.Python.dll"/>
+                        <File Id="File_BinNet48_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net48\Python.Runtime.dll"/>
+                        <File Id="File_BinNet48_System_Security_AccessControl_dll" Name="System.Security.AccessControl.dll" Source="$(var.PackageFolder)NLedger\bin\net48\System.Security.AccessControl.dll"/>
+                        <File Id="File_BinNet48_System_Security_Permissions_dll" Name="System.Security.Permissions.dll" Source="$(var.PackageFolder)NLedger\bin\net48\System.Security.Permissions.dll"/>
+                        <File Id="File_BinNet48_System_Security_Principal_Windows_dll" Name="System.Security.Principal.Windows.dll" Source="$(var.PackageFolder)NLedger\bin\net48\System.Security.Principal.Windows.dll"/>
+                     </Component>                     
+                  </Directory>
+                  <Directory Id="BinNet60Folder" Name="net6.0">
+                     <Component Id="BinNet60Files" Guid="2994434C-55A5-4798-BCC7-C5F38B26C11D" >
+                        <File Id="File_BinNet60_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\bin\net6.0\ledger.1.html"/>
+                        <File Id="File_BinNet60_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger.dll"/>
+                        <File Id="File_BinNet60_NLedger_cli_dll" Name="NLedger-cli.dll" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger-cli.dll"/>
+                        <File Id="File_BinNet60_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger-cli.exe"/>
+                        <File Id="File_BinNet60_NLedger_cli_deps_json" Name="NLedger-cli.deps.json" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger-cli.deps.json"/>
+                        <File Id="File_BinNet60_NLedger_cli_dll_config" Name="NLedger-cli.dll.config" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger-cli.dll.config"/>
+                        <File Id="File_BinNet60_NLedger_cli_runtimeconfig_json" Name="NLedger-cli.runtimeconfig.json" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger-cli.runtimeconfig.json"/>
+                        <File Id="File_BinNet60_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net6.0\NLedger.Extensibility.Python.dll"/>
+                        <File Id="File_BinNet60_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net6.0\Python.Runtime.dll"/>
+                        <File Id="File_BinNet60_System_Security_Permissions_dll" Name="System.Security.Permissions.dll" Source="$(var.PackageFolder)NLedger\bin\net6.0\System.Security.Permissions.dll"/>
+                     </Component>                     
+                  </Directory>
+                  <Directory Id="BinNet80Folder" Name="net8.0">
+                     <Component Id="BinNet80Files" Guid="80D316E6-02E6-4974-B9C2-843AB4649BAE" >
+                        <File Id="File_BinNet80_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\bin\net8.0\ledger.1.html"/>
+                        <File Id="File_BinNet80_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger.dll"/>
+                        <File Id="File_BinNet80_NLedger_cli_dll" Name="NLedger-cli.dll" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger-cli.dll"/>
+                        <File Id="File_BinNet80_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger-cli.exe"/>
+                        <File Id="File_BinNet80_NLedger_cli_deps_json" Name="NLedger-cli.deps.json" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger-cli.deps.json"/>
+                        <File Id="File_BinNet80_NLedger_cli_dll_config" Name="NLedger-cli.dll.config" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger-cli.dll.config"/>
+                        <File Id="File_BinNet80_NLedger_cli_runtimeconfig_json" Name="NLedger-cli.runtimeconfig.json" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger-cli.runtimeconfig.json"/>
+                        <File Id="File_BinNet80_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net8.0\NLedger.Extensibility.Python.dll"/>
+                        <File Id="File_BinNet80_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net8.0\Python.Runtime.dll"/>
+                        <File Id="File_BinNet80_System_Security_Permissions_dll" Name="System.Security.Permissions.dll" Source="$(var.PackageFolder)NLedger\bin\net8.0\System.Security.Permissions.dll"/>
+                     </Component>                     
+                  </Directory>
+               </Directory>
+               <Directory Id="CommonFolder" Name="Common">
+                  <Component Id="CommonFiles" Guid="31D03507-1F9D-42C1-89AE-01521032E8AC" >
+                     <File Id="File_Common_NLedgerConfig_psm1" Name="NLedgerConfig.psm1" Source="$(var.PackageFolder)NLedger\Common\NLedgerConfig.psm1"/>
+                     <File Id="File_Common_NLedgerEnvironment_psm1" Name="NLedgerEnvironment.psm1" Source="$(var.PackageFolder)NLedger\Common\NLedgerEnvironment.psm1"/>
+                     <File Id="File_Common_SysCommon_psm1" Name="SysCommon.psm1" Source="$(var.PackageFolder)NLedger\Common\SysCommon.psm1"/>
+                     <File Id="File_Common_SysConsole_psm1" Name="SysConsole.psm1" Source="$(var.PackageFolder)NLedger\Common\SysConsole.psm1"/>
+                     <File Id="File_Common_SysDotnet_psm1" Name="SysDotnet.psm1" Source="$(var.PackageFolder)NLedger\Common\SysDotnet.psm1"/>
+                     <File Id="File_Common_SysPlatform_psm1" Name="SysPlatform.psm1" Source="$(var.PackageFolder)NLedger\Common\SysPlatform.psm1"/>
+                  </Component>                     
+               </Directory>
+               <Directory Id="ExtrasFolder" Name="Extras">
+                  <Component Id="Extras" Guid="6B74D479-082B-4FC0-BDE6-2F6F0BCD55CD" >
+                    <File Id="File_cat_cmd" Name="cat.cmd" Source="$(var.PackageFolder)NLedger\Extras\cat.cmd"/>
+                    <File Id="File_extras_getQuote_cmd" Name="getQuote.cmd" Source="$(var.PackageFolder)NLedger\Extras\getQuote.cmd"/>
+                    <File Id="File_getQuote_ps1" Name="getQuote.ps1" Source="$(var.PackageFolder)NLedger\Extras\getQuote.ps1"/>                  
                   </Component>
                </Directory>
-               <Directory Id="NLTestToolkitFolder" Name="NLTestToolkit">
-                  <Component Id="NLTestToolkit" Guid="874FBA65-1862-4E0E-B1E6-078A45ACF084" >
-                     <File Id="File_NLTest_cmd" Name="NLTest.cmd" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.cmd"/>
-                     <File Id="File_NLTest_Launcher_ps1" Name="NLTest.Launcher.ps1" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.Launcher.ps1"/>
-                     <File Id="File_NLTest_ps1" Name="NLTest.ps1" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.ps1"/>
-                     <File Id="File_NLTest_xslt" Name="NLTest.xslt" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.xslt"/>
-                     <File Id="File_NLTest_Meta_xml" Name="NLTest.Meta.xml" Source="$(var.PackageFolder)NLedger\NLTestToolkit\NLTest.Meta.xml"/>
-                  </Component>
+               <Directory Id="LiveDemoFolder" Name="LiveDemo">
+                  <Component Id="LiveDemoFiles" Guid="8BA2831C-B256-4198-BBA3-5FCD42B596F3" >
+                     <File Id="File_LiveDemo_NLDoc_LiveDemo_psm1" Name="NLDoc.LiveDemo.psm1" Source="$(var.PackageFolder)NLedger\LiveDemo\NLDoc.LiveDemo.psm1"/>
+                     <File Id="File_LiveDemo_NLDoc_LiveDemo_config_xml" Name="NLDoc.LiveDemo.config.xml" Source="$(var.PackageFolder)NLedger\LiveDemo\NLDoc.LiveDemo.config.xml"/>
+                     <File Id="File_LiveDemo_NLDoc_LiveDemo_Launch_cmd" Name="NLDoc.LiveDemo.Launch.cmd" Source="$(var.PackageFolder)NLedger\LiveDemo\NLDoc.LiveDemo.Launch.cmd"/>
+                     <File Id="File_LiveDemo_NLDoc_LiveDemo_Launch_sh" Name="NLDoc.LiveDemo.Launch.sh" Source="$(var.PackageFolder)NLedger\LiveDemo\NLDoc.LiveDemo.Launch.sh"/>
+                     <File Id="File_LiveDemo_NLDoc_LiveDemo_ledger3_html" Name="NLDoc.LiveDemo.ledger3.html" Source="$(var.PackageFolder)NLedger\LiveDemo\NLDoc.LiveDemo.ledger3.html"/>
+                     <File Id="File_LiveDemo_PsHttpListener_psm1" Name="PsHttpListener.psm1" Source="$(var.PackageFolder)NLedger\LiveDemo\PsHttpListener.psm1"/>
+                  </Component>                     
                </Directory>
                <Directory Id="PythonFolder" Name="Python">
                   <Component Id="PythonContrib" Guid="30468F59-AAF0-4308-BAAB-B689BEB2CE22" >
-                     <File Id="File_GetPythonEnvironment_ps1" Name="GetPythonEnvironment.ps1" Source="$(var.PackageFolder)NLedger\Python\GetPythonEnvironment.ps1"/>
-                     <File Id="File_GetPythonEnvironment_Console_cmd" Name="GetPythonEnvironment.Console.cmd" Source="$(var.PackageFolder)NLedger\Python\GetPythonEnvironment.Console.cmd"/>
-                     <File Id="File_ledger_tests_py" Name="ledger_tests.py" Source="$(var.PackageFolder)NLedger\Python\ledger_tests.py"/>
-                     <File Id="File_PyManagement_psm1" Name="PyManagement.psm1" Source="$(var.PackageFolder)NLedger\Python\PyManagement.psm1"/>
                      <File Id="File_Python_drewr3_dat" Name="drewr3.dat" Source="$(var.PackageFolder)NLedger\Python\drewr3.dat"/>
                      <File Id="File_ledger_0_8_5_py3_none_any_whl" Name="ledger-0.8.5-py3-none-any.whl" Source="$(var.PackageFolder)NLedger\Python\ledger-0.8.5-py3-none-any.whl"/>
+                     <File Id="File_ledger_tests_py" Name="ledger_tests.py" Source="$(var.PackageFolder)NLedger\Python\ledger_tests.py"/>
+                     <File Id="File_NLedgerPyEnvironment_psm1" Name="NLedgerPyEnvironment.psm1" Source="$(var.PackageFolder)NLedger\Python\NLedgerPyEnvironment.psm1"/>
+                     <File Id="File_PyManagement_psm1" Name="PyManagement.psm1" Source="$(var.PackageFolder)NLedger\Python\PyManagement.psm1"/>
                   </Component>
                </Directory>
                <Directory Id="testFolder" Name="test">
@@ -468,6 +521,7 @@
                         <File Id="File_test_getquote_cmd" Name="getquote.cmd" Source="$(var.PackageFolder)NLedger\test\nledger\getquote.cmd"/>
                         <File Id="File_opt_download_test" Name="opt-download.test" Source="$(var.PackageFolder)NLedger\test\nledger\opt-download.test"/>
                         <File Id="File_gh_issues_24_test" Name="gh-issues-24.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-24.test"/>
+                        <File Id="File_gh_issues_29_test" Name="gh-issues-29.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-29.test"/>
                         <File Id="File_gh_issues_5_test" Name="gh-issues-5.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-5.test"/>
                         <File Id="File_gh_issues_7_test" Name="gh-issues-7.test" Source="$(var.PackageFolder)NLedger\test\nledger\gh-issues-7.test"/>
                         <File Id="File_nl_issues_1_test" Name="nl-issues-1.test" Source="$(var.PackageFolder)NLedger\test\nledger\nl-issues-1.test"/>
@@ -678,57 +732,21 @@
                         <File Id="File_xact_code_py_test" Name="xact_code_py.test" Source="$(var.PackageFolder)NLedger\test\regress\xact_code_py.test"/>
                      </Component>
                   </Directory>
-               </Directory>
-               <Directory Id="ExtrasFolder" Name="Extras">
-                  <Component Id="Extras" Guid="6B74D479-082B-4FC0-BDE6-2F6F0BCD55CD" >
-                    <File Id="File_cat_cmd" Name="cat.cmd" Source="$(var.PackageFolder)NLedger\Extras\cat.cmd"/>
-                    <File Id="File_extras_getQuote_cmd" Name="getQuote.cmd" Source="$(var.PackageFolder)NLedger\Extras\getQuote.cmd"/>
-                    <File Id="File_getQuote_ps1" Name="getQuote.ps1" Source="$(var.PackageFolder)NLedger\Extras\getQuote.ps1"/>                  
+                  <Component Id="NLedgerTestToolkit" Guid="1A9DE129-E906-4363-A53B-555462426B25" >
+                    <File Id="File_Test_NLTest_ps1" Name="NLTest.ps1" Source="$(var.PackageFolder)NLedger\test\NLTest.ps1"/>
+                    <File Id="File_Test_NLTest_psm1" Name="NLTest.psm1" Source="$(var.PackageFolder)NLedger\test\NLTest.psm1"/>
+                    <File Id="File_Test_NLTest_xslt" Name="NLTest.xslt" Source="$(var.PackageFolder)NLedger\test\NLTest.xslt"/>
+                    <File Id="File_Test_NLTest_Meta_xml" Name="NLTest.Meta.xml" Source="$(var.PackageFolder)NLedger\test\NLTest.Meta.xml"/>
                   </Component>
                </Directory>
-               <Directory Id="InstallFolder" Name="Install">
-                  <Component Id="ManualInstall" Guid="5033E61E-0B95-466C-B734-905530F3678B" >
-                    <File Id="File_NLedger_Install_cmd" Name="NLedger.Install.cmd" Source="$(var.PackageFolder)NLedger\Install\NLedger.Install.cmd"/>
-                    <File Id="File_NLedger_Install_ps1" Name="NLedger.Install.ps1" Source="$(var.PackageFolder)NLedger\Install\NLedger.Install.ps1"/>
-                    <File Id="File_NLedger_Launcher_ps1" Name="NLedger.Launcher.ps1" Source="$(var.PackageFolder)NLedger\Install\NLedger.Launcher.ps1"/>
-                    <File Id="File_NLedger_Uninstall_cmd" Name="NLedger.Uninstall.cmd" Source="$(var.PackageFolder)NLedger\Install\NLedger.Uninstall.cmd"/>
-                    <File Id="File_NLedger_NLInstall_psm1" Name="NLInstall.psm1" Source="$(var.PackageFolder)NLedger\Install\NLInstall.psm1"/>
-                    <File Id="File_NLedger_SysHardLink_psm1" Name="SysHardLink.psm1" Source="$(var.PackageFolder)NLedger\Install\SysHardLink.psm1"/>
-                    <File Id="File_NLedger_SysNGen_psm1" Name="SysNGen.psm1" Source="$(var.PackageFolder)NLedger\Install\SysNGen.psm1"/>
-                    <File Id="File_NLedger_SysPath_psm1" Name="SysPath.psm1" Source="$(var.PackageFolder)NLedger\Install\SysPath.psm1"/>
-                  </Component>
-               </Directory>
-               <Directory Id="BinFolder" Name="bin">
-                  <Directory Id="NetCoreApp31Folder" Name="netcoreapp3.1">
-                    <Component Id="AppBinCoreFiles" Guid="74DDC5E7-4EEE-4BCF-982C-9B88848E8A30" >
-                      <File Id="File_NLedger_Core_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger.dll"/>
-                      <File Id="File_NLedger_Core_cli_dll" Name="NLedger-cli.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.dll"/>
-                      <File Id="File_NLedger_Core_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.exe"/>
-                      <File Id="File_NLedger_Core_cli_deps_json" Name="NLedger-cli.deps.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.deps.json"/>
-                      <File Id="File_NLedger_Core_cli_dll_config" Name="NLedger-cli.dll.config" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.dll.config"/>
-                      <File Id="File_NLedger_Core_cli_runtimeconfig_json" Name="NLedger-cli.runtimeconfig.json" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger-cli.runtimeconfig.json"/>
-                      <File Id="File_NLedger_Core_System_Security_Permissions_dll" Name="System.Security.Permissions.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\System.Security.Permissions.dll"/>
-                      <File Id="File_NLedger_Core_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\NLedger.Extensibility.Python.dll"/>
-                      <File Id="File_Core_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\netcoreapp3.1\Python.Runtime.dll"/>
-                    </Component>
-                    <Component Id="LedgerCoreManFiles" Guid="C4C85651-C61F-4B2B-AE5F-C4A3BFAE8930" >
-                        <File Id="File_Core_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\ledger.1.html"/>
-                    </Component>
-                  </Directory>
-               </Directory>
-               <Component Id="AppBinFiles" Guid="59E7E5B2-E13F-4FBC-B05C-B5E1DFC1F06A" >
-                  <File Id="File_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger.dll"/>
-                  <File Id="File_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger-cli.exe">
-                     <!-- Call NGen -->
-		     <netfx:NativeImage Id="File_NLedger_cli_exe" Platform="all" Priority="0" />
-                  </File>
-                  <File Id="File_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger-cli.exe.config"/>
-                  <File Id="File_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net472\NLedger.Extensibility.Python.dll"/>
-                  <File Id="File_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net472\Python.Runtime.dll"/>
+               <Component Id="NLedgerToolsFiles" Guid="E50D9547-DEE3-4AD3-AF1C-1F1C66AF0B01" >
+                  <File Id="File_nledger_tools_ps1" Name="nledger-tools.ps1" Source="$(var.PackageFolder)NLedger\nledger-tools.ps1"/>
+                  <File Id="File_nledger_tools_cmd" Name="nledger-tools.cmd" Source="$(var.PackageFolder)NLedger\nledger-tools.cmd"/>
                </Component>
                <Component Id="LicenseFiles" Guid="9D31EDB8-04BC-4EF7-856C-3F29655E78CF" >
                   <File Id="File_LICENSE" Name="LICENSE" Source="$(var.PackageFolder)NLedger\LICENSE"/>
                   <File Id="File_LICENSE_LEDGER" Name="LICENSE.LEDGER" Source="$(var.PackageFolder)NLedger\LICENSE.LEDGER"/>
+                  <File Id="File_LICENSE_RTF" Name="LICENSE.RTF" Source="$(var.PackageFolder)NLedger\LICENSE.RTF"/>
                </Component>
                <Component Id="LedgerDocFiles" Guid="8C77C515-0A2D-453E-A475-9FDFEC8F2689" >
                   <File Id="File_ledger3_html" Name="ledger3.html" Source="$(var.PackageFolder)NLedger\ledger3.html" KeyPath="yes" />
