@@ -71,11 +71,24 @@ Param()
 
 [string]$Script:PathsSeparator = $(if(Test-IsWindows){";"}else{":"})
 
+# Locate shell config file for unix-like platforms (linux and OSX)
+[string]$Script:ShellConfig = $null
+if(!(Test-IsWindows)) {
+    if ($env:SHELL -eq "/bin/zsh") { 
+        $Script:ShellConfig = "$HOME/.zshrc" 
+    } else {
+        $Script:ShellConfig = "$HOME/.bashrc"
+        if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $Script:ShellConfig = "$HOME/.bash_profile" }
+    }
+    if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { $null = Add-Content $Script:ShellConfig "" }
+    if(!(Test-Path -LiteralPath $Script:ShellConfig -PathType Leaf)) { throw "Cannot find shell config file" }
+}
+
 <#
 .SYNOPSIS
     Forces reading recent changes in PATH variable
 .DESCRIPTION
-    Restars windows explorer so that a new process gets updated PATH variable. Does nothing on non-windows platforms.
+    Re-stars windows explorer so that a new process gets updated PATH variable. Does nothing on non-windows platforms.
 #>
 function Reset-Shell {
     [CmdletBinding()]
@@ -99,13 +112,9 @@ function Get-Paths {
     [CmdletBinding()]
     Param()
 
-    if (Test-IsWindows) {
-        # For Windows, get paths from the registry value
-        (Get-Item -LiteralPath 'registry::HKEY_CURRENT_USER\Environment').GetValue('Path', '', 'DoNotExpandEnvironmentNames') -split ';' -ne ''
-    } else {
-        # For other OS, get paths from the env variable
-        $env:PATH -split $Script:PathsSeparator | Where-Object{ $_ }
-    }
+    [string]$paths = $env:PATH
+    Write-Verbose "Get-Paths (win): $paths"
+    $paths -split $Script:PathsSeparator -ne ''
 }
 
 <#
@@ -125,9 +134,11 @@ function Test-PathsAreEqual {
         [Parameter(Mandatory=$True)][string]$pathB
     )
 
+    Write-Verbose "Test-PathsAreEqual: comparing paths '$pathA' and '$pathB'"
     if (!(Test-Path -LiteralPath $pathA -PathType Container) -or !(Test-Path -LiteralPath $pathB -PathType Container)) { return $false }
     [string]$Private:dirA = [System.IO.Path]::GetFullPath("$pathA/.")
     [string]$Private:dirB = [System.IO.Path]::GetFullPath("$pathB/.")
+    Write-Verbose "Test-PathsAreEqual: normalized paths '$Private:dirA' and '$Private:dirB'"
 
     return $(if(Test-IsWindows){$Private:dirA -eq $Private:dirB}else{$Private:dirA -ceq $Private:dirB})
 }
@@ -144,7 +155,26 @@ function Add-Path {
 
     if (!(Test-Path -LiteralPath $path -PathType Container)) { throw "Path $path does not exist" }
 
-    $null = (Get-Paths | Where-Object { !(Test-PathsAreEqual $_ $path) }) + $path | Update-Paths
+    $paths = Get-Paths
+    if (!($paths | Where-Object { Test-PathsAreEqual $_ $path })) {
+
+        $paths += $path
+        $pathValue = $paths -join $Script:PathsSeparator
+
+        if (Test-IsWindows) {
+            [System.Environment]::SetEnvironmentVariable("PATH",$pathValue,[System.EnvironmentVariableTarget]::User)
+        } else {
+            [string]$Private:exportString = "export PATH=`$PATH:$path"
+            [string]$Private:escapedExportString = [System.Text.RegularExpressions.Regex]::Escape($Private:exportString)
+            if(!(Select-String -LiteralPath $Script:ShellConfig -Pattern $Private:escapedExportString)) { # Check whether the file already contains the string
+                $Private:content = Get-Content $Script:ShellConfig
+                $null = ($Private:content | Out-File "$($Script:ShellConfig).old")
+                $null = Add-Content $Script:ShellConfig $Private:exportString
+            }
+        }
+
+        $env:PATH = $pathValue
+    }
 }
 
 <#
@@ -157,31 +187,28 @@ function Remove-Path {
     [CmdletBinding()]
     Param([Parameter(Mandatory=$True)][string]$path)
 
-    $null = Get-Paths | Where-Object { !(Test-PathsAreEqual $_ $path) } | Update-Paths
-}
+    if (!(Test-Path -LiteralPath $path -PathType Container)) { throw "Path $path does not exist" }
 
-function Update-Paths {
-    Param([Parameter(ValueFromPipeline)]$path)
-  
-    Begin { $paths = @() }
-    Process { $paths += $path }  
-    End {
-        $pathsValue = $paths -join $Script:PathsSeparator
-        if (((Get-Paths) -join $Script:PathsSeparator) -ne $pathsValue) {
+    $paths = Get-Paths
+    if ($paths | Where-Object { Test-PathsAreEqual $_ $path }) {
 
-            if (Test-IsWindows) {
-                $null = Set-ItemProperty -Type ExpandString -LiteralPath 'registry::HKEY_CURRENT_USER\Environment' Path $pathsValue
-                [Environment]::SetEnvironmentVariable('PATH', $pathsValue, 'User')             
-            } else {
+        $paths = $paths | Where-Object { !(Test-PathsAreEqual $_ $path) }
+        $pathValue = $paths -join $Script:PathsSeparator
+
+        if (Test-IsWindows) {
+            [System.Environment]::SetEnvironmentVariable("PATH",$pathValue,[System.EnvironmentVariableTarget]::User)
+        } else {
+            [string]$Private:exportString = "export PATH=`$PATH:$path"
+            [string]$Private:escapedExportString = [System.Text.RegularExpressions.Regex]::Escape($Private:exportString)
+            if(Select-String -LiteralPath $Script:ShellConfig -Pattern $Private:escapedExportString) { # Check whether the string was already removed
                 $Private:content = Get-Content $Script:ShellConfig
                 $null = ($Private:content | Out-File "$($Script:ShellConfig).old")
-                $Private:content = $Private:content | Where-Object { $_ -notmatch 'export PATH=.*' }
-                $null = ($paths | ForEach-Object { $Private:content += $"export PATH=`$PATH:$path" })
+                $Private:content = $Private:content | Where-Object { $_ -ne $Private:exportString }
                 $null = ($Private:content | Out-File $Script:ShellConfig )
             }
-
-            $env:PATH = $pathsValue
         }
+
+        $env:PATH = $pathValue
     }
 }
 

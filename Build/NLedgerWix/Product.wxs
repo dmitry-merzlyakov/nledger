@@ -125,6 +125,7 @@
          <ComponentRef Id="LedgerManFiles"/>                   <!-- Ledger manual file -->
          <ComponentRef Id="NLedgerReleaseNotesFiles"/>         <!-- Release Notes (readme and changelog) that are open after install -->
          <ComponentRef Id="NLedgerFolderShortcuts"/>           <!-- Adding a shortcut for NLedger folder -->
+         <ComponentRef Id="NLedgerToolsShortcuts"/>            <!-- Adding a shortcut for NLedger Tools console -->
          <ComponentRef Id="ProgramMenuSubfolderShortcuts"/>    <!-- Common component to manage main menu folder with shortcuts -->
          <ComponentRef Id="LedgerSharedTestFiles_input"/>      <!-- Example data files -->
 
@@ -135,7 +136,8 @@
            <ComponentRef Id="NLedgerDocShortcuts"/>
          </Feature>
 
-         <Feature Id="LiveDemoFeature" Title="!(loc.LiveDemoFeature_Title)" Level="1" Description="!(loc.LiveDemoFeature_Desc)" AllowAdvertise="no" >
+         <!-- Live demo is disabled by default -->
+         <Feature Id="LiveDemoFeature" Title="!(loc.LiveDemoFeature_Title)" Level="5" Description="!(loc.LiveDemoFeature_Desc)" AllowAdvertise="no" >
            <ComponentRef Id="LiveDemoFiles"/>
            <ComponentRef Id="SandboxTestFiles"/>
          </Feature>
@@ -165,8 +167,8 @@
 
       <!-- Run PS installing scripts -->
 
-      <SetProperty Id="AppBinInstall"   Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -NoExit -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1 install -link"' Sequence='execute' Before="AppBinInstall" />
-      <SetProperty Id="AppBinUninstall" Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -NoExit -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1 uninstall' Sequence='execute' Before="AppBinUninstall" />
+      <SetProperty Id="AppBinInstall"   Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1" install -link' Sequence='execute' Before="AppBinInstall" />
+      <SetProperty Id="AppBinUninstall" Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1" uninstall' Sequence='execute' Before="AppBinUninstall" />
 
       <CustomAction Id='AppBinInstall' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
       <CustomAction Id='AppBinUninstall' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
