@@ -89,5 +89,5 @@ function Get-CommandExpression {
       [Parameter(Mandatory)][string]$command,
       [Parameter()][string[]]$commandArguments)
 
-    "$command $(($commandArguments | Get-PsEscapedString) -join ' ')"
+    "& $($command | Get-PsEscapedString) $(($commandArguments | Get-PsEscapedString) -join ' ')"
 }

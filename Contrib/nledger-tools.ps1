@@ -24,7 +24,7 @@ Date:   December 14, 2023
 #>    
 [CmdletBinding()]
 Param(
-  [Parameter(Position=0)][ValidateSet("status","install","uninstall","test","set-config","remove-config","show-config","python-discover","python-status","python-connect","python-disconnect","python-enable","python-disable","python-install","python-uninstall","python-install-wheel","python-uninstall-wheel","python-install-pythonnet","python-uninstall-pythonnet","python-install-ledger","python-uninstall-ledger","python-test-ledger","live-demo","help",IgnoreCase=$true)][string]$command,
+  [Parameter(Position=0)][ValidateSet("status","install","uninstall","test","set-config","remove-config","show-config","python-discover","python-status","python-connect","python-disconnect","python-enable","python-disable","python-install","python-uninstall","python-install-wheel","python-uninstall-wheel","python-install-pythonnet","python-uninstall-pythonnet","python-install-ledger","python-uninstall-ledger","python-test-ledger","live-demo","nledger","help",IgnoreCase=$true)][string]$command,
   [Parameter(Position=1, ValueFromRemainingArguments)][string[]]$commandArguments
 )
 
@@ -45,7 +45,7 @@ function Import-ModuleIfAvailable {
     Param([Parameter(Mandatory)][string]$fileName)
 
     $fileName = [System.IO.Path]::GetFullPath($fileName)
-    [bool] $(if (Test-Path -LiteralPath $fileName -PathType Leaf) { Import-Module $fileName })
+    [bool] $(if (Test-Path -LiteralPath $fileName -PathType Leaf) { Import-Module $fileName; $true })
 }
 
 [string]$Script:CommandPath = $MyInvocation.MyCommand.Path
@@ -224,6 +224,9 @@ The command undoes the changes made when installing NLedger on your computer:
 
 The command cannot remove an external NLedger installation (if NLedger does not belong to the current folder); in this case you can change PATH manually.
 
+.PARAMETER link
+Removes 'ledger' hard link if it is found in binaries.
+
 .EXAMPLE
 PS> uninstall
 
@@ -237,13 +240,10 @@ In some cases, this command may require administrator rights (for example, to re
 function Uninstall-NLedger {
   [CmdletBinding()]
   [Alias("uninstall")]
-  Param()
+  Param([switch]$link)
 
   Assert-CommandCompleted {
-    $deploymentInfo = Get-NLedgerDeploymentInfo
-    if (!$deploymentInfo.Installed) { return "NLedger is not installed."}
-
-    $null = Uninstall-NLedgerExecutable
+    $null = Uninstall-NLedgerExecutable -link:$link
     "NLedger is uninstalled"
   }
 }
@@ -453,6 +453,35 @@ function Show-NLedgerConfig {
 
 <#
 .SYNOPSIS
+Runs the preferred or currently installed NLedger.
+
+.DESCRIPTION
+This command provides a quick way to launch NLedger, which belongs to your current deployments, in this Powershel console.
+This can be useful if it is not installed and you don't want to look for the executable in the deployment binaries.
+The command accepts any arguments; they are sent directly to NLedger.
+
+The command does not replace the main way to launch NLedger (entering Ledger or NLedger-cli at the command line); 
+it's just another way to run it without having to install it.
+
+.EXAMPLE
+PS> nledger -f .\test\input\drewr3.dat bal
+
+Shows the balance of the drewr3.dat file.
+#>
+function Invoke-NLedger {
+  [CmdletBinding()]
+  [Alias("nledger")]
+  Param([Parameter(Position=1, ValueFromRemainingArguments)][string[]]$commandArguments)
+
+  Assert-CommandCompleted {
+    $deploymentInfo = Get-NLedgerDeploymentInfo
+    if (!$deploymentInfo.PreferredNLedgerExecutableInfo) { "NLedger binaries are not available" }
+    Invoke-Expression (Get-CommandExpression $($deploymentInfo.PreferredNLedgerExecutableInfo.NLedgerExecutable) $commandArguments) 
+  }
+}
+
+<#
+.SYNOPSIS
 Shows available commands
 
 .DESCRIPTION
@@ -477,7 +506,12 @@ function Get-QuickHelp {
   $highlighted = @( "status","install","test","python-connect","help" )
 
   Assert-CommandCompleted {
-    ((Get-Command $Script:CommandPath).Parameters.Command.Attributes | Where-Object { $_.TypeId.Name -eq "ValidateSetAttribute" }).ValidValues | 
+    [array]$aliases = ((Get-Command $Script:CommandPath).Parameters.Command.Attributes | Where-Object { $_.TypeId.Name -eq "ValidateSetAttribute" }).ValidValues
+    Write-Verbose "Found aliases: $($aliases -join ',')"
+    Write-Verbose "Module availability: Python: $Script:isPythonAvailable; tests: $Script:isTestFrameworkAvailable; live demo: $Script:isLiveDemoAvailable"
+
+    $aliases | 
+    Where-Object { ($_ -notmatch "python-.*" -or $Script:isPythonAvailable) -and ($_ -ne "test" -or $Script:isTestFrameworkAvailable) -and ($_ -ne "live-demo" -or $Script:isLiveDemoAvailable) } |
     ForEach-Object { 
       $h = Get-Help $_; 
       [PsCustomObject] @{ 

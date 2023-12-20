@@ -293,7 +293,7 @@ function Install-NLedgerExecutable {
 
 function Uninstall-NLedgerExecutable {
   [CmdletBinding()]
-  Param()
+  Param([switch]$link)
 
   Write-Verbose "Uninstalling NLedger"
   $deploymentInfo = Get-NLedgerDeploymentInfo
@@ -303,7 +303,7 @@ function Uninstall-NLedgerExecutable {
     if ($info) {
       Write-Verbose "Uninstalling NLedger found by path $($info.NLedgerExecutable)"
 
-      if ($info.NLedgerLink) {         
+      if ($link -and $info.NLedgerLink) {
         Write-Verbose "Removing hard link $($info.NLedgerLink)"
         $null = Remove-HardLink $info.NLedgerLink 
       }

@@ -25,7 +25,10 @@
                      <Component Id="BinNet48Files" Guid="F0F45576-5DD7-41A3-8A10-55F9087D81E4" >
                         <File Id="File_BinNet48_ledger_1_html" Name="ledger.1.html" Source="$(var.PackageFolder)NLedger\bin\net48\ledger.1.html"/>
                         <File Id="File_BinNet48_NLedger_dll" Name="NLedger.dll" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger.dll"/>
-                        <File Id="File_BinNet48_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger-cli.exe"/>
+                        <File Id="File_BinNet48_NLedger_cli_exe" Name="NLedger-cli.exe" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger-cli.exe">
+                           <!-- Call NGen -->
+                           <netfx:NativeImage Id="File_BinNet48_NLedger_cli_exe" Platform="all" Priority="0" />
+                        </File>
                         <File Id="File_BinNet48_NLedger_cli_exe_config" Name="NLedger-cli.exe.config" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger-cli.exe.config"/>
                         <File Id="File_BinNet48_NLedger_Extensibility_Python_dll" Name="NLedger.Extensibility.Python.dll" Source="$(var.PackageFolder)NLedger\bin\net48\NLedger.Extensibility.Python.dll"/>
                         <File Id="File_BinNet48_Python_Runtime_dll" Name="Python.Runtime.dll" Source="$(var.PackageFolder)NLedger\bin\net48\Python.Runtime.dll"/>
