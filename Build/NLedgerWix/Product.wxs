@@ -78,6 +78,12 @@
 
       <Directory Id="TARGETDIR" Name="SourceDir">
 
+         <!-- Add NLedger path to PATH variable -->
+
+         <Component Id="AppBinFilesPath" Guid="9E3407D5-85A3-4922-A4DE-9BD66BF0FE27"  >
+            <Environment Id="PATH" Name="PATH" Value="[APPLICATIONFOLDER]\bin\net48" Permanent="no" Part="last" Action="set" System="no" />
+         </Component>
+
          <!-- Shortcuts -->
 
          <Directory Id="ProgramMenuFolder">
@@ -118,6 +124,7 @@
          <ComponentRef Id="BinNet48Files"/>                    <!-- NLedger dll and exe files -->
          <ComponentRef Id="BinNet60Files"/>                    <!-- NLedger dll and exe files -->
          <ComponentRef Id="BinNet80Files"/>                    <!-- NLedger dll and exe files -->
+         <ComponentRef Id="AppBinFilesPath"/>                  <!-- Add path to default NLedger binaries -->
          <ComponentRef Id="CommonFiles"/>                      <!-- NLedger Powershell tool files -->
          <ComponentRef Id="Extras"/>                           <!-- Extras folder with samples for db calls -->
          <ComponentRef Id="NLedgerToolsFiles"/>                <!-- NLedger Powershell tool console -->
@@ -165,18 +172,30 @@
          <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
       </UI>
 
-      <!-- Run PS installing scripts -->
+      <!-- Create hard links for all deployed binaries (alias 'ledger') -->
 
-      <SetProperty Id="AppBinInstall"   Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1" install -link' Sequence='execute' Before="AppBinInstall" />
-      <SetProperty Id="AppBinUninstall" Value='"[SystemFolder]cmd.exe" /C PowerShell -NoLogo -ExecutionPolicy RemoteSigned -File "[APPLICATIONFOLDER]nledger-tools.ps1" uninstall' Sequence='execute' Before="AppBinUninstall" />
+      <SetProperty Id="AppBinFilesNet48AddHardLink" Value='"[SystemFolder]cmd.exe" /C mklink /H "[APPLICATIONFOLDER]bin\net48\ledger.exe" "[APPLICATIONFOLDER]bin\net48\NLedger-cli.exe"' Sequence='execute' Before="AppBinFilesNet48AddHardLink" />
+      <SetProperty Id="AppBinFilesNet60AddHardLink" Value='"[SystemFolder]cmd.exe" /C mklink /H "[APPLICATIONFOLDER]bin\net6.0\ledger.exe" "[APPLICATIONFOLDER]bin\net6.0\NLedger-cli.exe"' Sequence='execute' Before="AppBinFilesNet60AddHardLink" />
+      <SetProperty Id="AppBinFilesNet80AddHardLink" Value='"[SystemFolder]cmd.exe" /C mklink /H "[APPLICATIONFOLDER]bin\net8.0\ledger.exe" "[APPLICATIONFOLDER]bin\net8.0\NLedger-cli.exe"' Sequence='execute' Before="AppBinFilesNet80AddHardLink" />
+      <SetProperty Id="AppBinFilesNet48DelHardLink" Value='"[SystemFolder]cmd.exe" /C del /f /q "[APPLICATIONFOLDER]bin\net48\ledger.exe' Sequence='execute' Before="AppBinFilesNet48DelHardLink" />
+      <SetProperty Id="AppBinFilesNet60DelHardLink" Value='"[SystemFolder]cmd.exe" /C del /f /q "[APPLICATIONFOLDER]bin\net6.0\ledger.exe' Sequence='execute' Before="AppBinFilesNet60DelHardLink" />
+      <SetProperty Id="AppBinFilesNet80DelHardLink" Value='"[SystemFolder]cmd.exe" /C del /f /q "[APPLICATIONFOLDER]bin\net8.0\ledger.exe' Sequence='execute' Before="AppBinFilesNet80DelHardLink" />
 
-      <CustomAction Id='AppBinInstall' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
-      <CustomAction Id='AppBinUninstall' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinFilesNet48AddHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinFilesNet60AddHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinFilesNet80AddHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinFilesNet48DelHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinFilesNet60DelHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
+      <CustomAction Id='AppBinFilesNet80DelHardLink' BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="ignore" /> 
 
       <InstallExecuteSequence> 
-         <Custom Action="AppBinInstall" Before="InstallFinalize">$NLedgerToolsFiles&gt;2</Custom>  
-         <Custom Action="AppBinUninstall" Before="MsiUnpublishAssemblies">$NLedgerToolsFiles=2</Custom>  
-      </InstallExecuteSequence>
+         <Custom Action="AppBinFilesNet48AddHardLink" Before="InstallFinalize">$BinNet48Files&gt;2</Custom>  
+         <Custom Action="AppBinFilesNet60AddHardLink" Before="InstallFinalize">$BinNet60Files&gt;2</Custom>  
+         <Custom Action="AppBinFilesNet80AddHardLink" Before="InstallFinalize">$BinNet80Files&gt;2</Custom>  
+         <Custom Action="AppBinFilesNet48DelHardLink" Before="MsiUnpublishAssemblies">$BinNet48Files=2</Custom>  
+         <Custom Action="AppBinFilesNet60DelHardLink" Before="MsiUnpublishAssemblies">$BinNet60Files=2</Custom>  
+         <Custom Action="AppBinFilesNet80DelHardLink" Before="MsiUnpublishAssemblies">$BinNet80Files=2</Custom>  
+      </InstallExecuteSequence> 
 
    </Product>
 
