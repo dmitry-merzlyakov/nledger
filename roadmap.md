@@ -41,7 +41,7 @@ This is a roadmap for development of next NLedger releases.
   - migration from MSTest to xUnits;
   - generating and verification .Net Framework 4.5, .Net Standard 2.0 and .Net Core 3.1 binaries;
   - multi-platform capabilities: build, testing and functioning on Windows, Linux and OSX;
-- [Complete] Bug fixing (GH#2, GH#7);
+- [Complete] Bug fixing (GH #2, GH #7);
 
 ## NLedger 0.9
 
@@ -52,13 +52,14 @@ This is a roadmap for development of next NLedger releases.
 - [Complete] Create Python extension that allows to extend Ledger data files with Python functions
 - [Complete] Create .Net Ledger Python module that provides access to Ledger domain objects in a Python interpreter session
 - [Complete] Code completion: enable Ledger tests that require Python integration;
-- Create Powershell extension that allows to extend Ledger data files with Powershell functions
-- Bug fixing: solve issues with .Net date parser error messages; 
-  consider creating an own date parser; enable corresponded Ledger unit and integration tests;
-- Bug fixing: solve issues with file names in error messages (absolute vs relative); 
-  simplify corresponded Ledger integration tests;
-- Update the source code and tests to the latest Ledger version (branch NEXT);
-- Add a build profile that supports .Net 5
+- [Complete] Added support for multi-target deployment; migrating solution to LTS .Net versions (.Net Framework 4.8, .Net 6.0, .Net 8.0) GH #32
+- [Complete] Reorganizing Powershell helper scripts; created a common .Net Ledger Tools management console
+- [Complete] Bug fixing (GH #24 #25 #26 #29)
+- Update the source code and tests to the latest Ledger version (branch NEXT)
+- Update Python Extension to support PythonNet 3.0.3 (NLedger binary and Python module)
+- Code completion: cover Powershell scripts by Pester tests and include them into the Release build
+- Migrate NLedger Release build from Azure to GitHub Actions; upgrade WiX project
+- Reorganize NLedger documentation
 
 ## NLedger 1.0
 
@@ -69,6 +70,9 @@ This is a roadmap for development of next NLedger releases.
   verify and process Ledger methods *gettext_*, *throw_*;
 - Code optimization (analyze efficient of *lookup* implementation and other critical places);
 - General performance analyzing and optimization;
+- Code completion: solve issues with .Net date parser error messages; 
+  consider creating an own date parser; enable corresponded Ledger unit and integration tests;
+- Code completion: revisit and manage postponed improvements listed in ProductInfo.xml
 - Code stabilization and bug fixing;
 
 ## Further Enhancements
@@ -78,7 +82,8 @@ This is a roadmap for development of next NLedger releases.
 - Enhancement (Service API): add support of semantical tokenization for NLedger output;
 - Enhancement (Service API): add auxiliary classes that help to build textual Ledger commands programmatically;
 - Enhancement (Service API): add auxiliary classes that can render Ledger Journal from a Journal object instance
-- Code completion: add integrated pager; add complete support of external pagers;
-  solve issues with colorization; simulate "cat" pager and enable corresponded Ledger test;
+- Code completion: add integrated pager; add complete support of external pagers
+- Create Powershell extension that allows to extend Ledger data files with Powershell functions
 
-(c) 2017-2022 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+
+(c) 2017-2023 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
