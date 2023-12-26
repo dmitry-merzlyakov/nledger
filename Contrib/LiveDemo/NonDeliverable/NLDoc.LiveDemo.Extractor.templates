@@ -1,0 +1,308 @@
+#TPL:styles
+
+/* Left and content pane */
+
+.leftPane {
+    left: 0px; 
+    top: 0px; 
+    width: 320px; 
+    height: 100%; 
+    overflow: auto; 
+    position: fixed; 
+    background-color: lightblue;
+}
+
+.leftPane h3 {
+    font-family: "Arial";
+    font-size: small;
+    color: #618685;
+    margin: 5px;
+}
+
+.leftPane div {
+    padding-left: 5px;
+    padding-right: 2px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-family: "Consolas";
+    font-size: smaller;
+    cursor: pointer;
+    border-top: 1px solid #67b2e4;
+}
+
+.leftPane div:hover {
+    background-color: #3498DB;
+}
+
+.contentPane {
+    margin-left:320px;
+}
+
+.introPane {
+    background-color: lightblue;
+    margin: -8px;
+    margin-top: -19px;
+    font-family: "Arial";
+    font-size: small;
+    padding-bottom: 1px;
+    border-bottom: 1px solid gray;
+}
+
+.introPane h3 {
+    padding-top: 10px;
+    padding-left: 5px;
+}
+
+.introPane p {
+    padding-left: 5px;
+}
+
+.introAct {
+    color: Blue;
+    font-size: small;
+    color: darkblue;
+}
+
+/* Action button */
+
+.dropbtn {
+    background-color: #3498DB;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    margin-left: -82px;
+    margin-top: -7px;
+}
+
+.dropbtn:hover /*, .dropbtn:focus */ {
+    background-color: #2980B9;
+}
+
+.executable {
+    /* background-color:lightblue; */
+    padding:7px;
+    padding-left: 7px;
+    min-height: 25px;
+}
+
+/* test_kind background colorization */
+
+.command, .validate-command {
+    background-color:lightblue;
+}
+
+.input, .validate-data {
+    background-color:#e3e6ad;
+}
+
+/* End of test_kind background colorization */
+
+div.smallexample {
+    margin-left: 77px;
+}
+
+.btnFlash {
+    background-color:#2980B9;
+}
+
+.liFlash {
+    background-color:#67b2e4;
+}
+
+/* Dropdown */
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #67b2e4;
+    border: 1px solid lightblue;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-family: "Arial";
+}
+
+.dropdown-content a:hover {
+    background-color: #2980B9;
+    cursor: pointer;
+}
+
+.show {display:block;} 
+
+/* Copy action */
+
+.visually-hidden{border:0;clip:rect(1px,1px,1px,1px);-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal}
+
+#TPL:javascript
+
+var clipboardCopySupported = document.queryCommandSupported && document.queryCommandSupported("copy");
+function clipboardCopy(text) {
+    if (!clipboardCopySupported) {
+        return false;
+    }
+    var txt = document.createElement("textarea");
+    txt.textContent = text;
+    txt.classList.add("visually-hidden");
+    document.body.appendChild(txt);
+    txt.select();
+    try {
+        return document.execCommand("copy");
+    } catch (ex) {
+        return false;
+    } finally {
+        document.body.removeChild(txt);
+    }
+}
+
+// Communicates with demo console process
+function callConsole(cmd) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //TODO this.responseText;
+    }
+  };
+  xhttp.open("GET", cmd, true);
+  xhttp.send();
+}
+
+function runAction(a) {
+    callConsole("act."+a.id+"."+a.dataset["testid"]);
+}
+
+function runCopy(a) {
+    var li = document.getElementById("li_"+a.dataset["testid"]+"_"+a.dataset["testkind"]);
+    clipboardCopy(li.innerText);
+}
+
+function openActions(btn) {
+    var testid=btn.dataset["testid"];
+    var testkind=btn.dataset["testkind"];
+
+    var ddActions = document.getElementById("ddActions");
+    var li = document.getElementById("li_"+testid+"_"+testkind);
+
+    if (ddActions.classList.contains("show")) {
+      ddActions.classList.remove("show");
+      li.classList.remove("liFlash");
+    } else {
+      ddActions.style.position = "absolute";
+      ddActions.style.left = btn.offsetLeft + "px";
+      ddActions.style.top = /* 1 + */ (btn.offsetTop + btn.clientHeight) + "px";
+      
+      ddActions.classList.add("show");
+      ddActions.dataset["testid"] = testid;
+      ddActions.dataset["testkind"] = testkind;
+
+      document.getElementById("actRun").dataset["testid"] = testid;
+      document.getElementById("actCopy").dataset["testid"] = testid;
+      document.getElementById("actCopy").dataset["testkind"] = testkind;
+      document.getElementById("actEdit").dataset["testid"] = testid;
+      document.getElementById("actOpen").dataset["testid"] = testid;
+      document.getElementById("actRevert").dataset["testid"] = testid;
+
+      li.classList.add("liFlash");
+
+      var pane = document.getElementsByClassName("leftPane")[0];
+      var liRect = li.getBoundingClientRect()
+      if (liRect.top < 0) {
+         pane.scrollTop += liRect.top;
+      } else {
+         var paneRect = pane.getBoundingClientRect();
+         if (liRect.top > paneRect.height) {
+            pane.scrollTop += (liRect.top + liRect.height - paneRect.height);
+         }
+      }
+    }
+}
+
+function scrTo(li) {
+    var testid=li.dataset["testid"];
+    var testkind=li.dataset["testkind"];
+    var btn=document.getElementById("btn_"+testid+"_"+testkind);
+    if (btn) {
+        var elementRect = btn.getBoundingClientRect();
+        var absoluteElementTop = elementRect.top + window.pageYOffset;
+        var middle = absoluteElementTop - (window.innerHeight / 2); 
+        window.scrollTo(0, middle);
+
+        //Blink
+        btn.classList.add("btnFlash");
+        setTimeout(function() { btn.classList.remove("btnFlash"); }, 300);
+
+        return;
+    }
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (event.target.className!="dropbtn") {
+    var ddActions = document.getElementById("ddActions");
+    ddActions.classList.remove('show');
+
+    var testid=ddActions.dataset["testid"];
+    var testkind=ddActions.dataset["testkind"];
+
+    var li=document.getElementById("li_"+testid+"_"+testkind);
+    if (li) { li.classList.remove("liFlash"); }
+  }
+}
+
+// Stop the demo process when the page is closing
+window.onunload = function(event) { callConsole('shutdown'); }
+
+#TPL:htmlBody
+
+<div id="ddActions" class="dropdown-content">
+<a id="actRun" onclick="runAction(this)" >Run Command</a>
+<a id="actCopy" onclick="runCopy(this)">Copy Command</a>
+<a id="actEdit" onclick="runAction(this)">Edit File</a>
+<a id="actOpen" onclick="runAction(this)">Open Folder</a>
+<a id="actRevert" onclick="runAction(this)">Revert File Changes</a>
+</div>
+
+<div class="leftPane">
+<h3>Quick Navigation</h3>
+$foreachExample
+</div>
+<div class="contentPane">
+
+<div class="introPane">
+<h3>Welcome to Ledger Live Examples!</h3>
+<p>This page makes examples in the original Ledger documentation alive. You can run any example and observe the result in a command line console. You can type the command again with another parameters and see how Ledger reacts.
+You can review corresponded data files; you can make any changes in them and you can restore the original state at any time. Everything is alive and everything is safe!
+</p>
+<p>Every example is preceded by <span class="introAct">Action</span> button. It gives you the options: <span class="introAct">Run</span> the command; <span class="introAct">Copy</span> the command text to clipboard; 
+<span class="introAct">Edit</span> data file in a text editor; <span class="introAct">Open</span> the folder containing data files and select the file; <span class="introAct">Revert</span> the data file to the original state. 
+All data files are located in <span class="introAct">NLedger\Sandbox</span> that is in your Documents folder, so you can safely make any changes in them. 
+</p>
+
+</div>
+
+#TPL:foreachExample
+
+<div id="li_$test_id_$test_kind" data-testid='$test_id' data-testkind='$test_kind' onclick='scrTo(this)'>$command</div>
+
+#TPL:htmlEndBody
+
+</div>
+
+#TPL:htmlPre
+
+<pre class='smallexample executable $test_kind'><button onclick='openActions(this)' id='btn_$test_id_$test_kind' data-testid='$test_id' data-testkind='$test_kind' class='dropbtn'>Action</button>
+

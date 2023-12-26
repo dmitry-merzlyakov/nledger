@@ -1,3 +1,34 @@
+## 0.8.5 (2023-12-28)
+
+### Release Information
+
+- Support for multi-target deployments
+- Migrating to LTS .Net versions
+- Created .Net Ledger Tools management console
+- Bug fixing
+
+### Features
+
+- Default solution targets are changed to current LTS versions (.Net Framework 4.8, .Net 6.0, .Net 8)
+- Public packages (MSI and ZIP) are distributed with pre-built binaries for LTS targets
+- Public NuGet package includes Standard 2.0, .Net 6.0 and .Net 8 targets
+- Development build script `get-nledger-up.ps1` is changed to support custom targets. Developers can build and test binaries for any supported .Net versions.
+- Development build script `get-nledger-up.ps1` is changed to reflect local environment limitations. Non-available targets are silently skipped.
+- Added a single management console `.Net Ledger Tools` that incorporates commands for installation, configuration, testing, Python management and running interactive demo
+
+### Known Issues
+
+- Listed in ProductInfo.xml
+- NLedger Python module requires PythonNet module version 2.5.2 or 3.0.0-pre. Adding support for PythonNet 3.0.3 is addressed by further development.
+
+### Bug Fixing
+
+- Bug fixing (GH #24 #25 #26 #29)
+
+### Breaking Changes
+
+- .Net Ledger Tools management console replaces interactive PowerShell scripts for installing, testing, Python management and running Live Demo.
+
 ## 0.8.4 (2021-12-01)
 
 ### Release Information

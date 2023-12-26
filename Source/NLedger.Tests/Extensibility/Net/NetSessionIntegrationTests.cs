@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2022, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2022, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Abstracts.Impl;
@@ -136,6 +136,7 @@ tag PATH
         {
             var inputText = @"
 import assembly System.IO.FileSystem            # This name is for .Net Core
+import assembly System.Private.CoreLib          # This name is for .Net 6
 import assembly mscorlib                        # This name is for .Net Framework
 import alias isfile for System.IO.File.Exists
 
@@ -158,7 +159,7 @@ tag PATH
 
             var session = engine.CreateSession("-f /dev/stdin", inputText);
             Assert.True(session.IsActive, session.ErrorText);
-            Assert.Equal("Warning: \"\", line 12: Metadata check failed for (PATH: test/baseline/feat-import_py.test): isfile(value)", session.ErrorText.Trim());
+            Assert.Equal("Warning: \"\", line 13: Metadata check failed for (PATH: test/baseline/feat-import_py.test): isfile(value)", session.ErrorText.Trim());
 
             var response = session.ExecuteCommand("reg");
             Assert.False(response.HasErrors);

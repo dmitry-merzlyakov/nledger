@@ -9,7 +9,7 @@ The main purpose of this project is to enable all Ledger features to .Net world.
 
 NLedger command line utility (NLedger.cli) is highly compatible with the original Ledger. 
 It supports all original features and command line options; the produced output is 100% identical to the original.
-Reliable compatibility level confirmed by 99% Ledger tests (except for a few that require deprecated features).
+Reliable compatibility level confirmed by 99.6% Ledger tests (except for a few that require deprecated features).
 Everything is done to ensure that users have the feeling of using a genuine Ledger. 
 
 NLedger is written in pure C# with no dependencies on any external libraries or any platform-specific features
@@ -18,24 +18,34 @@ This allows NLedger to work properly on any .Net compatible system and be embedd
 
 ## Quick Start
 
-If you have just installed NLedger MSI or ZIP package on Windows and want to know what to do next, you can try:
+First, install Ledger by following the instructions in the `Installation` section of this document.
 
+If you have just installed NLedger MSI on your Windows computer and want to know what to do next, you can try:
+
+- Run NLedger in *.Net Ledger Tools* Powershell console:
+  - Run the *.Net Ledger Tools* console (open the Start menu, go to the *.Net Ledger* folder and click *.Net Ledger Tools*)
+  - Type *ledger --version* in the console: you will see the installed software version
+  - Type *ledger bal -f test/input/drewr3.dat* - you will get a balance for one of the example files, which are located in the *test\input* folder
 - Run NLedger in a command line:
-  - Click *.Net Ledger Folder* icon in the main menu;
-  - Type *cmd* in the address bar of Windows Explorer window;
-  - In the command line window, type *ledger --version* - NLedger should show its version;
-  - Type *ledger bal -f test/input/drewr3.dat* - you will get the balance for one of the example files that are in *test\input* folder;
+  - Open the Start menu, go to the *.Net Ledger* folder and click *.Net Ledger Folder*
+  - Type *cmd* in the address bar of Windows Explorer window
+  - Type examples of the commands mentioned above (e.g. *ledger bal -f test/input/drewr3.dat*)
 - Run NLedger Live Demo:
-  - Click *.Net Ledger Live Demo* icon in the main menu;
-  - Check out the documentation and try all the examples in action;
+  - Run the *.Net Ledger Tools* console
+  - Type *live-demo* command: it will run the interactive Ledger documentation in the browser (assuming the Live Demo component is installed)
 - Read this file to the end, look at *Ledger 3 Documentation*, *.Net Ledger Guide* and try to find a use of this tool.
 
-If you installed NLedger from source code, you can open a new command prompt window, go to the NLedger folder and try:
-```
-ledger --version
-ledger bal -f test/input/drewr3.dat
-pwsh -file ./get-nledger-tools.ps1 -demo
-```
+If you have just extracted the NLedger zip package to your local computer or built NLedger from source codes, you can try:
+- Run NLedger in *.Net Ledger Tools* Powershell console:
+  - Run the *.Net Ledger Tools* console
+    - In a command line, go to the package root folder (in case of source code repository, it will be `/Contrib` folder)
+    - Run *nledger-tools.cmd* or execute *pwsh -NoLogo -NoExit -File nledger-tools.ps1*
+  - Type *nledger --version* in the console: you will see the current NLedger version. You can also try *nledger bal -f test/input/drewr3.dat* and other examples
+- If NLedger was installed by means of `install` command, you can run NLedger in a command line:
+  - Reopen the command line console, go to the package root folder and try examples above using *ledger* application name (for example, *ledger --version*)
+- Run NLedger Live Demo:
+  - Run the *.Net Ledger Tools* console
+  - Type *live-demo* command
 
 ## Features
 
@@ -112,7 +122,7 @@ seamless access to the same functions for external .Net applications.
   - Program API for developing with NLedger is created; NuGet packages are available;
   - Ledger testing framework is ported; 
   - Ledger tests are passed:
-    - 99% (708 out of 711) test cases passed;
+    - 99.6% (710 out of 713) test cases passed;
     - 3 test cases are ignored because of known limitations;
     - 0 failed.
   - The Ledger Python module is available as a standalone product for Python users. 
@@ -150,17 +160,17 @@ PowerShell is optional, you can still use NLedger if it is not installed, but th
 ```
 git clone https://github.com/dmitry-merzlyakov/nledger
 cd nledger
-pwsh -file ./get-nledger-tools.ps1 -pythonConnect
+pwsh -file ./Contrib/nledger-tools.ps1 python-connect
 pwsh -file ./get-nledger-up.ps1 -install
 ```
 
 On Windows, depending on your Powershell version, the last commands may look like:
 ```
-powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -pythonConnect
+powershell -ExecutionPolicy RemoteSigned -File ./Contrib/nledger-tools.ps1 python-connect
 powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -install
 ```
 
-The command `pythonConnect` is needed if you want to run Python-related unit tests. It can be skipped otherwise.
+The command `python-connect` is needed if you want to run Python-related unit tests. It can be skipped otherwise.
 
 ### Install from NLedger Installation Package
 
@@ -176,15 +186,18 @@ The command `pythonConnect` is needed if you want to run Python-related unit tes
 
 (Windows only)
 
-- Download the latest NLedger installation package from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases);
+- Download the latest NLedger installation zip package from [Releases](https://github.com/dmitry-merzlyakov/nledger/releases);
 - Unpack the package to a temp folder;
 - Open the file *nledger.html* and follow the installation instruction.
 
 OR (for impatient people):
 
 - move unpacked NLedger to a place of permanent location (e.g. *Program Files*);
-- Open *NLedger/Install* folder and execute NLedger.Install.cmd (confirm administrative privileges to let it call NGen); close the console;
-- Run Windows Command Line (e.g. type *cmd* in the search bar) and type *ledger* in it.
+- Open the root package folder and execute the command:
+```
+powershell -ExecutionPolicy RemoteSigned -File ./Contrib/nledger-tools.ps1 install -link
+```
+
 
 ## NLedger NuGet package
 
@@ -240,6 +253,13 @@ in the smallest detail. Thought it was quite big challenge for me
 I would like to express my gratitude to the creators of the [PythonNet](https://github.com/pythonnet/pythonnet) library, 
 who have worked hard to solve complex problems of interacting with Python and provided the developers with an effective tool. 
 
+My personal thanks to the people who contributed to the development of the project:
+- [Alen Šiljak](https://github.com/alensiljak)
+- [Antoine Aubry](https://github.com/aaubry)
+- [Charles Lindsay](https://github.com/VagyokC4)
+- [Doug Robertson](https://github.com/drobertson123)
+- [Spaette](https://github.com/spaette)
+
 ## Contact
 
 - Join us in the chat room here: [![Gitter chat room](https://badges.gitter.im/nledger/Lobby.svg)](https://gitter.im/nledger/lobby);
@@ -250,4 +270,4 @@ who have worked hard to solve complex problems of interacting with Python and pr
 
 The code is licensed under 3-clause [FreeBSD license](https://github.com/dmitry-merzlyakov/nledger/blob/master/LICENSE).
 
-(c) 2017-2022 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2023 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

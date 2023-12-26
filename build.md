@@ -11,7 +11,7 @@ refer to its [Readme](https://github.com/dmitry-merzlyakov/nledger/blob/master/S
 .Net Ledger as a software product consists of library files that include data processing logic, and an executable file that users run as a console application.
 Library files are .Net assemblies that can be linked with your software to get Ledger functionality.
 
-Library files are distributed as NuGet packages. Package binaries are compiled for .Net Framework 4.7.2 and Standard 2.0, so they should match most target platforms.
+Library files are distributed as NuGet packages. Package binaries are compiled for .Net Framework 4.8, Standard 2.0, .Net 6.0 and .Net 8.0, so they should match most target platforms.
 These binaries are actually the same files that are distributed with the console application, which means they have been properly tested with all unit and integration tests.
 
 The packages are available for download in the [NuGet](https://www.nuget.org/packages/NLedger/) repository. 
@@ -525,8 +525,8 @@ You may need to troubleshoot NLedger or build it from source. This section descr
 Here is a complete list of recommended software components for NLedger development. 
 Some of them may not be available on your operating system or are not needed for your purposes. 
 
-- .Net Core SDK 3.1 or later
-- .Net Framework 4.7.2 or later (if you want to build NLedger for .Net Framework)
+- .Net 6.0 (or later) with SDK
+- .Net Framework 4.8 or later (if you want to build NLedger for .Net Framework)
 - Visual Studio 2017 or Visual Studio Code with c# extension
 - Powershell (7.0 is recommended though 5.0 can work properly on Windows)
 - Git command line tool (only if you prefer command line)
@@ -553,7 +553,7 @@ If you want to make changes in code and save them for further work, the better i
 
 ### Build NLedger source code
 
-This action implies a manual development build: compile binaries (.Net Framework and/or .Net Core) and run unit tests. Unit tests checks binaries for both platforms and include:
+This action implies a manual development build: compile binaries and run unit tests. Unit tests checks binaries for both platforms and include:
    - NLedger unit tests (NLedger.Tests);
    - ported Ledger unit tests (NLedger.IntegrationTests/unit);
    - Ledger testing framework files (TestSetBaseline.cs, TestSetManual.cs, TestSetRegress.cs) and NLedger additions (TestSetNLedger.cs).
@@ -578,7 +578,7 @@ If you want to enable Python connection:
 
 1. Go to *nledger/* folder
 2. Execute: 
-    - `pwsh -file ./get-nledger-tools.ps1 -pythonConnect`
+    - `pwsh -file ./Contrib/nledger-tools.ps1 python-connect`
     - On Windows, you might need to type: `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh`
 
 If you have any issues, see more information in `Manage Python Integration` section [here](https://github.com/dmitry-merzlyakov/nledger/blob/master/nledger.md).
@@ -587,11 +587,12 @@ If you have any issues, see more information in `Manage Python Integration` sect
 
 1. Go to *nledger/Source/* folder
 2. Execute `dotnet build --configuration Release`
-    - If you want to build Core binaries only, the command is: `dotnet build --configuration Release /p:CoreOnly=True`
     - For OSX, you also need to add a switch `-r osx-x64`
+    - The default targets are .Net Framework 4.8, .Net 6.0, .Net 8.0.
+    If you want to create binaries for other targets, you should specify a comma-separated list of TFM codes in two environment variables: `LocalLibraryTargetFrameworks` and `LocalTargetFrameworks`.
 3. Execute `dotnet test --configuration Release`
-    - For Core binaries only: `dotnet test --configuration Release /p:CoreOnly=True`
     - For OSX, add a switch `-r osx-x64`
+    - If you want to create binaries for other targets - set environment variables as it was mentioned above.
 
 #### Running 'get-nledger-up.ps1' helper script
 
@@ -602,7 +603,12 @@ If you have any issues, see more information in `Manage Python Integration` sect
 
 > Note: the switch -noNLTests disables integration tests but you can run with them.
 
-#### Build with Visual Studio 2017 or later
+> The script creates binaries for .Net Framework 4.8, .Net 6.0 and .Net 8.0 targets.
+If some of them are not available on your computer, they will be skipped.
+You can specify other targets using `-targets` parameter: it takes a comma-separated list of TFM codes.
+
+
+#### Build with Visual Studio 2019 or later
 
 1. Open NLedger solution (*Source\NLedger.sln*)
 2. Build all sources (Build All)
@@ -628,19 +634,11 @@ NLedger contributes all the original Ledger tests and a special software compone
 
 1. Navigate to *nledger/* folder
 2. Execute: 
-    - `pwsh -file ./get-nledger-tools.ps1 -testConsole`
+    - `pwsh -file ./Contrib/nledger-tools.ps1 test`
     - Remember that you might need to type `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh` on Windows
-3. Follow instructions
 
-On Windows, you can also just run the file *nledger\Contrib\NLTestToolkit\NLTest.cmd*; it opens the testing toolkit console as well.
-
-The main capabilities of the testing toolkit are:
-- Commands `run`/`xrun`/`all` search all test files in *nledger/Contrib/test/* folder and run all of them;
-- Adding a search criteria selects a subset of tests by matching file names. For example, *run opt* runs all tests with "opt" in the name;
-- Command `run` also creates an HTML report file and opens it (if GUI is available, it runs a default browser);
-    - Note: the result files are saved in the folder *MyDocuments/NLedger/* (Windows) or *~/NLedger/* (Linux, OSX)
-- The toolkit looks for all available NLedger binaries. If there are binaries for both platforms (Framework and Core), it prefers Framework.
-  You can change the target executable by the command `platform -core`.
+This command runs all available Ledger tests on the machine.
+Check other options for `test` command by means of `get-help test`.
 
 #### Adding new integration tests
 
@@ -672,18 +670,17 @@ You can perform these actions automatically by the following command:
 
 1. Navigate to *nledger/* folder
 2. Execute: 
-    - `pwsh -file ./get-nledger-tools.ps1 -install`
+    - `pwsh -file ./Contrib/nledger-tools.ps1 install -link`
     - Remember that you might need to type `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh` on Windows
     
 Notes:
-- Switch `-installPreferCore` installs .Net Core binaries if you have files for both platforms (otherwise, it prefers .Net Framework)
-- Switch `-installConsole` opens a console where you can troubleshoot issues with installing
-- On Windows, you can also run the console by running the file *nledger\Contrib\Install\NLedger.Install.cmd*
+- Parameter `-tfmCode` can contain a target TFM code for a binary file you want to install
+- Parameter `-profile` specifies which profile you would like to select (Debug or Release)
+- Switch `-link` indicates that you also want to create `ledger` hard link
 
 > It is highly recommended to re-open the console after installing or uninstalling.
 
-For uninstalling (that means reverting the described changes), you run `get-nledger-tools.ps1` with `-uninstall` switch
-(or use the installation console or run *nledger\Contrib\Install\NLedger.Uninstall.cmd* on Windows).
+For uninstalling (that means reverting the changes described above), you can run `./Contrib/nledger-tools.ps1 uninstall` command.
 
 ### Packaging Build (Official Build)
 
@@ -766,4 +763,4 @@ observe changes and check in updated files when it finishes.
 if it detects any differences*. In such cases, you also need to execute *Build\ProductInfoUpdate.cmd*
 and commit updated files.
 
-(c) 2017-2022 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2023 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)

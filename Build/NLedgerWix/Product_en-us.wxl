@@ -22,8 +22,8 @@
    <String Id="LiveDemoFeature_Desc">Web Browser page that shows .Net Ledger in action (Powershell is required)</String>
    <String Id="TestToolkitFeature_Title">Test Toolkit</String>
    <String Id="TestToolkitFeature_Desc">Testing framework with a collection of tests (Powershell is required)</String>
-   <String Id="ManualInstallFeature_Title">Manual Install</String>
-   <String Id="ManualInstallFeature_Desc">Command line console that register .Net Ledger binaries (Powershell is required)</String>
+   <String Id="PythonExtensionFeature_Title">Python Extension</String>
+   <String Id="PythonExtensionFeature_Desc">Python support in .Net Ledger</String>
 
    <!-- UI Messages -->
 
