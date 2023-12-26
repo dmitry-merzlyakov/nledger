@@ -196,7 +196,7 @@
   <Target Name="GetPythonConnection">
     <Message Text="Configuring Python connection file" />
     <Message Text="NOTE: if this task fails, configure Python connection manually (command 'python-connect' in 'nledger-tools.ps1')." />
-    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\nledger-tools.ps1&quot; -command python-connect" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -File &quot;$(BuildDir)..\Contrib\nledger-tools.ps1&quot; -command python-connect -embed 3.7.9" />
   </Target>
 
   <!-- Technical task - checking the content of Wix configuration files -->
