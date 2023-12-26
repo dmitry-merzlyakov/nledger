@@ -1,9 +1,9 @@
 ####################################################################################
-# Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+# Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 # Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 # 
 # This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-# Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+# Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 # See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 ####################################################################################
 
@@ -432,7 +432,7 @@ class OriginKeeper:
         self._origin = value
 
     def get_origin(self):
-        raise Exception("Method 'get_origin' should be defined in derived class if 'origin' value is not specified explicitely.")
+        raise Exception("Method 'get_origin' should be defined in derived class if 'origin' value is not specified explicitly.")
 
 ###########################
 # Ported extras
@@ -2748,7 +2748,7 @@ class Value(OriginKeeper):
 
         assert(not (commodities is None) and isinstance(commodities, str))
         if addPrices is None:
-            return Value.to_value(self.origin.ExchangeCommodities(commodities, False, DateTime())) # default(DateTime) caused PythonNet issued, so arguments are populated explicitely
+            return Value.to_value(self.origin.ExchangeCommodities(commodities, False, DateTime())) # default(DateTime) caused PythonNet issued, so arguments are populated explicitly
 
         assert(isinstance(addPrices, bool))
         if moment is None:

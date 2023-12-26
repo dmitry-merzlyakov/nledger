@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -33,7 +33,7 @@ namespace NLedger.Commodities
          * for default ordering of commodities. The previous considerations still make sence: changing SortedDictionary to Dictionary
          * leads to failed tests (cmd-pricemap.test, regress\7C44010B.test) because of differences in hashing between .Net Dictionary and the unordered_map.
          * DM: migrated test "cmd-org.test" revealed an issue with class balance_t.
-         * In partucular, its member "amounts" (typedef std::map<commodity_t *, amount_t> amounts_map)
+         * In particular, its member "amounts" (typedef std::map<commodity_t *, amount_t> amounts_map)
          * does not specify any comparison rules (there is no third generic type in the template), 
          * so std::map uses a default comparer (std:less<K>). It compares commodity instances by means of operator "<" - __x < __y.
          * Since commodity_to does not override this operator, the system compares _object_allocation_addresses_ in memory.

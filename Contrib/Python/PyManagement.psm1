@@ -121,17 +121,19 @@ function Test-PyModuleInstalled {
 function Install-PyModule {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory=$True)][string]$pyExecutable,
-        [Parameter(Mandatory=$True)][string]$pyModule,
+        [Parameter(Mandatory)][string]$pyExecutable,
+        [Parameter(Mandatory)][string]$pyModule,
+        [Parameter()][version]$version,
         [Switch]$pre = $False
     )
 
     if (!(Test-Path -LiteralPath $pyExecutable -PathType Leaf)) { throw "Python executable not found: $pyExecutable"}
 
+    $verString = if($version){ "==$([string]$version)" }
     [string]$Private:preFlag = $(if($pre){"--pre"}else{""})
 
     Write-Verbose "Installing Python module: $pyModule"
-    [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "install" $pyModule $Private:preFlag) 2>&1 | Out-String )
+    [string]$Private:result = $( $(& "$pyExecutable" "-m" "pip" "install" $pyModule$verString $Private:preFlag) 2>&1 | Out-String )
     Write-Verbose "Python returned: $Private:result"
 }
 

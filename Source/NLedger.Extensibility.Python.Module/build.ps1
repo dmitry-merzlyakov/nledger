@@ -5,7 +5,7 @@
 .DESCRIPTION
     Helper script that is responsible to build NLedger Python package.
     Basically, it builds the package using pre-built .Net binaries and puts the output "wheel" file into Contrib/Python folder.
-    If build parameters are not specified explicitely, it discovers necessary information on the current environment.
+    If build parameters are not specified explicitly, it discovers necessary information on the current environment.
 
 .PARAMETER pyExecutable
     Fully-qualified path to Python executable file.

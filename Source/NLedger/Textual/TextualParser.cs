@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -1279,7 +1279,7 @@ namespace NLedger.Textual
                 ApplyStack.PushFront("year", TimesCommon.Current.Epoch);
                 Logger.Current.Debug(DebugTimesEpoch, () => String.Format("Setting current year to {0}", year));
                 // This must be set to the last day of the year, otherwise partial
-                // dates like "11/01" will refer to last year's november, not the
+                // dates like "11/01" will refer to last year's November, not the
                 // current year.
                 TimesCommon.Current.Epoch = new DateTime(year, 12, 31);
             }

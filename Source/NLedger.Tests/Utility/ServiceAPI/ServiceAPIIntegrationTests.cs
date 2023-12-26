@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Abstracts.Impl;
@@ -210,14 +210,14 @@ namespace NLedger.Tests.Utility.ServiceAPI
             Assert.Single(posts);
 
             // Note: once session response is received, current thread is out of NLedger application context.
-            // It means that queried objects (posts in this example) are accessible, but provide limited functinality.
+            // It means that queried objects (posts in this example) are accessible, but provide limited functionality.
             // Some properties or functions are accessible; some might trigger runtime exceptions.
             var post = posts.Single();
             Assert.Equal("Expenses:Food", post.Account.ToString());
             Assert.Equal(20, post.Amount.Quantity.ToLong());
 
             // If you need to get full access to all properties and functions, you need to set NLedger application context.
-            // (at least, for a limited scoope like "using" below). In bounds of this scope, all NLedger functinality is available.
+            // (at least, for a limited scope like "using" below). In bounds of this scope, all NLedger functionality is available.
             using (response.MainApplicationContext.AcquireCurrentThread())
             {
                 Assert.Equal("Payee", post.Payee);

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -367,7 +367,7 @@ namespace NLedger.Utility.BigValues
             string fractionalFormat = pos >= 0 && format.Length > pos + 1 ? format.Substring(pos + 1) : String.Empty;
             int prec = pos >= 0 ? format.Length - pos - 1 : 0;
 
-            // Round value and get integral and fractional parts of this valud
+            // Round value and get integral and fractional parts of this value
             BigRational value;
             Round(out value, prec);
             var integral = value.GetWholePart();

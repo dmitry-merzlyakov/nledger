@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp3.1</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CoreOnly)' == 'True'">netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net48;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LocalTargetFrameworks)' != ''">$(LocalTargetFrameworks)</TargetFrameworks>
     <AssemblyTitle>NLedger</AssemblyTitle>
     <Company>Dmitry Merzlyakov</Company>
     <Product>NLedger, the double-entry accounting tool</Product>
     <Description>NLedger, a .Net port of Ledger accounting system (www.ledger-cli.org)</Description>
-    <Copyright>Copyright © 2015-2021, Dmitry Merzlyakov</Copyright>
-    <VersionPrefix>0.8.4</VersionPrefix>
+    <Copyright>Copyright © 2015-2023, Dmitry Merzlyakov</Copyright>
+    <VersionPrefix>0.8.5</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
     <SourceRevisionId>dev-environment</SourceRevisionId>
     <OutputPath>bin\$(Configuration)\</OutputPath>
