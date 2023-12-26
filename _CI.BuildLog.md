@@ -19,6 +19,94 @@ the latest build status is:
 
 
 ***
+#### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [95] 2023/12/26 17:15:49
+
+>Build #95; Status:Succeeded
+
+>Queued by Microsoft.VisualStudio.Services.TFS; Reason:IndividualCI
+
+>Requested for Microsoft.VisualStudio.Services.TFS (Email:\*)
+
+>Latest commit: 3480c60f3dded8669f456294f7a38e463f3905d8
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/scl/fi/qegm241asju8228vg29gn/NLedger-BuildLogs-v0.8.zip?rlkey=5bjyiy0jcl9ik1cpuxd0t7fpg&dl=0) MD5: 27E4B3B94151D6E55B7CB1BABC984227
+
+Install package: [NLedger-v0.8.zip](https://www.dropbox.com/scl/fi/kphhsn5rvl0ih24hnj7o4/NLedger-v0.8.zip?rlkey=lwxr7nffltdiwrp8cqtusykwo&dl=0) MD5: 243A1649741E76BBA4BEFCAD56D59472
+
+MSI package: [NLedger-v0.8.msi](https://www.dropbox.com/scl/fi/t1usdex2tumquegic3hk7/NLedger-v0.8.msi?rlkey=pj9nun8hsrjxhpojdp5rjdjvt&dl=0) MD5: 7F1E0BF6EE5514BBDDE83FE46586CF57
+
+Nuget package: [NLedger.0.8.5-beta.nupkg](https://www.dropbox.com/scl/fi/o6nk41yrr3yfey8n9kqhw/NLedger.0.8.5-beta.nupkg?rlkey=mdnjq96cfic8bupcoen8uhopb&dl=0) MD5: 661F383CCFB9FC63AC8C22249780B1F8
+
+Nuget Python package: [NLedger.Extensibility.Python.0.8.5-beta.nupkg](https://www.dropbox.com/scl/fi/ur8db9o4q9rbnms7jdhzx/NLedger.Extensibility.Python.0.8.5-beta.nupkg?rlkey=9e4kwf6309r7oaqys52qmri7c&dl=0) MD5: 0A960ABB04E5938355E098146AEC4DC1
+
+Wheel Python package: [ledger-0.8.5-py3-none-any.whl](https://www.dropbox.com/scl/fi/t9fdrxcds74f8d6891w5b/ledger-0.8.5-py3-none-any.whl?rlkey=4nz38q4flmoo7zk3vltbe14g1&dl=0) MD5: 0A15CC507A24F23A74E395A00491B498
+***
+#### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [94] 2023/12/26 16:47:05
+
+>Build #94; Status:Failed
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: c0ec85862233db3c022fb24404febc9b827361a0
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/scl/fi/8umlotpk586jsiwq33jp0/NLedger-BuildLogs-v0.8.zip?rlkey=s7oyy5ipeay5r44k16h9tou4y&dl=0) MD5: 561C9E504CCD83E47DFE3C8870479424
+
+Install package: Not created
+
+MSI package: Not created
+
+Nuget package: Not created
+
+Nuget Python package: Not created
+
+Wheel Python package: Not created
+***
+#### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [93] 2023/12/26 16:13:24
+
+>Build #93; Status:Failed
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: bf3e58c6f5560a817173d24f3260d058e97d7c85
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/scl/fi/nj1nud4j7e3fekf3xa8nt/NLedger-BuildLogs-v0.8.zip?rlkey=ac0y7vvv1dx6x5bvwy9vawgl3&dl=0) MD5: 6F4A0B2FA2235AB63F2C6DD5CD0DB4F1
+
+Install package: Not created
+
+MSI package: Not created
+
+Nuget package: Not created
+
+Nuget Python package: Not created
+
+Wheel Python package: Not created
+***
+#### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [92] 2023/12/26 16:07:12
+
+>Build #92; Status:Failed
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: 45c6464d3a2285b56dd6953a6f960b3cf0dd6290
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/scl/fi/e9qwb1p0i57xnjmqqp46e/NLedger-BuildLogs-v0.8.zip?rlkey=jknb7m3jteg03tgzdki3984l1&dl=0) MD5: B040D552F3BCE9FE3CF44D1273DCCF32
+
+Install package: Not created
+
+MSI package: Not created
+
+Nuget package: Not created
+
+Nuget Python package: Not created
+
+Wheel Python package: Not created
+***
 #### ![Succeeded](https://img.shields.io/badge/Build-Succeeded-green.svg) Build [90] 2021/11/29 15:49:02
 
 >Build #90; Status:Succeeded
@@ -875,6 +963,10 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
+
+
+
 
 
 

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -16,7 +16,7 @@ namespace NLedger.Extensibility.Export
 {
     /// <summary>
     /// This is a wrapper for exported List objects. It keeps a reference to an original list, mimics basic methods but hides interfaces 
-    /// that might identify the origin as a list. Replacing lists with the wrapper prevents impicit conversion by connectors that causes loosing 
+    /// that might identify the origin as a list. Replacing lists with the wrapper prevents implicit conversion by connectors that causes loosing 
     /// a reference to the origin. So, wrapped lists properly supply mutability (manipulations with the exported list are reflected in the origin).
     /// </summary>
     public class ListAdapter<T>

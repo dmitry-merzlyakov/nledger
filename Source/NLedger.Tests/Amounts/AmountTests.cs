@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Amounts;
@@ -283,7 +283,7 @@ namespace NLedger.Tests.Amounts
             Commodity commodityA = new Commodity(CommodityPool.Current, new CommodityBase("AmtNZeroA")) { Precision = 2 };
             // Set a value that less than commodity precision (2) but higher than quantity precision (8)
             Amount amountA = new Amount(Quantity.Parse("0.008", 8), commodityA);
-            Assert.False(amountA.IsZero);  // The value is rounded to 0.01 accorrding to Commodity precision
+            Assert.False(amountA.IsZero);  // The value is rounded to 0.01 according to Commodity precision
         }
 
         [Fact]
@@ -474,7 +474,7 @@ namespace NLedger.Tests.Amounts
             Amount amount2 = new Amount(quantity2, null);
 
             Amount result = amount1.InPlaceAdd(amount2);
-            Assert.Equal(2, result.Quantity.Precision);
+            Assert.Equal(3, result.Quantity.Precision);
         }
 
         [Fact]

@@ -1,1 +1,0 @@
-PowerShell -ExecutionPolicy RemoteSigned -File "%~dp0NLedger.Launcher.ps1"

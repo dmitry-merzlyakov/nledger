@@ -1,0 +1,17 @@
+2008-07-17 Buy ABC
+	Assets:Investments:ABC  1945.83 ABC @ 1.3479 XYZ
+	Assets:Investments:Cash
+
+2017-01-13 Sell ABC
+	; sold at a loss
+	Assets:Investments:ABC  -1945.83 ABC {1.3479 XYZ} [2008-04-17] @@ 2500 XYZ
+	Income:Investment:Capital Gains      122.78 XYZ
+	Assets:Investments:Cash  			 2500.00 XYZ
+
+test bal
+         -122.78 XYZ  Assets:Investments:Cash
+          122.78 XYZ  Income:Investment:Capital Gains
+--------------------
+                   0
+end test
+

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Commodities;
@@ -136,7 +136,7 @@ namespace NLedger.Expressions
         public static ExprOp FindDefinition(ExprOp op, Scope scope, ExprOp locus, int depth, int recursionDepth = 0)
         {
             // If the object we are apply call notation to is a FUNCTION value
-            // or a O_LAMBDA expression, then this is the object we want to
+            // or an O_LAMBDA expression, then this is the object we want to
             // call.
             if (op.IsFunction || op.Kind == OpKindEnum.O_LAMBDA)
                 return op;

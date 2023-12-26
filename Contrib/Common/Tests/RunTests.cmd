@@ -1,0 +1,1 @@
+@Powershell -NoLogo -ExecutionPolicy RemoteSigned -File "%~dp0RunTests.ps1"

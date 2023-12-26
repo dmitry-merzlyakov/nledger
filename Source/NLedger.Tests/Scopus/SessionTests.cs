@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Abstracts.Impl;
@@ -70,6 +70,12 @@ namespace NLedger.Tests.Scopus
         [Fact]
         public void Session_ReadData_UsesDefaultLedgerFileNameIfNoFilesSpecifiedAndFilesBecauseOfNoFile()
         {
+            // The fake file system instance guarantess that the session object does not see a default ledger file
+            // that might physically exist on the machine (e.g. %HOMEPATH%\ledger on Windows)
+            var fs = new NLedger.Utility.ServiceAPI.MemoryFileSystemProvider();
+            MainApplicationContext.Current.SetApplicationServiceProvider(new ApplicationServiceProvider
+                (fileSystemProviderFactory: () => fs));
+
             Session session = new Session();
             Assert.Throws<ParseError>(() => session.ReadData(null));
         }

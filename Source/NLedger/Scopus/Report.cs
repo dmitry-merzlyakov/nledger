@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using NLedger.Accounts;
@@ -686,7 +686,7 @@ namespace NLedger.Scopus
             if (!GroupByHandler.Handled)
                 new AccountsFlusher(handler, this).Handle(Value.Empty);
 
-            // [DM] Disposing handlers at the moment when they go out of scope (like invoking a descructor in c++ code)
+            // [DM] Disposing handlers at the moment when they go out of scope (like invoking a destructor in c++ code)
             chain?.Dispose();
         }
 
@@ -1349,7 +1349,7 @@ namespace NLedger.Scopus
 
             AccountXDataDetails statistics = report.Session.Journal.Master.FamilyDetails(true);
 
-            if (statistics.EarliestPost == null || statistics.LatestPost == null)
+            if (!statistics.EarliestPost.IsValid() && !statistics.LatestPost.IsValid())
                 return Value.Empty;
 
             sb.AppendFormat("Time period: {0} to {1} ({2} days)",

@@ -1,9 +1,9 @@
 ﻿// **********************************************************************************
-// Copyright (c) 2015-2021, Dmitry Merzlyakov.  All rights reserved.
+// Copyright (c) 2015-2023, Dmitry Merzlyakov.  All rights reserved.
 // Licensed under the FreeBSD Public License. See LICENSE file included with the distribution for details and disclaimer.
 // 
 // This file is part of NLedger that is a .Net port of C++ Ledger tool (ledger-cli.org). Original code is licensed under:
-// Copyright (c) 2003-2021, John Wiegley.  All rights reserved.
+// Copyright (c) 2003-2023, John Wiegley.  All rights reserved.
 // See LICENSE.LEDGER file included with the distribution for details and disclaimer.
 // **********************************************************************************
 using System;
@@ -187,7 +187,7 @@ namespace NLedger.Amounts
         {
             CommodityPool.Cleanup();
 
-            // Add time commodity conversions, so that timelog's may be parsed
+            // Add time commodity conversions, so that timelogs may be parsed
             // in terms of seconds, but reported as minutes or hours.
             Commodity commS = CommodityPool.Current.Create("s");
             if (commS != null)
@@ -866,7 +866,7 @@ namespace NLedger.Amounts
             BigInt quantity = Quantity + amount.Quantity;
 
             if (HasCommodity == amount.HasCommodity && quantity.Precision < amount.Quantity.Precision)
-                quantity.SetPrecision(amount.Quantity.Precision);
+                quantity = quantity.SetPrecision(amount.Quantity.Precision);
 
             Quantity = quantity;
             return this;
@@ -1505,7 +1505,7 @@ namespace NLedger.Amounts
         }
 
         /// <summary>
-        /// to_string() returns an amount'ss "display value" as a string --
+        /// to_string() returns an amount's "display value" as a string --
         /// after rounding the value according to the commodity's default
         /// precision.  It is equivalent to: `round().to_fullstring()'.
         /// </summary>

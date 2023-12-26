@@ -1,6 +1,6 @@
 
 ' CUSTOM ACTION
-' Shows a warning message that Powershel is not installed
+' Shows a warning message that Powershell is not installed
 ' Requires property "NoPowershellWarningMessage"
 Sub ShowNoPowershellWarningMessage()
   Set rec = Session.Installer.CreateRecord(1)

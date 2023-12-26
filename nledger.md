@@ -13,15 +13,14 @@ it describes the installation process, specific configuration options and how to
 
 ### Basic Requirements
 
-NLedger is a .Net console application, so basic requirements are minimal; you have to have either .Net Framework or .Net Core installed on your machine:
+NLedger is a .Net console application, so basic requirements are minimal: you must have any currently supported version of .Net installed on your computer.
 
-- [.Net Framework 4.7.2 or later](https://dotnet.microsoft.com/download/dotnet-framework) (for .Net Framework version of NLedger)
-- [.Net Core SDK or Runtime 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) (for .Net Core version)
+- [.Net Framework 4.7.2 and later versions](https://dotnet.microsoft.com/download/dotnet-framework) (for .Net Framework version of NLedger)
+- [.Net 5 (and .Net Core) and later versions](https://dotnet.microsoft.com/en-us/download) (for .Net version of NLedger)
 
-Your choice depends on which host operation system you have. For Linux ans OSX, you should have .Net Core SDK. For Windows,
-.Net Framework is preferable if you want to install an MSI package; the ZIP package can work with both frameworks.
+Your choice depends on what operating system you have. For Linux and OSX, you must have .Net with SDK to run NLedger. For Windows, .Net Framework is acceptable if you want to install an MSI or ZIP package without installing additional components, although you can also run NLedger on other .Net implementations.
 
-NLedger deployment includes a set of Powershell helper scripts for configuring the product, testing, running a demo and managing environment settings.
+NLedger deployment includes a set of Powershell helper scripts (`.Net Ledger Tools`) for configuring the product, testing, running a demo and managing environment settings.
 They are not required but are generally recommended. Therefore:
 
 - [Optionally] Powershell (you can find a latest version available for your host operation system [here](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7))
@@ -33,7 +32,7 @@ They are not required but are generally recommended. Therefore:
 - Python 3.6 (64-bit) or later (you can find the latest version for Windows [here](https://www.python.org/downloads/windows/) or follow Python installation recommendations for your OS)
   - The requirement for 64-bit Python stems from the assumption that the .Net Ledger is running as a 64-bit process. This is the correct assumption for the vast majority of modern environments. However, if your .Net Ledger is running as a 32-bit process for some reason, you should have 32-bit Python.
 
-If you are going to use Python Toolset script (this is the recommended approach for setting up Python integration), you should also have the following Python modules installed:
+If you are going to use `.Net Ledger Tools` (this is the recommended approach for setting up Python integration), you should also have the following Python modules installed:
 - `Pip` is the [package installer](https://pypi.org/project/pip/) for Python. You can find installation instruction [here](https://pip.pypa.io/en/stable/installation/). I personally prefer using [get-pip-py](https://pip.pypa.io/en/stable/installation/#get-pip-py)
    - Use the command `python -m pip --version` to check whether Pip is installed
 - `find-libpython` module is needed for Python ToolSet to find LibPython location. It will be installed automatically.
@@ -43,7 +42,7 @@ If you are going to build .Net Ledger from source code with enabled Python featu
 - `PythonNet` module is needed for testing .Net Ledger Python module after build
   - If you have issues with installing PythonNet, please check Troubleshooting section in the module [Readme](https://github.com/dmitry-merzlyakov/nledger/blob/master/Source/NLedger.Extensibility.Python.Module/README.md) file.
 
-> Windows users can relay on the *Python ToolSet* helper script; it may automatically install and configure the embedded version of Python for the .Net Ledger.
+> Windows users can relay on the `.Net Ledger Tools` helper script; it can automatically install and configure the embedded version of Python for the .Net Ledger.
 
 ### Build from source code
 
@@ -65,7 +64,7 @@ This option works on Windows, Linux and OSX. It includes:
 - Passing unit and integration tests
 - Installing binaries (adding to PATH variable and creating 'ledger' alias)
 
-Prerequisites: .Net Core SDK 3.1, Powershell, Python 3.6, Git command line tool
+Prerequisites: .Net with SDK, Powershell, Python 3.6, Git command line tool
 
 #### Installing (Windows, Linux and OSX)
 
@@ -76,22 +75,22 @@ Prerequisites: .Net Core SDK 3.1, Powershell, Python 3.6, Git command line tool
 ```
 git clone https://github.com/dmitry-merzlyakov/nledger
 cd nledger
-pwsh -file ./nledger/get-nledger-tools.ps1 -pythonConnect
-pwsh -file ./nledger/get-nledger-up.ps1 -install
+pwsh -file ./Contrib/nledger-tools.ps1 python-connect
+pwsh -file ./get-nledger-up.ps1 -install
 ```
 
 On Windows, depending on your Powershell version, the last commands might be:
 
 ```
-PowerShell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -pythonConnect
+PowerShell -ExecutionPolicy RemoteSigned -File ./Contrib/nledger-tools.ps1 python-connect
 powershell -ExecutionPolicy RemoteSigned -File ./get-nledger-up.ps1 -install
 ```
 
 Remarks:
-- Setting up the Python connection (the command *./get-nledger-tools.ps1 -pythonConnect*) enables Python-related unit and integration tests, and also triggers the creation of .Net Ledger Python module. If you are not interested in Python integration, you can skip this step
+- Setting up the Python connection (the command *./Contrib/nledger-tools.ps1 python-connect*) enables Python-related unit and integration tests, and also triggers the creation of .Net Ledger Python module. If you are not interested in Python integration, you can skip this step
 - If Python connection is not configured, build warnings will be displayed indicating skipped steps. You can suppress them by running the build with `noPython` flag:
 ```
-pwsh -file ./nledger/get-nledger-up.ps1 -install -noPython
+pwsh -file ./get-nledger-up.ps1 -install -noPython
 ```
 - Building Python Module requires "pip", "wheel" and, optionally, "pythonnet" modules to be installed in Python. See more information in `Manage Python Integration` section
 
@@ -101,7 +100,7 @@ Uninstalling includes removing NLedger from PATH variable and deleting a short a
 
 Open a terminal window, navigate to the folder containing NLedger and execute:
 ```
-pwsh -file ./get-nledger-tools.ps1 -uninstall
+pwsh -file ./Contib/nledger-tools.ps1 uninstall
 ```
 Remember that you might need to type `powershell -ExecutionPolicy RemoteSigned` instead of `pwsh` for old Powershell versions on Windows.
 
@@ -134,8 +133,8 @@ NLedger installer is a regular Microsoft Windows MSI package. It does:
 
 Installing NLedger from an installation package is pretty easy; your steps are:
 
-- Check prerequisites. You must have .Net Framework 4.7.2 or later; it is absolutely required.
-  If you want to use any component that requires Powershell, check, please, that you have Powershell 4.5 or higher:
+- Check prerequisites. You must have .Net Framework 4.7.2 or later.
+  If you want to use any component that requires Powershell, check, please, that you have Powershell 5.0 or higher:
 
   - In command line window, type *powershell* and once it shows its prompt, type *$PSVersionTable*. The field *PSVersion* contains its version;
 
@@ -154,13 +153,12 @@ You can get the latest ZIP package by this [link](https://github.com/dmitry-merz
 
 If you do not want to run NLedger Installer (MSI package) for some reason, you can get binaries from a ZIP package. The package contains binary files for Windows, so this option works on this operation system only.
 
-Prerequisites: .Net Framework 4.7.2 or .Net Core SDK 3.1 (the package contains binaries for both frameworks)
+Prerequisites: .Net Framework 4.7.2 or .Net 6.0 (or later) runtime (the package contains binaries for .Net Framework, .Net 6.0 and .Net 8.0).
 
 Basically, NLedger binaries are immediately ready for using once they are unpacked.
 However, there are three additional recommended steps that make your work with NLedger more comfortable:
 
-1. It is recommended to create native images for NLedger binaries by calling NGen. 
-   Native images contain very efficient code that speeds up NLedger several times;
+1. For .Net Framework binaries, it is recommended to create native images by calling NGen. Native images contain very efficient code that speeds up NLedger several times;
 2. It is recommended to add the path to NLedger binaries to PATH environment variable.
    It allows you omit path to NLedger in the command line;
 3. You might find it useful to create an short alias to NLedger command line utility.
@@ -179,24 +177,25 @@ The steps to install NLedger are:
 
 1. Download and unpack NLedger zip package;
 2. Open unpacked files; move *NLedger* folder to any appropriate place (e.g. *"C:\Program Files"*);
-3. Open *NLedger\Install* folder;
-4. Execute *NLedger.Install.cmd* command file; confirm requested elevated permissions;
+3. Open *\Contrib* folder in the package;
+4. Execute *nledger-tools.cmd* command file (you may run it as an administrator if elevated privileges are needed);
 5. In the console window:
-    - Type `install` if you want to install .Net Framework version of NLedger
-    - Type `install -core` if you want to install .Net Core version of NLedger
-5. Observe the log of installation actions in the console and close it.
+    - Type `install -link` if you want to install the most appropraite binaries. The script will try to install either .Net 8 or .Net 6 or .Net Framework binaries - depending on which runtime is available on the local machine
+    - Type `install [TFM] -link` if you want to install binaries for a specific .Net implementation. Parameter TFM represent a corresponded TFM code (net6.0, net8.0, net48)
+5. Check the output messages in the console and close it (type `exit`).
 
-Now NLedger is ready for using. For example, open new Windows Command Prompt and type *ledger*:
-the standard prompt should appear. 
+> Note: use `status` command in the console to check the deployment status.
+
+Now NLedger is ready for using. For example, open new Windows Command Prompt and type *ledger*: the standard prompt should appear. 
 
 #### Uninstalling NLedger
 
 If you decide to remove NLedger from the system, perform the steps:
 
-1. Open *NLedger\Install* folder;
-2. Execute *NLedger.Uninstall.cmd* command file; confirm requested elevated permissions;
-3. Observe the log of uninstalling actions in the console and close it;
-4. Delete the folder *NLedger* (of course, make sure that you do not have your own files in this folder).
+1. Open *\Contrib* folder;
+2. Execute *nledger-tools.cmd* command file and execute `uninstall` command;
+3. Check the output messages in the console and close it;
+4. Delete the folder with ZIP package files (of course, make sure that you do not have your own files in this folder).
 
 ## Using NLedger
 
@@ -209,22 +208,22 @@ huge amount of good examples, best practices and recommendations how to deal wit
 accounting systems.
 
 *Note: the example journal file (drewr3.dat) and some other example files that are mentioned in 
-the documentation are available in the folder with Ledger tests (nledger/test/input).*
+the documentation are available in the folder with Ledger tests (/test/input).*
 
 ### Enable Python Integration
 
 Python integration is disabled by default, so you will get error messages like *Error: 'python' directive seen, but Python support is missing* if you try to use this feature.
 
-In order to enable the integration, you should run the Python ToolSet console and execute `enable` command:
+In order to enable the integration, you should run the .Net Ledger ToolSet console and execute `python-enable` command:
 
-1. Click on the '.Net Ledger Python Toolkit' menu shortcut or run the file [Install Folder]/Contrib/Python/GetPythonEnvironment.Console.cmd
+1. Click on the '.Net Ledger Tools' menu shortcut or run the file [Install Folder]/Contrib/nledger-tools.ps1
    - Similar command for Linux and OSX users is:
 
 ```console
-$pwsh -file ./get-nledger-tools.ps1 -pythonTools
+$pwsh -file ./Contrib/nledger-tools.ps1
 ```
 
-2. Type `enable` in the console
+2. Type `python-enable` in the console
 
 This is basically enough; the integration becomes available once that command finishes successfully. Corresponding commands in data files are now processed correctly:
 
@@ -236,7 +235,7 @@ C:\NLedger>NLedger-cli.exe -f feat-value_py3.test reg
 ```
 You can find more information about Python integration settings (including troubleshooting recommendations) in `Manage Python Integration` section.
 
-In order to disable integration, you should run the same console and execute `disable` command.
+In order to disable integration, you should run the same console and execute `python-disable` command.
 
 > Hint: refer to Ledger documentation to find more examples how to use Python in Ledger data files. You can also check integration tests with "py" in names.
 
@@ -245,7 +244,7 @@ In order to disable integration, you should run the same console and execute `di
 Similarly to Python integration, .Net Ledger also supports integration with .Net code.
 When .Net Integration is enabled, you can specify which assembly to load and which function to use in data files.
 
-The example below illustrates how to call .Net function File.Exists() from a data file. You can find more examples in the folder with NLedger tests (nledger/test/nledger; files nl-baseline-net-*.test).
+The example below illustrates how to call .Net function File.Exists() from a data file. You can find more examples in the folder with NLedger tests (/test/nledger; files nl-baseline-net-*.test).
 
 ```
 import assemblies
@@ -270,22 +269,29 @@ There are three logical steps to make .Net Integration work:
 NLedger configuration setting ExtensionProvider specifies which extension will be used. If it is empty, all related directives in data files are inactive; 
 attempts to use them will lead to errors like *directive seen, but ... support is missing*. 
 
-For .Net integration, you should set this setting to `dotnet`. The simplest way to do so is to use Setup Console:
-- Run [Install Folder]/Contrib/NLManagement/NLSetup.Console.cmd (or corresponded menu shortcut if you installed MSI)
-- Type *set-setting ExtensionProvider dotnet -user*
+For .Net integration, you should set this setting to `dotnet`. The simplest way to do so is to use .Net Ledger Tools console:
+- Run [Install Folder]/Contrib/nledger-tools.cmd (or corresponded menu shortcut if you installed MSI)
+- Type *set-config ExtensionProvider dotnet*
 
 ```console
-NLedger Setup>set-setting ExtensionProvider dotnet -user
-[OK] Setting 'ExtensionProvider' is set to 'dotnet' (Scope 'user')
+PS>set-config ExtensionProvider dotnet
+
+Status  : Updated
+Setting : ExtensionProvider
+Value   : dotnet
+Scope   : user
 ```
 
-> Hint: you can use the command *show-details ExtensionProvider -allValues* to check whether the setting is properly set
+> Hint: you can use the command *show-config ExtensionProvider* to check whether the setting is properly set
 
 If you want to disable .Net integration, set an empty value to this setting:
 
 ```console
-NLedger Setup>remove-setting ExtensionProvider
-[OK] Setting 'ExtensionProvider' is removed (Scope 'user')
+PS>remove-config ExtensionProvider
+
+Status  : Removed
+Setting : ExtensionProvider
+Scope   : user
 ```
 
 #### Import .Net Assembly
@@ -349,28 +355,29 @@ namespace Sample
 ```
 > More information about how to develop with NLedger domain model you can find in [Development Notes](https://github.com/dmitry-merzlyakov/nledger/blob/master/build.md).
 
-### Setup Console
+### NLedger Configuration Management
 
 Basically, NLedger settings are available in its configuration file (NLedger-cli.exe.config for .Net Framework or NLedger-cli.dll.config for .Net Core); you can manually change them anytime. However, this approach is not generally recommended by two reasons:
 
 - If you make changes manually, you need strictly know the syntax of settings and available values;
-- For Windows, if is not a good approach to make any manual changes in *Program Files* folder.
+- For Windows, if NLedger is installed in Program Files, it is not a good approach to make any manual changes in that location.
 
-NLedger provides an alternative way to specify user settings on a machine without changing Program Files content:
+NLedger provides another way to manage user settings on a machine without changing configuration files manually. It includes:
 
-- It can read user settings from extra optional files that represent Common (for any user) and User (for an individual user) settings. 
-  They have the same format as the main config file;
-- It provides a helping test console that allows you to manage NLedger settings on your machine:
+- Reading settings from configuration files that represent Common scope (for any user on this machine), User scope (for a current user) and Application scope (application configuration file). Note: all these files have the same format as the app config file;
+- Managing NLedger settings on your machine:
 
-  - It shows help instructions;
   - It shows current options and their effective values (having in mind that the options might be overridden);
   - It allows to set an option value for both Common and User scope (and even for the app config).
 
-On Windows, you can run the tool by executing *NLedger/Contrib/NLManagement/NLSetup.Console.cmd*. Type "help" in the console for further information. Typically, you will use *show*, *set-setting*.
+All these actions are presented as `show-config`, `set-config` and `remove-config` commands in .Net Ledger Tools console.
 
-If you build NLedger from the sources, you can run the tool by the command:
+> .Net Ledger Tools console provides help for every command. Use `get-help [command]` for getting detail information.
+
+If you installed NLedger from MSI, .Net Ledger Tools console is available in the main menu. Otherwise, you can run the console directly:
+
 ```
-pwsh -file ./get-nledger-tools.ps1 -settings
+pwsh -file ./Contrib/nledger-tools.ps1 -noexit
 ```
 
 *Note: this tool requires Powershell*
@@ -382,17 +389,18 @@ but also allows to run all its examples in an interactive manner. You just selec
 so that you see the result in a command line console popup.
 
 You can also repeat the command, change command line arguments to see the result, change the file and run the command again. If you did something wrong in the file, 
-you can revert your changes and continue experimenting with it. So, it is some kind of a playground that let you learn NLedger features in easy and efficiemt way.
+you can revert your changes and continue experimenting with it. So, it is some kind of a playground that let you learn NLedger features in easy and efficient way.
 
-On Windows, you can run the console by executing *NLedger\Contrib\NLManagement\NLDoc.LiveDemo.WebConsole.cmd*.
-
-If you build NLedger from the sources, you can run the tool by the command:
+You can run the demo by means of .Net Ledger Tools console (`live-demo` command).
+You can also do it directly from the command line:
 ```
-pwsh -file ./get-nledger-tools.ps1 -demo
+pwsh -file ./Contrib/nledger-tools.ps1 live-demo
 ```
 
 Technically, it will run a powershell tool that starts http listener and runs your default browser.
-If you have any troubles with default HTTP settings (e.g. port number for HTTP listener) or you want to use another editor or browser - use Setup Console to customize Live Demo settings.
+If you have any troubles with default HTTP settings (e.g. port number for HTTP listener) or you want to use another editor or browser - check and customize Live Demo settings in .Net Ledger Tools console (use `show-config Demo` command).
+
+> For the demo, you need to install NLedger with `ledger` hard link
 
 *Note: this tool requires Powershell*
 
@@ -420,8 +428,8 @@ at all to get rid of artifacts in the output text.*
 
 Like the original application, NLedger has a special testing framework that executes Ledger-style test files
 and verifies that they pass well. It consists of two parts:
-- the folder *NLTestToolkit* has the testing runtime (PowerShell scripts that run tests);
-- the folder *test* that contain the original set of Ledger test files (baseline, input, manual and regress).
+- root files in the folder *test* have the testing runtime (PowerShell scripts that run tests);
+- subfolders in the folder *test* that contain the original set of Ledger test files (baseline, input, manual and regress).
  
 Main testing toolkit features are:
 
@@ -441,18 +449,11 @@ Main testing toolkit features are:
 
 ### Running Tests
 
-On Windows, you can open NLedger Testing Framework console by clicking on *NLTestToolkit\NLTest.cmd*. 
-
-If you build NLedger from the sources, you can run the tool by the command:
-```
-pwsh -file ./get-nledger-tools.ps1 -testConsole
-```
-
-The prompt will show you available commands and other recommendations. For example, simply type *run* and click *Enter* to execute 
-all test files that you have in *test* folder.
-
-*Note: typical time to execute all tests is about 1 minute in case you created native images and about 5 minutes
-otherwise.*
+Run .Net Ledger Tools console and use the command `test`. Basic capabilities are:
+- Run all tests (`test` command without parameters)
+- Run tests filtered by name (`test py` command will run tests that have `py` in the name)
+- Run tests and create an html report (`test -report` command)
+- Run tests using a specific binary file (`test -tfmCode net6.0` will run tests for `net6.0` binaries even if another target is currently installed)
 
 ### Creating Tests
 
@@ -556,11 +557,11 @@ in order to speed up Python runtime: it can cache parsed code in `__pycache__` s
 > If the file NLedger.Extensibility.Python.settings.xml does not exist by the expected path, the integration is considered to be disabled even though `ExtensionProvider` setting contains `python` value.
 
 Changing the configuration settings manually is possible, but not recommended due to the complexity and potential for error. 
-You may consider using Python ToolSet script that can make these changes automatically (see the next section).
+You may consider using .Net Ledger Tools console and `python-*`commands to make these changes automatically (see the next section).
 
-### Python ToolSet helper script
+### Python Management Commands
 
-The Python ToolSet is a Powershell script that was designed to simplify setting up a local environment for .Net Ledger Python integration.
+.Net Ledger Tools console provides a collection of `python-*` commands designed to simplify setting up a local environment for .Net Ledger Python integration.
 It basically covers the following activities:
 - Quick environment setup for .Net Ledger Python integration or .Net Ledger build
 - Discovering local environment settings (primarily local Python deployments) 
@@ -569,25 +570,9 @@ It basically covers the following activities:
 - Installing and managing required Python modules
 - Installing and testing .Net Ledger Python module
 
-The script is basically designed to work in [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) mode in an interactive console, 
-but you can also call commands from the command line.
+The console provides the following features:
 
-You can run the script by means of the following commands (Windows):
-```console
->PowerShell -ExecutionPolicy RemoteSigned -File ./get-nledger-tools.ps1 -pythonTools
-```
-or Linux:
-```console
-$pwsh ./get-nledger-tools.ps1 -pythonTools
-```
-Another way is to run /Contrib/Python/GetPythonEnvironment.ps1 file. Windows users can execute (/Contrib/Python/GetPythonEnvironment.Console.cmd).
-People who installed MSI, can simply run the corresponded menu shortcut.
-
-> The the script runs, it shows a list of available commands. You can get a quick help for every command by typing `get-help [command]`
-
-The script provides the following features:
-
-- `discover` shows you local Python deployments. It checks PATH variable, the folder with embedded Python deployments and checks what is installed by the path specified in 
+- `python-discover` shows you local Python deployments. It checks PATH variable, the folder with embedded Python deployments and checks what is installed by the path specified in 
   NLedger.Extensibility.Python.settings.xml. If you have a local Python in another location, you can check it by adding `-path [PATH]` argument.
 
   What you can check in the output: Python version (it should be in the expected range), Python platform (`x64` is mainly expected), 
@@ -595,40 +580,39 @@ The script provides the following features:
   `wheel` version (you should install it if you want to build .Net Ledger Python module: connect this Python and use `install-wheel`),
   `pythonnet` version (you should install it if you want to test .Net Ledger Python module: connect this Python and use `install-pythonnet`. Refer to the module's Readme if you have issues with this step).
 
-- `status` shows you your current integration status. It basically checks whether the file NLedger.Extensibility.Python.settings.xml exists and has valid content.
+- `python-status` shows you your current integration status. It basically checks whether the file NLedger.Extensibility.Python.settings.xml exists and has valid content.
   Also, it checks that the Python extension provider is enabled. If you see both checks passed, then your Python integration should work as expected.
 
   Another use of this command is to check the expected location of the configuration file, path to connected Python deployment and
   whether PythonNet and Ledger modules are installed on that deployment.
 
-- `connect` creates or updates the connection file NLedger.Extensibility.Python.settings.xml.
+- `python-connect` creates or updates the connection file NLedger.Extensibility.Python.settings.xml.
   If you run this command with no parameters, it will search for Python deployment by PATH and use it if successful.
   Otherwise, on Windows, it will download and install the embedded Python 3.8.1. Eventually, it will create or update the connection configuration file.
 
   If you want to connect to a specific local Python deployment, add `-path [PATH]` argument. 
   If you want to connect to a specific version of the embedded Python, add `-embed [N.N.N]` argument where the numbers are a three-digit Python version. 
-  Notice that if the connection file already exists, it will try to use the specified there deployment. Execute `disconnect` before this command to make it work by default sequence.
+  Notice that if the connection file already exists, it will try to use the specified there deployment. Execute `python-disconnect` before this command to make it work by default sequence.
 
-  You can execute `status` after this command to check that the connection is created as expected.
+  You can execute `python-status` after this command to check that the connection is created as expected.
 
-- `enable` turns on the Python extension provider in .Net Ledger settings. Basically, it sets `python` value to `ExtensionProvider` parameter.
-  An important feature of this command is that it also runs the `connect` command before it, so you can get a fully configured environment by simply executing `enable`. 
+- `python-enable` turns on the Python extension provider in .Net Ledger settings. Basically, it sets `python` value to `ExtensionProvider` parameter.
+  An important feature of this command is that it also runs the `python-connect` command before it, so you can get a fully configured environment by simply executing `python-enable`. 
 
-  Notice that it changes `ExtensionProvider` setting on user level that implies it updates `\NLedger\user.config` file. Settings on the application level can override it.
-  Use NLManagement/NLSetup.Console.ps1 console (command "show-details ExtensionProvider -allValues") to check this point in case of issues.
+  Notice that it changes `ExtensionProvider` setting on user level that implies it updates `\NLedger\user.config` file. Settings on the application level can override it. Use `show-config ExtensionProvider` command to check this point in case of any issues.
 
-  You can execute `status` after this command to check that the provider is enabled as expected.
+  You can execute `python-status` after this command to check that the provider is enabled as expected.
 
-- `disable` turns off the Python extension provider by placing an empty value in the `ExtensionProvider` parameter.
+- `python-disable` turns off the Python extension provider by placing an empty value in the `ExtensionProvider` parameter.
 
-- `disconnect` removes the current connection file NLedger.Extensibility.Python.settings.xml.
+- `python-disconnect` removes the current connection file NLedger.Extensibility.Python.settings.xml.
 
 There are additional auxiliary commands that help to manage the local environment:
 
-- `install-python` and `uninstall-python` install and remove embedded Python deployments. 
+- `python-install` and `python-uninstall` install and remove embedded Python deployments. 
   You may specify `-version [N.N.N]` argument to specify a three-digit version of Python that you want to install or remove.
 
-- `install-pythonnet` and `uninstall-pythonnet` install and remove PythonNet module on the connected Python. 
+- `python-install-pythonnet` and `python-uninstall-pythonnet` install and remove PythonNet module on the connected Python. 
   By default, it installs the public release from PyPi (PythonNet 2.5.2). 
   If it does not work (for example, for Python 3.9 or later), you may try to install pre-release version of PythonNet 3. In this case, add `-pre` switch to the command.
   This command re-installs PythonNet, so that it will uninstall a previous version if it installed.
@@ -636,116 +620,116 @@ There are additional auxiliary commands that help to manage the local environmen
   Note: Installing PythonNet might require additional steps on some environments. Please, refer to Troubleshooting section in 
   the Ledger module's [Readme](https://github.com/dmitry-merzlyakov/nledger/blob/master/Source/NLedger.Extensibility.Python.Module/README.md) to get more information.
 
-- `install-ledger` and `uninstall-ledger` install and remove .Net Ledger Python module on the connected Python. 
+- `python-install-ledger` and `python-uninstall-ledger` install and remove .Net Ledger Python module on the connected Python. 
   The module should exists in /Contrib/Python/ folder (it is important if you build .Net Ledger from source code, so finish the build first). 
   Installing Ledger module requires PythonNet, so try to install it before if you have problems with this command.
   
-- `test-ledger` runs Python unit tests for the installed .Net Ledger Python module.
+- `python-test-ledger` runs Python unit tests for the installed .Net Ledger Python module.
 
-- `test-wheel` installs "wheel" module on the connected Python if it has not been installed yet. No changes otherwise.
+- `python-install-wheel` installs "wheel" module on the connected Python if it has not been installed yet. No changes otherwise.
 
 ### Best Practices
 
 Here is a list of best practices for setting up your environment for specific cases. You can find your case in the list and follow recommendations.
 
 - I installed .Net Ledger from MSI (or pre-built binaries) and now I want to enable Python integration:
-  - Open Python ToolSet console
-  - Execute `enable`
-  - In case of any errors - execute `connect` and troubleshoot the issue. On Windows, you can try `connect -embed 3.8.1` to force installing the isolated embedded Python.
-  - Execute `status` and see that both checks are Green now
+  - Open .Net Ledger Tools console
+  - Execute `python-enable`
+  - In case of any errors - execute `python-connect` and troubleshoot the issue. On Windows, you can try `connect -embed 3.8.1` to force installing the isolated embedded Python.
+  - Execute `python-status` and see that both checks are Green now
 
 - I downloaded .Net Ledger sources and I want to build it from source code:
   - Open Python ToolSet console
-  - Execute `connect`
-  - In case of any errors - troubleshoot the issue. On Windows, you can try `connect -embed 3.8.1` to force installing the isolated embedded Python.
-  - Execute `status` and see that `Python Connection` check is Green (the second one is expectable Red)
-  - Execute `install-wheel`
+  - Execute `python-connect`
+  - In case of any errors - troubleshoot the issue. On Windows, you can try `python-connect -embed 3.8.1` to force installing the isolated embedded Python.
+  - Execute `python-status` and see that `Python Connection` check is Green (the second one is expectable Red)
+  - Execute `python-install-wheel`
   - Run build. Note: .Net Ledger Python module will not be tested
 
 - I downloaded .Net Ledger sources and I want to build it from source code including proper testing of .Net Ledger Python module:
   - Open Python ToolSet console
-  - Execute `connect`
-  - In case of any errors - troubleshoot the issue. On Windows, you can try `connect -embed 3.8.1` to force installing the isolated embedded Python.
-  - Execute `status` and see that `Python Connection` check is Green (the second one is expectable Red)
-  - Execute `install-wheel`
-  - Execute `install-pythonnet`. In case of issues, try `install-pythonnet -pre` or troubleshoot and install PythonNet manually.
+  - Execute `python-connect`
+  - In case of any errors - troubleshoot the issue. On Windows, you can try `python-connect -embed 3.8.1` to force installing the isolated embedded Python.
+  - Execute `python-status` and see that `Python Connection` check is Green (the second one is expectable Red)
+  - Execute `python-install-wheel`
+  - Execute `python-install-pythonnet`. In case of issues, try `python-install-pythonnet -pre` or troubleshoot and install PythonNet manually.
   - Run build. No errors and no warnings expected.
 
 - I have a local Python but I want to connect to an isolated embedded Python with a specific version:
   - Open Python ToolSet console
-  - Execute `connect -embed [N.N.N]` where `[N.N.N]` is a three-digit Python version
-  - Execute `enable`
-  - Execute `status` and see that both checks are Green
+  - Execute `python-connect -embed [N.N.N]` where `[N.N.N]` is a three-digit Python version
+  - Execute `python-enable`
+  - Execute `python-status` and see that both checks are Green
 
 - I have a local Python but its folder is not listed in PATH. I want to use it.
   - Open Python ToolSet console
-  - Execute `discover -path [PATH]` where `[PATH]` is a full path to your Python executable file. Example:
+  - Execute `python-discover -path [PATH]` where `[PATH]` is a full path to your Python executable file. Example:
     - *discover -path C:\Users\dmitry\AppData\Local\NLedger\python-3.9.2-embed-amd64\python.exe*
   - Verify that your Python matches integration requirements (3.6.1 or later, x64, pip is installed)
-  - Execute `connect -path [PATH]`
-  - Execute `enable`
-  - Execute `status` and see that both checks are Green
+  - Execute `python-connect -path [PATH]`
+  - Execute `python-enable`
+  - Execute `python-status` and see that both checks are Green
 
 - My connection is configured but I want to use another Python
   - Open Python ToolSet console
-  - Execute `disconnect`
-  - Execute `connect NNN` where NNN are your preferences (none or `path` or `embed`)
-  - Execute `status` and see that you are connected to preferred Python now
+  - Execute `python-disconnect`
+  - Execute `python-connect NNN` where NNN are your preferences (none or `path` or `embed`)
+  - Execute `python-status` and see that you are connected to preferred Python now
 
 - Python integration is enabled on my machine. I want to install and use .Net Ledger Python module
   - Make sure that the `ledger-0.8.N-py3-none-any.whl` file exists in `/Contrib/Python/` folder.
   - Open Python ToolSet console
-  - Execute `status` and make sure that `PythonNet Module` is installed. Execute `install-pythonnet` otherwise (additional actions might be required)
-  - Execute `install-ledger`
-  - Execute `status` and make sure that `Ledger Module` shows a valid version
-  - Execute `test-ledger` (no errors expected)
-  - Execute `status`, copy `Python Executable` value and run it in a command line
+  - Execute `python-status` and make sure that `PythonNet Module` is installed. Execute `python-install-pythonnet` otherwise (additional actions might be required)
+  - Execute `python-install-ledger`
+  - Execute `python-status` and make sure that `Ledger Module` shows a valid version
+  - Execute `python-test-ledger` (no errors expected)
+  - Execute `python-status`, copy `Python Executable` value and run it in a command line
   - Type `import ledger` in the Python console
 
 - I do not know whether I have a local Python
   - Open Python ToolSet console
-  - Execute `discover`
+  - Execute `python-discover`
   - See what you have in the output:
     - `[Local Python]` refers to a local Python available by PATH
     - `[Embed Python]` contains a list of embedded Pythons in NLedger folder (Windows only)
     - `[NLedger Settings]` shows what is currently specified in the connection file (if exists)
-  - If a local Python found, the command `connect` will use it. Otherwise, `connect` will install an embedded Python (Windows only).
+  - If a local Python found, the command `python-connect` will use it. Otherwise, `python-connect` will install an embedded Python (Windows only).
     On other OS, you should install Python and repeat.
 
 - I do not want to use Python integration anymore:
   - Open Python ToolSet console
-  - Execute `disable`. It will remove `ExtensionProvider` setting, so .Net Ledger will not use Python extension.
-  - Execute `disconnect`. It will disable Python feature for the build process (Python-related tests are ignored; Python module is not built) and for integration tests.
-  - Execute `status` and see that both checks are Red now
+  - Execute `python-disable`. It will remove `ExtensionProvider` setting, so .Net Ledger will not use Python extension.
+  - Execute `python-disconnect`. It will disable Python feature for the build process (Python-related tests are ignored; Python module is not built) and for integration tests.
+  - Execute `python-status` and see that both checks are Red now
   - Note: if you run the build with disabled Python integration, you will see warnings. Add `-noPython` flag to suppress them (*get-nledger-up.ps1 -noPython*)
 
 ### Troubleshooting
 
 Here is a list of guidelines that can be helpful in troubleshooting Python integration issues. Please, follow it if you have problems.
 
-1) Open Python ToolSet console, execute `status` and make sure that both checks (`Python Connection` and `Python Extension`) indicate that they are `[Enabled]`.
+1) Open Python ToolSet console, execute `python-status` and make sure that both checks (`Python Connection` and `Python Extension`) indicate that they are `[Enabled]`.
    Take corrective actions if one of them is not enabled.
-2) Make sure that .Net Ledger configuration setting returns a valid effective value `python`. Run `NLSetup.Console` and execute `show-details ExtensionProvider -allValues`.
+2) Make sure that .Net Ledger configuration setting returns a valid effective value `python`. Run .Net Ledger Tools and execute `show-config ExtensionProvider`.
    Check that `Effective Value` returns `python`. Take corrective actions otherwise.
 3) Check Python version and make sure that the connected Python is 64-bit (assuming that your .Net Ledger runs as 64-bit process as well).
    - Open Python ToolSet console
-   - Execute `status` and copy `Python Executable`
-   - Execute `discover -path [Python Executable]`
+   - Execute `python-status` and copy `Python Executable`
+   - Execute `python-discover -path [Python Executable]`
    - Check that you have a valid output (no error messages). Troubleshoot the issue otherwise
    - Check that `Python Version` is in valid range (3.6.1 or later)
    - Check that `Python Platform` is `x64`
    - Check that `Pip` is installed; install it otherwise
 4) Check that the connection file contains valid values
    - Open Python ToolSet console
-   - Execute `status` and note the path `Connection Settings`
+   - Execute `python-status` and note the path `Connection Settings`
    - Open this file in any text editor and check that both values (`py-executable` and `py-dll`) point at valid files. At least, they should physically exist
 5) If you use a local Python and cannot localize a problem, try to use an isolated embedded Python (Windows only):
    - Open Python ToolSet console
-   - Execute `connect -embed 3.8.1` (ot whatever Python version you prefer)
+   - Execute `python-connect -embed 3.8.1` (ot whatever Python version you prefer)
 
 You can request additional help by posting an issue on GitHub.
 
-## NLedger Configuration File
+## NLedger Configuration File Settings
 
 As a regular .Net application, NLedger command line utility has the own configuration file: *NLedger-cli.exe.config* (*NLedger-cli.dll.config* for Core application).
 It contains several options that are specific for .Net product and Windows environment.
@@ -782,4 +766,4 @@ Available configuration options are:
 by means of environment variables. It checks the variables with the same names and with the prefix "nledger":
 nledgerIsAtty, nledgerAnsiTerminalEmulation, nledgerOutputEncoding and nledgerTimeZoneId.*
 
-(c) 2017-2021 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
+(c) 2017-2023 [Dmitry Merzlyakov](mailto:dmitry.merzlyakov@gmail.com)
