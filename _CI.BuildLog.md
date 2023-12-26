@@ -19,6 +19,28 @@ the latest build status is:
 
 
 ***
+#### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [94] 2023/12/26 16:47:05
+
+>Build #94; Status:Failed
+
+>Queued by Dmitry Merzlyakov; Reason:Manual
+
+>Requested for Dmitry Merzlyakov (Email:dmitry_merzlyakov@hotmail.com)
+
+>Latest commit: c0ec85862233db3c022fb24404febc9b827361a0
+
+Build logs: [NLedger-BuildLogs-v0.8.zip](https://www.dropbox.com/scl/fi/8umlotpk586jsiwq33jp0/NLedger-BuildLogs-v0.8.zip?rlkey=s7oyy5ipeay5r44k16h9tou4y&dl=0) MD5: 561C9E504CCD83E47DFE3C8870479424
+
+Install package: Not created
+
+MSI package: Not created
+
+Nuget package: Not created
+
+Nuget Python package: Not created
+
+Wheel Python package: Not created
+***
 #### ![Failed](https://img.shields.io/badge/Build-Failed-red.svg) Build [93] 2023/12/26 16:13:24
 
 >Build #93; Status:Failed
@@ -919,6 +941,7 @@ Build logs: [NLedger-BuildLogs-v0.6.Build.38.zip](https://www.dropbox.com/s/1x3t
 
 Install package: [NLedger-v0.6.Build.38.zip](https://www.dropbox.com/s/jsxn0doeyi4to4l/NLedger-v0.6.Build.38.zip?dl=0) MD5: 927B428060DF7025FA18E26FFE20D803
 ***
+
 
 
 
