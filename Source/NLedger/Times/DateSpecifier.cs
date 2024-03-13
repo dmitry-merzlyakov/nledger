@@ -27,11 +27,11 @@ namespace NLedger.Times
 
         public DateSpecifier (Date date, DateTraits? traits = null)
         {
-            if (traits != null && traits.Value.HasYear)
+            if (traits == null || traits.Value.HasYear)
                 Year = date.Year;
-            if (traits != null && traits.Value.HasMonth)
+            if (traits == null || traits.Value.HasMonth)
                 Month = (MonthEnum)date.Month;
-            if (traits != null && traits.Value.HasDay)
+            if (traits == null || traits.Value.HasDay)
                 Day = date.Day;
         }
 
