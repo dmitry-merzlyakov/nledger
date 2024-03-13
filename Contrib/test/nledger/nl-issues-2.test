@@ -1,0 +1,7 @@
+~ daily
+  Expenses            $1.00
+  Assets
+
+test --forecast "d<[3 days hence]" bal ^expenses
+               $3.00  Expenses
+end test
